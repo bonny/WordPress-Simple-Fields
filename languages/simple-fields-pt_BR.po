@@ -1,0 +1,348 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Simple Fields\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-03-02 20:38-0300\n"
+"PO-Revision-Date: 2011-03-02 20:49-0300\n"
+"Last-Translator: Ricardo Tomasi <ricardobeat@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: pt-BR\n"
+"X-Poedit-Country: Brasil\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: functions_admin.php:113
+msgid "Post type"
+msgstr "Tipo de post"
+
+#: functions_admin.php:118
+msgid "Default post connector"
+msgstr "Relacionamento de post padrão"
+
+#: functions_admin.php:126
+msgid "No post connector"
+msgstr "Nenhum relacionamento de post"
+
+#: functions_admin.php:127
+msgid "Inherit from parent post"
+msgstr "Herdar do post pai"
+
+#: functions_admin.php:136
+msgid "There are no post connectors for this post type."
+msgstr "Não há nenhum relacionamento para este tipo de post."
+
+#: functions_admin.php:146
+#: functions_admin.php:379
+#: functions_admin.php:472
+msgid "cancel"
+msgstr "cancelar"
+
+#: functions_admin.php:283
+msgid "Post Connector details"
+msgstr "Detalhes do relacionamento de Post"
+
+#: functions_admin.php:289
+#: functions_admin.php:436
+#: functions_admin.php:642
+msgid "Name"
+msgstr "Nome"
+
+#: functions_admin.php:293
+msgid "Field Groups"
+msgstr "Grupos de campos"
+
+#: functions_admin.php:298
+msgid "Add field group..."
+msgstr "Adicionar grupo de campos"
+
+#: functions_admin.php:320
+#: simple_fields.php:83
+msgid "Context"
+msgstr "Contexto"
+
+#: functions_admin.php:322
+#: simple_fields.php:84
+msgid "normal"
+msgstr ""
+
+#: functions_admin.php:323
+#: simple_fields.php:85
+msgid "advanced"
+msgstr ""
+
+#: functions_admin.php:324
+#: simple_fields.php:86
+msgid "side"
+msgstr ""
+
+#: functions_admin.php:327
+msgid "Priority"
+msgstr "Prioridade"
+
+#: functions_admin.php:329
+#: simple_fields.php:87
+msgid "low"
+msgstr "baixa"
+
+#: functions_admin.php:330
+#: simple_fields.php:88
+msgid "high"
+msgstr "alta"
+
+#: functions_admin.php:333
+#: functions_admin.php:382
+#: functions_admin.php:475
+#: functions_admin.php:736
+#: simple_fields.php:73
+msgid "Delete"
+msgstr "Excluir"
+
+#: functions_admin.php:344
+msgid "Available for post types"
+msgstr "Disponível para os tipos de post"
+
+#: functions_admin.php:374
+#: functions_admin.php:467
+msgid "Save Changes"
+msgstr "Salvar alterações"
+
+#: functions_admin.php:433
+msgid "Field group details"
+msgstr "Detalhes do grupo de campos"
+
+#: functions_admin.php:442
+msgid "Repeatable"
+msgstr "Múltiplo"
+
+#: functions_admin.php:448
+msgid "Fields"
+msgstr "Campos"
+
+#: functions_admin.php:461
+msgid "Add field"
+msgstr "Adicionar campo"
+
+#: functions_admin.php:471
+msgid "or"
+msgstr "ou"
+
+#: functions_admin.php:510
+msgid "Field groups"
+msgstr "Grupos de campos"
+
+#: functions_admin.php:514
+msgid "Field group saved"
+msgstr "Grupo de campos salvo"
+
+#: functions_admin.php:516
+msgid "Field group deleted"
+msgstr "Grupo de campos apagado"
+
+#: functions_admin.php:518
+msgid "Post connector deleted"
+msgstr "Relacionamento de post excluído"
+
+#: functions_admin.php:520
+msgid "Post type defaults saved"
+msgstr "Padrões para tipos de post salvos"
+
+#: functions_admin.php:533
+msgid "No field groups yet."
+msgstr "Nenhum grupo de campos foi criado ainda."
+
+#: functions_admin.php:543
+msgid "New field group"
+msgstr "Novo grupo de campos"
+
+#: functions_admin.php:550
+msgid "Post Connectors"
+msgstr "Relacionamentos de Post"
+
+#: functions_admin.php:554
+msgid "Post connector saved"
+msgstr "Relacionamento de post salvo com sucesso"
+
+#: functions_admin.php:578
+msgid "New post connector"
+msgstr "Novo relacionamento de post"
+
+#: functions_admin.php:584
+msgid "Post type defaults"
+msgstr "Padrões para tipos de post"
+
+#: functions_admin.php:647
+msgid "Description"
+msgstr "Descrição"
+
+#: functions_admin.php:652
+msgid "Type"
+msgstr "Tipo"
+
+#: functions_admin.php:655
+#: functions_post.php:34
+msgid "Select"
+msgstr "Select"
+
+#: functions_admin.php:656
+msgid "Text"
+msgstr "Text"
+
+#: functions_admin.php:657
+msgid "Textarea"
+msgstr "Textarea"
+
+#: functions_admin.php:658
+msgid "Checkbox"
+msgstr "Checkbox"
+
+#: functions_admin.php:659
+msgid "Radio buttons"
+msgstr "Radiobuttons"
+
+#: functions_admin.php:660
+msgid "Dropdown"
+msgstr "Dropdown"
+
+#: functions_admin.php:661
+msgid "File"
+msgstr "Arquivo"
+
+#: functions_admin.php:669
+msgid "Use HTML-editor"
+msgstr "Usar editor HTML"
+
+#: functions_admin.php:701
+msgid "Default"
+msgstr "Padrão"
+
+#: functions_admin.php:705
+msgid "Add radio button"
+msgstr "Adicionar radiobutton"
+
+#: functions_admin.php:714
+msgid "Checked by default"
+msgstr "Marcado por padrão"
+
+#: functions_admin.php:744
+msgid "Added dropdown values"
+msgstr "Valores atuais:"
+
+#: functions_admin.php:748
+msgid "Add dropdown value"
+msgstr "Adicionar valor"
+
+#: functions_admin.php:757
+msgid "Delete field"
+msgstr "Excluir campo"
+
+#: functions_post.php:301
+#: simple_fields.php:80
+msgid "Add"
+msgstr "Adicionar"
+
+#: functions_post.php:357
+msgid "Remove field group"
+msgstr "Remover grupo de campos"
+
+#: functions_post.php:460
+msgid "Select file"
+msgstr "Selecionar arquivo"
+
+#: functions_post.php:462
+msgid "Clear"
+msgstr "Limpar"
+
+#: functions_post.php:469
+msgid "image"
+msgstr "imagem"
+
+#: functions_post.php:491
+msgid "View"
+msgstr "Ver"
+
+#: functions_post.php:491
+msgid "Visual"
+msgstr "Visual"
+
+#: functions_post.php:491
+msgid "HTML"
+msgstr "HTML"
+
+#: functions_post.php:496
+msgid "Upload/Insert"
+msgstr ""
+
+#: functions_post.php:515
+msgid "Add an Image"
+msgstr ""
+
+#: functions_post.php:521
+msgid "Add Video"
+msgstr ""
+
+#: functions_post.php:527
+msgid "Add Audio"
+msgstr ""
+
+#: functions_post.php:531
+msgid "Add Media"
+msgstr ""
+
+#: functions_post.php:552
+msgid "Meta key:"
+msgstr "Chave meta:"
+
+#: functions_post.php:708
+msgid "None"
+msgstr "Nenhum"
+
+#: functions_post.php:709
+msgid "Inherit from parent"
+msgstr "Herdar do pai"
+
+#: functions_post.php:717
+msgid "Save post to switch to selected fields."
+msgstr "Salve as alterações para exibir os campos selecionados."
+
+#: functions_post.php:720
+msgid "Show custom field keys"
+msgstr "Exibir chaves dos campos customizados"
+
+#: simple_fields.php:74
+msgid "Delete this field?"
+msgstr "Você quer mesmo excluir este campo?"
+
+#: simple_fields.php:75
+msgid "Delete this group?"
+msgstr "Você quer mesmo excluir este grupo de campos?"
+
+#: simple_fields.php:76
+msgid "Delete this post connector?"
+msgstr "Você quer mesmo excluir este relacionamento?"
+
+#: simple_fields.php:77
+msgid "Delete radio button?"
+msgstr "Você quer mesmo excluir este radiobutton?"
+
+#: simple_fields.php:78
+msgid "Delete dropdown value?"
+msgstr "Você quer mesmo excluir este valor?"
+
+#: simple_fields.php:79
+msgid "Adding..."
+msgstr "Adicionando.."
+
+#: simple_fields.php:81
+msgid "Remove field group from post connector?"
+msgstr "Você quer mesmo remover este grupo de campos do relacionamento?"
+
+#: simple_fields.php:82
+msgid "Remove this field group?"
+msgstr "Você quer mesmo remover este grupo de campos?"
+
+#~ msgid "Submit"
+#~ msgstr "Enviar"
