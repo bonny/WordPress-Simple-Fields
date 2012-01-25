@@ -129,7 +129,7 @@ function simple_fields_options() {
 		 * save post type defaults
 		 */
 		if ("edit-post-type-defaults-save" == $action) {
-			$post_type = $_POST["post_type"];
+			$post_type = $_POST["sf_post_type"];
 			$post_type_connector = $_POST["post_type_connector"];
 			$post_type_defaults = (array) get_option("simple_fields_post_type_defaults");
 			$post_type_defaults["$post_type"] = $post_type_connector;
@@ -178,7 +178,7 @@ function simple_fields_options() {
 					</table>
 					<p class="submit">
 						<input class="button-primary" type="submit" value="Save Changes" />
-						<input type="hidden" name="post_type" value="<?php echo $post_type ?>" />
+						<input type="hidden" name="sf_post_type" value="<?php echo $post_type ?>" />
 						<?php _e('or', 'simple_fields');  ?>
 						<a href="<?php echo EASY_FIELDS_FILE ?>"><?php _e('cancel', 'simple-fields') ?></a>
 					</p>
