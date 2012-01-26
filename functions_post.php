@@ -632,7 +632,12 @@ function simple_fields_meta_box_output_one_field_group($field_group_id, $num_in_
 					
 					$textarea_class = "";
 					$textarea_class_wrapper = "";
+
 					if (isset($textarea_options["use_html_editor"])) {
+						// This should be a WYSIWYG-editor
+						// Use  the new api:
+						// wp_editor( $content, $editor_id, $settings = array() );
+						//wp_editor( 123, "abc", $settings = array() );
 						$textarea_class = "simple-fields-metabox-field-textarea-tinymce";
 						$textarea_class_wrapper = "simple-fields-metabox-field-textarea-tinymce-wrapper";
 					}
@@ -641,7 +646,6 @@ function simple_fields_meta_box_output_one_field_group($field_group_id, $num_in_
 					echo $description;
 
 					// tiny-insert-media-buttons
-					
 					if (isset($textarea_options["use_html_editor"])) {
 
 						// switch html/tinymce
@@ -1422,3 +1426,4 @@ class Walker_Category_Checklist2 extends Walker {
 		$output .= "</li>\n";
 	}
 }
+

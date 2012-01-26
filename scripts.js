@@ -10,14 +10,14 @@ var simple_fields_datepicker_args = { "clickInput": true };
 		var data = {
 			action: 'simple_fields_field_group_add_field',
 			simple_fields_highest_field_id: simple_fields_highest_field_id
-		}
+		};
 		$.post(ajaxurl, data, function(response) {
 			var ul = $("#simple-fields-field-group-existing-fields ul:first");
 			$response = $(response);
 			ul.append($response);
 			ul.find(".simple-fields-field-group-one-field:last").effect("highlight").find(".simple-fields-field-group-one-field-name").focus();
 			//$response.effect("highlight").find(".simple-fields-field-group-one-field-name").focus();
-		});		
+		});
 	}
 	
 	function simple_fields_metabox_tinymce_attach() {
@@ -49,7 +49,7 @@ var simple_fields_datepicker_args = { "clickInput": true };
 
 			// fix so new lines and stuff don't get lost (when drag n dropping)
 			//console.log(arr_elms_to_convert);
-			for (var i = 0; i<arr_elms_to_convert.length; i++) {
+			for (i = 0; i<arr_elms_to_convert.length; i++) {
 				switchEditors.go(arr_elms_to_convert[i], "tinymce");
 			}
 			
@@ -67,7 +67,7 @@ var simple_fields_datepicker_args = { "clickInput": true };
 	// switch-buttons
 	$(".simple_fields_editor_switch_visual").live("click", function() {
 		$this = $(this);
-		$parent = $this.closest(".simple-fields-metabox-field")
+		$parent = $this.closest(".simple-fields-metabox-field");
 		$parent.find(".simple_fields_editor_switch a").removeClass("selected");
 		$this.addClass("selected");
 		
@@ -88,7 +88,7 @@ var simple_fields_datepicker_args = { "clickInput": true };
 	});
 	$(".simple_fields_editor_switch_html").live("click", function() {
 		$this = $(this);
-		$parent = $this.closest(".simple-fields-metabox-field")
+		$parent = $this.closest(".simple-fields-metabox-field");
 		$parent.find(".simple_fields_editor_switch a").removeClass("selected");
 		$this.addClass("selected");
 		
@@ -154,10 +154,11 @@ var simple_fields_datepicker_args = { "clickInput": true };
 	});
 
 	$("li.simple-fields-field-group-one-field div.delete a").live("click", function(){
-		if (confirm(sfstrings.confirmDeleteField)) {
+		console.log(sfstrings);
+		if (confirm(sfstrings.confirmDelete)) {
 			$(this).closest("li").find(".hidden_deleted").attr("value", 1);
 			$(this).closest("li").hide("slow");
-		} else {							
+		} else {
 		}
 		return false;
 	});
@@ -165,7 +166,7 @@ var simple_fields_datepicker_args = { "clickInput": true };
 	$(".simple-fields-field-group-delete a").live("click", function() {
 		if (confirm(sfstrings.confirmDeleteGroup)) {
 			return true;
-		} else {							
+		} else {
 		}
 		return false;
 	});
@@ -173,7 +174,7 @@ var simple_fields_datepicker_args = { "clickInput": true };
 	$(".simple-fields-post-connector-delete a").live("click", function() {
 		if (confirm(sfstrings.confirmDeleteConnector)) {
 			return true;
-		} else {							
+		} else {
 		}
 		return false;
 	});
@@ -328,8 +329,6 @@ var simple_fields_datepicker_args = { "clickInput": true };
 	$(".simple-fields-metabox-field-file-clear").live("click", function() {
 		var $li = $(this).closest(".simple-fields-metabox-field-file");
 		$li.find(".simple-fields-metabox-field-file-fileID").val("");
-		//$li.find(".simple-fields-metabox-field-file-selected-image").text("");		
-		//$li.find(".simple-fields-metabox-field-file-selected-image-name").text("");
 		
 		$li.find(".simple-fields-metabox-field-file-selected-image").fadeOut();
 		$li.find(".simple-fields-metabox-field-file-selected-image-name").fadeOut();
@@ -377,17 +376,6 @@ var simple_fields_datepicker_args = { "clickInput": true };
 					"action": "simple_fields_field_type_post_dialog_load",
 					"arr_enabled_post_types": arr_enabled_post_types
 				});
-				/*
-				var html = "<ul>";
-				if (arr_enabled_post_types.length > 1) {
-					html += "<li><a href=''>All</a></li>";
-				}
-				$(arr_enabled_post_types).each(function(i, elm){
-					html += "<li><a href=''>"+elm+"</a></li>";
-				});
-				html += "<ul>";
-				select_type.html(html);
-				*/
 			}
 		});
 
@@ -577,7 +565,7 @@ var simple_fields_datepicker_args = { "clickInput": true };
 			var params = {
 				"simple_fields_dummy": 1,
 				"simple_fields_action": "select_file"
-			}
+			};
 			
 			var match = window.location.search.match(/simple_fields_file_field_unique_id=([\w]+)/);
 			params.simple_fields_file_field_unique_id = match[1];
@@ -585,7 +573,7 @@ var simple_fields_datepicker_args = { "clickInput": true };
 			// all params that start with "simple_fields_"
 			$.each(params, function(key, val) {
 				frm_filter.append("<input type='hidden' name='"+key+"' value='"+val+"' />");
-			});	
+			});
 
 		}
 		
@@ -600,8 +588,7 @@ var simple_fields_datepicker_args = { "clickInput": true };
 
 // for media selectors
 // code from custom field template by Hiroaki Miyashita
-// 
-var simple_fields_tmpFocus = undefined; // will contain the id of the tinymce field we are adding a file to
+var simple_fields_tmpFocus; // will contain the id of the tinymce field we are adding a file to
 var simple_fields_isTinyMCE = false;
 // when click the thickbox-link, "unset" our vars
 jQuery(".thickbox").bind("click", function (e) {
@@ -609,8 +596,9 @@ jQuery(".thickbox").bind("click", function (e) {
 	simple_fields_isTinyMCE = false;
 });
 function simple_fields_focusTextArea(id) {
+	var elm;
 	if ( typeof tinyMCE != "undefined" ) {
-		var elm = tinyMCE.get(id);
+		elm = tinyMCE.get(id);
 	}
 	if (!elm || elm.isHidden()) {
 		elm = document.getElementById(id);

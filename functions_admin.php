@@ -129,8 +129,8 @@ function simple_fields_options() {
 		 * save post type defaults
 		 */
 		if ("edit-post-type-defaults-save" == $action) {
-			$post_type = $_POST["post_type"];
-			$post_type_connector = $_POST["post_type_connector"];
+			$post_type = $_POST["simle_fields_save-post_type"];
+			$post_type_connector = $_POST["simle_fields_save-post_type_connector"];
 			$post_type_defaults = (array) get_option("simple_fields_post_type_defaults");
 			$post_type_defaults["$post_type"] = $post_type_connector;
 			update_option("simple_fields_post_type_defaults", $post_type_defaults);
@@ -159,7 +159,7 @@ function simple_fields_options() {
 								if ($arr_post_connectors) {
 									$selected_post_type_default = simple_fields_get_default_connector_for_post_type($post_type);
 									?>
-									<select name="post_type_connector">
+									<select name="simle_fields_save-post_type_connector">
 										<option <?php echo ($selected_post_type_default=="__none__") ? " selected='selected' " : "" ?> value="__none__"><?php _e('No post connector', 'simple-fields') ?></option>
 										<option <?php echo ($selected_post_type_default=="__inherit__") ? " selected='selected' " : "" ?> value="__inherit__"><?php _e('Inherit from parent post', 'simple-fields') ?></option>
 										<?php
@@ -178,7 +178,7 @@ function simple_fields_options() {
 					</table>
 					<p class="submit">
 						<input class="button-primary" type="submit" value="Save Changes" />
-						<input type="hidden" name="post_type" value="<?php echo $post_type ?>" />
+						<input type="hidden" name="simle_fields_save-post_type" value="<?php echo $post_type ?>" />
 						<?php _e('or', 'simple_fields');  ?>
 						<a href="<?php echo EASY_FIELDS_FILE ?>"><?php _e('cancel', 'simple-fields') ?></a>
 					</p>
