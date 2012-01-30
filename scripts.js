@@ -26,7 +26,6 @@ var simple_fields_datepicker_args = { "clickInput": true };
 			tiny_init.mode = "exact";
 			tiny_init.theme_advanced_resizing = true;
 			var elms_to_convert = jQuery("textarea.simple-fields-metabox-field-textarea-tinymce");
-			console.log(elms_to_convert);
 			//var str_elms_to_convert = "";
 			var arr_elms_to_convert = [];
 			for (var i=0; i<elms_to_convert.length; i++) {
@@ -49,7 +48,7 @@ var simple_fields_datepicker_args = { "clickInput": true };
 			//}
 
 			// fix so new lines and stuff don't get lost (when drag n dropping)
-			//console.log(arr_elms_to_convert);
+			console.log(arr_elms_to_convert);
 			for (var i = 0; i<arr_elms_to_convert.length; i++) {
 				switchEditors.go(arr_elms_to_convert[i], "tinymce");
 			}
