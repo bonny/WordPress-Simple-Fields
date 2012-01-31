@@ -632,7 +632,12 @@ function simple_fields_meta_box_output_one_field_group($field_group_id, $num_in_
 					
 					$textarea_class = "";
 					$textarea_class_wrapper = "";
+
 					if (isset($textarea_options["use_html_editor"])) {
+						// This should be a WYSIWYG-editor
+						// Use  the new api:
+						// wp_editor( $content, $editor_id, $settings = array() );
+						//wp_editor( 123, "abc", $settings = array() );
 						$textarea_class = "simple-fields-metabox-field-textarea-tinymce";
 						$textarea_class_wrapper = "simple-fields-metabox-field-textarea-tinymce-wrapper";
 					}
@@ -641,7 +646,6 @@ function simple_fields_meta_box_output_one_field_group($field_group_id, $num_in_
 					echo $description;
 
 					// tiny-insert-media-buttons
-					
 					if (isset($textarea_options["use_html_editor"])) {
 
 						// switch html/tinymce
@@ -1300,7 +1304,7 @@ function simple_fields_get_all_fields_and_values_for_post($post_id) {
 	
 		// loop through all fields within this field group
 		// now find out how many times this field group has been added
-		// can be zero, 1 and several (if field group is repeatable)
+		// can be zero, 1 och several (if field group is repeatable)
 	
 		$num_added_field_groups = 0;
 		while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
@@ -1423,102 +1427,3 @@ class Walker_Category_Checklist2 extends Walker {
 	}
 }
 
-function simple_fields_get_field_group($group_id) {
-	$field_groups = get_option("simple_fields_groups");
-	$return = false;
-	if (is_array($field_groups)) {
-		foreach($field_groups as $field_group) {
-			if (is_numeric($group_id)) {
-				if ($field_group['id'] == $group_id) {
-					$return = $field_group;
-					break;
-				}
-			} else {
-				if ($field_group['name'] == $group_id) {
-					$return = $field_group;
-					break;
-				}
-			}
-		}
-	}
-	return $return;
-}
-
-function simple_fields_get_field_in_group($field_group, $field_id) {
-	$return = false;
-	if (is_array($field_group) && is_array($field_group['fields'])) {
-		foreach($field_group['fields'] as $field) {
-			if (is_numeric($field_id)) {
-				if ($field['id'] == $field_id) {
-					$return = $field;
-					break;
-				}
-			} else {
-				if ($field['name'] == $field_id) {
-					$return = $field;
-					break;
-				}
-			}
-		}
-	}
-	return $return;
-}
-
-// Returns an array for merging with WP_Query() arguments.
-// TODO: A variable in simple_fields_groups that keeps track of the most number
-// of times a field has been repeated on any single post so that $num_in_set can
-// be determined dynamically.
-function simple_fields_get_meta_query($group_id, $field_id, $value, $compare = "=", $type = "CHAR", $order = "", $num_in_set = 1) {
-	$field_group = simple_fields_get_field_group($group_id);
-	$field = simple_fields_get_field_in_group($field_group, $field_id);
-	if (!is_array($field_group) || !is_array($field)) {
-		return false;
-	}
-	$query_args = array('meta_query' => array('relation' => 'OR'));
-	for($i=0;$i<$num_in_set;$i++) {
-		$query_args['meta_query'][$i]['key'] = "_simple_fields_fieldGroupID_{$field_group['id']}_fieldID_{$field['id']}_numInSet_{$i}";
-		$query_args['meta_query'][$i]['value'] = $value;
-		$query_args['meta_query'][$i]['compare'] = $compare;
-		$query_args['meta_query'][$i]['type'] = $type;
-	}
-	if ($order == "ASC" || $order == "DESC") {
-		$query_args['meta_key'] = $query_args['meta_query'][0]['key'];
-		$query_args['orderby'] = 'meta_value';
-		$query_args['order'] = $order;
-	}
-	return $query_args;
-}
-
-// Extends args for WP_Query() with simple fields meta query args
-// and returns query result object
-function simple_fields_query_posts($query_args = array()) {
-	foreach($query_args as $key => $val) {
-		switch($key) {
-			case "sf_group":
-			case "sf_field":
-			case "sf_value":
-				if(empty($val))
-					return false;
-				break;
-			case "sf_compare":
-				if(empty($val))
-					$query_args[$key] = "=";
-				break;
-			case "sf_type":
-				if(empty($val))
-					$query_args[$key] = "CHAR";
-				break;
-			case "sf_order":
-				if($val != "ASC" && $val != "DESC")
-					$query_args[$key] = "";
-				break;
-			case "sf_num_in_set":
-				if(!is_numeric($val) || $val < 1)
-					$query_args[$key] = 1;
-				break;
-		}
-	}
-	$meta_query_args = simple_fields_get_meta_query($query_args['sf_group'], $query_args['sf_field'], $query_args['sf_compare'], $query_args['sf_type'], $query_args['sf_order'], $query_args['sf_num_in_set']);
-	$query_args = array_merge($query_args, $meta_query_args);
-	return new WP_Query($query_args);
-}
