@@ -49,7 +49,12 @@ var simple_fields_datepicker_args = { "clickInput": true };
 
 			// fix so new lines and stuff don't get lost (when drag n dropping)
 			//console.log(arr_elms_to_convert);
+<<<<<<< HEAD
 			for (i = 0; i<arr_elms_to_convert.length; i++) {
+=======
+			for (var i = 0; i<arr_elms_to_convert.length; i++) {
+				console.log(arr_elms_to_convert[i]);
+>>>>>>> parent of b701464... simple fields debug
 				switchEditors.go(arr_elms_to_convert[i], "tinymce");
 			}
 			
