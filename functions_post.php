@@ -581,6 +581,7 @@ function simple_fields_meta_box_output_one_field_group($field_group_id, $num_in_
 
 				} elseif ("file" == $field["type"]) {
 
+					$current_post_id = !empty( $_GET['post_id'] ) ? (int) $_GET['post_id'] : 0;
 					$attachment_id = (int) $saved_value;
 					$image_html = "";
 					$image_name = "";
@@ -606,7 +607,7 @@ function simple_fields_meta_box_output_one_field_group($field_group_id, $num_in_
 
 							$field_unique_id_esc = rawurlencode($field_unique_id);
 							// $file_url = "media-upload.php?simple_fields_dummy=1&simple_fields_action=select_file&simple_fields_file_field_unique_id=$field_unique_id_esc&post_id=$post_id&TB_iframe=true";
-							$file_url = "media-upload.php?simple_fields_dummy=1&simple_fields_action=select_file&simple_fields_file_field_unique_id=$field_unique_id_esc&post_id=-1&TB_iframe=true";
+							$file_url = "media-upload.php?simple_fields_dummy=1&simple_fields_action=select_file&simple_fields_file_field_unique_id=$field_unique_id_esc&post_id=$current_post_id&TB_iframe=true";
 							echo "<a class='thickbox simple-fields-metabox-field-file-select' href='$file_url'>".__('Select file', 'simple-fields')."</a>";
 							
 							$class = ($attachment_id) ? " " : " hidden ";
@@ -632,71 +633,20 @@ function simple_fields_meta_box_output_one_field_group($field_group_id, $num_in_
 					
 					$textarea_class = "";
 					$textarea_class_wrapper = "";
-					if (isset($textarea_options["use_html_editor"])) {
-						$textarea_class = "simple-fields-metabox-field-textarea-tinymce";
-						$textarea_class_wrapper = "simple-fields-metabox-field-textarea-tinymce-wrapper";
-					}
 
 					echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
 					echo $description;
 
-					// tiny-insert-media-buttons
-					
 					if (isset($textarea_options["use_html_editor"])) {
-
-						// switch html/tinymce
-						echo "<div class='simple_fields_editor_switch'>".__('View', 'simple-fields')." <a class='selected simple_fields_editor_switch_visual' href='#'>".__('Visual', 'simple-fields')."</a> <a href='#' class='simple_fields_editor_switch_html'>".__('HTML', 'simple-fields')."</a></div>";
-
-						if ( current_user_can( 'upload_files' ) )
-
-						$media = "<div class='simple-fields-metabox-field-textarea-tinymce-media'>";
-						$media .= __("Upload/Insert", "simple-fields");
-						
-						$media_upload_iframe_src = "media-upload.php";
-
-						// from media.php
-						$do_image = $do_audio = $do_video = true;
-						if ( is_multisite() ) {
-							$media_buttons = get_site_option( 'mu_media_buttons' );
-							if ( empty($media_buttons['image']) )
-								$do_image = false;
-							if ( empty($media_buttons['audio']) )
-								$do_audio = false;
-							if ( empty($media_buttons['video']) )
-								$do_video = false;
-						}
-						// end
-
-						if ($do_image) {
-							$image_upload_iframe_src = apply_filters('image_upload_iframe_src', "$media_upload_iframe_src?type=image");
-							$image_title = __('Add an Image');
-							$media .= "<a title='$image_title' class='simple_fields_tiny_media_button' href=\"{$image_upload_iframe_src}&amp;post_id={$post_id}&amp;simple_fields_action=select_file_for_tiny&amp;TB_iframe=true\"><img src='images/media-button-image.gif' alt='' /></a> ";
-						}
-						
-						if ($do_video) {
-							$video_upload_iframe_src = apply_filters('video_upload_iframe_src', "$media_upload_iframe_src?type=video");
-							$video_title = __('Add Video');	
-							$media .= "<a class='simple_fields_tiny_media_button' href=\"{$video_upload_iframe_src}&amp;post_id={$post_id}&amp;simple_fields_action=select_file_for_tiny&amp;TB_iframe=true\" title='$video_title'><img src='images/media-button-video.gif' alt='$video_title' /></a> ";
-						}
-					
-						if ($do_audio) {
-							$audio_upload_iframe_src = apply_filters('audio_upload_iframe_src', "$media_upload_iframe_src?type=audio");
-							$audio_title = __('Add Audio');
-							$media .= "<a class='simple_fields_tiny_media_button' href=\"{$audio_upload_iframe_src}&amp;post_id={$post_id}&amp;simple_fields_action=select_file_for_tiny&amp;TB_iframe=true\" title='$audio_title'><img src='images/media-button-music.gif' alt='$audio_title' /></a> ";
-						}
-					
-						$media_title = __('Add Media');
-						$media .= "<a class='simple_fields_tiny_media_button' href=\"{$media_upload_iframe_src}?post_id={$post_id}&amp;simple_fields_action=select_file_for_tiny&amp;TB_iframe=true\" title='$media_title'><img src='images/media-button-other.gif' alt='$media_title' /></a>";
-						
-						$media .= "</div>";
-
-						echo $media;
-					
+						$args = array("textarea_name" => $field_name, "editor_class" => "simple-fields-metabox-field-textarea-tinymce");
+						echo "<div class='simple-fields-metabox-field-textarea-tinymce-wrapper'>";
+						wp_editor( $saved_value, $field_unique_id, $args );
+						echo "</div>";
+					} else {
+						echo "<div class='simple-fields-metabox-field-textarea-wrapper'>";
+						echo "<textarea class='simple-fields-metabox-field-textarea' name='$field_name' id='$field_unique_id' cols='50' rows='5'>$textarea_value_esc</textarea>";
+						echo "</div>";
 					}
-
-					echo "<div class='$textarea_class_wrapper'>";
-					echo "<textarea class='$textarea_class' name='$field_name' id='$field_unique_id' cols='50' rows='5'>$textarea_value_esc</textarea>";
-					echo "</div>";
 	
 				} elseif ("text" == $field["type"]) {
 	
