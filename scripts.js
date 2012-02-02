@@ -22,86 +22,104 @@ var simple_fields_datepicker_args = { "clickInput": true };
 	
 	function simple_fields_metabox_tinymce_attach() {
 		if (typeof( tinyMCE ) == "object" && typeof( tinyMCEPreInit ) == "object" ) {
-			var tiny_init = tinyMCEPreInit.mceInit;
-			tiny_init.mode = "exact";
-			tiny_init.theme_advanced_resizing = true;
+			var tiny_init = {};
+			var qt_init = {};
 			var elms_to_convert = jQuery("textarea.simple-fields-metabox-field-textarea-tinymce");
-			//var str_elms_to_convert = "";
-			var arr_elms_to_convert = [];
+			var dom = tinymce.DOM;
+			var id, qt, visual_tab, html_tab, is_new, new_ed, new_qt, wrap_id, qttb, txtarea_el, qtname, qtbuttons;
 			for (var i=0; i<elms_to_convert.length; i++) {
-				var one_elm = elms_to_convert[i];
-				// check if this element id already is a tiny editor
-				if (tinyMCE.get(one_elm.id)) {
-					// exists, do nada
-					arr_elms_to_convert.push(one_elm.id);
-				} else {
-					// does not exist, not a tiny editor, so add to the list of ids to convert to editors
-					//str_elms_to_convert += one_elm.id + ",";
-					arr_elms_to_convert.push(one_elm.id);
+				id = elms_to_convert[i].id;
+				is_new = (id + '').indexOf('new', 0);
+				is_new = is_new === -1 ? false : true;
+				if (is_new) {
+					wrap_id = 'wp-'+id+'-wrap';
+					iframe_id = id+"_ifr";
+					iframe_el = jQuery("#"+iframe_id);
+					txtarea_el = dom.get(id);
+					qtname = 'qt_'+id;
+					qttb = 'qt_'+id+'_toolbar';
+					if ( typeof(QTags) != undefined && iframe_el.canvas != undefined ) {
+						QTags.closeAllTags(iframe_el.id);
+					}
+					if (!tinyMCEPreInit.qtInit[id]) {
+						qt_init = tinyMCEPreInit.qtInit[id] = jQuery.extend({}, tinyMCEPreInit.qtInit['content']);
+						qt_init.id = id;
+						qt_init.buttons = qt_init.buttons.replace(",fullscreen", "");
+						try { new_qt = new QTags( tinyMCEPreInit.qtInit[id] ); } catch(e){}
+						QTags._buttonsInit();
+					}
+					
+					if (!tinyMCEPreInit.mceInit[id]) {
+						tiny_init = tinyMCEPreInit.mceInit[id] = jQuery.extend({}, tinyMCEPreInit.mceInit['content']);
+					} else {
+						tiny_init = tinyMCEPreInit.mceInit[id];
+					}
+					tiny_init.mode = 'exact';
+					tiny_init.elements = id;
+					tiny_init.theme_advanced_resizing = true;
+					new_ed = new tinymce.Editor(id, tiny_init);
+					new_ed.render();
+					
+					visual_tab = jQuery("#"+id+"-tmce");
+					visual_tab.removeAttr('onclick').click(function() {
+						var id = this.id.substr(0, (this.id.length-5));
+						var wrap_id = 'wp-'+id+'-wrap';
+						var qttb = 'qt_'+id+'_toolbar';
+						var dom = tinyMCE.DOM;
+						var ed = tinyMCE.get(id);
+						ed.show();
+						dom.hide(qttb);
+						dom.addClass(wrap_id, 'tmce-active');
+						dom.removeClass(wrap_id, 'html-active');
+					});
+					
+					html_tab = jQuery("#"+id+"-html");
+					html_tab.removeAttr('onclick').click(function() {
+						var id = this.id.substr(0, (this.id.length-5));
+						var wrap_id = 'wp-'+id+'-wrap';
+						var qttb = 'qt_'+id+'_toolbar';
+						var dom = tinyMCE.DOM;
+						var ed = tinyMCE.get(id);
+						ed.hide();
+						dom.show(qttb);
+						dom.addClass(wrap_id, 'html-active');
+						dom.removeClass(wrap_id, 'tmce-active');
+					});
+				dom.hide(qttb);
+				dom.addClass(wrap_id, 'tmce-active');
+				dom.removeClass(wrap_id, 'html-active');	
 				}
-				
 			}
-			//str_elms_to_convert = str_elms_to_convert.replace(/,$/, "");
-			//if (str_elms_to_convert != "") {
-			//	tiny_init.elements = str_elms_to_convert;
-				//tinyMCE.init( tiny_init );
-			//}
-
-			// fix so new lines and stuff don't get lost (when drag n dropping)
-			//console.log(arr_elms_to_convert);
-			for (i = 0; i<arr_elms_to_convert.length; i++) {
-				switchEditors.go(arr_elms_to_convert[i], "tinymce");
-			}
-			
 		}
+		return false;
 	}
 	
 	function simple_fields_metabox_tinymce_detach() {
+		var wrap_id, qttb, txtarea_el;
+		var dom = tinymce.DOM;
+		var is_new = false;
 		for( edId in tinyMCE.editors ) {
-			if ( /simple_fields/.test(edId) ) {
-				tinyMCE.execCommand('mceRemoveControl', false, edId);
+			is_new = (edId + '').indexOf('new', 0);
+			is_new = is_new === -1 ? false : true;
+			if (is_new) {
+				wrap_id = 'wp-'+edId+'-wrap';
+				txtarea_el = dom.get(edId);
+				ed = tinyMCE.get(edId);
+				qttb = 'qt_'+edId+'_toolbar';
+				if ( ed && ed.isHidden() ) {
+					return false;
+				}
+				if ( ed ) {
+					txtarea_el.style.height = ed.getContentAreaContainer().offsetHeight + 20 + 'px';
+					ed.hide();
+				}
+				dom.show(qttb);
+				dom.removeClass(wrap_id, 'tmce-active');
+				dom.addClass(wrap_id, 'html-active');
 			}
 		}
+		return false;
 	}
-	
-	// switch-buttons
-	$(".simple_fields_editor_switch_visual").live("click", function() {
-		$this = $(this);
-		$parent = $this.closest(".simple-fields-metabox-field");
-		$parent.find(".simple_fields_editor_switch a").removeClass("selected");
-		$this.addClass("selected");
-		
-		$parent.find(".simple-fields-metabox-field-textarea-tinymce-media").show();
-		
-		var tiny_id = $parent.find(".simple-fields-metabox-field-textarea-tinymce").attr("id");
-		
-		switchEditors.go(tiny_id, "tinymce");
-		/*
-		var tiny_init = tinyMCEPreInit.mceInit;
-		tiny_init.mode = "exact";
-		tiny_init.theme_advanced_resizing = true;
-		tiny_init.elements = tiny_id;
-		tinyMCE.init( tiny_init );
-		*/
-		
-		return false;
-	});
-	$(".simple_fields_editor_switch_html").live("click", function() {
-		$this = $(this);
-		$parent = $this.closest(".simple-fields-metabox-field");
-		$parent.find(".simple_fields_editor_switch a").removeClass("selected");
-		$this.addClass("selected");
-		
-		$parent.find(".simple-fields-metabox-field-textarea-tinymce-media").hide();
-
-		var tiny_id = $parent.find(".simple-fields-metabox-field-textarea-tinymce").attr("id");
-		/*
-		tinyMCE.execCommand('mceRemoveControl', false, tiny_id);
-		*/
-		switchEditors.go(tiny_id, "html");
-		return false;
-
-	});
 
 	function simple_fields_get_fieldID_from_this(t) {
 		var $t = $(t);
@@ -154,7 +172,6 @@ var simple_fields_datepicker_args = { "clickInput": true };
 	});
 
 	$("li.simple-fields-field-group-one-field div.delete a").live("click", function(){
-		console.log(sfstrings);
 		if (confirm(sfstrings.confirmDelete)) {
 			$(this).closest("li").find(".hidden_deleted").attr("value", 1);
 			$(this).closest("li").hide("slow");
@@ -565,7 +582,7 @@ var simple_fields_datepicker_args = { "clickInput": true };
 			var params = {
 				"simple_fields_dummy": 1,
 				"simple_fields_action": "select_file"
-			};
+			}
 			
 			var match = window.location.search.match(/simple_fields_file_field_unique_id=([\w]+)/);
 			params.simple_fields_file_field_unique_id = match[1];
