@@ -45,9 +45,7 @@ var simple_fields_datepicker_args = { "clickInput": true };
 						qt_init = tinyMCEPreInit.qtInit[id] = jQuery.extend({}, tinyMCEPreInit.qtInit['content']);
 						qt_init.id = id;
 						qt_init.buttons = qt_init.buttons.replace(",fullscreen", "");
-						try { new_qt = new QTags( tinyMCEPreInit.qtInit[id] );
-							console.log(tinyMCEPreInit.qtInit);
-						} catch(e){}
+						try { new_qt = new QTags( tinyMCEPreInit.qtInit[id] ); } catch(e){}
 						QTags._buttonsInit();
 					}
 					
@@ -99,21 +97,26 @@ var simple_fields_datepicker_args = { "clickInput": true };
 	function simple_fields_metabox_tinymce_detach() {
 		var wrap_id, qttb, txtarea_el;
 		var dom = tinymce.DOM;
+		var is_new = false;
 		for( edId in tinyMCE.editors ) {
-			wrap_id = 'wp-'+edId+'-wrap';
-			txtarea_el = dom.get(edId);
-			ed = tinyMCE.get(edId);
-			qttb = 'qt_'+edId+'_toolbar';
-			if ( ed && ed.isHidden() ) {
-				return false;
+			is_new = (edId + '').indexOf('new', 0);
+			is_new = is_new === -1 ? false : true;
+			if (is_new) {
+				wrap_id = 'wp-'+edId+'-wrap';
+				txtarea_el = dom.get(edId);
+				ed = tinyMCE.get(edId);
+				qttb = 'qt_'+edId+'_toolbar';
+				if ( ed && ed.isHidden() ) {
+					return false;
+				}
+				if ( ed ) {
+					txtarea_el.style.height = ed.getContentAreaContainer().offsetHeight + 20 + 'px';
+					ed.hide();
+				}
+				dom.show(qttb);
+				dom.removeClass(wrap_id, 'tmce-active');
+				dom.addClass(wrap_id, 'html-active');
 			}
-			if ( ed ) {
-				txtarea_el.style.height = ed.getContentAreaContainer().offsetHeight + 20 + 'px';
-				ed.hide();
-			}
-			dom.show(qttb);
-			dom.removeClass(wrap_id, 'tmce-active');
-			dom.addClass(wrap_id, 'html-active');
 		}
 		return false;
 	}

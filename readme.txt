@@ -1,10 +1,10 @@
 === Plugin Name ===
-Contributors: eskapism, MarsApril, samface, angrycreative
+Contributors: eskapism, MarsApril
 Donate link: http://eskapism.se/sida/donate/
 Tags: admin, fields, custom fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom
 Requires at least: 3.0
-Tested up to: 3.3
-Stable tag: 0.5
+Tested up to: 3.0
+Stable tag: 0.4
 
 Add different kind of input fields to your edit post page. Field can be of type textarea, TinyMCE, checkbox, radio buttons, drop downs or files.
 
@@ -70,12 +70,6 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 
 == Changelog ==
-
-= 0.5 =
-- Added: New function: simple_fields_query_posts(). Fetch and sort posts by simple fields value.
-- Fixed: An incompatibility with Wordpress 3.3 prevented saving of default post connector.
-- Fixed: An incompatibility with the new TinyMCE in Wordpress 3.3 caused the HTML-editor to not show.
-- Fixed: An incompatibility with the new media uploader in Wordpress 3.3 caused the "insert into post"-button to not show in the media library.
 
 = 0.4 =
 - Massive update!
