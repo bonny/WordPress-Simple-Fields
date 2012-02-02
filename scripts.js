@@ -26,26 +26,21 @@ var simple_fields_datepicker_args = { "clickInput": true };
 			var qt_init = {};
 			var elms_to_convert = jQuery("textarea.simple-fields-metabox-field-textarea-tinymce");
 			var dom = tinymce.DOM;
-			var id, qt, visual_tab, html_tab, ed, new_ed, new_qt, wrap_id, qttb, txtarea_el, qtname, qtbuttons;
+			var id, qt, visual_tab, html_tab, is_new, new_ed, new_qt, wrap_id, qttb, txtarea_el, qtname, qtbuttons;
 			for (var i=0; i<elms_to_convert.length; i++) {
 				id = elms_to_convert[i].id;
-				ed = tinyMCE.get(id);
-				wrap_id = 'wp-'+id+'-wrap';
-				iframe_id = id+"_ifr";
-				iframe_el = jQuery("#"+iframe_id);
-				txtarea_el = dom.get(id);
-				qtname = 'qt_'+id;
-				qttb = 'qt_'+id+'_toolbar';
-				if ( ed && ! ed.isHidden() ) {
-					return false;
-				}
-				if ( typeof(QTags) != undefined && iframe_el.canvas != undefined ) {
-					QTags.closeAllTags(iframe_el.id);
-				}
-				if ( ed ) {
-					ed.show();
-				} else {
-					
+				is_new = (id + '').indexOf('new', 0);
+				is_new = is_new === -1 ? false : true;
+				if (is_new) {
+					wrap_id = 'wp-'+id+'-wrap';
+					iframe_id = id+"_ifr";
+					iframe_el = jQuery("#"+iframe_id);
+					txtarea_el = dom.get(id);
+					qtname = 'qt_'+id;
+					qttb = 'qt_'+id+'_toolbar';
+					if ( typeof(QTags) != undefined && iframe_el.canvas != undefined ) {
+						QTags.closeAllTags(iframe_el.id);
+					}
 					if (!tinyMCEPreInit.qtInit[id]) {
 						qt_init = tinyMCEPreInit.qtInit[id] = jQuery.extend({}, tinyMCEPreInit.qtInit['content']);
 						qt_init.id = id;
@@ -92,11 +87,10 @@ var simple_fields_datepicker_args = { "clickInput": true };
 						dom.addClass(wrap_id, 'html-active');
 						dom.removeClass(wrap_id, 'tmce-active');
 					});
-					
-				}
 				dom.hide(qttb);
 				dom.addClass(wrap_id, 'tmce-active');
-				dom.removeClass(wrap_id, 'html-active');
+				dom.removeClass(wrap_id, 'html-active');	
+				}
 			}
 		}
 		return false;
