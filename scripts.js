@@ -1,6 +1,7 @@
 
 jscolor.bindClass = "simple-fields-field-type-color";
 var simple_fields_datepicker_args = { "clickInput": true };
+var simple_fields_tinymce_iframes = new Array;
 
 (function($) {
 
@@ -94,33 +95,24 @@ var simple_fields_datepicker_args = { "clickInput": true };
 		return false;
 	}
 	
-	function simple_fields_metabox_tinymce_detach() {
-		var wrap_id, qttb, txtarea_el;
-		var dom = tinymce.DOM;
-		var is_new = false;
-		for( edId in tinyMCE.editors ) {
-			is_new = (edId + '').indexOf('new', 0);
-			is_new = is_new === -1 ? false : true;
-			if (is_new) {
-				wrap_id = 'wp-'+edId+'-wrap';
-				txtarea_el = dom.get(edId);
-				ed = tinyMCE.get(edId);
-				qttb = 'qt_'+edId+'_toolbar';
-				if ( ed && ed.isHidden() ) {
-					return false;
-				}
-				if ( ed ) {
-					txtarea_el.style.height = ed.getContentAreaContainer().offsetHeight + 20 + 'px';
-					ed.hide();
-				}
-				dom.show(qttb);
-				dom.removeClass(wrap_id, 'tmce-active');
-				dom.addClass(wrap_id, 'html-active');
-			}
+	function simple_fields_buffer_iframes() {
+		var id, textareas = jQuery("textarea.simple-fields-metabox-field-textarea-tinymce");
+		for (var i=0; i<textareas.length; i++) {
+			id = textareas[i].id;
+			simple_fields_tinymce_iframes[id] = jQuery("#"+id+"_ifr").contents().find('html').html();
 		}
 		return false;
 	}
-
+	
+	function simple_fields_reset_iframes() {
+		var id, textareas = jQuery("textarea.simple-fields-metabox-field-textarea-tinymce");
+		for (var i=0; i<textareas.length; i++) {
+			id = textareas[i].id;
+			jQuery("#"+id+"_ifr").contents().find('html').html(simple_fields_tinymce_iframes[id]);
+		}
+		return false;
+	}
+	
 	function simple_fields_get_fieldID_from_this(t) {
 		var $t = $(t);
 		return $t.closest(".simple-fields-field-group-one-field").find(".simple-fields-field-group-one-field-id").val();
@@ -255,7 +247,7 @@ var simple_fields_datepicker_args = { "clickInput": true };
 		$t.text(sfstrings.adding);
 		var $wrapper = $(this).parents(".simple-fields-meta-box-field-group-wrapper");
 		var field_group_id = $wrapper.find("input[name=simple-fields-meta-box-field-group-id]").val();
-		var post_id = $("#post_ID").val();
+		var post_id = jQuery("#post_ID").val();
 
 		var data = {
 			"action": 'simple_fields_metabox_fieldgroup_add',
@@ -555,12 +547,12 @@ var simple_fields_datepicker_args = { "clickInput": true };
 			axis: 'y',
 			handle: ".simple-fields-metabox-field-group-handle",
 			start: function(event, ui) {
-				// detach tinymce, or there will be errors
-				simple_fields_metabox_tinymce_detach();
+				// buffer, or there will be errors
+				simple_fields_buffer_iframes();
 			},
 			stop: function(event, ui) {
-				// add back tiny editors
-				simple_fields_metabox_tinymce_attach();
+				// reset iframes from buffer
+				simple_fields_reset_iframes();
 			}
 		});
 
