@@ -581,7 +581,7 @@ function simple_fields_meta_box_output_one_field_group($field_group_id, $num_in_
 
 				} elseif ("file" == $field["type"]) {
 
-					$current_post_id = !empty( $_GET['post'] ) ? (int) $_GET['post'] : 0;
+					$current_post_id = !empty( $_GET['post_id'] ) ? (int) $_GET['post_id'] : 0;
 					$attachment_id = (int) $saved_value;
 					$image_html = "";
 					$image_name = "";
