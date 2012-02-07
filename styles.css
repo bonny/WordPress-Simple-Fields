@@ -193,6 +193,7 @@ ul#simple-fields-post-connector-added-fields li {
  {
 	margin-top: .5em;
 	margin-bottom: .5em;
+	margin-right: 11px;
 }
 
 .simple-fields-metabox-field label {
@@ -218,7 +219,6 @@ ul.simple-fields-metabox-field-group-fields-repeatable li {
 	padding-top: .5em;
 	padding-bottom: .5em;
 	padding-left: 11px;
-	background-color: white;
 }
 ul.simple-fields-metabox-field-group-fields-repeatable li.hover {
 	background-color: #fffcf1;
@@ -257,11 +257,7 @@ ul.simple-fields-metabox-field-group-fields-repeatable .simple-fields-metabox-fi
 }
 
 .simple-fields-metabox-field-textarea-tinymce-wrapper {
-	width: 95%;
-	border: 1px solid #DFDFDF;
-	-moz-border-radius: 6px 6px 0 0;
-	-webkit-border-radius: 6px 6px 0 0;
-	border-radius: 6px 6px 0 0;
+	width: 100%;
 }
 .simple-fields-metabox-field-textarea-tinymce-wrapper .mce_fullscreen {
 	display: none !important;
