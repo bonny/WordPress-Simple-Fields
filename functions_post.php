@@ -638,6 +638,15 @@ function simple_fields_meta_box_output_one_field_group($field_group_id, $num_in_
 					echo $description;
 
 					if (isset($textarea_options["use_html_editor"])) {
+						// This helps get_upload_iframe_src() determine the correct post id for the media upload button
+						global $post_ID;
+						if (intval($post_ID) == 0) {
+							if (intval($_REQUEST['post_id']) > 0) {
+								$post_ID = intval($_REQUEST['post']);
+							} elseif (intval($_REQUEST['post']) > 0) {
+								$post_ID = intval($_REQUEST['post']);
+							}
+						}
 						$args = array("textarea_name" => $field_name, "editor_class" => "simple-fields-metabox-field-textarea-tinymce");
 						echo "<div class='simple-fields-metabox-field-textarea-tinymce-wrapper'>";
 						wp_editor( $saved_value, $field_unique_id, $args );
