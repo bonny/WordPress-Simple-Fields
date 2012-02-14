@@ -35,7 +35,7 @@ if (isset($_GET["wp_abspath"])) {
 */
 
 
-define( "EASY_FIELDS_URL", WP_PLUGIN_URL . '/simple-fields/');
+define( "EASY_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
 define( "EASY_FIELDS_NAME", "Simple Fields"); 
 define( "EASY_FIELDS_VERSION", "0.4");
 #define( "EASY_FIELDS_FILE", "options-general.php?page=simple-fields-options"); // this still feels nasty...
