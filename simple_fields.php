@@ -55,6 +55,8 @@ function simple_fields_admin_init() {
 	wp_enqueue_script("jquery");
 	wp_enqueue_script("jquery-ui-core");
 	wp_enqueue_script("jquery-ui-sortable");
+	wp_enqueue_script("jquery-ui-dialog");
+	wp_enqueue_style('wp-jquery-ui-dialog');
 	wp_enqueue_script("jquery-effects-highlight");
 	wp_enqueue_script("thickbox");
 	wp_enqueue_style("thickbox");
