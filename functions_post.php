@@ -1433,6 +1433,9 @@ function simple_fields_get_meta_query($group_id, $field_id, $value, $compare = "
 	if (!is_array($field_group) || !is_array($field)) {
 		return false;
 	}
+	if(!is_numeric($num_in_set) || $num_in_set < 1) {
+		$num_in_set = 1;
+	}
 	$query_args = array('meta_query' => array('relation' => 'OR'));
 	for($i=0;$i<$num_in_set;$i++) {
 		$query_args['meta_query'][$i]['key'] = "_simple_fields_fieldGroupID_{$field_group['id']}_fieldID_{$field['id']}_numInSet_{$i}";
@@ -1477,7 +1480,7 @@ function simple_fields_query_posts($query_args = array()) {
 				break;
 		}
 	}
-	$meta_query_args = simple_fields_get_meta_query($query_args['sf_group'], $query_args['sf_field'], $query_args['sf_compare'], $query_args['sf_type'], $query_args['sf_order'], $query_args['sf_num_in_set']);
+	$meta_query_args = simple_fields_get_meta_query($query_args['sf_group'], $query_args['sf_field'], $query_args['sf_value'], $query_args['sf_compare'], $query_args['sf_type'], $query_args['sf_order'], $query_args['sf_num_in_set']);
 	$query_args = array_merge($query_args, $meta_query_args);
 	return new WP_Query($query_args);
 }
