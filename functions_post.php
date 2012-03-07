@@ -1433,6 +1433,9 @@ function simple_fields_get_meta_query($group_id, $field_id, $value, $compare = "
 	if (!is_array($field_group) || !is_array($field)) {
 		return false;
 	}
+	if(!is_numeric($num_in_set) || $num_in_set < 1) {
+		$num_in_set = 1;
+	}
 	$query_args = array('meta_query' => array('relation' => 'OR'));
 	for($i=0;$i<$num_in_set;$i++) {
 		$query_args['meta_query'][$i]['key'] = "_simple_fields_fieldGroupID_{$field_group['id']}_fieldID_{$field['id']}_numInSet_{$i}";
