@@ -1274,6 +1274,18 @@ function simple_fields_get_all_fields_and_values_for_post($post_id) {
 				$custom_field_key = "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_{$one_field_id}_numInSet_{$num_in_set}";	
 				$saved_value = get_post_meta($post_id, $custom_field_key, true); // empty string if does not exist
 
+				if ($one_field_value["type"] == "textarea") {
+					$match_count = preg_match_all('/http:\/\/[a-z0-9A-Z\.]+[a-z0-9A-Z\.\/%&=\?\-_#]+/i', $saved_value, $match);
+					if ($match_count) {
+						$links=$match[0];
+						for ($j=0;$j<$match_count;$j++) {
+							if ($embed_html = wp_oembed_get($links[$j])) {
+								$saved_value = str_replace($links[$j], $embed_html, $saved_value);
+							}
+						}
+					}
+				}
+				
 				$selected_post_connector["field_groups"][$one_field_group["id"]]["fields"][$one_field_id]["saved_values"][$num_in_set] = $saved_value;
 				$selected_post_connector["field_groups"][$one_field_group["id"]]["fields"][$one_field_id]["meta_keys"][$num_in_set] = $custom_field_key;
 
