@@ -1436,6 +1436,18 @@ function simple_fields_get_meta_query($group_id, $field_id, $value, $compare = "
 	if(!is_numeric($num_in_set) || $num_in_set < 1) {
 		$num_in_set = 1;
 	}
+	if ($field["type"] == "radiobuttons") {
+		$get_value_key = "type_radiobuttons_options";
+	} else if ($field["type"] == "dropdown") {
+		$get_value_key = "type_dropdown_options";
+	}
+	if (!empty($get_value_key) && is_array($field[$get_value_key])) {
+		foreach($field[$get_value_key] as $option_key => $option) {
+			if ($option['value'] == $value && (!isset($option['deleted']) || intval($option['deleted']) == 0)) {
+				$value = $option_key;
+			}
+		}
+	}
 	$query_args = array('meta_query' => array('relation' => 'OR'));
 	for($i=0;$i<$num_in_set;$i++) {
 		$query_args['meta_query'][$i]['key'] = "_simple_fields_fieldGroupID_{$field_group['id']}_fieldID_{$field['id']}_numInSet_{$i}";
