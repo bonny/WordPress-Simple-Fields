@@ -77,6 +77,9 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
+#### 0.x
+- Added: German translation by Johann Heyne (http://johannheyne.de). Thanks a lot!
+
 #### 0.5
 - Added: New function: simple_fields_query_posts(). Fetch and sort posts by simple fields value.
 - Fixed: An incompatibility with Wordpress 3.3 prevented saving of default post connector.
