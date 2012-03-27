@@ -1279,9 +1279,11 @@ function simple_fields_get_all_fields_and_values_for_post($post_id) {
 					if ($match_count) {
 						$links=$match[0];
 						for ($j=0;$j<$match_count;$j++) {
-							if (strpos($saved_value, 'href="'.$links[$j].'"') === false && strpos($saved_value, "href='".$links[$j]."'") === false) {
-								$embed_html = wp_oembed_get($links[$j]);
-								$saved_value = str_replace($links[$j], $embed_html, $saved_value);
+							$attr['discover'] = (apply_filters('embed_oembed_discover', false)) ? true : false;
+							$oembed_html = wp_oembed_get($links[$j], $attr);
+							// If there was a result, oembed the link
+							if ($oembed_html) {
+								$saved_value = apply_filters('embed_oembed_html', $oembed_html, $links[$j], $attr);
 							}
 						}
 					}
