@@ -3,8 +3,9 @@
 table.jCalendar {
 	border: 1px solid #000;
 	background: #aaa;
-    border-collapse: separate;
-    border-spacing: 2px;
+	border-collapse: separate;
+	border-spacing: 2px;
+	width: 100%;
 }
 table.jCalendar th {
 	background: #333;
@@ -58,7 +59,9 @@ table.jCalendar td.unselectable.dp-hover {
 /* For the popup */
 
 /* NOTE - you will probably want to style a.dp-choose-date - see how I did it in demo.css */
-
+a.dp-choose-date{
+	margin-left: 5px;
+}
 div.dp-popup {
 	position: relative;
 	background: #ccc;
