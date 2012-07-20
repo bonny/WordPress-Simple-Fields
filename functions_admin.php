@@ -459,7 +459,7 @@ function simple_fields_options() {
 				$field_groups[$field_group_id]["type_taxonomy_options"] = (array) @$_POST["type_taxonomy_options"];
 				//$field_groups[$field_group_id]["type_taxonomyterm_options"] = (array) @$_POST["type_taxonomyterm_options"];
 
-				echo "<pre>fields_groups:"; print_r($field_groups);exit;
+				// echo "<pre>fields_groups:"; print_r($field_groups);exit;
 						
 				update_option("simple_fields_groups", $field_groups);
 				// echo "<pre>";print_r($field_groups);echo "</pre>";
