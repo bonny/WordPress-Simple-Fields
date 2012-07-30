@@ -191,10 +191,10 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 						if ($oneGroupConnectorDefaultKey == "id") {
 							$field_group_connectors[$field_group_connector_id]["id"] = $field_group_connector_id;
 						} else if ($oneGroupConnectorDefaultKey == "key") {
-							$field_group_connectors[$field_group_connector_id]["key"] = (isset($oneGroup["key"])) ? $oneGroup["key"] : $field_group_connector_id;
+							$field_group_connectors[$field_group_connector_id]["key"] = (isset($field_group_options["key"])) ? $field_group_options["key"] : $field_group_connector_id;
 						} else {
-							if (isset($oneGroup[$oneGroupConnectorDefaultKey])) {
-								$field_group_connectors[$field_group_connector_id][$oneGroupConnectorDefaultKey] = $oneGroup[$oneGroupConnectorDefaultKey];
+							if (isset($field_group_options[$oneGroupConnectorDefaultKey])) {
+								$field_group_connectors[$field_group_connector_id][$oneGroupConnectorDefaultKey] = $field_group_options[$oneGroupConnectorDefaultKey];
 							} else {
 								$field_group_connectors[$field_group_connector_id][$oneGroupConnectorDefaultKey] = $oneGroupConnectorDefaultValue;
 							}
