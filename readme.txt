@@ -161,7 +161,6 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 == Changelog ==
 
 = 0.6 =
-
 - Fixed: Various bugfixes.
 - Added: New functions for registering field groups and fields in php, see example usage.
 
