@@ -137,9 +137,13 @@ simple_fields_register_field_group('test',
 simple_fields_register_post_connector('test_connector',
                 array (
                     'name' => "A test connector",
-                    'field_groups' => array('test'),
-                    'post_types' => array('post'),
-                    'priority' => 'high'
+                    'field_groups' => array(
+                                            array('name' => 'Test fields',
+                                                  'key' => 'test',
+                                                  'context' => 'normal',
+                                                  'priority' => 'high')
+                                      ),
+                    'post_types' => array('post')
                 )
 );
 
