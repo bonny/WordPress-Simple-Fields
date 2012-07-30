@@ -160,6 +160,11 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
+= 0.6 =
+
+- Fixed: Various bugfixes.
+- Added: New functions for registering field groups and fields in php, see example usage.
+
 = 0.5 =
 - Added: New function: simple_fields_query_posts(). Fetch and sort posts by simple fields value.
 - Fixed: An incompatibility with Wordpress 3.3 prevented saving of default post connector.
