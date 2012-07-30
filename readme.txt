@@ -52,10 +52,99 @@ There are also [tutorials available for Simple Fields](http://eskapism.se/code-p
 As always, make a backup of your database first!
 
 1. Upload the folder "simple-fields" to "/wp-content/plugins/"
-1. Activate the plugin through the "Plugins" menu in WordPress
-1. Start poking around with Simple Fields under Settings > Simple Fields
-1. Get help at http://eskapism.se/code-playground/simple-fields/ and ask your questions at http://wordpress.org/tags/simple-fields?forum_id=10
-1. That's it; you know have a super cool and powerful CMS based on WordPress!
+2. Activate the plugin through the "Plugins" menu in WordPress
+3. Start poking around with Simple Fields under Settings > Simple Fields
+4. Get help at http://eskapism.se/code-playground/simple-fields/ and ask your questions at http://wordpress.org/tags/simple-fields?forum_id=10
+5. That's it; you know have a super cool and powerful CMS based on WordPress!
+
+
+== Example usage: Define your simple fields in your theme ==
+
+Simple fields now supports registering field groups and fields with php code. For example, try this in your functions.php:
+
+--- 8< ---
+
+simple_fields_register_field_group('test',
+                array (
+                    'name' => 'Test field group',
+                    'description' => "Test field description",
+                    'repeatable' => 1,
+                    'fields' => array(
+                                    array('name' => 'Test text',
+                                          'description' => 'Text description',
+                                          'type' => 'text'
+                                    ),
+                                    array('name' => 'Test textarea',
+                                          'description' => 'Textarea description',
+                                          'type' => 'textarea',
+                                          'type_textarea_options' => array('use_html_editor' => 1)
+                                    ),
+                                    array('name' => 'Test checkbox',
+                                          'description' => 'Checkbox description',
+                                          'type' => 'checkbox',
+                                          'type_checkbox_options' => array('checked_by_default' => 1)
+                                    ),
+                                    array('name' => 'Test radiobutton',
+                                          'description' => 'Radiobutton description',
+                                          'type' => 'radiobutton',
+                                          'type_radiobutton_options' => array(array("value" => "Yes"),
+                                                                              array("value" => "No")
+                                                                        )
+                                    ),
+                                    array('name' => 'Test dropdown',
+                                          'description' => 'Dropdown description',
+                                          'type' => 'dropdown',
+                                          'type_dropdown_options' => array(array("value" => "Yes"),
+                                                                           array("value" => "No")
+                                                                     )
+                                    ),
+                                    array('name' => 'Test file',
+                                          'description' => 'File description',
+                                          'type' => 'file'
+                                    ),
+                                    array('name' => 'Test post',
+                                          'description' => 'Post description',
+                                          'type' => 'post',
+                                          'type_post_options' => array("enabled_post_types" => array("post"))
+                                    ),
+                                    array('name' => 'Test taxonomy',
+                                          'description' => 'Taxonomy description',
+                                          'type' => 'taxonomy',
+                                          'type_taxonomy_options' => array("enabled_taxonomies" => array("category"))
+                                    ),
+                                    array('name' => 'Test taxonomy term',
+                                          'description' => 'Taxonomy term description',
+                                          'type' => 'taxonomyterm',
+                                          'type_taxonomyterm_options' => array("enabled_taxonomy" => "category")
+                                    ),
+                                    array('name' => 'Test color selector',
+                                          'description' => 'Color selector description',
+                                          'type' => 'color'
+                                    ),
+                                    array('name' => 'Test date selector',
+                                          'description' => 'Date selector description',
+                                          'type' => 'date',
+                                          'type_date_options' => array('use_time' => 1)
+                                    ),
+                                    array('name' => 'Test user selector',
+                                          'description' => 'User selector description',
+                                          'type' => 'user'
+                                    )
+                                )
+                )
+);
+
+simple_fields_register_post_connector('test_connector',
+                array (
+                    'name' => "A test connector",
+                    'field_groups' => array('test'),
+                    'post_types' => array('post')
+                )
+);
+
+simple_fields_register_post_type_default('test_connector', 'post');
+
+--- >8 ---
 
 
 == Screenshots ==
