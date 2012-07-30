@@ -53,7 +53,7 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 	}
 	
 	if (!isset($field_group_id) || !is_numeric($field_group_id)) {
-		if ($highest_id > 0) {
+		if (!empty($field_groups[$highest_id]) || $highest_id > 0) {
 			$highest_id++;
 		}
 		$field_group_id = $highest_id;
@@ -148,7 +148,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 	}
 	
 	if (!isset($connector_id) || !is_numeric($connector_id)) {
-		if ($highest_connector_id > 0) {
+		if (!empty($post_connectors[$highest_connector_id]) || $highest_connector_id > 0) {
 			$highest_connector_id++;
 		}
 		$connector_id = $highest_connector_id;
