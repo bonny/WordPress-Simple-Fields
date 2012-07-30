@@ -189,9 +189,9 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 				if ($oneGroup["id"] == $field_group_options["id"] || $oneGroup["key"] == $field_group_options["key"]) {
 					foreach($field_group_connector_defaults as $oneGroupConnectorDefaultKey => $oneGroupConnectorDefaultValue) {
 						if ($oneGroupConnectorDefaultKey == "id") {
-							$field_group_connectors[$field_group_connector_id]["id"] = $field_group_connector_id;
+							$field_group_connectors[$field_group_connector_id]["id"] = $oneGroup["id"];
 						} else if ($oneGroupConnectorDefaultKey == "key") {
-							$field_group_connectors[$field_group_connector_id]["key"] = (isset($field_group_options["key"])) ? $field_group_options["key"] : $field_group_connector_id;
+							$field_group_connectors[$field_group_connector_id]["key"] = $oneGroup["key"];
 						} else {
 							if (isset($field_group_options[$oneGroupConnectorDefaultKey])) {
 								$field_group_connectors[$field_group_connector_id][$oneGroupConnectorDefaultKey] = $field_group_options[$oneGroupConnectorDefaultKey];
@@ -222,16 +222,16 @@ function simple_fields_register_post_type_default($post_type_connector = "", $po
 		$post_connectors = simple_fields_get_post_connectors();
 		foreach ($post_connectors as $oneConnector) {
 			if ($oneConnector["key"] == $post_type_connector) {
-				$post_type_connector = $oneConnector["id"];
+				$connector_id = $oneConnector["id"];
 			}
 		}
 	}
-	if (!is_numeric($post_type_connector)) {
+	if (!is_numeric($connector_id)) {
 		// Still not numeric?
 		return false;
 	}
 	$post_type_defaults = (array) get_option("simple_fields_post_type_defaults");
-	$post_type_defaults["$post_type"] = $post_type_connector;
+	$post_type_defaults["$post_type"] = $connector_id;
 	if (isset($post_type_defaults[0])) {
 		unset($post_type_defaults[0]);
 	}
