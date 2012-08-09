@@ -1170,7 +1170,7 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
  */
 function simple_fields_get_post_group_values($post_id, $field_group_name_or_id, $use_name = true, $return_format = 1) {
 
-	$fetch_by_id = true;
+	$fetch_by_id = false;
 	if (is_int($field_group_name_or_id)) {
 		$fetch_by_id = true;
 	}
