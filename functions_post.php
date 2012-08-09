@@ -1112,7 +1112,9 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 		$field_id = $field_name_or_id[1];
 		$fetch_by_id = false;
 	}
+	
 	$connector = simple_fields_get_all_fields_and_values_for_post($post_id);
+	
 	$return_val = null;
 	if ($connector) {
 		foreach ($connector["field_groups"] as $one_field_group) {
@@ -1121,7 +1123,7 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 				if ($fetch_by_id && $one_field["name"] == $field_name_or_id) {
 					// we got our field, get the value(s)
 					$is_found = true;
-				} else if (($one_field_group["id"] == $field_group_id) && ($one_field["id"] == $field_id)) {
+				} else if (!$fetch_by_id && ($one_field_group["id"] === $field_group_id) && ($one_field["id"] === $field_id)) {
 					$is_found = true;
 				}
 	
@@ -1154,6 +1156,7 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 			}
 		}
 	}
+	echo "</pre>";
 	return; // oh no! nothing found. bummer.
 }
 
@@ -1182,7 +1185,7 @@ function simple_fields_get_post_group_values($post_id, $field_group_name_or_id, 
 		$is_found = false;
 		if ($fetch_by_id && $one_field_group["id"] == $field_group_name_or_id) {
 			$is_found = true;
-		} else if ($field_group_name_or_id == $one_field_group["name"]) {
+		} else if (!$fetch_by_id && $field_group_name_or_id == $one_field_group["name"]) {
 			$is_found = true;
 		}
 
@@ -1268,10 +1271,17 @@ function simple_fields_get_all_fields_and_values_for_post($post_id) {
 		
 		// now fetch the stored values, one field at a time
 		for ($num_in_set = 0; $num_in_set < $num_added_field_groups; $num_in_set++) {
+			/* echo "<pre>";
+			var_dump($one_field_group["id"]);
+			var_dump(array_keys($selected_post_connector["field_groups"]));
+			var_dump($selected_post_connector["field_groups"]);
+			var_dump($selected_post_connector["field_groups"][$one_field_group["id"]]);
+			*/
 			// fetch value for each field
 			foreach ($selected_post_connector["field_groups"][$one_field_group["id"]]["fields"] as $one_field_id => $one_field_value) {
 
-				$custom_field_key = "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_{$one_field_id}_numInSet_{$num_in_set}";	
+				$custom_field_key = "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_{$one_field_id}_numInSet_{$num_in_set}";
+				
 				$saved_value = get_post_meta($post_id, $custom_field_key, true); // empty string if does not exist
 
 				if ($one_field_value["type"] == "textarea") {

@@ -183,27 +183,25 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 							"priority" => "low"
 			
 		);
-		$field_group_connector_id = 0;
 		foreach($new_post_connector["field_groups"] as $field_group_options) {
 			foreach($field_groups as $oneGroup) {
 				if ($oneGroup["id"] == $field_group_options["id"] || $oneGroup["key"] == $field_group_options["key"]) {
 					foreach($field_group_connector_defaults as $oneGroupConnectorDefaultKey => $oneGroupConnectorDefaultValue) {
 						if ($oneGroupConnectorDefaultKey == "id") {
-							$field_group_connectors[$field_group_connector_id]["id"] = $oneGroup["id"];
+							$field_group_connectors[$oneGroup["id"]]["id"] = $oneGroup["id"];
 						} else if ($oneGroupConnectorDefaultKey == "key") {
-							$field_group_connectors[$field_group_connector_id]["key"] = $oneGroup["key"];
+							$field_group_connectors[$oneGroup["id"]]["key"] = $oneGroup["key"];
 						} else {
 							if (isset($field_group_options[$oneGroupConnectorDefaultKey])) {
-								$field_group_connectors[$field_group_connector_id][$oneGroupConnectorDefaultKey] = $field_group_options[$oneGroupConnectorDefaultKey];
+								$field_group_connectors[$oneGroup["id"]][$oneGroupConnectorDefaultKey] = $field_group_options[$oneGroupConnectorDefaultKey];
 							} else {
-								$field_group_connectors[$field_group_connector_id][$oneGroupConnectorDefaultKey] = $oneGroupConnectorDefaultValue;
+								$field_group_connectors[$oneGroup["id"]][$oneGroupConnectorDefaultKey] = $oneGroupConnectorDefaultValue;
 							}
 							
 						}
 					}
 				}
 			}
-			$field_group_connector_id++;
 		}
 		$post_connectors[$connector_id]["field_groups"] = $field_group_connectors;
 		
@@ -1187,4 +1185,3 @@ function simple_fields_field_group_add_field_template($fieldID, $field_group_in_
 	return $out;
 
 }
-
