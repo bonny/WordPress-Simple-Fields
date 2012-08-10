@@ -65,30 +65,38 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 		$new_field_group["name"] = $unique_name;
 	}
 	
-	$field_group_defaults = array(
-		"id" => $field_group_id,
-		"key" => $unique_name,
-		"name" => "Unnamed field group $field_group_id",
-		"repeatable" => false,
-		"fields" => array(),
-		"deleted" => false
-	);
+	if (!isset($field_groups[$field_group_id])) {
+		$field_group_defaults = array(
+			"id" => $field_group_id,
+			"key" => $unique_name,
+			"name" => "Unnamed field group $field_group_id",
+			"repeatable" => false,
+			"fields" => array(),
+			"deleted" => false
+		);
+	} else {
+		$field_group_defaults = $field_groups[$field_group_id];
+	}
 	
 	$field_groups[$field_group_id] = array_merge($field_group_defaults, $new_field_group);
 	
 	if (is_array($new_field_group["fields"]) && !empty($new_field_group["fields"])) {
-		$field_defaults = array("name" => "",
-					"description" => "",
-					"type" => "",
-					"type_post_options" => array("additional_arguments" => ""),
-					"type_taxonomyterm_options" => array("additional_arguments" => ""),
-					"id" => "",
-					"deleted" => 0
-		);
 		$fields = array();
 		$field_id = 0;
 		foreach($new_field_group["fields"] as $oneField) {
 			$fields[$field_id] = array();
+			if (!isset($field_groups[$field_group_id]['fields'][$field_id])) {
+				$field_defaults = array("name" => "",
+							"description" => "",
+							"type" => "",
+							"type_post_options" => array("additional_arguments" => ""),
+							"type_taxonomyterm_options" => array("additional_arguments" => ""),
+							"id" => "",
+							"deleted" => 0
+				);
+			} else {
+				$field_defaults = $field_groups[$field_group_id]['fields'][$field_id];
+			}
 			foreach($field_defaults as $oneDefaultFieldKey => $oneDefaultFieldValue) {
 				if ($oneDefaultFieldKey == "id") {
 					$fields[$field_id]["id"] = $field_id;
@@ -140,7 +148,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 	$highest_connector_id = 0;
 	foreach ($post_connectors as $oneConnector) {
 		if ($oneConnector["key"] == $unique_name) {
-			// Field group already exists
+			// Connector already exists
 			$connector_id = $oneConnector["id"];
 		} else if (!isset($field_group_id) && $oneConnector["id"] > $highest_connector_id) {
 			$highest_connector_id = $oneConnector["id"];
@@ -170,6 +178,10 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 		"hide_editor" => false
 	);
 	
+	if (isset($post_connectors[$connector_id])) {
+		$post_connector_defaults = $post_connectors[$connector_id];
+	}
+	
 	$post_connectors[$connector_id] = array_merge($post_connector_defaults, $new_post_connector);
 	
 	if (is_array($new_post_connector["field_groups"]) && !empty($new_post_connector["field_groups"])) {
@@ -184,21 +196,33 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 			
 		);
 		foreach($new_post_connector["field_groups"] as $field_group_options) {
-			foreach($field_groups as $oneGroup) {
+			$field_group_found = false;
+			foreach ($field_groups as $oneGroup) {
 				if ($oneGroup["id"] == $field_group_options["id"] || $oneGroup["key"] == $field_group_options["key"]) {
-					foreach($field_group_connector_defaults as $oneGroupConnectorDefaultKey => $oneGroupConnectorDefaultValue) {
-						if ($oneGroupConnectorDefaultKey == "id") {
-							$field_group_connectors[$oneGroup["id"]]["id"] = $oneGroup["id"];
-						} else if ($oneGroupConnectorDefaultKey == "key") {
-							$field_group_connectors[$oneGroup["id"]]["key"] = $oneGroup["key"];
+					// Field group found
+					$field_group_found = true;
+					$field_group_id = $oneGroup["id"];
+					$field_group_key = $oneGroup["id"];
+				}
+			}
+			if ($field_group_found !== false) {
+				if (isset($field_group_connectors[$field_group_id]) && !$field_group_connectors[$field_group_id]["deleted"]) {
+					$default_field_group_connector = $field_group_connectors[$field_group_id];
+				} else {
+					$default_field_group_connector = $field_group_connector_defaults;
+				}
+				foreach($default_field_group_connector as $oneGroupConnectorDefaultKey => $oneGroupConnectorDefaultValue) {
+					if ($oneGroupConnectorDefaultKey == "id") {
+						$field_group_connectors[$field_group_id]["id"] = $field_group_id;
+					} else if ($oneGroupConnectorDefaultKey == "key") {
+						$field_group_connectors[$field_group_id]["key"] = $field_group_key;
+					} else {
+						if (isset($field_group_options[$oneGroupConnectorDefaultKey])) {
+							$field_group_connectors[$field_group_id][$oneGroupConnectorDefaultKey] = $field_group_options[$oneGroupConnectorDefaultKey];
 						} else {
-							if (isset($field_group_options[$oneGroupConnectorDefaultKey])) {
-								$field_group_connectors[$oneGroup["id"]][$oneGroupConnectorDefaultKey] = $field_group_options[$oneGroupConnectorDefaultKey];
-							} else {
-								$field_group_connectors[$oneGroup["id"]][$oneGroupConnectorDefaultKey] = $oneGroupConnectorDefaultValue;
-							}
-							
+							$field_group_connectors[$field_group_id][$oneGroupConnectorDefaultKey] = $oneGroupConnectorDefaultValue;
 						}
+						
 					}
 				}
 			}
@@ -206,8 +230,6 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 		$post_connectors[$connector_id]["field_groups"] = $field_group_connectors;
 		
 	}
-	
-	// echo "<pre>" . print_r($post_connectors, true) . "</pre>";
 	
 	update_option("simple_fields_post_connectors", $post_connectors);
 }
@@ -1185,4 +1207,3 @@ function simple_fields_field_group_add_field_template($fieldID, $field_group_in_
 	return $out;
 
 }
-
