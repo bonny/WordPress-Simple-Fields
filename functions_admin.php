@@ -1185,3 +1185,4 @@ function simple_fields_field_group_add_field_template($fieldID, $field_group_in_
 	return $out;
 
 }
+
