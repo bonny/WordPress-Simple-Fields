@@ -41,29 +41,37 @@ function simple_fields_field_type_post_dialog_load() {
 	)
 	*/
 	$arr_enabled_post_types = (array) $_POST["arr_enabled_post_types"];
+	$additional_arguments = $_POST["additional_arguments"];
 	$existing_post_types = get_post_types(NULL, "objects");
 	$selected_post_type = (string) @$_POST["selected_post_type"];
 	?>
-	<p>Show posts of type:</p>
-	<ul class="simple-fields-meta-box-field-group-field-type-post-dialog-post-types">
-		<?php
-		$loopnum = 0;
-		foreach ($existing_post_types as $key => $val) {
-			if (!in_array($key, $arr_enabled_post_types)) {
-				continue;
+
+	<?php if (count($arr_enabled_post_types) > 1) { ?>
+		<p>Show posts of type:</p>
+		<ul class="simple-fields-meta-box-field-group-field-type-post-dialog-post-types">
+			<?php
+			$loopnum = 0;
+			foreach ($existing_post_types as $key => $val) {
+				if (!in_array($key, $arr_enabled_post_types)) {
+					continue;
+				}
+				if (empty($selected_post_type) && $loopnum == 0) {
+					$selected_post_type = $key;
+				}
+				$class = "";
+				if ($selected_post_type == $key) {
+					$class = "selected";
+				}
+				printf("\n<li class='%s'><a href='%s'>%s</a></li>", $class, "$key", $val->labels->name);
+				$loopnum++;
 			}
-			if (empty($selected_post_type) && $loopnum == 0) {
-				$selected_post_type = $key;
-			}
-			$class = "";
-			if ($selected_post_type == $key) {
-				$class = "selected";
-			}
-			printf("\n<li class='%s'><a href='%s'>%s</a></li>", $class, "$key", $val->labels->name);
-			$loopnum++;
-		}
-	?>
-	</ul>
+		?>
+		</ul>
+	<?php } else {
+		$selected_post_type = $arr_enabled_post_types[0];
+		?>
+		<p>Showing posts of type: <a href="<?php echo $selected_post_type; ?>"><?php echo $existing_post_types[$selected_post_type]->labels->name; ?></a></p>
+	<?php } ?>
 	
 	<div class="simple-fields-meta-box-field-group-field-type-post-dialog-post-posts-wrap">
 		<ul class="simple-fields-meta-box-field-group-field-type-post-dialog-post-posts">
@@ -88,10 +96,15 @@ function simple_fields_field_type_post_dialog_load() {
 				"post_type" => $selected_post_type,
 				"post_status" => "publish"
 			);
+			
 			$hierarchical = (bool) $existing_post_types[$selected_post_type]->hierarchical;
 			if ($hierarchical) {
 				$args["parent"] = 0;
 				$args["post_parent"] = 0;
+			}
+			
+			if (!empty($additional_arguments)) {
+				$args = wp_parse_args( $additional_arguments, $args );
 			}
 		
 			$output = simple_fields_get_pages($args);
@@ -787,6 +800,9 @@ echo "</ul>";
 					
 					// print the id of the current post
 					echo "<input type='hidden' class='simple-fields-field-type-post-postID' name='$field_name' id='$field_unique_id' value='$saved_value_int' />";
+					
+					// output additional arguments for this post field
+					echo "<input type='hidden' name='additional_arguments' id='additional_arguments' value='".$type_post_options['additional_arguments']."' />";
 					
 					echo "</div>";
 

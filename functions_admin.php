@@ -39,6 +39,17 @@ function simple_fields_admin_menu() {
 	add_submenu_page( 'options-general.php' , EASY_FIELDS_NAME, EASY_FIELDS_NAME, "administrator", "simple-fields-options", "simple_fields_options");
 }
 
+function simple_fields_merge_arrays($array1 = array(), $array2 = array()) {
+	foreach($array2 as $key => $value) {
+		if(is_array($value)) {
+			$array1[$key] = simple_fields_merge_arrays($array1[$key], $array2[$key]);
+		} else {
+			$array1[$key] = $value;
+		}
+	}
+	return $array1;
+}
+
 function simple_fields_register_field_group($unique_name = "", $new_field_group = array()) {
 	$field_groups = simple_fields_get_field_groups();
 	
@@ -78,7 +89,9 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 		$field_group_defaults = $field_groups[$field_group_id];
 	}
 	
-	$field_groups[$field_group_id] = array_merge($field_group_defaults, $new_field_group);
+	// echo "<pre>" . print_r($field_groups[$field_group_id], true) . "</pre>";
+	
+	$field_groups[$field_group_id] = simple_fields_merge_arrays($field_group_defaults, $new_field_group);
 	
 	if (is_array($new_field_group["fields"]) && !empty($new_field_group["fields"])) {
 		$fields = array();
@@ -89,54 +102,59 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 			$field_defaults = array("name" => "",
 						"description" => "",
 						"type" => "",
-						"type_post_options" => array("additional_arguments" => ""),
+						"type_post_options" => array("enabled_post_types" => array(), "additional_arguments" => ""),
 						"type_taxonomyterm_options" => array("additional_arguments" => ""),
 						"id" => "",
 						"deleted" => 0
 			);
 			
 			if (isset($field_groups[$field_group_id]['fields'][$field_id])) {
-				$field_defaults = array_merge($field_defaults, $field_groups[$field_group_id]['fields'][$field_id]);
+				$field_defaults = simple_fields_merge_arrays($field_defaults, $field_groups[$field_group_id]['fields'][$field_id]);
 			}
+			
+			// echo "<pre>" . print_r($field_groups[$field_group_id]['fields'][$field_id], true) . "</pre>";
+			
+			// echo "<pre>" . print_r($field_defaults, true) . "</pre>";
+			
 			foreach($field_defaults as $oneDefaultFieldKey => $oneDefaultFieldValue) {
 				if ($oneDefaultFieldKey == "id") {
 					$fields[$field_id]["id"] = $field_id;
 				} else {
-					if (isset($oneField[$oneDefaultFieldKey])) {
-						$fields[$field_id][$oneDefaultFieldKey] = $oneField[$oneDefaultFieldKey];
-					} else {
+					if (!isset($oneField[$oneDefaultFieldKey])) {
 						$fields[$field_id][$oneDefaultFieldKey] = $oneDefaultFieldValue;
 					}
 					
 				}
-			}
-			foreach(array_keys($oneField) as $oneFieldKey) {
-				$fields[$field_id][$oneFieldKey] = $oneField[$oneFieldKey];
-				if (is_array($oneField[$oneFieldKey]) && !empty($oneField[$oneFieldKey])) {
-					$options_type = preg_replace("/type_([a-z]+)_options/i", '$1', $oneFieldKey);
+				if (is_array($oneField[$oneDefaultFieldKey]) && !empty($oneField[$oneDefaultFieldKey])) {
+					$options_type = preg_replace("/type_([a-z]+)_options/i", '$1', $oneDefaultFieldKey);
 					if (!empty($options_type)) {
-						foreach(array_keys($oneField[$oneFieldKey]) as $optionNumKey) {
-							if (is_numeric($optionNumKey)) {
-								$newOptionKey = $options_type . "_num_" . $optionNumKey;
-								$fields[$field_id][$oneFieldKey][$newOptionKey] = $oneField[$oneFieldKey][$optionNumKey];
-								unset($fields[$field_id][$oneFieldKey][$optionNumKey]);
-								$optionNumKey = $newOptionKey;
+						foreach(array_keys($oneField[$oneDefaultFieldKey]) as $optionKey) {
+							//echo "<pre>" . print_r($fields[$field_id][$oneDefaultFieldKey][$optionKey], true) . "</pre>";
+							if (is_numeric($optionKey)) {
+								$newOptionKey = $options_type . "_num_" . $optionKey;
+								$fields[$field_id][$oneDefaultFieldKey][$newOptionKey] = $oneField[$oneDefaultFieldKey][$optionKey];
+								unset($fields[$field_id][$oneDefaultFieldKey][$optionKey]);
+								$optionKey = $newOptionKey;
 							}
-							if (isset($fields[$field_id][$oneFieldKey][$optionNumKey]["value"]) && !empty($fields[$field_id][$oneFieldKey][$optionNumKey]["value"])) {
-								if (!isset($fields[$field_id][$oneFieldKey][$optionNumKey]["deleted"])) {
-									$fields[$field_id][$oneFieldKey][$optionNumKey]["deleted"] = 0;
+							if (is_array($fields[$field_id][$oneDefaultFieldKey][$optionKey]) && !empty($fields[$field_id][$oneDefaultFieldKey][$optionKey]["value"])) {
+								if (!isset($fields[$field_id][$oneDefaultFieldKey][$optionKey]["deleted"])) {
+									$fields[$field_id][$oneDefaultFieldKey][$optionKey]["deleted"] = 0;
 								}
 							}
+							
 						}
 					}
+				}
+				if (!isset($fields[$field_id][$oneDefaultFieldKey])) {
+					$fields[$field_id][$oneDefaultFieldKey] = $oneDefaultFieldValue;
 				}
 			}
 			$field_id++;
 		}
 		$field_groups[$field_group_id]["fields"] = $fields;
 	}
-	
-	//echo "<pre>" . print_r($field_groups, true) . "</pre>";
+
+	// echo "<pre>" . print_r($field_groups, true) . "</pre>";
 	
 	update_option("simple_fields_groups", $field_groups);
 }
@@ -181,7 +199,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 		$post_connector_defaults = $post_connectors[$connector_id];
 	}
 	
-	$post_connectors[$connector_id] = array_merge($post_connector_defaults, $new_post_connector);
+	$post_connectors[$connector_id] = simple_fields_merge_arrays($post_connector_defaults, $new_post_connector);
 	
 	if (is_array($new_post_connector["field_groups"]) && !empty($new_post_connector["field_groups"])) {
 		$field_group_connectors = array();
@@ -718,6 +736,7 @@ function simple_fields_options() {
 			}
 			
 			$field_group_in_edit = $field_groups[$field_group_id];
+			// echo "<pre>" . print_r($field_group_in_edit) . "</pre>";
 			?>
 			<form method="post" action="<?php echo EASY_FIELDS_FILE ?>&amp;action=edit-field-group-save">
 				<?php #settings_fields('simple_fields_options'); ?>
@@ -849,7 +868,7 @@ function simple_fields_options() {
 				} else {
 					echo "<ul class=''>";
 					foreach ($field_groups as $oneFieldGroup) {
-						if (!$oneFieldGroup["deleted"]) {
+						if ($oneFieldGroup["id"] && !$oneFieldGroup["deleted"]) {
 							echo "<li><a href='" . EASY_FIELDS_FILE . "&amp;action=edit-field-group&amp;group-id=$oneFieldGroup[id]'>$oneFieldGroup[name]</a></li>";
 						}
 					}
@@ -872,7 +891,7 @@ function simple_fields_options() {
 				if ($post_connector_count) {
 					?><ul><?php
 						foreach ($post_connectors as $one_post_connector) {
-							if ($one_post_connector["deleted"]) {
+							if ($one_post_connector["deleted"] || !$one_post_connector["id"]) {
 								continue;
 							}
 							?>
@@ -970,7 +989,7 @@ function simple_fields_field_group_add_field_template($fieldID, $field_group_in_
 	$field_type_taxonomyterm_options = (array) @$fields[$fieldID]["type_taxonomyterm_options"];
 	$field_type_taxonomyterm_options["enabled_taxonomy"] = (string) @$field_type_taxonomyterm_options["enabled_taxonomy"];
 
-	// echo "<pre>field_type_taxonomyterm_options:"; print_r($field_type_taxonomyterm_options);
+	// echo "<pre>field_type_post_options:"; print_r($field_type_post_options);
 	// echo "<pre>";print_r($field_type_taxonomy_options);echo "</pre>";
 	// echo "<pre>";print_r($fields[$fieldID]);echo "</pre>";
 	
