@@ -150,7 +150,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 		if ($oneConnector["key"] == $unique_name) {
 			// Connector already exists
 			$connector_id = $oneConnector["id"];
-		} else if (!isset($field_group_id) && $oneConnector["id"] > $highest_connector_id) {
+		} else if (!isset($connector_id) && $oneConnector["id"] > $highest_connector_id) {
 			$highest_connector_id = $oneConnector["id"];
 		}
 	}
@@ -171,7 +171,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 	$post_connector_defaults = array(
 		"id" => $connector_id,
 		"key" => $unique_name,
-		"name" => "Unnamed post connector $connector_id",
+		"name" => $unique_name."_".$connector_id,
 		"field_groups" => array(),
 		"post_types" => array(),
 		"deleted" => false,
@@ -554,11 +554,11 @@ function simple_fields_options() {
 		 * edit new or existing post connector
 		 */
 		if ("edit-post-connector" == $action) {
-			$connector_id =  (int) $_GET["connector-id"];
+			$connector_id = (isset($_GET["connector-id"])) ? intval($_GET["connector-id"]) : false;
 			$highest_connector_id = 0;
 	
 			// if new, save it as unnamed, and then set to edit that
-			if ($connector_id == 0) {
+			if ($connector_id === false) {
 				simple_fields_register_post_connector();
 
 			} else {
@@ -701,11 +701,11 @@ function simple_fields_options() {
 		 */
 		if ("edit-field-group" == $action) {
 	
-			$field_group_id = (int) $_GET["group-id"];
+			$field_group_id = (isset($_GET["group-id"])) ? intval($_GET["group-id"]) : false;
 			$highest_field_id = 0;
 	
 			// if new, save it as unnamed, and then set to edit that
-			if ($field_group_id == 0) {
+			if ($field_group_id === false) {
 				simple_fields_register_field_group();
 			} else {
 				// existing field group
@@ -1207,3 +1207,4 @@ function simple_fields_field_group_add_field_template($fieldID, $field_group_in_
 	return $out;
 
 }
+
