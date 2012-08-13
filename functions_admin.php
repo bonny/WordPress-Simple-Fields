@@ -85,17 +85,18 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 		$field_id = 0;
 		foreach($new_field_group["fields"] as $oneField) {
 			$fields[$field_id] = array();
-			if (!isset($field_groups[$field_group_id]['fields'][$field_id])) {
-				$field_defaults = array("name" => "",
-							"description" => "",
-							"type" => "",
-							"type_post_options" => array("additional_arguments" => ""),
-							"type_taxonomyterm_options" => array("additional_arguments" => ""),
-							"id" => "",
-							"deleted" => 0
-				);
-			} else {
-				$field_defaults = $field_groups[$field_group_id]['fields'][$field_id];
+			
+			$field_defaults = array("name" => "",
+						"description" => "",
+						"type" => "",
+						"type_post_options" => array("additional_arguments" => ""),
+						"type_taxonomyterm_options" => array("additional_arguments" => ""),
+						"id" => "",
+						"deleted" => 0
+			);
+			
+			if (isset($field_groups[$field_group_id]['fields'][$field_id])) {
+				$field_defaults = array_merge($field_defaults, $field_groups[$field_group_id]['fields'][$field_id]);
 			}
 			foreach($field_defaults as $oneDefaultFieldKey => $oneDefaultFieldValue) {
 				if ($oneDefaultFieldKey == "id") {
@@ -110,22 +111,20 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 				}
 			}
 			foreach(array_keys($oneField) as $oneFieldKey) {
-				if (!isset($fields[$field_id][$oneFieldKey])) {
-					$fields[$field_id][$oneFieldKey] = $oneField[$oneFieldKey];
-					if (is_array($oneField[$oneFieldKey]) && !empty($oneField[$oneFieldKey])) {
-						$options_type = preg_replace("/type_([a-z]+)_options/i", '$1', $oneFieldKey);
-						if (!empty($options_type)) {
-							foreach(array_keys($oneField[$oneFieldKey]) as $optionNumKey) {
-								if (is_numeric($optionNumKey)) {
-									$newOptionKey = $options_type . "_num_" . $optionNumKey;
-									$fields[$field_id][$oneFieldKey][$newOptionKey] = $oneField[$oneFieldKey][$optionNumKey];
-									unset($fields[$field_id][$oneFieldKey][$optionNumKey]);
-									$optionNumKey = $newOptionKey;
-								}
-								if (isset($fields[$field_id][$oneFieldKey][$optionNumKey]["value"]) && !empty($fields[$field_id][$oneFieldKey][$optionNumKey]["value"])) {
-									if (!isset($fields[$field_id][$oneFieldKey][$optionNumKey]["deleted"])) {
-										$fields[$field_id][$oneFieldKey][$optionNumKey]["deleted"] = 0;
-									}
+				$fields[$field_id][$oneFieldKey] = $oneField[$oneFieldKey];
+				if (is_array($oneField[$oneFieldKey]) && !empty($oneField[$oneFieldKey])) {
+					$options_type = preg_replace("/type_([a-z]+)_options/i", '$1', $oneFieldKey);
+					if (!empty($options_type)) {
+						foreach(array_keys($oneField[$oneFieldKey]) as $optionNumKey) {
+							if (is_numeric($optionNumKey)) {
+								$newOptionKey = $options_type . "_num_" . $optionNumKey;
+								$fields[$field_id][$oneFieldKey][$newOptionKey] = $oneField[$oneFieldKey][$optionNumKey];
+								unset($fields[$field_id][$oneFieldKey][$optionNumKey]);
+								$optionNumKey = $newOptionKey;
+							}
+							if (isset($fields[$field_id][$oneFieldKey][$optionNumKey]["value"]) && !empty($fields[$field_id][$oneFieldKey][$optionNumKey]["value"])) {
+								if (!isset($fields[$field_id][$oneFieldKey][$optionNumKey]["deleted"])) {
+									$fields[$field_id][$oneFieldKey][$optionNumKey]["deleted"] = 0;
 								}
 							}
 						}
@@ -137,7 +136,7 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 		$field_groups[$field_group_id]["fields"] = $fields;
 	}
 	
-	// echo "<pre>" . print_r($field_groups, true) . "</pre>";
+	//echo "<pre>" . print_r($field_groups, true) . "</pre>";
 	
 	update_option("simple_fields_groups", $field_groups);
 }
@@ -202,7 +201,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 					// Field group found
 					$field_group_found = true;
 					$field_group_id = $oneGroup["id"];
-					$field_group_key = $oneGroup["id"];
+					$field_group_key = $oneGroup["key"];
 				}
 			}
 			if ($field_group_found !== false) {
@@ -700,8 +699,9 @@ function simple_fields_options() {
 		 * edit new or existing group
 		 */
 		if ("edit-field-group" == $action) {
-	
+			
 			$field_group_id = (isset($_GET["group-id"])) ? intval($_GET["group-id"]) : false;
+			
 			$highest_field_id = 0;
 	
 			// if new, save it as unnamed, and then set to edit that
@@ -718,7 +718,6 @@ function simple_fields_options() {
 			}
 			
 			$field_group_in_edit = $field_groups[$field_group_id];
-			
 			?>
 			<form method="post" action="<?php echo EASY_FIELDS_FILE ?>&amp;action=edit-field-group-save">
 				<?php #settings_fields('simple_fields_options'); ?>
