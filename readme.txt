@@ -1,6 +1,6 @@
 === Plugin Name ===
 
-Contributors: eskapism, MarsApril, samface, angrycreative
+Contributors: eskapism, MarsApril, samface, angrycreative, earth-people
 
 Donate link: http://eskapism.se/sida/donate/
 
