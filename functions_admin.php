@@ -27,12 +27,24 @@ function simple_fields_get_post_connectors_for_post_type($post_type) {
 	return $arr_found_connectors;
 }
 
+/**
+ * Returns all defined post connectors
+ * @return array
+ */
 function simple_fields_get_post_connectors() {
-	return (array) get_option("simple_fields_post_connectors");
+	$connectors = get_option("simple_fields_post_connectors");
+	if ($connectors === FALSE) $connectors = array();
+	return $connectors;
 }
 
+/**
+ * Returns all defined field groups
+ * @return array
+ */
 function simple_fields_get_field_groups() {
-	return (array) get_option("simple_fields_groups");
+	$field_groups = get_option("simple_fields_groups");
+	if ($field_groups === FALSE) $field_groups = array();
+	return $field_groups;
 }
 
 function simple_fields_admin_menu() {
