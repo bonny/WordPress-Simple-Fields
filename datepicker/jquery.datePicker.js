@@ -3,7 +3,7 @@
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) 
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
  * .
- * $Id: jquery.datePicker.js 103 2010-09-22 08:54:28Z kelvin.luck $
+ * $Id: jquery.datePicker.js 108 2011-11-17 21:19:57Z kelvin.luck@gmail.com $
  **/
 
 (function($){
@@ -219,7 +219,7 @@
 					var alreadyExists = true;
 					
 					if (!this._dpId) {
-						this._dpId = $.event.guid++;
+						this._dpId = $.guid++;
 						$.event._dpCache[this._dpId] = new DatePicker(this);
 						alreadyExists = false;
 					}
@@ -799,7 +799,7 @@
 						'class'	:	'dp-popup'
 					};
 					cssRules = {
-						'top'	:	eleOffset.top + c.verticalOffset,
+						'top'	:	eleOffset.top + c.verticalOffset - 20,
 						'left'	:	eleOffset.left + c.horizontalOffset
 					};
 					
@@ -949,7 +949,7 @@
 						if (!$this.is('.disabled')) {
 							c.setSelected(d, !$this.is('.selected') || !c.selectMultiple, false, true);
 							if (c.closeOnSelect) {
-								// Focus the next input in the form…
+								// Focus the next input in the formâ€¦
 								if (c.settings.autoFocusNextInput) {
 									var ele = c.ele;
 									var found = false;
@@ -1171,7 +1171,7 @@
 		HEADER_FORMAT		:	'mmmm yyyy'
 	};
 	// version
-	$.dpVersion = '$Id: jquery.datePicker.js 103 2010-09-22 08:54:28Z kelvin.luck $';
+	$.dpVersion = '$Id: jquery.datePicker.js 108 2011-11-17 21:19:57Z kelvin.luck@gmail.com $';
 
 	$.fn.datePicker.defaults = {
 		month				: undefined,

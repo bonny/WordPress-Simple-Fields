@@ -41,29 +41,37 @@ function simple_fields_field_type_post_dialog_load() {
 	)
 	*/
 	$arr_enabled_post_types = (array) $_POST["arr_enabled_post_types"];
+	$additional_arguments = $_POST["additional_arguments"];
 	$existing_post_types = get_post_types(NULL, "objects");
 	$selected_post_type = (string) @$_POST["selected_post_type"];
 	?>
-	<p>Show posts of type:</p>
-	<ul class="simple-fields-meta-box-field-group-field-type-post-dialog-post-types">
-		<?php
-		$loopnum = 0;
-		foreach ($existing_post_types as $key => $val) {
-			if (!in_array($key, $arr_enabled_post_types)) {
-				continue;
+
+	<?php if (count($arr_enabled_post_types) > 1) { ?>
+		<p>Show posts of type:</p>
+		<ul class="simple-fields-meta-box-field-group-field-type-post-dialog-post-types">
+			<?php
+			$loopnum = 0;
+			foreach ($existing_post_types as $key => $val) {
+				if (!in_array($key, $arr_enabled_post_types)) {
+					continue;
+				}
+				if (empty($selected_post_type) && $loopnum == 0) {
+					$selected_post_type = $key;
+				}
+				$class = "";
+				if ($selected_post_type == $key) {
+					$class = "selected";
+				}
+				printf("\n<li class='%s'><a href='%s'>%s</a></li>", $class, "$key", $val->labels->name);
+				$loopnum++;
 			}
-			if (empty($selected_post_type) && $loopnum == 0) {
-				$selected_post_type = $key;
-			}
-			$class = "";
-			if ($selected_post_type == $key) {
-				$class = "selected";
-			}
-			printf("\n<li class='%s'><a href='%s'>%s</a></li>", $class, "$key", $val->labels->name);
-			$loopnum++;
-		}
-	?>
-	</ul>
+		?>
+		</ul>
+	<?php } else {
+		$selected_post_type = $arr_enabled_post_types[0];
+		?>
+		<p>Showing posts of type: <a href="<?php echo $selected_post_type; ?>"><?php echo $existing_post_types[$selected_post_type]->labels->name; ?></a></p>
+	<?php } ?>
 	
 	<div class="simple-fields-meta-box-field-group-field-type-post-dialog-post-posts-wrap">
 		<ul class="simple-fields-meta-box-field-group-field-type-post-dialog-post-posts">
@@ -88,10 +96,15 @@ function simple_fields_field_type_post_dialog_load() {
 				"post_type" => $selected_post_type,
 				"post_status" => "publish"
 			);
+			
 			$hierarchical = (bool) $existing_post_types[$selected_post_type]->hierarchical;
 			if ($hierarchical) {
 				$args["parent"] = 0;
 				$args["post_parent"] = 0;
+			}
+			
+			if (!empty($additional_arguments)) {
+				$args = wp_parse_args( $additional_arguments, $args );
 			}
 		
 			$output = simple_fields_get_pages($args);
@@ -607,7 +620,7 @@ function simple_fields_meta_box_output_one_field_group($field_group_id, $num_in_
 
 							$field_unique_id_esc = rawurlencode($field_unique_id);
 							// $file_url = "media-upload.php?simple_fields_dummy=1&simple_fields_action=select_file&simple_fields_file_field_unique_id=$field_unique_id_esc&post_id=$post_id&TB_iframe=true";
-							$file_url = "media-upload.php?simple_fields_dummy=1&simple_fields_action=select_file&simple_fields_file_field_unique_id=$field_unique_id_esc&post_id=$current_post_id&TB_iframe=true";
+							$file_url = get_bloginfo('url') . "/wp-admin/media-upload.php?simple_fields_dummy=1&simple_fields_action=select_file&simple_fields_file_field_unique_id=$field_unique_id_esc&post_id=$current_post_id&TB_iframe=true";
 							echo "<a class='thickbox simple-fields-metabox-field-file-select' href='$file_url'>".__('Select file', 'simple-fields')."</a>";
 							
 							$class = ($attachment_id) ? " " : " hidden ";
@@ -787,6 +800,9 @@ echo "</ul>";
 					
 					// print the id of the current post
 					echo "<input type='hidden' class='simple-fields-field-type-post-postID' name='$field_name' id='$field_unique_id' value='$saved_value_int' />";
+					
+					// output additional arguments for this post field
+					echo "<input type='hidden' name='additional_arguments' id='additional_arguments' value='".$type_post_options['additional_arguments']."' />";
 					
 					echo "</div>";
 
@@ -1112,7 +1128,9 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 		$field_id = $field_name_or_id[1];
 		$fetch_by_id = false;
 	}
+	
 	$connector = simple_fields_get_all_fields_and_values_for_post($post_id);
+	
 	$return_val = null;
 	if ($connector) {
 		foreach ($connector["field_groups"] as $one_field_group) {
@@ -1121,7 +1139,7 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 				if ($fetch_by_id && $one_field["name"] == $field_name_or_id) {
 					// we got our field, get the value(s)
 					$is_found = true;
-				} else if (($one_field_group["id"] == $field_group_id) && ($one_field["id"] == $field_id)) {
+				} else if (!$fetch_by_id && ($one_field_group["id"] === $field_group_id) && ($one_field["id"] === $field_id)) {
 					$is_found = true;
 				}
 	
@@ -1154,6 +1172,7 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 			}
 		}
 	}
+	echo "</pre>";
 	return; // oh no! nothing found. bummer.
 }
 
@@ -1167,7 +1186,7 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
  */
 function simple_fields_get_post_group_values($post_id, $field_group_name_or_id, $use_name = true, $return_format = 1) {
 
-	$fetch_by_id = true;
+	$fetch_by_id = false;
 	if (is_int($field_group_name_or_id)) {
 		$fetch_by_id = true;
 	}
@@ -1182,7 +1201,7 @@ function simple_fields_get_post_group_values($post_id, $field_group_name_or_id, 
 		$is_found = false;
 		if ($fetch_by_id && $one_field_group["id"] == $field_group_name_or_id) {
 			$is_found = true;
-		} else if ($field_group_name_or_id == $one_field_group["name"]) {
+		} else if (!$fetch_by_id && $field_group_name_or_id == $one_field_group["name"]) {
 			$is_found = true;
 		}
 
@@ -1268,12 +1287,36 @@ function simple_fields_get_all_fields_and_values_for_post($post_id) {
 		
 		// now fetch the stored values, one field at a time
 		for ($num_in_set = 0; $num_in_set < $num_added_field_groups; $num_in_set++) {
+			/* echo "<pre>";
+			var_dump($one_field_group["id"]);
+			var_dump(array_keys($selected_post_connector["field_groups"]));
+			var_dump($selected_post_connector["field_groups"]);
+			var_dump($selected_post_connector["field_groups"][$one_field_group["id"]]);
+			*/
 			// fetch value for each field
 			foreach ($selected_post_connector["field_groups"][$one_field_group["id"]]["fields"] as $one_field_id => $one_field_value) {
 
-				$custom_field_key = "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_{$one_field_id}_numInSet_{$num_in_set}";	
+				$custom_field_key = "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_{$one_field_id}_numInSet_{$num_in_set}";
+				
 				$saved_value = get_post_meta($post_id, $custom_field_key, true); // empty string if does not exist
 
+				if ($one_field_value["type"] == "textarea") {
+					$match_count = preg_match_all('/http:\/\/[a-z0-9A-Z\.]+[a-z0-9A-Z\.\/%&=\?\-_#]+/i', $saved_value, $match);
+					if ($match_count) {
+						$links=$match[0];
+						for ($j=0;$j<$match_count;$j++) {
+							if (strpos($saved_value, 'href="'.$links[$j].'"') === false && strpos($saved_value, "href='".$links[$j]."'") === false) {
+								$attr['discover'] = (apply_filters('embed_oembed_discover', false)) ? true : false;
+								$oembed_html = wp_oembed_get($links[$j], $attr);
+								// If there was a result, oembed the link
+								if ($oembed_html) {
+									$saved_value = str_replace($links[$j], apply_filters('embed_oembed_html', $oembed_html, $links[$j], $attr), $saved_value);
+								}
+							}
+						}
+					}
+				}
+				
 				$selected_post_connector["field_groups"][$one_field_group["id"]]["fields"][$one_field_id]["saved_values"][$num_in_set] = $saved_value;
 				$selected_post_connector["field_groups"][$one_field_group["id"]]["fields"][$one_field_id]["meta_keys"][$num_in_set] = $custom_field_key;
 
@@ -1433,6 +1476,21 @@ function simple_fields_get_meta_query($group_id, $field_id, $value, $compare = "
 	if (!is_array($field_group) || !is_array($field)) {
 		return false;
 	}
+	if(!is_numeric($num_in_set) || $num_in_set < 1) {
+		$num_in_set = 1;
+	}
+	if ($field["type"] == "radiobuttons") {
+		$get_value_key = "type_radiobuttons_options";
+	} else if ($field["type"] == "dropdown") {
+		$get_value_key = "type_dropdown_options";
+	}
+	if (!empty($get_value_key) && is_array($field[$get_value_key])) {
+		foreach($field[$get_value_key] as $option_key => $option) {
+			if ($option['value'] == $value && (!isset($option['deleted']) || intval($option['deleted']) == 0)) {
+				$value = $option_key;
+			}
+		}
+	}
 	$query_args = array('meta_query' => array('relation' => 'OR'));
 	for($i=0;$i<$num_in_set;$i++) {
 		$query_args['meta_query'][$i]['key'] = "_simple_fields_fieldGroupID_{$field_group['id']}_fieldID_{$field['id']}_numInSet_{$i}";
@@ -1477,7 +1535,7 @@ function simple_fields_query_posts($query_args = array()) {
 				break;
 		}
 	}
-	$meta_query_args = simple_fields_get_meta_query($query_args['sf_group'], $query_args['sf_field'], $query_args['sf_compare'], $query_args['sf_type'], $query_args['sf_order'], $query_args['sf_num_in_set']);
+	$meta_query_args = simple_fields_get_meta_query($query_args['sf_group'], $query_args['sf_field'], $query_args['sf_value'], $query_args['sf_compare'], $query_args['sf_type'], $query_args['sf_order'], $query_args['sf_num_in_set']);
 	$query_args = array_merge($query_args, $meta_query_args);
 	return new WP_Query($query_args);
 }

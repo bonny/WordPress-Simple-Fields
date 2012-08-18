@@ -251,11 +251,11 @@ ul.simple-fields-metabox-field-group-fields-repeatable .simple-fields-metabox-fi
  {
 	width: 6em;
 }
-
+/*
 .simple-fields-metabox-field-group .dp-choose-date {
 	display: none;
 }
-
+*/
 .simple-fields-metabox-field-textarea-tinymce-wrapper {
 	width: 100%;
 }

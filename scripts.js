@@ -587,7 +587,10 @@ var simple_fields_tinymce_iframes = new Array;
 		}
 		
 		// type date
-		$('input.simple-fields-field-type-date').datePicker(simple_fields_datepicker_args);
+		$('input.simple-fields-field-type-date').datePicker();
+	
+		
+	
 		
 	});
 
