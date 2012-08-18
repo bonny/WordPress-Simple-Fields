@@ -36,10 +36,11 @@ load_plugin_textdomain( 'simple-fields', null, basename(dirname(__FILE__)).'/lan
  */ 
 class simple_fields {
 
+	const DEBUG_ENABLED = TRUE;
 
 	/**
 	 * Init is where we setup actions and filers and loads stuff and a little bit of this and that
-	 * 
+	 *
 	 */
 	function init() {
 
@@ -47,7 +48,7 @@ class simple_fields {
 		require("functions_post.php");
 
 		define( "EASY_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
-		define( "EASY_FIELDS_NAME", "Simple Fields"); 
+		define( "EASY_FIELDS_NAME", "Simple Fields");
 		define( "EASY_FIELDS_VERSION", "0.5");
 
 		// Actions
@@ -60,7 +61,39 @@ class simple_fields {
 		add_filter( 'plugin_row_meta', array($this, 'set_plugin_row_meta'), 10, 2 );
 
 	}
+	
+	/**
+	 * Returns a post connector
+	 * @param int $connector_id
+	 */
+	function get_connector_by_id($connector_id) {
+		$connectors = simple_fields_get_post_connectors();
+		if (isset($connectors[$connector_id])) {
+			return $connectors[$connector_id];
+		} else {
+			return FALSE;
+		}
+	}
 
+	/**
+	 * If setting debug = true then output some debug stuff a little here and there
+	 * Hopefully this saves us some var_dump/sf_d/echo all the time
+	 * usage:
+	 * first set DEBUG_ENABLED = true in beginning of class
+	 * then:
+	 * simple_fields("Saved post connector", array("description" => $value, "description n" => $value_n));
+	 */
+	public static function debug($description, $details) {
+		if (self::DEBUG_ENABLED) {
+			echo "<pre>";
+			echo $description;
+			if ($details) {
+				echo "<br>";
+				print_r($details);
+			}
+			echo "</pre>";
+		}
+	}
 
 	function admin_init() {
 

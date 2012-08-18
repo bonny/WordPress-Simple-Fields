@@ -12,9 +12,12 @@ add_action( 'dbx_post_sidebar', 'simple_fields_post_dbx_post_sidebar' );
 
 // little debug version
 function sf_d($var) {
+
 	echo "<pre>";
 	if (is_array($var) || is_object($var)) {
 		print_r($var);
+	} else if( is_null($var) ) {
+		echo "Var is NULL";
 	} else {
 		echo $var;
 	}

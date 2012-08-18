@@ -5,7 +5,7 @@
  * @param return array
  */
 function simple_fields_post_connector_attached_types() {
-	$post_connectors = (array) get_option("simple_fields_post_connectors");
+	$post_connectors = simple_fields_get_post_connectors();
 	$arr_post_types = array();
 	foreach ($post_connectors as $one_post_connector) {
 		$arr_post_types = array_merge($arr_post_types, (array) $one_post_connector["post_types"]);
@@ -172,6 +172,7 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 }
 
 function simple_fields_register_post_connector($unique_name = "", $new_post_connector = array()) {
+
 	$post_connectors = simple_fields_get_post_connectors();
 	
 	$highest_connector_id = 0;
@@ -191,6 +192,10 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 		$connector_id = $highest_connector_id;
 	}
 	
+	// If $connector_id is 0 here then it's the first ever created
+	// But 0 is the id to tell SF to create new, so we must up it to 1
+	if ($connector_id === 0) $connector_id = 1;
+
 	if (empty($unique_name)) {
 		$unique_name = "post_connector_" . $connector_id;
 	} else if (!isset($new_post_connector["name"]) || empty($new_post_connector["name"])) {
@@ -261,26 +266,53 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 	}
 	
 	update_option("simple_fields_post_connectors", $post_connectors);
+	
+	return $post_connectors[$connector_id];
+	
 }
 
-function simple_fields_register_post_type_default($post_type_connector = "", $post_type = "post") {
-	if (!is_numeric($post_type_connector)) {
-		if (empty($post_type_connector)) {
+/**
+ * Sets the default post connector for a post type
+ * 
+ * @param $post_type_connector = connector id (int) or key (string) or string __inherit__
+ * 
+ */
+function simple_fields_register_post_type_default($connector_id_or_special_type = "", $post_type = "post") {
+
+	simple_fields::debug("simple_fields_register_post_type_default()", array("post_type_connector" => $connector_id_or_special_type, "post_type" => $post_type));
+
+	if (is_numeric($connector_id_or_special_type)) {
+		
+		$connector_id_or_special_type = (int) $connector_id_or_special_type;
+		
+	} else if ( in_array($connector_id_or_special_type, array("__inherit__", "__none__") ) ) {
+			
+		// Nothing to do here - It's good already
+		
+	} else if (!is_numeric($connector_id_or_special_type)) {
+	
+		// Connector is probably the name
+	
+		if (empty($connector_id_or_special_type)) {
 			return false;
 		}
 		$post_connectors = simple_fields_get_post_connectors();
 		foreach ($post_connectors as $oneConnector) {
-			if ($oneConnector["key"] == $post_type_connector) {
-				$connector_id = $oneConnector["id"];
+			if ($oneConnector["key"] == $connector_id_or_special_type) {
+				$connector_id_or_special_type = $oneConnector["id"];
 			}
 		}
+
+		if (!is_numeric($connector_id_or_special_type)) {
+			// Still not numeric?
+			return false;
+		}
+		
 	}
-	if (!is_numeric($connector_id)) {
-		// Still not numeric?
-		return false;
-	}
+	
 	$post_type_defaults = (array) get_option("simple_fields_post_type_defaults");
-	$post_type_defaults["$post_type"] = $connector_id;
+
+	$post_type_defaults[$post_type] = $connector_id_or_special_type;
 	if (isset($post_type_defaults[0])) {
 		unset($post_type_defaults[0]);
 	}
@@ -290,8 +322,10 @@ function simple_fields_register_post_type_default($post_type_connector = "", $po
 
 function simple_fields_options() {
 
-	$field_groups = get_option("simple_fields_groups");
-	$post_connectors = get_option("simple_fields_post_connectors");
+	global $sf;
+
+	$field_groups = simple_fields_get_field_groups();
+	$post_connectors = simple_fields_get_post_connectors();
 
 	/*
 	$field_groups = get_option("easy_fields_groups");
@@ -303,14 +337,6 @@ function simple_fields_options() {
 	// for debug purposes, here we can reset the option
 	#$field_groups = array(); update_option("simple_fields_groups", $field_groups);
 	#$post_connectors = array(); update_option("simple_fields_post_connectors", $post_connectors);
-
-	// first run? make sure field groups is an array
-	if (!$field_groups) {
-		$field_groups = array();
-	}
-	if (!$post_connectors) {
-		$post_connectors = array();
-	}
 
 	// sort them by name
 	function simple_fields_uasort($a, $b) {
@@ -378,9 +404,15 @@ function simple_fields_options() {
 		 * save post type defaults
 		 */
 		if ("edit-post-type-defaults-save" == $action) {
+
 			$post_type = $_POST["simple_fields_save-post_type"];
 			$post_type_connector = $_POST["simple_fields_save-post_type_connector"];
+						
 			simple_fields_register_post_type_default($post_type_connector, $post_type);
+			
+			$simple_fields_did_save_post_type_defaults = true;
+			$action = "";
+
 		}
 
 		/**
@@ -392,7 +424,7 @@ function simple_fields_options() {
 			if (isset($wp_post_types[$post_type])) {
 				$selected_post_type = $wp_post_types[$post_type];
 				?>
-				<h3><?php echo __('Post type', 'simple-fields').' '.$post_type ?></h3>
+				<h3><?php echo __( sprintf('Edit default post connector for post type %1$s', $selected_post_type->label), "simple-fields" ) ?></h3>
 				
 				<form action="<?php echo EASY_FIELDS_FILE ?>&amp;action=edit-post-type-defaults-save" method="post">
 					<table class="form-table">
@@ -581,23 +613,31 @@ function simple_fields_options() {
 		
 		/**
 		 * edit new or existing post connector
+		 * If new then connector-id = 0
 		 */
 		if ("edit-post-connector" == $action) {
+
 			$connector_id = (isset($_GET["connector-id"])) ? intval($_GET["connector-id"]) : false;
 			$highest_connector_id = 0;
-	
+
 			// if new, save it as unnamed, and then set to edit that
-			if ($connector_id === false) {
-				simple_fields_register_post_connector();
+			if ($connector_id === 0) {
+
+				// is new connector
+				$post_connector_in_edit = simple_fields_register_post_connector();
 
 			} else {
+
 				// existing post connector
 				
 				// set a default value for hide_editor if it does not exist. did not exist until 0.5
 				$post_connectors[$connector_id]["hide_editor"] = (bool) @$post_connectors[$connector_id]["hide_editor"];
+				
+				$post_connector_in_edit = $post_connectors[$connector_id];
 			}
 
-			$post_connector_in_edit = $post_connectors[$connector_id];
+
+
 			// echo "<pre>";print_r($post_connector_in_edit);echo "</pre>";
 			?>
 			<h3><?php _e('Post Connector details', 'simple-fields') ?></h3>
@@ -611,7 +651,6 @@ function simple_fields_options() {
 					</tr>
 					<tr>
 						<th><?php _e('Field Groups', 'simple-fields') ?></th>
-	
 						<td>
 							<p>
 								<select id="simple-fields-post-connector-add-fields">
@@ -928,20 +967,39 @@ function simple_fields_options() {
 
 			<div class="easy-fields-post-type-defaults">
 				<h3><?php _e('Post type defaults', 'simple-fields') ?></h3>
-				<?php
-				#$post_types = get_post_types();
-				#d($post_types);
-				?>
 				<ul>
 					<?php
 					$post_types = get_post_types();
 					$arr_post_types_to_ignore = array("attachment", "revision", "nav_menu_item");
 					foreach ($post_types as $one_post_type) {
 						$one_post_type_info = get_post_type_object($one_post_type);
-						#d($one_post_type_info);
 						if (!in_array($one_post_type, $arr_post_types_to_ignore)) {
+
+							$default_connector = simple_fields_get_default_connector_for_post_type($one_post_type);
+							switch ($default_connector) {
+								case "__none__":
+									$default_connector_str = __('Default is to use <em>no connector</em>', 'simple-fields');
+									break;
+								case "__inherit__":
+									$default_connector_str = __('Default is to inherit from <em>parent connector</em>', 'simple-fields');
+									break;
+								default:
+									if (is_numeric($default_connector)) {
+										
+										$connector = $sf->get_connector_by_id($default_connector);
+										if ($connector !== FALSE) {
+											$default_connector_str = sprintf(__('Default is to use connector <em>%s</em>', 'simple-fields'), $connector["name"]);
+										}
+									}
+
+							}
+
 							?><li>
-								<a href="<?php echo EASY_FIELDS_FILE ?>&amp;action=edit-post-type-defaults&amp;post-type=<?php echo $one_post_type ?>"><?php echo $one_post_type_info->label ?></a>
+								<a href="<?php echo EASY_FIELDS_FILE ?>&amp;action=edit-post-type-defaults&amp;post-type=<?php echo $one_post_type ?>">
+									<?php echo $one_post_type_info->label ?>
+								</a>
+								<br>
+								<span><?php echo $default_connector_str ?></span>
 							</li><?php
 						}
 					}
