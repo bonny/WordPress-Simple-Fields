@@ -62,7 +62,14 @@ function simple_fields_merge_arrays($array1 = array(), $array2 = array()) {
 	return $array1;
 }
 
+/**
+ * Adds a new field group
+ * @param string $unique_name
+ * @param array $new_field_group settings/options for the new group
+ * @param return the new field group as an array
+ */
 function simple_fields_register_field_group($unique_name = "", $new_field_group = array()) {
+
 	$field_groups = simple_fields_get_field_groups();
 	
 	$highest_id = 0;
@@ -74,12 +81,18 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 			$highest_id = $oneGroup["id"];
 		}
 	}
-	
+
 	if (!isset($field_group_id) || !is_numeric($field_group_id)) {
 		if (!empty($field_groups[$highest_id]) || $highest_id > 0) {
 			$highest_id++;
 		}
 		$field_group_id = $highest_id;
+	}
+
+	// if $highest_id = 0 here then this is a new field group that is created
+	// the first group gets id 1
+	if ($highest_id === 0) {
+		$field_group_id = 1;
 	}
 	
 	if (empty($unique_name)) {
@@ -101,10 +114,8 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 		$field_group_defaults = $field_groups[$field_group_id];
 	}
 	
-	// echo "<pre>" . print_r($field_groups[$field_group_id], true) . "</pre>";
-	
 	$field_groups[$field_group_id] = simple_fields_merge_arrays($field_group_defaults, $new_field_group);
-	
+
 	if (is_array($new_field_group["fields"]) && !empty($new_field_group["fields"])) {
 		$fields = array();
 		$field_id = 0;
@@ -123,10 +134,6 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 			if (isset($field_groups[$field_group_id]['fields'][$field_id])) {
 				$field_defaults = simple_fields_merge_arrays($field_defaults, $field_groups[$field_group_id]['fields'][$field_id]);
 			}
-			
-			// echo "<pre>" . print_r($field_groups[$field_group_id]['fields'][$field_id], true) . "</pre>";
-			
-			// echo "<pre>" . print_r($field_defaults, true) . "</pre>";
 			
 			foreach($field_defaults as $oneDefaultFieldKey => $oneDefaultFieldValue) {
 				if ($oneDefaultFieldKey == "id") {
@@ -166,9 +173,10 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 		$field_groups[$field_group_id]["fields"] = $fields;
 	}
 
-	// echo "<pre>" . print_r($field_groups, true) . "</pre>";
-	
 	update_option("simple_fields_groups", $field_groups);
+	
+	return $field_groups[$field_group_id];
+	
 }
 
 function simple_fields_register_post_connector($unique_name = "", $new_post_connector = array()) {
@@ -773,20 +781,26 @@ function simple_fields_options() {
 			
 			$highest_field_id = 0;
 	
-			// if new, save it as unnamed, and then set to edit that
-			if ($field_group_id === false) {
-				simple_fields_register_field_group();
+			// check if field group is new or existing
+			if ($field_group_id === 0) {
+
+				// new: save it as unnamed, and then set to edit that
+				$field_group_in_edit = simple_fields_register_field_group();
+				simple_fields::debug("Added new field group", $field_group_in_edit);
+
 			} else {
-				// existing field group
-				// get highest group and field id
+
+				// existing: get highest field id
 				foreach ($field_groups[$field_group_id]["fields"] as $one_field) {
 					if ($one_field["id"] > $highest_field_id) {
 						$highest_field_id = $one_field["id"];
 					}
 				}
+
+				$field_group_in_edit = $field_groups[$field_group_id];
 			}
 			
-			$field_group_in_edit = $field_groups[$field_group_id];
+
 			// echo "<pre>" . print_r($field_group_in_edit) . "</pre>";
 			?>
 			<form method="post" action="<?php echo EASY_FIELDS_FILE ?>&amp;action=edit-field-group-save">

@@ -85,8 +85,8 @@ class simple_fields {
 	 */
 	public static function debug($description, $details) {
 		if (self::DEBUG_ENABLED) {
-			echo "<pre>";
-			echo $description;
+			echo "<pre class='sf_box_debug'>";
+			echo "<strong>".$description."</strong>";
 			if ($details) {
 				echo "<br>";
 				print_r($details);

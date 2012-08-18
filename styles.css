@@ -5,11 +5,17 @@ ul.simple-fields-edit-field-groups-added-fields {
 	position: relative;
 }
 ul.simple-fields-edit-field-groups-added-fields li {
-	margin-bottom: 2em;
-	padding-bottom: 2em;
-	border-bottom: 1px solid #DFDFDF;
-	background-color: #F9F9F9;
+	/* border-bottom: 1px solid #DFDFDF; */
+	/* background-color: #F9F9F9; */
 	position: relative;
+	padding: 1em 2em;
+	margin: 0;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(whiteSmoke), to(white));
+	border-top: 2px solid #eee;
+	margin-bottom: 2em;
+}
+ul.simple-fields-edit-field-groups-added-fields li li {
+	background-image: none;
 }
 ul.simple-fields-edit-field-groups-added-fields li:nth-child(odd) {
 	/* background-color: #fff; */
@@ -104,7 +110,7 @@ ul#simple-fields-post-connector-added-fields li
 	margin: 0;
 	line-height: 2.5em;
 	position: relative;
-	background-color: #f9f9f9;
+	/* background-color: #f9f9f9; */
 }
 .simple-fields-field-type-options-radiobutton-checked-by-default {
 	margin-left: 27em;
@@ -438,4 +444,9 @@ ul.simple-fields-file-browser-list h3 {
 }
 .simple-fields-metabox-field-taxonomymeta-terms label {
 	font-weight: normal;
+}
+
+.sf_box_debug {
+	padding: .5em;
+	background-color: lightyellow;
 }
