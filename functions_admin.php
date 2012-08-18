@@ -368,26 +368,11 @@ function simple_fields_options() {
 		<div class="clear"></div>
 
 		<div class="simple-fields-bonny-plugins-inner-sidebar">
+			<h3>Keep this plugin alive</h3>
 			<p>
-				If you like this plugin you are welcome to support the author by donating:
-			</p>
-			<form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="text-align: center">
-				<input type="hidden" name="cmd" value="_s-xclick">
-				<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
-				">
-				<input type="image" src="https://www.paypalobjects.com/WEBSCR-640-20110306-1/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-				<img alt="" border="0" src="https://www.paypalobjects.com/WEBSCR-640-20110306-1/en_US/i/scr/pixel.gif" width="1" height="1">
-			</form>
-
-			<p style="text-align: center">
-				<a href="https://flattr.com/thing/116510/Simple-Fields" target="_blank">
-				<img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a>
-			</p>
-
-			<p>
-				You can also show your appreciation 
-				by giving the plugin a <a href="http://wordpress.org/extend/plugins/simple-fields/">good rating over at the plugin directory</a>
-				or blog or tweet something nice about this plugin.
+				I develop this plugin mostly on my spare time. Please consider <a href="http://eskapism.se/sida/donate/">donating</a>
+				or <a href="https://flattr.com/thing/116510/Simple-Fields">Flattr</a>
+				to support further development.
 			</p>
 
 			<h3>Support</h3>
