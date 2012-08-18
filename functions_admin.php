@@ -401,11 +401,12 @@ function simple_fields_options() {
 				<li><a href="http://wordpress.org/extend/plugins/simple-history/">Simple History</a></li>
 			</ul>
 			
-			
 		</div>
+
 	<div class="simple-fields-settings-wrap">
 
 		<?php
+		
 		$action = (isset($_GET["action"])) ? $_GET["action"] : null;
 		
 		/**
@@ -901,7 +902,6 @@ function simple_fields_options() {
 				}
 			}
 
-
 			/**
 			 * view existing field groups
 			 */	
@@ -911,6 +911,8 @@ function simple_fields_options() {
 				<h3><?php _e('Field groups', 'simple-fields') ?></h3>
 
 				<?php
+				
+				// Show messages, like "saved" and so on
 				if (isset($simple_fields_did_save) && $simple_fields_did_save) {
 					?><div id="message" class="updated"><p><?php _e('Field group saved', 'simple-fields') ?></p></div><?php
 				} elseif (isset($simple_fields_did_delete) && $simple_fields_did_delete) {
@@ -934,7 +936,21 @@ function simple_fields_options() {
 					echo "<ul class=''>";
 					foreach ($field_groups as $oneFieldGroup) {
 						if ($oneFieldGroup["id"] && !$oneFieldGroup["deleted"]) {
-							echo "<li><a href='" . EASY_FIELDS_FILE . "&amp;action=edit-field-group&amp;group-id=$oneFieldGroup[id]'>$oneFieldGroup[name]</a></li>";
+							
+							// calc number of existing, non deleted, fields
+							$num_fields_in_group = 0;
+							foreach ($oneFieldGroup["fields"] as $one_field) {
+								if ($one_field["deleted"]) continue;
+								$num_fields_in_group++;
+							}
+							
+							echo "<li>";
+							echo "<a href='" . EASY_FIELDS_FILE . "&amp;action=edit-field-group&amp;group-id=$oneFieldGroup[id]'>$oneFieldGroup[name]</a>";
+							if ($num_fields_in_group) {
+								$format = $oneFieldGroup["repeatable"] ? '%d added fields, repeatable' : '%d added fields';
+								echo "<br>" . __( sprintf($format, $num_fields_in_group) );
+							}
+							echo "</li>";
 						}
 					}
 					echo "</ul>";
