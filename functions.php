@@ -4,6 +4,26 @@
  * Functions that should be available outside the simple fields class
  */
 
+/**
+ * Quicky debug a variable
+ * @param $var mixed
+ * @return echo output
+ */
+if (!function_exists("sf_d")) {
+function sf_d($var) {
+
+	echo "<pre>";
+	if (is_array($var) || is_object($var)) {
+		print_r($var);
+	} else if( is_null($var) ) {
+		echo "Var is NULL";
+	} else {
+		echo $var;
+	}
+	echo "</pre>";
+}
+}
+
 
 /**
  * get all values or just the from a field in a field group
@@ -381,4 +401,295 @@ function simple_fields_query_posts($query_args = array()) {
 	$query_args = array_merge($query_args, $meta_query_args);
 	return new WP_Query($query_args);
 }
+
+
+function simple_fields_merge_arrays($array1 = array(), $array2 = array()) {
+	foreach($array2 as $key => $value) {
+		if(is_array($value)) {
+			$array1[$key] = simple_fields_merge_arrays($array1[$key], $array2[$key]);
+		} else {
+			$array1[$key] = $value;
+		}
+	}
+	return $array1;
+}
+
+
+
+/**
+ * Adds a new field group
+ * @param string $unique_name
+ * @param array $new_field_group settings/options for the new group
+ * @param return the new field group as an array
+ */
+function simple_fields_register_field_group($unique_name = "", $new_field_group = array()) {
+	
+	global $sf;
+	
+	$field_groups = $sf->get_field_groups();
+	
+	$highest_id = 0;
+	foreach ($field_groups as $oneGroup) {
+		if ($oneGroup["key"] == $unique_name) {
+			// Field group already exists
+			$field_group_id = $oneGroup["id"];
+		} else if (!isset($field_group_id) && $oneGroup["id"] > $highest_id) {
+			$highest_id = $oneGroup["id"];
+		}
+	}
+
+	if (!isset($field_group_id) || !is_numeric($field_group_id)) {
+		if (!empty($field_groups[$highest_id]) || $highest_id > 0) {
+			$highest_id++;
+		}
+		$field_group_id = $highest_id;
+	}
+
+	// if $highest_id = 0 here then this is a new field group that is created
+	// the first group gets id 1
+	if ($highest_id === 0) {
+		$field_group_id = 1;
+	}
+	
+	if (empty($unique_name)) {
+		$unique_name = "field_group_" . $field_group_id;
+	} else if (!isset($new_field_group["name"]) || empty($new_field_group["name"])) {
+		$new_field_group["name"] = $unique_name;
+	}
+	
+	if (!isset($field_groups[$field_group_id])) {
+		$field_group_defaults = array(
+			"id" => $field_group_id,
+			"key" => $unique_name,
+			"name" => "Unnamed field group $field_group_id",
+			"description" => "",
+			"repeatable" => false,
+			"fields" => array(),
+			"deleted" => false
+		);
+	} else {
+		$field_group_defaults = $field_groups[$field_group_id];
+	}
+	
+	$field_groups[$field_group_id] = simple_fields_merge_arrays($field_group_defaults, $new_field_group);
+
+	if (isset($new_field_group["fields"]) && is_array($new_field_group["fields"]) && !empty($new_field_group["fields"])) {
+		$fields = array();
+		$field_id = 0;
+		foreach($new_field_group["fields"] as $oneField) {
+			$fields[$field_id] = array();
+			
+			$field_defaults = array(
+					"name" => "",
+					"description" => "",
+					"type" => "",
+					"type_post_options" => array("enabled_post_types" => array(), "additional_arguments" => ""),
+					"type_taxonomyterm_options" => array("additional_arguments" => ""),
+					"id" => "",
+					"deleted" => 0
+			);
+			
+			if (isset($field_groups[$field_group_id]['fields'][$field_id])) {
+				$field_defaults = simple_fields_merge_arrays($field_defaults, $field_groups[$field_group_id]['fields'][$field_id]);
+			}
+			
+			foreach($field_defaults as $oneDefaultFieldKey => $oneDefaultFieldValue) {
+				if ($oneDefaultFieldKey == "id") {
+					$fields[$field_id]["id"] = $field_id;
+				} else {
+					if (!isset($oneField[$oneDefaultFieldKey])) {
+						$fields[$field_id][$oneDefaultFieldKey] = $oneDefaultFieldValue;
+					}
+					
+				}
+				if (is_array($oneField[$oneDefaultFieldKey]) && !empty($oneField[$oneDefaultFieldKey])) {
+					$options_type = preg_replace("/type_([a-z]+)_options/i", '$1', $oneDefaultFieldKey);
+					if (!empty($options_type)) {
+						foreach(array_keys($oneField[$oneDefaultFieldKey]) as $optionKey) {
+							//echo "<pre>" . print_r($fields[$field_id][$oneDefaultFieldKey][$optionKey], true) . "</pre>";
+							if (is_numeric($optionKey)) {
+								$newOptionKey = $options_type . "_num_" . $optionKey;
+								$fields[$field_id][$oneDefaultFieldKey][$newOptionKey] = $oneField[$oneDefaultFieldKey][$optionKey];
+								unset($fields[$field_id][$oneDefaultFieldKey][$optionKey]);
+								$optionKey = $newOptionKey;
+							}
+							if (is_array($fields[$field_id][$oneDefaultFieldKey][$optionKey]) && !empty($fields[$field_id][$oneDefaultFieldKey][$optionKey]["value"])) {
+								if (!isset($fields[$field_id][$oneDefaultFieldKey][$optionKey]["deleted"])) {
+									$fields[$field_id][$oneDefaultFieldKey][$optionKey]["deleted"] = 0;
+								}
+							}
+							
+						}
+					}
+				}
+				if (!isset($fields[$field_id][$oneDefaultFieldKey])) {
+					$fields[$field_id][$oneDefaultFieldKey] = $oneDefaultFieldValue;
+				}
+			}
+			$field_id++;
+		}
+		$field_groups[$field_group_id]["fields"] = $fields;
+	}
+
+	update_option("simple_fields_groups", $field_groups);
+	
+	return $field_groups[$field_group_id];
+	
+}
+
+function simple_fields_register_post_connector($unique_name = "", $new_post_connector = array()) {
+
+	global $sf;
+
+	$post_connectors = $sf->get_post_connectors();
+	
+	$highest_connector_id = 0;
+	foreach ($post_connectors as $oneConnector) {
+		if ($oneConnector["key"] == $unique_name) {
+			// Connector already exists
+			$connector_id = $oneConnector["id"];
+		} else if (!isset($connector_id) && $oneConnector["id"] > $highest_connector_id) {
+			$highest_connector_id = $oneConnector["id"];
+		}
+	}
+	
+	if (!isset($connector_id) || !is_numeric($connector_id)) {
+		if (!empty($post_connectors[$highest_connector_id]) || $highest_connector_id > 0) {
+			$highest_connector_id++;
+		}
+		$connector_id = $highest_connector_id;
+	}
+	
+	// If $connector_id is 0 here then it's the first ever created
+	// But 0 is the id to tell SF to create new, so we must up it to 1
+	if ($connector_id === 0) $connector_id = 1;
+
+	if (empty($unique_name)) {
+		$unique_name = "post_connector_" . $connector_id;
+	} else if (!isset($new_post_connector["name"]) || empty($new_post_connector["name"])) {
+		$new_post_connector["name"] = $unique_name;
+	}
+	
+	$post_connector_defaults = array(
+		"id" => $connector_id,
+		"key" => $unique_name,
+		"name" => $unique_name."_".$connector_id,
+		"field_groups" => array(),
+		"post_types" => array(),
+		"deleted" => false,
+		"hide_editor" => false
+	);
+	
+	if (isset($post_connectors[$connector_id])) {
+		$post_connector_defaults = $post_connectors[$connector_id];
+	}
+	
+	$post_connectors[$connector_id] = simple_fields_merge_arrays($post_connector_defaults, $new_post_connector);
+	
+	if (isset($new_post_connector["field_groups"]) && is_array($new_post_connector["field_groups"]) && !empty($new_post_connector["field_groups"])) {
+		$field_group_connectors = array();
+		$field_groups = $sf->get_field_groups();
+		$field_group_connector_defaults = array(
+							"id" => "",
+							"key" => "",
+							"name" => "",
+							"deleted" => 0,
+							"context" => "normal",
+							"priority" => "low"
+			
+		);
+		foreach($new_post_connector["field_groups"] as $field_group_options) {
+			$field_group_found = false;
+			foreach ($field_groups as $oneGroup) {
+				if ($oneGroup["id"] == $field_group_options["id"] || $oneGroup["key"] == $field_group_options["key"]) {
+					// Field group found
+					$field_group_found = true;
+					$field_group_id = $oneGroup["id"];
+					$field_group_key = $oneGroup["key"];
+				}
+			}
+			if ($field_group_found !== false) {
+				if (isset($field_group_connectors[$field_group_id]) && !$field_group_connectors[$field_group_id]["deleted"]) {
+					$default_field_group_connector = $field_group_connectors[$field_group_id];
+				} else {
+					$default_field_group_connector = $field_group_connector_defaults;
+				}
+				foreach($default_field_group_connector as $oneGroupConnectorDefaultKey => $oneGroupConnectorDefaultValue) {
+					if ($oneGroupConnectorDefaultKey == "id") {
+						$field_group_connectors[$field_group_id]["id"] = $field_group_id;
+					} else if ($oneGroupConnectorDefaultKey == "key") {
+						$field_group_connectors[$field_group_id]["key"] = $field_group_key;
+					} else {
+						if (isset($field_group_options[$oneGroupConnectorDefaultKey])) {
+							$field_group_connectors[$field_group_id][$oneGroupConnectorDefaultKey] = $field_group_options[$oneGroupConnectorDefaultKey];
+						} else {
+							$field_group_connectors[$field_group_id][$oneGroupConnectorDefaultKey] = $oneGroupConnectorDefaultValue;
+						}
+						
+					}
+				}
+			}
+		}
+		$post_connectors[$connector_id]["field_groups"] = $field_group_connectors;
+		
+	}
+	
+	update_option("simple_fields_post_connectors", $post_connectors);
+	
+	return $post_connectors[$connector_id];
+	
+}
+
+/**
+ * Sets the default post connector for a post type
+ * 
+ * @param $post_type_connector = connector id (int) or key (string) or string __inherit__
+ * 
+ */
+function simple_fields_register_post_type_default($connector_id_or_special_type = "", $post_type = "post") {
+
+	global $sf;
+
+	simple_fields::debug("simple_fields_register_post_type_default()", array("post_type_connector" => $connector_id_or_special_type, "post_type" => $post_type));
+
+	if (is_numeric($connector_id_or_special_type)) {
+		
+		$connector_id_or_special_type = (int) $connector_id_or_special_type;
+		
+	} else if ( in_array($connector_id_or_special_type, array("__inherit__", "__none__") ) ) {
+			
+		// Nothing to do here - It's good already
+		
+	} else if (!is_numeric($connector_id_or_special_type)) {
+	
+		// Connector is probably the name
+	
+		if (empty($connector_id_or_special_type)) {
+			return false;
+		}
+		$post_connectors = $sf->get_post_connectors();
+		foreach ($post_connectors as $oneConnector) {
+			if ($oneConnector["key"] == $connector_id_or_special_type) {
+				$connector_id_or_special_type = $oneConnector["id"];
+			}
+		}
+
+		if (!is_numeric($connector_id_or_special_type)) {
+			// Still not numeric?
+			return false;
+		}
+		
+	}
+	
+	$post_type_defaults = (array) get_option("simple_fields_post_type_defaults");
+
+	$post_type_defaults[$post_type] = $connector_id_or_special_type;
+	if (isset($post_type_defaults[0])) {
+		unset($post_type_defaults[0]);
+	}
+
+	update_option("simple_fields_post_type_defaults", $post_type_defaults);
+
+}
+
 
