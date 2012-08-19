@@ -4,8 +4,6 @@
 add_filter( 'media_send_to_editor', 'simple_fields_media_send_to_editor', 15, 2 );
 add_filter( 'media_upload_tabs', 'simple_fields_media_upload_tabs', 15);
 add_filter( 'media_upload_form_url', 'simple_fields_media_upload_form_url');
-add_filter( 'attachment_fields_to_edit', 'simple_fields_attachment_fields_to_edit', 10, 2 );
-add_action( 'admin_head', 'simple_fields_admin_head_select_file' );
 add_action( 'admin_footer', 'simple_fields_admin_footer' );
 add_action( 'admin_init', 'simple_fields_post_admin_init' );
 add_action( 'dbx_post_sidebar', 'simple_fields_post_dbx_post_sidebar' );
@@ -167,42 +165,7 @@ function simple_fields_hijack_thickbox_text($translated_text, $source_text, $dom
 }
 
 
-/*
-	hide some stuff in the file browser
-*/
-function simple_fields_admin_head_select_file() {
-	if (isset($_GET["simple_fields_action"]) && $_GET["simple_fields_action"] == "select_file") {
-		?>
-		<style type="text/css">
-			.wp-post-thumbnail,
-			tr.image_alt,
-			tr.post_title,
-			tr.align,
-			tr.image-size
-			 {
-				display: none;
-			}
-	
-		</style>
-		<?php
-	}
-}
 
-// remove some fields in the file select dialogue, since simple fields don't use them anyway
-function simple_fields_attachment_fields_to_edit($form_fields, $post) {
-	if (isset($_GET["simple_fields_action"]) && $_GET["simple_fields_action"] == "select_file") {
-		unset(
-			$form_fields["post_excerpt"],
-			$form_fields["post_content"],
-			$form_fields["url"],
-			$form_fields["image_url"],
-			$form_fields["image_alt"],
-			$form_fields["menu_order"]
-		);
-		#bonny_d($form_fields);
-	}
-	return $form_fields;
-}
 
 // if we have simple fields args in GET, make sure our simple fields-stuff are added to the form
 function simple_fields_media_upload_form_url($url) {
@@ -225,35 +188,27 @@ function simple_fields_media_upload_form_url($url) {
 	return $url;
 }
 
-// remove gallery and remote url tab in file select
+/**
+ * remove gallery and remote url tab in file select
+ * also remove some
+ */
 function simple_fields_media_upload_tabs($arr_tabs) {
+
 	if ( (isset($_GET["simple_fields_action"]) || isset($_GET["simple_fields_action"]) ) && ($_GET["simple_fields_action"] == "select_file" || $_GET["simple_fields_action"] == "select_file_for_tiny") ) {
 		unset($arr_tabs["gallery"], $arr_tabs["type_url"]);
 	}
+
 	return $arr_tabs;
 }
 
-// send the selected file to simple fields
+/**
+ * used from file selector popup
+ * send the selected file to simple fields
+ */
 function simple_fields_media_send_to_editor($html, $id) {
-	/*
-	post_id	1060, -1 since dda17 October, 2
-	tab	library
-	type	file
-	
-	POST
-	_wp_http_referer=/wp-admin/media-upload.php?simple_fields_action=select_file&simple_fields_file_field_unique_id=simple_fields_fieldgroups_8_4_new0&tab=library
-	*/
+
 	parse_str($_POST["_wp_http_referer"], $arr_postinfo);
-	#bonny_d($arr_url);
-	/*
-	Array
-	(
-	    [/wp-admin/media-upload_php?simple_fields_dummy] => 1
-	    [simple_fields_action] => select_file
-	    [simple_fields_file_field_unique_id] => simple_fields_fieldgroups_8_4_new1
-	    [tab] => library
-	)
-	*/
+
 	// only act if file browser is initiated by simple fields
 	if (isset($arr_postinfo["simple_fields_action"]) && $arr_postinfo["simple_fields_action"] == "select_file") {
 
@@ -272,7 +227,7 @@ function simple_fields_media_send_to_editor($html, $id) {
 		$file_name = rawurlencode($post_title);
 
 		?>
-		<script type="text/javascript">
+		<script>
 			var win = window.dialogArguments || opener || parent || top;
 			var file_id = <?php echo $file_id ?>;
 			win.jQuery("#<?php echo $simple_fields_file_field_unique_id ?>").val(file_id);
@@ -879,21 +834,6 @@ echo "</ul>";
 	<?php
 }
 
-
-
-#add_filter( "media_send_to_editor", "simple_fields_media_send_to_editor", 15 );
-/*
-function simple_fields_media_send_to_editor($html) {
-	// runs for both simple fields and regular insert media
-	$html = addslashes($html);
-	?>
-	<script type="text/javascript">
-		var win = window.dialogArguments || opener || parent || top;
-		win.send_to_custom_field("<?php echo $html ?>");
-	</script>
-	<?
-}
-*/
 
 /**
  * Head of admin area

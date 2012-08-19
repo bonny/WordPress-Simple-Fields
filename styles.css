@@ -169,9 +169,10 @@ ul#simple-fields-post-connector-added-fields {
 	position: relative;
 }
 ul#simple-fields-post-connector-added-fields li {
-	border-bottom: 1px solid #DFDFDF;
-	padding-bottom: 1em;
-	margin-bottom: 1em;
+	/* padding-bottom: 1em; */
+	margin-bottom: 2em;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(whiteSmoke), to(white));
+	border-top: 2px solid #eee;
 }
 .simple-fields-post-connector-addded-fields-options {
 	margin-left: 16px;

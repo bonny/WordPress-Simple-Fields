@@ -786,22 +786,30 @@ function simple_fields_options() {
 	            <h3><?php _e('Field group details', 'simple-fields') ?></h3>
 	            <table class="form-table">
 	            	<tr>
-	            		<th><label for="field_group_name"><?php _e('Name', 'simple-fields') ?></label></th>
+	            		<th>
+	            			<label for="field_group_name"><?php _e('Name', 'simple-fields') ?></label>
+	            		</th>
 	            		<td>
 	            			<input type="text" name="field_group_name" id="field_group_name" class="regular-text" value="<?php echo esc_html($field_group_in_edit["name"]) ?>" />
-	            			
-							<br />
-	            			<label for="field_group_description">
-								<?php _e('Description', 'simple-fields') ?>
-								<input type="text" name="field_group_description" id="field_group_description" class="regular-text" value="<?php echo esc_html($field_group_in_edit["description"]) ?>" />
-							</label>
-
-	            			<br />	
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<label for="field_group_description"><?php _e('Description', 'simple-fields') ?></label>
+						</th>
+						<td>
+							<input type="text" name="field_group_description" id="field_group_description" class="regular-text" value="<?php echo esc_html($field_group_in_edit["description"]) ?>" />
+						</td>
+					</th>
+					<tr>
+						<th>
+							<?php echo __("Options", 'simple-fields') ?>
+						</th>
+						<td>
 	            			<label for="field_group_repeatable">
 								<input type="checkbox" <?php echo ($field_group_in_edit["repeatable"] == true) ? "checked='checked'" : ""; ?> value="1" id="field_group_repeatable" name="field_group_repeatable" />
 								<?php _e('Repeatable', 'simple-fields') ?>
-							</label>
-								
+							</label>								
 	            		</td>
 	            	</tr>
 	            	<tr>

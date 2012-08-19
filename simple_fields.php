@@ -30,7 +30,6 @@ License: GPL2
 load_plugin_textdomain( 'simple-fields', null, basename(dirname(__FILE__)).'/languages/');
 
 
-
 /**
  * Class to keep all simple fields stuff together i bit better
  */ 
@@ -55,7 +54,8 @@ class simple_fields {
 		add_action( 'admin_init', array($this, 'admin_init') );
 		add_action( 'admin_menu', "simple_fields_admin_menu" );
 		add_action( 'admin_head', 'simple_fields_admin_head' );
-		add_action('wp_ajax_simple_fields_field_group_add_field', 'simple_fields_field_group_add_field');
+		add_action( 'wp_ajax_simple_fields_field_group_add_field', 'simple_fields_field_group_add_field' );
+		add_action( 'admin_head', array($this, 'admin_head_select_file') );
 
 		// Filters
 		add_filter( 'plugin_row_meta', array($this, 'set_plugin_row_meta'), 10, 2 );
@@ -152,6 +152,32 @@ class simple_fields {
 		}
 		return $links;
 
+	}
+
+	
+	/**
+	 * hide some things in the file browser to make it more clean and user friendly
+	 */
+	function admin_head_select_file() {
+	
+		// Only output this css when we are showing a file dialog for simple fields
+		if (isset($_GET["simple_fields_action"]) && $_GET["simple_fields_action"] == "select_file") {
+			?>
+			<style type="text/css">
+				.wp-post-thumbnail,
+				tr.image_alt,
+				tr.post_title,
+				tr.align,
+				tr.image-size,
+				tr.post_excerpt,
+				tr.url,
+				tr.post_content
+				 {
+					display: none;
+				}
+			</style>
+			<?php
+		}
 	}
 
 }
