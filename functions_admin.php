@@ -922,7 +922,7 @@ function simple_fields_options() {
 					foreach ($field_groups as $oneFieldGroup) {
 						if ($oneFieldGroup["id"] && !$oneFieldGroup["deleted"]) {
 							
-							// calc number of existing, non deleted, fields
+							// calc number of existing, non deleted, fields @todo: add to array
 							$num_fields_in_group = 0;
 							foreach ($oneFieldGroup["fields"] as $one_field) {
 								if ($one_field["deleted"]) continue;
@@ -932,7 +932,7 @@ function simple_fields_options() {
 							echo "<li>";
 							echo "<a href='" . EASY_FIELDS_FILE . "&amp;action=edit-field-group&amp;group-id=$oneFieldGroup[id]'>$oneFieldGroup[name]</a>";
 							if ($num_fields_in_group) {
-								$format = $oneFieldGroup["repeatable"] ? '%d added fields, repeatable' : '%d added fields';
+								$format = $oneFieldGroup["repeatable"] ? _n('One added field, repeatable', '%d added fields, repeatable', $num_fields_in_group) : _n('One added field', '%d added fields', $num_fields_in_group);
 								echo "<br>" . __( sprintf($format, $num_fields_in_group) );
 							}
 							echo "</li>";
@@ -960,9 +960,21 @@ function simple_fields_options() {
 							if ($one_post_connector["deleted"] || !$one_post_connector["id"]) {
 								continue;
 							}
+
+							// calculate number of non-deleted added field groups @todo: add to array
+							$num_of_added_field_groups = 0;
+							foreach ($one_post_connector["field_groups"] as $one_field_group) {
+								if (!$one_field_group["deleted"]) $num_of_added_field_groups++;
+							}
+
 							?>
 							<li>
 								<a href="<?php echo EASY_FIELDS_FILE ?>&amp;action=edit-post-connector&amp;connector-id=<?php echo $one_post_connector["id"] ?>"><?php echo $one_post_connector["name"] ?></a>
+								<?php
+								if ($num_of_added_field_groups) {
+									echo "<br>" . sprintf( _n('One added field group', '%d added field groups', $num_of_added_field_groups), $num_of_added_field_groups );
+								}
+								?>
 							</li>
 							<?php
 							
