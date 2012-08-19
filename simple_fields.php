@@ -31,11 +31,11 @@ load_plugin_textdomain( 'simple-fields', null, basename(dirname(__FILE__)).'/lan
 
 
 /**
- * Class to keep all simple fields stuff together i bit better
+ * Class to keep all simple fields stuff together a bit better
  */ 
 class simple_fields {
 
-	const DEBUG_ENABLED = TRUE;
+	const DEBUG_ENABLED = TRUE; // set to true to enable some debug output
 
 	/**
 	 * Init is where we setup actions and filers and loads stuff and a little bit of this and that
@@ -43,8 +43,8 @@ class simple_fields {
 	 */
 	function init() {
 
-		require("functions_admin.php");
-		require("functions_post.php");
+		require( dirname(__FILE__) . "/functions_admin.php" );
+		require( dirname(__FILE__) . "/functions_post.php" );
 
 		define( "EASY_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
 		define( "EASY_FIELDS_NAME", "Simple Fields");
@@ -106,7 +106,7 @@ class simple_fields {
 		wp_enqueue_script("thickbox");
 		wp_enqueue_style("thickbox");
 		wp_enqueue_script("jscolor", EASY_FIELDS_URL . "jscolor/jscolor.js"); // color picker for type color
-		wp_enqueue_script("date", EASY_FIELDS_URL . "datepicker/date.js"); // date picker for type date
+		wp_enqueue_script("simple-fields-date", EASY_FIELDS_URL . "datepicker/date.js"); // date picker for type date
 		wp_enqueue_script("jquery-datepicker", EASY_FIELDS_URL . "datepicker/jquery.datePicker.js"); // date picker for type date
 		wp_enqueue_style('jquery-datepicker', EASY_FIELDS_URL.'datepicker/datePicker.css', false, EASY_FIELDS_VERSION);
 
