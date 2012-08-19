@@ -249,7 +249,7 @@ function simple_fields_get_selected_connector_for_post($post) {
 	}
 	
 	// if selected connector is deleted, then return none
-	$post_connectors = simple_fields_get_post_connectors();
+	$post_connectors = $sf->get_post_connectors();
 	if (isset($post_connectors[$connector_to_use]["deleted"]) && $post_connectors[$connector_to_use]["deleted"]) {
 		$connector_to_use = "__none__";
 	}
@@ -489,12 +489,16 @@ function simple_fields_get_post_group_values($post_id, $field_group_name_or_id, 
  * fetch all information about the field group that a post has
  * returns connector structure, field groups, fields, and values
  * well.. everything! it's really funky.
+ *
  * return @array a really fat one!
  */
 function simple_fields_get_all_fields_and_values_for_post($post_id) {
+	
+	global $sf;
+	
 	$post = get_post($post_id);
 	$connector_to_use = simple_fields_get_selected_connector_for_post($post);
-	$existing_post_connectors = simple_fields_get_post_connectors();
+	$existing_post_connectors = $sf->get_post_connectors();
 	$field_groups = get_option("simple_fields_groups");
 	$selected_post_connector = $existing_post_connectors[$connector_to_use];
 	if($selected_post_connector == null) {
@@ -555,7 +559,6 @@ function simple_fields_get_all_fields_and_values_for_post($post_id) {
 	}
 	return $selected_post_connector;
 }
-# $custom_field_key = "_simple_fields_fieldGroupID_{$one_field_group_id}_fieldID_{$one_field_id}_numInSet_{$num_in_set}";
 
 /**
  * Code from Admin Menu Tree Page View
@@ -612,7 +615,7 @@ function simple_fields_get_pages($args) {
 	return $output;
 }
 
-class Walker_Category_Checklist2 extends Walker {
+class Simple_Fields_Walker_Category_Checklist extends Walker {
 	var $tree_type = 'category';
 	var $db_fields = array ('parent' => 'parent', 'id' => 'term_id');
 
@@ -636,16 +639,8 @@ class Walker_Category_Checklist2 extends Walker {
 
 		// @todo: use custom simple fields name for all inputs
 		$name = $simple_fields_taxonomyterm_walker_field_name;
-		/*
-		if ( $taxonomy == 'category' ) {
-			$name = 'post_category';
-		} else {
-			$name = 'tax_input['.$taxonomy.']';
-		}
-		*/
 
 		$class = in_array( $category->term_id, $popular_cats ) ? ' class="popular-category"' : '';
-		//$output .= "\n<li id='{$taxonomy}-{$category->term_id}'$class>" . '<label class="selectit"><input value="' . $category->term_id . '" type="checkbox" name="'.$name.'[]" id="in-'.$taxonomy.'-' . $category->term_id . '"' . checked( in_array( $category->term_id, $selected_cats ), true, false ) . disabled( empty( $args['disabled'] ), false, false ) . ' /> ' . esc_html( apply_filters('the_category', $category->name )) . '</label>';
 		$output .= "\n<li $class>" . '<label class="selectit"><input value="' . $category->term_id . '" type="checkbox" name="'.$name.'[]" ' . checked( in_array( $category->term_id, $selected_cats ), true, false ) . disabled( empty( $args['disabled'] ), false, false ) . ' /> ' . esc_html( apply_filters('the_category', $category->name )) . '</label>';
 	}
 
@@ -654,6 +649,9 @@ class Walker_Category_Checklist2 extends Walker {
 	}
 }
 
+/**
+ * @todo: add description
+ */
 function simple_fields_get_field_group($group_id) {
 	$field_groups = get_option("simple_fields_groups");
 	$return = false;
@@ -675,6 +673,9 @@ function simple_fields_get_field_group($group_id) {
 	return $return;
 }
 
+/**
+ * @todo: add description
+ */
 function simple_fields_get_field_in_group($field_group, $field_id) {
 	$return = false;
 	if (is_array($field_group) && is_array($field_group['fields'])) {

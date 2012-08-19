@@ -84,7 +84,8 @@ class simple_fields {
 	 * @param int $connector_id
 	 */
 	function get_connector_by_id($connector_id) {
-		$connectors = simple_fields_get_post_connectors();
+
+		$connectors = $this->get_post_connectors();
 		if (isset($connectors[$connector_id])) {
 			return $connectors[$connector_id];
 		} else {
@@ -213,7 +214,8 @@ class simple_fields {
 	 * @param return array
 	 */
 	function get_post_connector_attached_types() {
-		$post_connectors = simple_fields_get_post_connectors();
+		global $sf;
+		$post_connectors = $sf->get_post_connectors();
 		$arr_post_types = array();
 		foreach ($post_connectors as $one_post_connector) {
 			$arr_post_types = array_merge($arr_post_types, (array) $one_post_connector["post_types"]);
@@ -624,55 +626,31 @@ class simple_fields {
 						$enabled_taxonomy = @$field["type_taxonomyterm_options"]["enabled_taxonomy"];
 						$additional_arguments = @$field["type_taxonomyterm_options"]["additional_arguments"];
 	
-						// echo "saved_value:";sf_d($saved_value);
-	
 						// hämta alla terms som finns för taxonomy $enabled_taxonomy
 						// @todo: kunna skicka in args här, t.ex. för orderby
-						
-						// check if taxonomy is hierachical
-						// _get_term_hierarchy($taxonomy) {
-						/*
-						$is_hierarchical = is_taxonomy_hierarchical($enabled_taxonomy);
-						if ( $is_hierarchical ) {
-							// echo "<br>is hierarchical";
-							$existing_terms = _get_term_hierarchy($enabled_taxonomy);
-						} else {
-							// echo "<br>is not hierarchical";
-							$existing_terms = get_terms($enabled_taxonomy, "&{$additional_arguments}");
-						}
-						*/
 	
 						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
 						echo $description;
 	
-	/*
-	wp_terms_checklist($post->ID, array( 'taxonomy' => $taxonomy, 'popular_cats' => $popular_ids ) ) ?>
-	<?php wp_terms_checklist($post_ID, array( 'taxonomy' => 'category', 'popular_cats' => $popular_ids ) ) ?>
-	xxx
-	wp_terms_checklist
-	*/
-	$arr_selected_cats = (array) $saved_value;
-	
-	$walker = new Walker_Category_Checklist2();
-	$args = array(
-		"taxonomy" => $enabled_taxonomy,
-		"selected_cats" => $arr_selected_cats,
-		"walker" => $walker,
-		"sf_field_name" => $field_name // walker is ot able to get this one, therefor global
-	);
-	global $simple_fields_taxonomyterm_walker_field_name; // sorry for global…!
-	$simple_fields_taxonomyterm_walker_field_name = $field_name;
-	echo "<ul class='simple-fields-metabox-field-taxonomymeta-terms'>";
-	wp_terms_checklist(NULL, $args);
-	echo "</ul>";
+						$arr_selected_cats = (array) $saved_value;
 						
-						//echo "<pre>terms:";print_r($existing_terms);echo "</pre>";
+						$walker = new Simple_Fields_Walker_Category_Checklist();
+						$args = array(
+							"taxonomy" => $enabled_taxonomy,
+							"selected_cats" => $arr_selected_cats,
+							"walker" => $walker,
+							"sf_field_name" => $field_name // walker is ot able to get this one, therefor global
+						);
+						global $simple_fields_taxonomyterm_walker_field_name; // sorry for global…!
+						$simple_fields_taxonomyterm_walker_field_name = $field_name;
+						echo "<ul class='simple-fields-metabox-field-taxonomymeta-terms'>";
+						wp_terms_checklist(NULL, $args);
+						echo "</ul>";
 						
 					} elseif ("post" == $field["type"]) {
 						
 						$saved_value_int = (int) $saved_value;
 						if ($saved_value_int) {
-							//$saved_post = get_post($saved_value_int);
 							$saved_post_name = get_the_title($saved_value_int);
 							$showHideClass = "";
 						} else {
@@ -684,7 +662,6 @@ class simple_fields {
 						$enabled_post_types = $type_post_options["enabled_post_types"];
 						
 						echo "<div class='simple-fields-metabox-field-post'>";
-						// echo "<pre>"; print_r($type_post_options); echo "</pre>";
 						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
 						echo $description;					
 	
@@ -802,11 +779,10 @@ class simple_fields {
 				$connector_to_use = simple_fields_get_selected_connector_for_post($post);
 				
 				// get connector to use for this post
-				$post_connectors = simple_fields_get_post_connectors();
+				$post_connectors = $sf->get_post_connectors();
 				if (isset($post_connectors[$connector_to_use])) {
 					
-					//$field_groups = get_option("simple_fields_groups");
-					$field_groups = simple_fields_get_field_groups();
+					$field_groups = $sf->get_field_groups();
 					$selected_post_connector = $post_connectors[$connector_to_use];
 					
 					// check if we should hide the editor, using css to keep things simple
@@ -915,7 +891,50 @@ class simple_fields {
 	     
 	    echo "</div>";
 	 
+	} // end
+
+	/**
+	 * Returns all defined post connectors
+	 * @return array
+	 */
+	function get_post_connectors() {
+		$connectors = get_option("simple_fields_post_connectors");
+		if ($connectors === FALSE) $connectors = array();
+	
+		// calculate number of active field groups
+		// @todo: check this a bit more, does not seem to be any deleted groups. i thought i saved the deletes ones to, but with deleted flag set
+		foreach ($connectors as $one_connector) {
+			$num_fields_in_group = 0;
+			foreach ($one_connector["field_groups"] as $one_group) {
+				if (!$one_group["deleted"]) $num_fields_in_group++;
+			}
+			$connectors[$one_connector["id"]]["field_groups_count"] = $num_fields_in_group;
+		}
+	
+		return $connectors;
 	}
+	
+	/**
+	 * Returns all defined field groups
+	 *
+	 * @return array
+	 */
+	function get_field_groups() {
+		$field_groups = get_option("simple_fields_groups");
+		if ($field_groups === FALSE) $field_groups = array();
+		
+		// Calculate the number of active fields
+		foreach ($field_groups as & $one_group) {
+			$num_active_fields = 0;
+			foreach ($one_group["fields"] as $one_field) {
+				if (!$one_field["deleted"]) $num_active_fields++;
+			}
+			$one_group["fields_count"] = $num_active_fields;
+		}
+		
+		return $field_groups;
+	}
+
 
 } // end class
 

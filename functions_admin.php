@@ -5,8 +5,10 @@
  * @return array
  */
 function simple_fields_get_post_connectors_for_post_type($post_type) {
-
-	$arr_post_connectors = simple_fields_get_post_connectors();
+	
+	global $sf;
+	
+	$arr_post_connectors = $sf->get_post_connectors();
 	$arr_found_connectors = array();
 
 	foreach ($arr_post_connectors as $one_connector) {
@@ -17,46 +19,6 @@ function simple_fields_get_post_connectors_for_post_type($post_type) {
 	return $arr_found_connectors;
 }
 
-/**
- * Returns all defined post connectors
- * @return array
- */
-function simple_fields_get_post_connectors() {
-	$connectors = get_option("simple_fields_post_connectors");
-	if ($connectors === FALSE) $connectors = array();
-
-	// calculate number of active field groups
-	// @todo: check this a bit more, does not seem to be any deleted groups. i thought i saved the deletes ones to, but with deleted flag set
-	foreach ($connectors as $one_connector) {
-		$num_fields_in_group = 0;
-		foreach ($one_connector["field_groups"] as $one_group) {
-			if (!$one_group["deleted"]) $num_fields_in_group++;
-		}
-		$connectors[$one_connector["id"]]["field_groups_count"] = $num_fields_in_group;
-	}
-
-	return $connectors;
-}
-
-/**
- * Returns all defined field groups
- * @return array
- */
-function simple_fields_get_field_groups() {
-	$field_groups = get_option("simple_fields_groups");
-	if ($field_groups === FALSE) $field_groups = array();
-	
-	// Calculate the number of active fields
-	foreach ($field_groups as & $one_group) {
-		$num_active_fields = 0;
-		foreach ($one_group["fields"] as $one_field) {
-			if (!$one_field["deleted"]) $num_active_fields++;
-		}
-		$one_group["fields_count"] = $num_active_fields;
-	}
-	
-	return $field_groups;
-}
 
 function simple_fields_admin_menu() {
 	add_submenu_page( 'options-general.php' , EASY_FIELDS_NAME, EASY_FIELDS_NAME, "administrator", "simple-fields-options", "simple_fields_options");
@@ -80,8 +42,10 @@ function simple_fields_merge_arrays($array1 = array(), $array2 = array()) {
  * @param return the new field group as an array
  */
 function simple_fields_register_field_group($unique_name = "", $new_field_group = array()) {
-
-	$field_groups = simple_fields_get_field_groups();
+	
+	global $sf;
+	
+	$field_groups = $sf->get_field_groups();
 	
 	$highest_id = 0;
 	foreach ($field_groups as $oneGroup) {
@@ -194,7 +158,9 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 
 function simple_fields_register_post_connector($unique_name = "", $new_post_connector = array()) {
 
-	$post_connectors = simple_fields_get_post_connectors();
+	global $sf;
+
+	$post_connectors = $sf->get_post_connectors();
 	
 	$highest_connector_id = 0;
 	foreach ($post_connectors as $oneConnector) {
@@ -241,7 +207,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 	
 	if (isset($new_post_connector["field_groups"]) && is_array($new_post_connector["field_groups"]) && !empty($new_post_connector["field_groups"])) {
 		$field_group_connectors = array();
-		$field_groups = simple_fields_get_field_groups();
+		$field_groups = $sf->get_field_groups();
 		$field_group_connector_defaults = array(
 							"id" => "",
 							"key" => "",
@@ -301,6 +267,8 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
  */
 function simple_fields_register_post_type_default($connector_id_or_special_type = "", $post_type = "post") {
 
+	global $sf;
+
 	simple_fields::debug("simple_fields_register_post_type_default()", array("post_type_connector" => $connector_id_or_special_type, "post_type" => $post_type));
 
 	if (is_numeric($connector_id_or_special_type)) {
@@ -318,7 +286,7 @@ function simple_fields_register_post_type_default($connector_id_or_special_type 
 		if (empty($connector_id_or_special_type)) {
 			return false;
 		}
-		$post_connectors = simple_fields_get_post_connectors();
+		$post_connectors = $sf->get_post_connectors();
 		foreach ($post_connectors as $oneConnector) {
 			if ($oneConnector["key"] == $connector_id_or_special_type) {
 				$connector_id_or_special_type = $oneConnector["id"];
@@ -346,8 +314,8 @@ function simple_fields_options() {
 
 	global $sf;
 
-	$field_groups = simple_fields_get_field_groups();
-	$post_connectors = simple_fields_get_post_connectors();
+	$field_groups = $sf->get_field_groups();
+	$post_connectors = $sf->get_post_connectors();
 
 	/*
 	$field_groups = get_option("easy_fields_groups");
@@ -546,7 +514,7 @@ function simple_fields_options() {
 				update_option("simple_fields_groups", $field_groups);
 				// echo "<pre>";print_r($field_groups);echo "</pre>";
 				// we can have changed the options of a field group, so update connectors using this field group
-				$post_connectors = (array) simple_fields_get_post_connectors();
+				$post_connectors = (array) $sf->get_post_connectors();
 				foreach ($post_connectors as $connector_id => $connector_options) {
 					if (isset($connector_options["field_groups"][$field_group_id])) {
 						// field group existed, update name
@@ -875,7 +843,7 @@ function simple_fields_options() {
 			echo "<h3>Post Connectors</h3>\n";
 			echo "<p>Called with function <code>simple_fields_get_post_connectors()</code>";
 			echo "<pre>";
-			print_r( simple_fields_get_post_connectors() );
+			print_r( $sf->get_post_connectors() );
 			echo "</pre>";
 
 			echo "<hr />";
@@ -883,7 +851,7 @@ function simple_fields_options() {
 			echo "<h3>Field Groups</h3>\n";
 			echo "<p>Called with function <code>simple_fields_get_field_groups()</code>";
 			echo "<pre>";
-			print_r( simple_fields_get_field_groups() );
+			print_r( $sf->get_field_groups() );
 			echo "</pre>";
 			
 		}
