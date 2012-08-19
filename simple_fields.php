@@ -47,9 +47,9 @@ class simple_fields {
 	 */
 	function init() {
 
-		define( "EASY_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
-		define( "EASY_FIELDS_NAME", "Simple Fields");
-		define( "EASY_FIELDS_VERSION", "0.x");
+		define( "SIMPLE_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
+		define( "SIMPLE_FIELDS_NAME", "Simple Fields");
+		define( "SIMPLE_FIELDS_VERSION", "0.x");
 
 		require( dirname(__FILE__) . "/functions.php" );
 
@@ -122,14 +122,14 @@ class simple_fields {
 		wp_enqueue_script("jquery-effects-highlight");
 		wp_enqueue_script("thickbox");
 		wp_enqueue_style("thickbox");
-		wp_enqueue_script("jscolor", EASY_FIELDS_URL . "jscolor/jscolor.js"); // color picker for type color
-		wp_enqueue_script("simple-fields-date", EASY_FIELDS_URL . "datepicker/date.js"); // date picker for type date
-		wp_enqueue_script("jquery-datepicker", EASY_FIELDS_URL . "datepicker/jquery.datePicker.js"); // date picker for type date
-		wp_enqueue_style('jquery-datepicker', EASY_FIELDS_URL.'datepicker/datePicker.css', false, EASY_FIELDS_VERSION);
+		wp_enqueue_script("jscolor", SIMPLE_FIELDS_URL . "jscolor/jscolor.js"); // color picker for type color
+		wp_enqueue_script("simple-fields-date", SIMPLE_FIELDS_URL . "datepicker/date.js"); // date picker for type date
+		wp_enqueue_script("jquery-datepicker", SIMPLE_FIELDS_URL . "datepicker/jquery.datePicker.js"); // date picker for type date
+		wp_enqueue_style('jquery-datepicker', SIMPLE_FIELDS_URL.'datepicker/datePicker.css', false, SIMPLE_FIELDS_VERSION);
 
 		// add css and scripts
-		wp_enqueue_style('simple-fields-styles', EASY_FIELDS_URL.'styles.css', false, EASY_FIELDS_VERSION);
-		wp_register_script('simple-fields-scripts', EASY_FIELDS_URL.'scripts.js', false, EASY_FIELDS_VERSION);
+		wp_enqueue_style('simple-fields-styles', SIMPLE_FIELDS_URL.'styles.css', false, SIMPLE_FIELDS_VERSION);
+		wp_register_script('simple-fields-scripts', SIMPLE_FIELDS_URL.'scripts.js', false, SIMPLE_FIELDS_VERSION);
 		wp_localize_script('simple-fields-scripts', 'sfstrings', array(
 			'txtDelete' => __('Delete', 'simple-fields'),
 			'confirmDelete' => __('Delete this field?', 'simple-fields'),
@@ -150,7 +150,7 @@ class simple_fields {
 		));
 		wp_enqueue_script('simple-fields-scripts');
 
-		define( "EASY_FIELDS_FILE", menu_page_url("simple-fields-options", false) );
+		define( "SIMPLE_FIELDS_FILE", menu_page_url("simple-fields-options", false) );
 
 	}
 
@@ -1596,8 +1596,8 @@ class simple_fields {
 		$post_connectors = $sf->get_post_connectors();
 	
 		/*
-		$field_groups = get_option("easy_fields_groups");
-		$post_connectors = get_option("easy_fields_post_connectors");
+		$field_groups = get_option("SIMPLE_FIELDS_groups");
+		$post_connectors = get_option("SIMPLE_FIELDS_post_connectors");
 		update_option("simple_fields_groups", $field_groups);
 		update_option("simple_fields_post_connectors", $post_connectors);
 		// */
@@ -1623,7 +1623,7 @@ class simple_fields {
 		?>
 		<div class="wrap">
 	
-			<h2><?php echo EASY_FIELDS_NAME ?></h2>
+			<h2><?php echo SIMPLE_FIELDS_NAME ?></h2>
 	
 			<div class="clear"></div>
 	
@@ -1673,7 +1673,7 @@ class simple_fields {
 					?>
 					<h3><?php echo __( sprintf('Edit default post connector for post type %1$s', $selected_post_type->label), "simple-fields" ) ?></h3>
 					
-					<form action="<?php echo EASY_FIELDS_FILE ?>&amp;action=edit-post-type-defaults-save" method="post">
+					<form action="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-post-type-defaults-save" method="post">
 						<table class="form-table">
 							<tr>
 								<th><?php _e('Default post connector', 'simple-fields') ?></th>
@@ -1704,7 +1704,7 @@ class simple_fields {
 							<input class="button-primary" type="submit" value="Save Changes" />
 							<input type="hidden" name="simple_fields_save-post_type" value="<?php echo $post_type ?>" />
 							<?php _e('or', 'simple_fields');  ?>
-							<a href="<?php echo EASY_FIELDS_FILE ?>"><?php _e('cancel', 'simple-fields') ?></a>
+							<a href="<?php echo SIMPLE_FIELDS_FILE ?>"><?php _e('cancel', 'simple-fields') ?></a>
 						</p>
 					</form>
 					<?php
@@ -1889,7 +1889,7 @@ class simple_fields {
 				?>
 				<h3><?php _e('Post Connector details', 'simple-fields') ?></h3>
 	
-				<form method="post" action="<?php echo EASY_FIELDS_FILE ?>&amp;action=edit-post-connector-save">
+				<form method="post" action="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-post-connector-save">
 	
 					<table class="form-table">
 						<tr>
@@ -2000,10 +2000,10 @@ class simple_fields {
 						<!-- <input type="hidden" name="page_options" value="field_group_name" /> -->
 						<input type="hidden" name="post_connector_id" value="<?php echo $post_connector_in_edit["id"] ?>" />
 						or 
-						<a href="<?php echo EASY_FIELDS_FILE ?>"><?php _e('cancel', 'simple-fields') ?></a>
+						<a href="<?php echo SIMPLE_FIELDS_FILE ?>"><?php _e('cancel', 'simple-fields') ?></a>
 					</p>
 					<p class="simple-fields-post-connector-delete">
-						<a href="<?php echo EASY_FIELDS_FILE ?>&amp;action=delete-post-connector&amp;connector-id=<?php echo $post_connector_in_edit["id"] ?>"><?php _e('Delete') ?></a>
+						<a href="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=delete-post-connector&amp;connector-id=<?php echo $post_connector_in_edit["id"] ?>"><?php _e('Delete') ?></a>
 					</p>
 	
 				</form>
@@ -2042,7 +2042,7 @@ class simple_fields {
 	
 				// echo "<pre>" . print_r($field_group_in_edit) . "</pre>";
 				?>
-				<form method="post" action="<?php echo EASY_FIELDS_FILE ?>&amp;action=edit-field-group-save">
+				<form method="post" action="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-field-group-save">
 					<?php #settings_fields('simple_fields_options'); ?>
 		            <h3><?php _e('Field group details', 'simple-fields') ?></h3>
 		            <table class="form-table">
@@ -2099,10 +2099,10 @@ class simple_fields {
 						<input type="hidden" name="page_options" value="field_group_name" />
 						<input type="hidden" name="field_group_id" value="<?php echo $field_group_in_edit["id"] ?>" />
 						<?php _e('or', 'simple-fields') ?> 
-						<a href="<?php echo EASY_FIELDS_FILE ?>"><?php _e('cancel', 'simple-fields') ?></a>
+						<a href="<?php echo SIMPLE_FIELDS_FILE ?>"><?php _e('cancel', 'simple-fields') ?></a>
 					</p>
 					<p class="simple-fields-field-group-delete">
-						<a href="<?php echo EASY_FIELDS_FILE ?>&amp;action=delete-field-group&amp;group-id=<?php echo $field_group_in_edit["id"] ?>"><?php _e('Delete', 'simple-fields') ?></a>
+						<a href="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=delete-field-group&amp;group-id=<?php echo $field_group_in_edit["id"] ?>"><?php _e('Delete', 'simple-fields') ?></a>
 					</p>
 					
 				</form>
@@ -2185,7 +2185,7 @@ class simple_fields {
 							if ($oneFieldGroup["id"] && !$oneFieldGroup["deleted"]) {
 								
 								echo "<li>";
-								echo "<a href='" . EASY_FIELDS_FILE . "&amp;action=edit-field-group&amp;group-id=$oneFieldGroup[id]'>$oneFieldGroup[name]</a>";
+								echo "<a href='" . SIMPLE_FIELDS_FILE . "&amp;action=edit-field-group&amp;group-id=$oneFieldGroup[id]'>$oneFieldGroup[name]</a>";
 								if ($oneFieldGroup["fields_count"]) {
 									$format = $oneFieldGroup["repeatable"] ? _n('One added field, repeatable', '%d added fields, repeatable', $oneFieldGroup["fields_count"]) : _n('One added field', '%d added fields', $oneFieldGroup["fields_count"]);
 									echo "<br>" . __( sprintf($format, $oneFieldGroup["fields_count"]) );
@@ -2195,7 +2195,7 @@ class simple_fields {
 						}
 						echo "</ul>";
 					}
-					echo "<p><a class='button' href='" . EASY_FIELDS_FILE . "&amp;action=edit-field-group&amp;group-id=0'>+ ".__('New field group', 'simple-fields')."</a></p>";
+					echo "<p><a class='button' href='" . SIMPLE_FIELDS_FILE . "&amp;action=edit-field-group&amp;group-id=0'>+ ".__('New field group', 'simple-fields')."</a></p>";
 					?>
 				</div>
 			
@@ -2218,7 +2218,7 @@ class simple_fields {
 	
 								?>
 								<li>
-									<a href="<?php echo EASY_FIELDS_FILE ?>&amp;action=edit-post-connector&amp;connector-id=<?php echo $one_post_connector["id"] ?>"><?php echo $one_post_connector["name"] ?></a>
+									<a href="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-post-connector&amp;connector-id=<?php echo $one_post_connector["id"] ?>"><?php echo $one_post_connector["name"] ?></a>
 									<?php
 									if ($one_post_connector["field_groups_count"]) {
 										echo "<br>" . sprintf( _n('One added field group', '%d added field groups', $one_post_connector["field_groups_count"]), $one_post_connector["field_groups_count"] );
@@ -2236,12 +2236,12 @@ class simple_fields {
 					}
 					?>
 					<p>
-						<a href="<?php echo EASY_FIELDS_FILE ?>&amp;action=edit-post-connector&amp;connector-id=0" class="button">+ <?php _e('New post connector', 'simple-fields') ?></a>
+						<a href="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-post-connector&amp;connector-id=0" class="button">+ <?php _e('New post connector', 'simple-fields') ?></a>
 					</p>
 					
 				</div>
 	
-				<div class="easy-fields-post-type-defaults">
+				<div class="simple-fields-post-type-defaults">
 					<h3><?php _e('Post type defaults', 'simple-fields') ?></h3>
 					<ul>
 						<?php
@@ -2271,7 +2271,7 @@ class simple_fields {
 								}
 	
 								?><li>
-									<a href="<?php echo EASY_FIELDS_FILE ?>&amp;action=edit-post-type-defaults&amp;post-type=<?php echo $one_post_type ?>">
+									<a href="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-post-type-defaults&amp;post-type=<?php echo $one_post_type ?>">
 										<?php echo $one_post_type_info->label ?>
 									</a>
 									<br>
@@ -2286,7 +2286,7 @@ class simple_fields {
 				<div class="simple-fields-debug">
 					<h3><?php echo __('Debug', 'simple-fields') ?></h3>
 					<ul>
-						<li><a href='<?php echo EASY_FIELDS_FILE ?>&amp;action=simple-fields-view-debug-info'><?php echo __('View debug information', 'simple-fields') ?></a></li>
+						<li><a href='<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=simple-fields-view-debug-info'><?php echo __('View debug information', 'simple-fields') ?></a></li>
 					</ul>
 				</div>
 				
@@ -2302,7 +2302,7 @@ class simple_fields {
 	} // end func simple_fields_options
 
 	function admin_menu() {
-		add_submenu_page( 'options-general.php' , EASY_FIELDS_NAME, EASY_FIELDS_NAME, "administrator", "simple-fields-options", array($this, "options"));
+		add_submenu_page( 'options-general.php' , SIMPLE_FIELDS_NAME, SIMPLE_FIELDS_NAME, "administrator", "simple-fields-options", array($this, "options"));
 	}
 
 

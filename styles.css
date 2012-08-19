@@ -5,8 +5,6 @@ ul.simple-fields-edit-field-groups-added-fields {
 	position: relative;
 }
 ul.simple-fields-edit-field-groups-added-fields li {
-	/* border-bottom: 1px solid #DFDFDF; */
-	/* background-color: #F9F9F9; */
 	position: relative;
 	padding: 1em 2em;
 	margin: 0;
@@ -18,7 +16,6 @@ ul.simple-fields-edit-field-groups-added-fields li li {
 	background-image: none;
 }
 ul.simple-fields-edit-field-groups-added-fields li:nth-child(odd) {
-	/* background-color: #fff; */
 }
 
 #field_group_name,
@@ -43,7 +40,6 @@ ul.simple-fields-edit-field-groups-added-fields li:nth-child(odd) {
 }
 
 .simple-fields-field-group-one-field-row-description {
-/* 	display: none; */
 }
 
 div.delete a {
@@ -81,21 +77,16 @@ simple-fields-post-connector-delete a:hover
 
 .simple-fields-edit-post-connectors,
 .simple-fields-edit-field-groups {
-	xfloat: left;	
+
 }
 .simple-fields-edit-post-connectors {
-	xborder-right: 1px solid #DFDFDF;
-	xpadding-right: 3em;
 }
 .simple-fields-edit-field-groups {
-	xborder-left: 1px solid #DFDFDF;
-	xpadding-left: 3em;
-	xmargin-left: -1px;
 }
 
 .simple-fields-edit-field-groups ul,
 .simple-fields-edit-post-connectors ul,
-.easy-fields-post-type-defaults ul
+.simple-fields-post-type-defaults ul
  {
 	list-style-type: disc;
 	margin-left: 20px;
@@ -110,7 +101,6 @@ ul#simple-fields-post-connector-added-fields li
 	margin: 0;
 	line-height: 2.5em;
 	position: relative;
-	/* background-color: #f9f9f9; */
 }
 .simple-fields-field-type-options-radiobutton-checked-by-default {
 	margin-left: 27em;
@@ -147,7 +137,6 @@ ul#simple-fields-post-connector-added-fields li
 	color: #BC0B0B;
 	cursor: pointer;
 	position: absolute;
-	/* bottom: 0; */
 	top: 0;
 	left: 35em;
 }
@@ -169,7 +158,6 @@ ul#simple-fields-post-connector-added-fields {
 	position: relative;
 }
 ul#simple-fields-post-connector-added-fields li {
-	/* padding-bottom: 1em; */
 	margin-bottom: 2em;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(whiteSmoke), to(white));
 	border-top: 2px solid #eee;
@@ -184,7 +172,7 @@ ul#simple-fields-post-connector-added-fields li {
 	margin-right: 1em;
 }
 
-.easy-fields-post-type-defaults,
+.simple-fields-post-type-defaults,
 .simple-fields-edit-post-connectors
  {
 	margin-top: 2.5em;
@@ -226,12 +214,10 @@ ul.simple-fields-metabox-field-group-fields-repeatable li {
 	padding-top: .5em;
 	padding-bottom: .5em;
 	padding-left: 11px;
-
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(whiteSmoke), to(white));
 	border-top: 2px solid #eee;
 	padding: .5em 1.5em;
 	margin: 0 0 0 0;
-
 }
 ul.simple-fields-metabox-field-group-fields-repeatable li.hover {
 	background-color: #fffcf1;
@@ -264,11 +250,7 @@ ul.simple-fields-metabox-field-group-fields-repeatable .simple-fields-metabox-fi
  {
 	width: 6em;
 }
-/*
-.simple-fields-metabox-field-group .dp-choose-date {
-	display: none;
-}
-*/
+
 .simple-fields-metabox-field-textarea-tinymce-wrapper {
 	width: 100%;
 }
@@ -406,9 +388,6 @@ ul.simple-fields-file-browser-list h3 {
 }
 
 .simple-fields-meta-box-field-group-field-type-post-dialog-post-types {
-/*	border-bottom: 1px solid #DFDFDF;
-	padding-bottom: 10px;
-	margin-bottom: 10px; */
 	margin-bottom: 10px;
 }
 .simple-fields-meta-box-field-group-field-type-post-dialog-post-types li {
