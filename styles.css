@@ -226,6 +226,12 @@ ul.simple-fields-metabox-field-group-fields-repeatable li {
 	padding-top: .5em;
 	padding-bottom: .5em;
 	padding-left: 11px;
+
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(whiteSmoke), to(white));
+	border-top: 2px solid #eee;
+	padding: .5em 1.5em;
+	margin: 0 0 0 0;
+
 }
 ul.simple-fields-metabox-field-group-fields-repeatable li.hover {
 	background-color: #fffcf1;
@@ -301,8 +307,8 @@ ul.simple-fields-metabox-field-group-fields-repeatable .simple-fields-metabox-fi
 
 .simple-fields-metabox-field-group-delete {
 	position: absolute;
-	left: -6px;
-	top: 38px;
+	top: 10px;
+	right: 10px;
 }
 .simple-fields-metabox-field-group-delete a {
 	background: transparent url(bin_closed.png) no-repeat 0 50%;
