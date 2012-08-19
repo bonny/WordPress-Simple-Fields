@@ -106,6 +106,7 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 			"id" => $field_group_id,
 			"key" => $unique_name,
 			"name" => "Unnamed field group $field_group_id",
+			"description" => "",
 			"repeatable" => false,
 			"fields" => array(),
 			"deleted" => false
@@ -116,19 +117,20 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 	
 	$field_groups[$field_group_id] = simple_fields_merge_arrays($field_group_defaults, $new_field_group);
 
-	if (is_array($new_field_group["fields"]) && !empty($new_field_group["fields"])) {
+	if (isset($new_field_group["fields"]) && is_array($new_field_group["fields"]) && !empty($new_field_group["fields"])) {
 		$fields = array();
 		$field_id = 0;
 		foreach($new_field_group["fields"] as $oneField) {
 			$fields[$field_id] = array();
 			
-			$field_defaults = array("name" => "",
-						"description" => "",
-						"type" => "",
-						"type_post_options" => array("enabled_post_types" => array(), "additional_arguments" => ""),
-						"type_taxonomyterm_options" => array("additional_arguments" => ""),
-						"id" => "",
-						"deleted" => 0
+			$field_defaults = array(
+					"name" => "",
+					"description" => "",
+					"type" => "",
+					"type_post_options" => array("enabled_post_types" => array(), "additional_arguments" => ""),
+					"type_taxonomyterm_options" => array("additional_arguments" => ""),
+					"id" => "",
+					"deleted" => 0
 			);
 			
 			if (isset($field_groups[$field_group_id]['fields'][$field_id])) {
@@ -226,7 +228,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 	
 	$post_connectors[$connector_id] = simple_fields_merge_arrays($post_connector_defaults, $new_post_connector);
 	
-	if (is_array($new_post_connector["field_groups"]) && !empty($new_post_connector["field_groups"])) {
+	if (isset($new_post_connector["field_groups"]) && is_array($new_post_connector["field_groups"]) && !empty($new_post_connector["field_groups"])) {
 		$field_group_connectors = array();
 		$field_groups = simple_fields_get_field_groups();
 		$field_group_connector_defaults = array("id" => "",
@@ -798,7 +800,8 @@ function simple_fields_options() {
 							<label for="field_group_description"><?php _e('Description', 'simple-fields') ?></label>
 						</th>
 						<td>
-							<input type="text" name="field_group_description" id="field_group_description" class="regular-text" value="<?php echo esc_html($field_group_in_edit["description"]) ?>" />
+							<input 	type="text" name="field_group_description" id="field_group_description" class="regular-text" 
+									value="<?php echo esc_html($field_group_in_edit["description"]) ?>" />
 						</td>
 					</th>
 					<tr>

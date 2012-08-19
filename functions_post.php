@@ -453,8 +453,9 @@ function simple_fields_meta_box_output_one_field_group($field_group_id, $num_in_
 	$field_groups = get_option("simple_fields_groups");
 	$current_field_group = $field_groups[$field_group_id];
 	$repeatable = (bool) $current_field_group["repeatable"];
+	$field_group_css = "simple-fields-fieldgroup-$field_group_id";
 	?>
-	<li class="simple-fields-metabox-field-group">
+	<li class="simple-fields-metabox-field-group <?php echo $field_group_css ?>">
 		<?php // must use this "added"-thingie do be able to track added field group that has no added values (like unchecked checkboxes, that we can't detect ?>
 		<input type="hidden" name="simple_fields_fieldgroups[<?php echo $field_group_id ?>][added][<?php echo $num_in_set ?>]" value="1" />
 		
@@ -466,7 +467,10 @@ function simple_fields_meta_box_output_one_field_group($field_group_id, $num_in_
 		}
 		?>
 		<?php
-				
+		
+		// Output content for each field in this fieldgroup
+		// LI = fieldgroup
+		// DIV = field
 		foreach ($current_field_group["fields"] as $field) {
 			
 			if ($field["deleted"]) { continue; }
@@ -474,6 +478,7 @@ function simple_fields_meta_box_output_one_field_group($field_group_id, $num_in_
 			$field_id = $field["id"];
 			$field_unique_id = "simple_fields_fieldgroups_{$field_group_id}_{$field_id}_{$num_in_set}";
 			$field_name = "simple_fields_fieldgroups[$field_group_id][$field_id][$num_in_set]";
+			$field_class = "simple-fields-fieldgroups-field-{$field_group_id}-{$field_id}";
 
 			$custom_field_key = "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_{$field_id}_numInSet_{$num_in_set}";
 			$saved_value = get_post_meta($post_id, $custom_field_key, true); // empty string if does not exist
@@ -483,10 +488,8 @@ function simple_fields_meta_box_output_one_field_group($field_group_id, $num_in_
 				$description = sprintf("<div class='simple-fields-metabox-field-description'>%s</div>", esc_html($field["description"]));
 			}
 			
-			// echo "<pre>";print_r($field);echo "</pre>";
-			
 			?>
-			<div class="simple-fields-metabox-field">
+			<div class="simple-fields-metabox-field <?php echo $field_class ?>">
 				<?php
 				// different output depending on field type
 				if ("checkbox" == $field["type"]) {
