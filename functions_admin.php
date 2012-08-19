@@ -1,18 +1,5 @@
 <?php
 
-/**
- * return an array of the post types that we have set up post connectors for
- * @param return array
- */
-function simple_fields_post_connector_attached_types() {
-	$post_connectors = simple_fields_get_post_connectors();
-	$arr_post_types = array();
-	foreach ($post_connectors as $one_post_connector) {
-		$arr_post_types = array_merge($arr_post_types, (array) $one_post_connector["post_types"]);
-	}
-	$arr_post_types = array_unique($arr_post_types);
-	return $arr_post_types;
-}
 
 /**
  * @return array
@@ -448,7 +435,7 @@ function simple_fields_options() {
 								<?php
 								$arr_post_connectors = simple_fields_get_post_connectors_for_post_type($post_type);
 								if ($arr_post_connectors) {
-									$selected_post_type_default = simple_fields_get_default_connector_for_post_type($post_type);
+									$selected_post_type_default = $sf->get_default_connector_for_post_type($post_type);
 									?>
 									<select name="simple_fields_save-post_type_connector">
 										<option <?php echo ($selected_post_type_default==="__none__") ? " selected='selected' " : "" ?> value="__none__"><?php _e('No post connector', 'simple-fields') ?></option>
@@ -1018,7 +1005,7 @@ function simple_fields_options() {
 						$one_post_type_info = get_post_type_object($one_post_type);
 						if (!in_array($one_post_type, $arr_post_types_to_ignore)) {
 
-							$default_connector = simple_fields_get_default_connector_for_post_type($one_post_type);
+							$default_connector = $sf->get_default_connector_for_post_type($one_post_type);
 							switch ($default_connector) {
 								case "__none__":
 									$default_connector_str = __('Default is to use <em>no connector</em>', 'simple-fields');

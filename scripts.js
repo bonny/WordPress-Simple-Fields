@@ -360,6 +360,7 @@ var simple_fields_tinymce_iframes = new Array;
 	// field type post
 	// popup a dialog where the user can choose  the post to attach
 	$("a.simple-fields-metabox-field-post-select").live("click", function(e) {
+
 		e.preventDefault();
 		
 		var a = $(this);
@@ -374,12 +375,7 @@ var simple_fields_tinymce_iframes = new Array;
 			dialogClass: 'wp-dialog',
 			zIndex: 300000,
 			open: function(event, ui) {
-				//console.log("event", event);
-				//console.log("ui", ui);
-				//console.log("originLink", $(this).data("originLink"));
 				var originLink = $($(this).data("originLink"));
-				//console.log(enabled_post_types);
-				//var select_type = $("div.simple-fields-meta-box-field-group-field-type-post-dialog-select-type");
 				arr_enabled_post_types = enabled_post_types.split(",");
 				$(this).text("Loading...").load(ajaxurl, {
 					"action": "simple_fields_field_type_post_dialog_load",
@@ -389,15 +385,23 @@ var simple_fields_tinymce_iframes = new Array;
 		});
 
 	});
+	
+	/**
+	 * Post type dialog: click on cancel link
+	 * Close the dialog
+	 */
 	$(".simple-fields-postdialog-link-cancel").live("click", function(e) {
 		e.preventDefault();
 		$("div.simple-fields-meta-box-field-group-field-type-post-dialog").dialog("close");
 	});
 	
-	// in dialog: click on post type
+	/**
+	 * in dialog: click on post type = show posts of that type
+	 */
 	$(".simple-fields-meta-box-field-group-field-type-post-dialog-post-types a").live("click", function(e) {
 
 		e.preventDefault();
+
 		var a = $(this);
 		var dialog = $("div.simple-fields-meta-box-field-group-field-type-post-dialog");
 		var originLink = dialog.data("originLink");
@@ -413,7 +417,9 @@ var simple_fields_tinymce_iframes = new Array;
 
 	});
 	
-	// in dialog: click on post = update input in field group
+	/** 
+	 * in dialog: click on a post = update input in field group and then close dialog
+	 */
 	$(".simple-fields-meta-box-field-group-field-type-post-dialog-post-posts a").live("click", function(e) {
 		
 		e.preventDefault();
@@ -430,12 +436,13 @@ var simple_fields_tinymce_iframes = new Array;
 		div.find(".simple-fields-metabox-field-post-clear").show();
 		div.find(".simple-fields-field-type-post-postName").show();
 
-		
 		dialog.dialog("close");
 		
 	});
 	
-	// clear post id and name
+	/** 
+	 * Field type post: link clear = clear post id and name
+	 */
 	$(".simple-fields-metabox-field-post-clear").live("click", function(e) {
 		e.preventDefault();
 		var a = $(this);
