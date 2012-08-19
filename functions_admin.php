@@ -14,6 +14,9 @@ function simple_fields_post_connector_attached_types() {
 	return $arr_post_types;
 }
 
+/**
+ * @return array
+ */
 function simple_fields_get_post_connectors_for_post_type($post_type) {
 
 	$arr_post_connectors = simple_fields_get_post_connectors();
@@ -34,6 +37,17 @@ function simple_fields_get_post_connectors_for_post_type($post_type) {
 function simple_fields_get_post_connectors() {
 	$connectors = get_option("simple_fields_post_connectors");
 	if ($connectors === FALSE) $connectors = array();
+
+	// calculate number of active field groups
+	// @todo: check this a bit more, does not seem to be any deleted groups. i thought i saved the deletes ones to, but with deleted flag set
+	foreach ($connectors as $one_connector) {
+		$num_fields_in_group = 0;
+		foreach ($one_connector["field_groups"] as $one_group) {
+			if (!$one_group["deleted"]) $num_fields_in_group++;
+		}
+		$connectors[$one_connector["id"]]["field_groups_count"] = $num_fields_in_group;
+	}
+
 	return $connectors;
 }
 
@@ -44,6 +58,16 @@ function simple_fields_get_post_connectors() {
 function simple_fields_get_field_groups() {
 	$field_groups = get_option("simple_fields_groups");
 	if ($field_groups === FALSE) $field_groups = array();
+	
+	// Calculate the number of active fields
+	foreach ($field_groups as & $one_group) {
+		$num_active_fields = 0;
+		foreach ($one_group["fields"] as $one_field) {
+			if (!$one_field["deleted"]) $num_active_fields++;
+		}
+		$one_group["fields_count"] = $num_active_fields;
+	}
+	
 	return $field_groups;
 }
 
@@ -231,7 +255,8 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 	if (isset($new_post_connector["field_groups"]) && is_array($new_post_connector["field_groups"]) && !empty($new_post_connector["field_groups"])) {
 		$field_group_connectors = array();
 		$field_groups = simple_fields_get_field_groups();
-		$field_group_connector_defaults = array("id" => "",
+		$field_group_connector_defaults = array(
+							"id" => "",
 							"key" => "",
 							"name" => "",
 							"deleted" => 0,
@@ -379,7 +404,8 @@ function simple_fields_options() {
 
 			<h3>Support</h3>
 			<p>If you have any problems with this plugins please check out the <a href="http://wordpress.org/tags/simple-fields?forum_id=10">support forum</a>.</p>
-						
+			<p>You can <a href="https://github.com/bonny/WordPress-Simple-Fields">follow the development of this plugin at GitHub</a>.</p>
+									
 		</div>
 
 	<div class="simple-fields-settings-wrap">
@@ -925,18 +951,11 @@ function simple_fields_options() {
 					foreach ($field_groups as $oneFieldGroup) {
 						if ($oneFieldGroup["id"] && !$oneFieldGroup["deleted"]) {
 							
-							// calc number of existing, non deleted, fields @todo: add to array
-							$num_fields_in_group = 0;
-							foreach ($oneFieldGroup["fields"] as $one_field) {
-								if ($one_field["deleted"]) continue;
-								$num_fields_in_group++;
-							}
-							
 							echo "<li>";
 							echo "<a href='" . EASY_FIELDS_FILE . "&amp;action=edit-field-group&amp;group-id=$oneFieldGroup[id]'>$oneFieldGroup[name]</a>";
-							if ($num_fields_in_group) {
-								$format = $oneFieldGroup["repeatable"] ? _n('One added field, repeatable', '%d added fields, repeatable', $num_fields_in_group) : _n('One added field', '%d added fields', $num_fields_in_group);
-								echo "<br>" . __( sprintf($format, $num_fields_in_group) );
+							if ($oneFieldGroup["fields_count"]) {
+								$format = $oneFieldGroup["repeatable"] ? _n('One added field, repeatable', '%d added fields, repeatable', $oneFieldGroup["fields_count"]) : _n('One added field', '%d added fields', $oneFieldGroup["fields_count"]);
+								echo "<br>" . __( sprintf($format, $oneFieldGroup["fields_count"]) );
 							}
 							echo "</li>";
 						}
@@ -964,18 +983,12 @@ function simple_fields_options() {
 								continue;
 							}
 
-							// calculate number of non-deleted added field groups @todo: add to array
-							$num_of_added_field_groups = 0;
-							foreach ($one_post_connector["field_groups"] as $one_field_group) {
-								if (!$one_field_group["deleted"]) $num_of_added_field_groups++;
-							}
-
 							?>
 							<li>
 								<a href="<?php echo EASY_FIELDS_FILE ?>&amp;action=edit-post-connector&amp;connector-id=<?php echo $one_post_connector["id"] ?>"><?php echo $one_post_connector["name"] ?></a>
 								<?php
-								if ($num_of_added_field_groups) {
-									echo "<br>" . sprintf( _n('One added field group', '%d added field groups', $num_of_added_field_groups), $num_of_added_field_groups );
+								if ($one_post_connector["field_groups_count"]) {
+									echo "<br>" . sprintf( _n('One added field group', '%d added field groups', $one_post_connector["field_groups_count"]), $one_post_connector["field_groups_count"] );
 								}
 								?>
 							</li>

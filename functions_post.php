@@ -27,20 +27,7 @@ function sf_d($var) {
  */
 add_action('wp_ajax_simple_fields_field_type_post_dialog_load', 'simple_fields_field_type_post_dialog_load');
 function simple_fields_field_type_post_dialog_load() {
-	//echo "<pre>";print_r($_POST); 
-	/*
-	Array
-	(
-	    [action] => simple_fields_field_type_post_dialog_load
-	    [arr_enabled_post_types] => Array
-	        (
-	            [0] => post
-	            [1] => page
-	            [2] => feedback
-	        )
-	
-	)
-	*/
+
 	$arr_enabled_post_types = (array) $_POST["arr_enabled_post_types"];
 	$additional_arguments = $_POST["additional_arguments"];
 	$existing_post_types = get_post_types(NULL, "objects");
@@ -146,7 +133,9 @@ function simple_fields_post_dbx_post_sidebar() {
 }
 
 /**
+ * In file dialog:
  * Change "insert into post" to something better
+ * 
  * Code inspired by/gracefully stolen from
  * http://mondaybynoon.com/2010/10/12/attachments-1-5/#comment-27524
  */
@@ -927,7 +916,6 @@ function simple_fields_get_selected_connector_for_post($post) {
 	$connector_to_use = null;
 	if (!$post->ID) {
 		// no id (new post), use default for post type
-		// @todo: can this happen in wp3 btw? all new posts are assigned id
 		$connector_to_use = simple_fields_get_default_connector_for_post_type($post_type);
 	} elseif ($post->ID) {
 		// get saved connector for post

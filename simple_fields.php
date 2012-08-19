@@ -7,7 +7,6 @@ Version: 0.x
 Author: Pär Thernström
 Author URI: http://eskapism.se/
 License: GPL2
-
 */
 
 /*  Copyright 2010  Pär Thernström (email: par.thernstrom@gmail.com)
@@ -36,6 +35,11 @@ load_plugin_textdomain( 'simple-fields', null, basename(dirname(__FILE__)).'/lan
 class simple_fields {
 
 	const DEBUG_ENABLED = TRUE; // set to true to enable some debug output
+	
+	public 
+		// Looks something like this: "Simple-Fields-GIT/simple_fields.php"
+		$plugin_foldername_and_filename;
+		
 
 	/**
 	 * Init is where we setup actions and filers and loads stuff and a little bit of this and that
@@ -43,12 +47,14 @@ class simple_fields {
 	 */
 	function init() {
 
+		define( "EASY_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
+		define( "EASY_FIELDS_NAME", "Simple Fields");
+		define( "EASY_FIELDS_VERSION", "0.x");
+
 		require( dirname(__FILE__) . "/functions_admin.php" );
 		require( dirname(__FILE__) . "/functions_post.php" );
 
-		define( "EASY_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
-		define( "EASY_FIELDS_NAME", "Simple Fields");
-		define( "EASY_FIELDS_VERSION", "0.5");
+		$this->plugin_foldername_and_filename = basename(dirname(__FILE__)) . "/" . basename(__FILE__);
 
 		// Actions
 		add_action( 'admin_init', array($this, 'admin_init') );
@@ -143,8 +149,7 @@ class simple_fields {
 	 */
 	function set_plugin_row_meta($links, $file) {
 
-		$plugin_plugin_path_and_filename = basename(dirname(__FILE__)) . "/" . basename(__FILE__);
-		if ($file == $plugin_plugin_path_and_filename) {
+		if ($file == $this->plugin_foldername_and_filename) {
 			return array_merge(
 				$links,
 				array( sprintf( '<a href="options-general.php?page=%s">%s</a>', "simple-fields-options", __('Settings') ) )
@@ -156,7 +161,8 @@ class simple_fields {
 
 	
 	/**
-	 * hide some things in the file browser to make it more clean and user friendly
+	 * File browsre:
+	 * hide some things there to make it more clean and user friendly
 	 */
 	function admin_head_select_file() {
 	
@@ -182,5 +188,6 @@ class simple_fields {
 
 }
 
+// Boot it up!
 $sf = new simple_fields();
 $sf->init();
