@@ -51,6 +51,7 @@ class simple_fields {
 		define( "EASY_FIELDS_NAME", "Simple Fields");
 		define( "EASY_FIELDS_VERSION", "0.x");
 
+		require( dirname(__FILE__) . "/functions.php" );
 		require( dirname(__FILE__) . "/functions_admin.php" );
 		require( dirname(__FILE__) . "/functions_post.php" );
 
@@ -67,11 +68,11 @@ class simple_fields {
 		// Filters
 		add_filter( 'plugin_row_meta', array($this, 'set_plugin_row_meta'), 10, 2 );
 
-		add_filter( 'media_send_to_editor', 'simple_fields_media_send_to_editor', 15, 2 );
-		add_filter( 'media_upload_tabs', 'simple_fields_media_upload_tabs', 15);
-		add_filter( 'media_upload_form_url', 'simple_fields_media_upload_form_url');
+		add_filter( 'media_send_to_editor', array($this, 'media_send_to_editor'), 15, 2 );
+		add_filter( 'media_upload_tabs', array($this, 'media_upload_tabs'), 15 );
+		add_filter( 'media_upload_form_url', array($this, 'media_upload_form_url') );
 		add_action( 'admin_footer', array($this, 'admin_footer') );
-		add_action( 'admin_init', 'simple_fields_post_admin_init' );
+		add_action( 'admin_init', array($this,'post_admin_init') );
 		add_action( 'dbx_post_sidebar', array($this, 'post_dbx_post_sidebar') );
 
 		add_action( 'save_post', array($this, 'save_postdata') );
@@ -774,9 +775,9 @@ class simple_fields {
 			if (in_array($post_type, $arr_post_types)) {
 				
 				// general meta box to select fields for the post
-				add_meta_box('simple-fields-post-edit-side-field-settings', 'Simple Fields', 'simple_fields_edit_post_side_field_settings', $post_type, 'side', 'low');
+				add_meta_box('simple-fields-post-edit-side-field-settings', 'Simple Fields', array($this, 'edit_post_side_field_settings'), $post_type, 'side', 'low');
 				
-				$connector_to_use = simple_fields_get_selected_connector_for_post($post);
+				$connector_to_use = $sf->get_selected_connector_for_post($post);
 				
 				// get connector to use for this post
 				$post_connectors = $sf->get_post_connectors();
@@ -933,6 +934,297 @@ class simple_fields {
 		}
 		
 		return $field_groups;
+	}
+
+
+	/**
+	 * meta box in sidebar in post edit screen
+	 * let user select post connector to use for current post
+	 */
+	function edit_post_side_field_settings() {
+		
+		global $post, $sf;
+		
+		$arr_connectors = simple_fields_get_post_connectors_for_post_type($post->post_type);
+		$connector_default = $sf->get_default_connector_for_post_type($post->post_type);
+		$connector_selected = $sf->get_selected_connector_for_post($post);
+	
+		// $connector_selected returns the id of the connector to use, yes, but we want the "real" connector, not the id of the inherited or so
+		// this will be empty if this is a new post and default connector is __inherit__
+		// if this is empty then use connector_selected. this may happen in post is new and not saved
+		$saved_connector_to_use = get_post_meta($post->ID, "_simple_fields_selected_connector", true);
+		if (empty($saved_connector_to_use)) {
+			$saved_connector_to_use = $connector_default;
+		}
+		/*
+		echo "<br>saved_connector_to_use: $saved_connector_to_use";
+		echo "<br>connector_selected: $connector_selected";
+		echo "<br>connector_default: $connector_default";
+		on parent post we can use simple_fields_get_selected_connector_for_post($post) to get the right one?
+		can't use that function on the current post, because it won't work if we don't acually have inherit
+		confused? I AM!
+		*/
+		
+		// get name of inherited post connector
+		$parents = get_post_ancestors($post);
+		$str_inherit_parent_connector_name = __('(no parent found)', 'simple-fields');
+		if (empty($parents)) {
+		} else {
+			$post_parent = get_post($post->post_parent);
+			$parent_selected_connector = $sf->get_selected_connector_for_post($post_parent);
+			$str_parent_connector_name = "";
+			if ($parent_selected_connector)
+			foreach ($arr_connectors as $one_connector) {
+				if ($one_connector["id"] == $parent_selected_connector) {
+					$str_parent_connector_name = $one_connector["name"];
+					break;
+				}
+			}
+			if ($str_parent_connector_name) {
+				$str_inherit_parent_connector_name = "({$str_parent_connector_name})";
+			}
+		}
+		
+		?>
+		<div class="inside">
+			<div>
+				<select name="simple_fields_selected_connector" id="simple-fields-post-edit-side-field-settings-select-connector">
+					<option <?php echo ($saved_connector_to_use == "__none__") ? " selected='selected' " : "" ?> value="__none__"><?php _e('None', 'simple-fields') ?></option>
+					<option <?php echo ($saved_connector_to_use == "__inherit__") ? " selected='selected' " : "" ?> value="__inherit__"><?php _e('Inherit from parent', 'simple-fields') ?>
+						<?php
+						echo $str_inherit_parent_connector_name;
+						?>
+					</option>
+					<?php foreach ($arr_connectors as $one_connector) : ?>
+						<?php if ($one_connector["deleted"]) { continue; } ?>
+						<option <?php echo ($saved_connector_to_use == $one_connector["id"]) ? " selected='selected' " : "" ?> value="<?php echo $one_connector["id"] ?>"><?php echo $one_connector["name"] ?></option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+			<div id="simple-fields-post-edit-side-field-settings-select-connector-please-save" class="hidden">
+				<p><?php _e('Save post to switch to selected fields.', 'simple-fields') ?></p>
+			</div>
+			<div>
+				<p><a href="#" id="simple-fields-post-edit-side-field-settings-show-keys"><?php _e('Show custom field keys', 'simple-fields') ?></a></p>
+			</div>
+		</div>
+		<?php
+	} // function 
+
+	/**
+	 * get selected post connector for a post
+	 * @param object $post
+	 * @return id or string __none__
+	 */
+	function get_selected_connector_for_post($post) {
+		/*
+		om sparad connector finns för denna artikel, använd den
+		om inte sparad connector, använd default
+		om sparad eller default = inherit, leta upp connector för parent post
+		*/
+		#d($post);
+		
+		global $sf;
+		
+		$post_type = $post->post_type;
+		$connector_to_use = null;
+		if (!$post->ID) {
+			// no id (new post), use default for post type
+			$connector_to_use = $sf->get_default_connector_for_post_type($post_type);
+		} elseif ($post->ID) {
+			// get saved connector for post
+			$connector_to_use = get_post_meta($post->ID, "_simple_fields_selected_connector", true);
+			#var_dump($connector_to_use);
+			if ($connector_to_use == "") {
+				// no previous post connector saved, use default for post type
+				$connector_to_use = $sf->get_default_connector_for_post_type($post_type);
+			}
+		}
+		
+		// $connector_to_use is now a id or __none__ or __inherit__
+	
+		// if __inherit__, get connector from post_parent
+		if ("__inherit__" == $connector_to_use && $post->post_parent > 0) {
+			$parent_post_id = $post->post_parent;
+			$parent_post = get_post($parent_post_id);
+			$connector_to_use = $sf->get_selected_connector_for_post($parent_post);
+		} elseif ("__inherit__" == $connector_to_use && 0 == $post->post_parent) {
+			// already at the top, so inherit should mean... __none__..? right?
+			// hm.. no.. then the wrong value is selected in the drop down.. hm...
+			#$connector_to_use = "__none__";
+		}
+		
+		// if selected connector is deleted, then return none
+		$post_connectors = $sf->get_post_connectors();
+		if (isset($post_connectors[$connector_to_use]["deleted"]) && $post_connectors[$connector_to_use]["deleted"]) {
+			$connector_to_use = "__none__";
+		}
+	
+		return $connector_to_use;
+	
+	} // function get_selected_connector_for_post
+
+
+	/**
+	 * Code from Admin Menu Tree Page View
+	 */
+	function get_pages($args) {
+	
+		global $sf;
+	
+		$defaults = array(
+	    	"post_type" => "page",
+			"xparent" => "0",
+			"xpost_parent" => "0",
+			"numberposts" => "-1",
+			"orderby" => "menu_order",
+			"order" => "ASC",
+			"post_status" => "any"
+		);
+		$args = wp_parse_args( $args, $defaults );
+		$pages = get_posts($args);
+	
+		$output = "";
+		$str_child_output = "";
+		foreach ($pages as $one_page) {
+			$edit_link = get_edit_post_link($one_page->ID);
+			$title = get_the_title($one_page->ID);
+			$title = esc_html($title);
+					
+			$class = "";
+			if (isset($_GET["action"]) && $_GET["action"] == "edit" && isset($_GET["post"]) && $_GET["post"] == $one_page->ID) {
+				$class = "current";
+			}
+	
+			// add css if we have childs
+			$args_childs = $args;
+			$args_childs["parent"] = $one_page->ID;
+			$args_childs["post_parent"] = $one_page->ID;
+			$args_childs["child_of"] = $one_page->ID;
+			$str_child_output = $sf->get_pages($args_childs);
+			
+			$output .= "<li class='$class'>";
+			$output .= "<a href='$edit_link' data-post-id='".$one_page->ID."'>";
+			$output .= $title;
+			$output .= "</a>";
+	
+			// add child articles
+			$output .= $str_child_output;
+			
+			$output .= "</li>";
+		}
+		
+		// if this is a child listing, add ul
+		if (isset($args["child_of"]) && $args["child_of"] && $output != "") {
+			$output = "<ul class='simple-fields-tree-page-tree_childs'>$output</ul>";
+		}
+		
+		return $output;
+	}
+	
+	/**
+	 * used from file selector popup
+	 * send the selected file to simple fields
+	 */
+	function media_send_to_editor($html, $id) {
+	
+		parse_str($_POST["_wp_http_referer"], $arr_postinfo);
+	
+		// only act if file browser is initiated by simple fields
+		if (isset($arr_postinfo["simple_fields_action"]) && $arr_postinfo["simple_fields_action"] == "select_file") {
+	
+			// add the selected file to input field with id simple_fields_file_field_unique_id
+			$simple_fields_file_field_unique_id = $arr_postinfo["simple_fields_file_field_unique_id"];
+			$file_id = (int) $id;
+			
+			$image_thumbnail = wp_get_attachment_image_src( $file_id, 'thumbnail', true );
+			$image_thumbnail = $image_thumbnail[0];
+			$image_html = "<img src='$image_thumbnail' alt='' />";
+			$file_name = get_the_title($file_id);
+			$post_file = get_post($file_id);
+			$post_title = $post_file->post_title;
+			$post_title = esc_html($post_title);
+			$post_title = utf8_decode($post_title);
+			$file_name = rawurlencode($post_title);
+	
+			?>
+			<script>
+				var win = window.dialogArguments || opener || parent || top;
+				var file_id = <?php echo $file_id ?>;
+				win.jQuery("#<?php echo $simple_fields_file_field_unique_id ?>").val(file_id);
+				var sfmff = win.jQuery("#<?php echo $simple_fields_file_field_unique_id ?>").closest(".simple-fields-metabox-field-file");
+				sfmff.find(".simple-fields-metabox-field-file-selected-image").html("<?php echo $image_html ?>").show();
+				sfmff.closest(".simple-fields-metabox-field").find(".simple-fields-metabox-field-file-selected-image-name").html(unescape("<?php echo $file_name?>")).show();
+				
+				// show clear and edit-links
+				//var url = ajaxurl.replace(/admin-ajax.php$/, "") + "media.php?attachment_id="+file_id+"&action=edit";
+				var url = "<?php echo admin_url("media.php?attachment_id={$file_id}&action=edit") ?>";
+	
+				sfmff.find(".simple-fields-metabox-field-file-edit").attr("href", url).show();
+				sfmff.find(".simple-fields-metabox-field-file-clear").show();
+				
+				// close popup
+				win.tb_remove();
+			</script>
+			<?php
+			exit;
+		} else {
+			return $html;
+		}
+	
+	}
+	
+
+	/**
+	 * if we have simple fields args in GET, make sure our simple fields-stuff are added to the form
+	 */
+	function media_upload_form_url($url) {
+	
+		foreach ($_GET as $key => $val) {
+			if (strpos($key, "simple_fields_") === 0) {
+				$url = add_query_arg($key, $val, $url);
+			}
+		}
+		return $url;
+	
+	}
+
+
+	/**
+	 * remove gallery and remote url tab in file select
+	 * also remove some
+	 */
+	function media_upload_tabs($arr_tabs) {
+	
+		if ( (isset($_GET["simple_fields_action"]) || isset($_GET["simple_fields_action"]) ) && ($_GET["simple_fields_action"] == "select_file" || $_GET["simple_fields_action"] == "select_file_for_tiny") ) {
+			unset($arr_tabs["gallery"], $arr_tabs["type_url"]);
+		}
+	
+		return $arr_tabs;
+	}
+	
+
+	
+	/**
+	 * In file dialog:
+	 * Change "insert into post" to something better
+	 * 
+	 * Code inspired by/gracefully stolen from
+	 * http://mondaybynoon.com/2010/10/12/attachments-1-5/#comment-27524
+	 */
+	function post_admin_init() {
+		if (isset($_GET["simple_fields_action"]) && $_GET["simple_fields_action"] == "select_file") {
+			add_filter('gettext', array($this, 'hijack_thickbox_text'), 1, 3);
+		}
+	}
+	
+	function hijack_thickbox_text($translated_text, $source_text, $domain) {
+		if (isset($_GET["simple_fields_action"]) && $_GET["simple_fields_action"] == "select_file") {
+			if ('Insert into Post' == $source_text) {
+				return __('Select', 'simple_fields' );
+			}
+		}
+		return $translated_text;
 	}
 
 
