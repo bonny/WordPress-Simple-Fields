@@ -372,20 +372,12 @@ function simple_fields_options() {
 			<p>
 				I develop this plugin mostly on my spare time. Please consider <a href="http://eskapism.se/sida/donate/">donating</a>
 				or <a href="https://flattr.com/thing/116510/Simple-Fields">Flattr</a>
-				to support further development.
+				to keep the development going.
 			</p>
 
 			<h3>Support</h3>
 			<p>If you have any problems with this plugins please check out the <a href="http://wordpress.org/tags/simple-fields?forum_id=10">support forum</a>.</p>
-			
-			<h3>More CMS related plugins</h3>
-			<p>These are some more plugins that enhance the CMS functionality of WordPress. Please check them out!</p>
-			<ul>
-				<li><a href="http://wordpress.org/extend/plugins/cms-tree-page-view/">CMS Tree Page View</a></li>
-				<li><a href="http://wordpress.org/extend/plugins/admin-menu-tree-page-view/">Admin Menu Tree Page View</a></li>
-				<li><a href="http://wordpress.org/extend/plugins/simple-history/">Simple History</a></li>
-			</ul>
-			
+						
 		</div>
 
 	<div class="simple-fields-settings-wrap">
