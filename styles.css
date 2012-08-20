@@ -42,6 +42,15 @@ ul.simple-fields-edit-field-groups-added-fields li:nth-child(odd) {
 .simple-fields-field-group-one-field-row-description {
 }
 
+.simple-fields-field-group-one-field-row p input[type=text],
+.simple-fields-field-group-one-field-row p textarea
+{
+	width: 100%;
+}
+.simple-fields-field-group-one-field-row p textarea {
+	height: 8em;
+}
+
 div.delete a {
 	color: #BC0B0B;
 }

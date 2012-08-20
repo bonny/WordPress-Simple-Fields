@@ -1351,22 +1351,29 @@ class simple_fields {
 				($field_type == $one_field_type->key) ? " selected " : ""
 			);
 			// xxx
+
 			$div_class  = "simple-fields-field-group-one-field-row ";
 			$div_class .= "simple-fields-field-type-options ";
 			$div_class .= "simple-fields-field-type-options-" . $one_field_type->key . " ";
 			$div_class .= ($field_type == $one_field_type->key) ? "" : " hidden ";
 			
-			$field_options_name	= "field[$fieldID][options][" . $one_field_type->key . "]";
 			$field_options_id 	= "field_{$fieldID}_options_" . $one_field_type->key . "";
+			$field_options_name	= "field[$fieldID][options][" . $one_field_type->key . "]";
+			$one_field_type->set_options_base_id($field_options_id);
+			$one_field_type->set_options_base_name($field_options_name);
 			
 			$registred_field_types_output_options .= sprintf(
 				'
 					<div class="%1$s">
-						%2$s
+						<!-- <fieldset> 
+							<legend>Options</legend>
+						-->
+							%2$s
+						<!-- </fieldset> -->
 					</div>
 				', 
 				$div_class, 
-				$one_field_type->options_output($field_options_name, $field_options_id)
+				$one_field_type->options_output(array())
 			);
 
 		}
@@ -2377,6 +2384,12 @@ class simple_fields {
  
 class simple_fields_field {
 
+	private
+		// Variables used as base when outputing form fields on options page
+		$options_base_id,
+		$options_base_name
+		;
+
 	function __construct() {
 	}
 	function get_field_id() {}
@@ -2388,6 +2401,19 @@ class simple_fields_field {
 	function get_value() {}
 	function set_value() {}
 	
+	function set_options_base_id($id) {
+		$this->options_base_id = $id;
+	}
+	function set_options_base_name($name) {
+		$this->options_base_name = $name;
+	}
+	function get_options_id($name) {
+		return $this->options_base_id . "_$name";
+	}
+	function get_options_name($name) {
+		return $this->options_base_name . "[$name]";
+	}
+
 }
 
 // Make sure simple fields are loaded before trying to instantiate class that extends simple_fields_field
@@ -2398,36 +2424,81 @@ add_action("plugins_loaded", function() {
 	class simple_fields_field_maps extends simple_fields_field {
 	
 		public
-			$key = "maps", // unique key for this field type. 
+			$key = "fieldExample", // unique key for this field type. 
 						   // just a-z, no spaces or funky stuff
-			$name = "Google Maps",
-			$description = "Adds a Google Maps-field",
+			$name = "A new example field",
+			$description = "This is an example field. Check out it's source!",
 			$options = array()	// General settings for field type
 							  	// used in options screen
 			;
-	
+		
 		function __construct() {
 			parent::__construct();
 		}
 		
-		function options_output($field_options_name, $field_options_id) {
-			// field[{$fieldID}][type_checkbox_options][checked_by_default]
-			// 			$out .= "<input type='checkbox' name='field[{$fieldID}][type_date_options][use_time]' " . (($field_type_date_option_use_time) ? " checked='checked'" : "") . " value='1' /> ".__('Also show time', 'simple-fields');
-
-			$output = sprintf(
-				'
-				<p>This is options for my field type</p>
-				<p>name for input 1:<br>%1$s</p>
-				<p>name for input 2:<br>%2$s</p>
-				<p>id for input 1:<br>%3$s</p>
-				<p>id for input 2:<br>%4$s</p>
+		function options_output($existing_vals) {
+			
+			$output = "";
+			
+			// Text field
+			$output .= sprintf('
+				<p>
+					<label for="%2$s">My text option</label>
+					<input type="text" name="%1$s" id="%2$s" value="%3$s">
+				</p>
 				',
-				$field_options_name . "[key1]",
-				$field_options_name . "[key2]",
-				$field_options_id . "_one",
-				$field_options_id . "_two"
+				$this->get_options_name("myTextOption"),
+				$this->get_options_id("myTextOption"),
+				isset($existing_vals["myTextOption"]) ? $existing_vals["myTextOption"] : "No value entered yet"
 			);
+
+			// Text area
+			$output .= sprintf('
+				<p>
+					<label for="%2$s">Textareas are fine too</label>
+					<textarea name="%1$s" id="%2$s">%3$s</textarea>
+				</p>
+				',
+				$this->get_options_name("mapsTextarea"),
+				$this->get_options_id("mapsTextarea"),
+				isset($existing_vals["mapsTextarea"]) ? $existing_vals["mapsTextarea"] : "Enter some cool text here please!"
+			);
+
+			// Checkbox
+			$output .= sprintf('
+				<p>
+					<input type="checkbox" name="%1$s" id="%2$s" %3$s>
+					Check it!
+				</p>
+				',
+				$this->get_options_name("aCheckbox"),
+				$this->get_options_id("aCheckbox"),
+				isset($existing_vals["aCheckbox"]) && $existing_vals["aCheckbox"] ? "checked" : ""
+			);
+
+			// Dropdown
+			$output .= sprintf('
+				<p>
+					<label for="%2$s">Please select something in my dropdown</label>
+					<select name="%1$s" id="%2$s">
+						<option value="">Choose ...</option>
+						<option value="val1" %3$s>Value number one</option>
+						<option value="val2" %4$s>Value number two</option>
+						<option value="val3" %5$s>Value number three</option>
+						<option value="val4" %6$s>Value number four</option>
+					</select>
+				</p>
+				',
+				$this->get_options_name("funkyDropdown"),
+				$this->get_options_id("funkyDropdown"),
+				isset($existing_vals["funkyDropdown"]) && ($existing_vals["funkyDropdown"] == "val1" ) ? "selected" : "",
+				isset($existing_vals["funkyDropdown"]) && ($existing_vals["funkyDropdown"] == "val2" ) ? "selected" : "",
+				isset($existing_vals["funkyDropdown"]) && ($existing_vals["funkyDropdown"] == "val3" ) ? "selected" : "",
+				isset($existing_vals["funkyDropdown"]) && ($existing_vals["funkyDropdown"] == "val4" ) ? "selected" : ""
+			);
+			
 			return $output;
+
 		}
 	
 	}
