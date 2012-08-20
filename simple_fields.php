@@ -55,26 +55,26 @@ class simple_fields {
 
 		$this->plugin_foldername_and_filename = basename(dirname(__FILE__)) . "/" . basename(__FILE__);
 
-		// Actions
+		// Actions and filters
 		add_action( 'admin_init', array($this, 'admin_init') );
 		add_action( 'admin_menu', array($this, "admin_menu") );
 		add_action( 'admin_head', array($this, 'admin_head') );
-		add_action( 'wp_ajax_simple_fields_field_group_add_field', array($this, 'field_group_add_field') );
 		add_action( 'admin_head', array($this, 'admin_head_select_file') );
-		add_action( 'wp_ajax_simple_fields_field_type_post_dialog_load', array($this, 'field_type_post_dialog_load') );
-		
-		// Filters
 		add_filter( 'plugin_row_meta', array($this, 'set_plugin_row_meta'), 10, 2 );
-
-		add_filter( 'media_send_to_editor', array($this, 'media_send_to_editor'), 15, 2 );
-		add_filter( 'media_upload_tabs', array($this, 'media_upload_tabs'), 15 );
-		add_filter( 'media_upload_form_url', array($this, 'media_upload_form_url') );
 		add_action( 'admin_footer', array($this, 'admin_footer') );
 		add_action( 'admin_init', array($this,'post_admin_init') );
 		add_action( 'dbx_post_sidebar', array($this, 'post_dbx_post_sidebar') );
-
 		add_action( 'save_post', array($this, 'save_postdata') );
+
+		// Hacks for media select dialog
+		add_filter( 'media_send_to_editor', array($this, 'media_send_to_editor'), 15, 2 );
+		add_filter( 'media_upload_tabs', array($this, 'media_upload_tabs'), 15 );
+		add_filter( 'media_upload_form_url', array($this, 'media_upload_form_url') );
+
+		// Ajax calls
 		add_action( 'wp_ajax_simple_fields_metabox_fieldgroup_add', array($this, 'metabox_fieldgroup_add') );
+		add_action( 'wp_ajax_simple_fields_field_type_post_dialog_load', array($this, 'field_type_post_dialog_load') );
+		add_action( 'wp_ajax_simple_fields_field_group_add_field', array($this, 'field_group_add_field') );
 		
 	}
 	
@@ -170,33 +170,6 @@ class simple_fields {
 
 	}
 
-	
-	/**
-	 * File browsre:
-	 * hide some things there to make it more clean and user friendly
-	 */
-	function admin_head_select_file() {
-	
-		// Only output this css when we are showing a file dialog for simple fields
-		if (isset($_GET["simple_fields_action"]) && $_GET["simple_fields_action"] == "select_file") {
-			?>
-			<style type="text/css">
-				.wp-post-thumbnail,
-				tr.image_alt,
-				tr.post_title,
-				tr.align,
-				tr.image-size,
-				tr.post_excerpt,
-				tr.url,
-				tr.post_content
-				 {
-					display: none;
-				}
-			</style>
-			<?php
-		}
-	}
-
 
 	/**
 	 * Return an array of the post types that we have set up post connectors for
@@ -214,7 +187,7 @@ class simple_fields {
 	 */
 	function get_post_connector_attached_types() {
 		global $sf;
-		$post_connectors = $sf->get_post_connectors();
+		$post_connectors = $this->get_post_connectors();
 		$arr_post_types = array();
 		foreach ($post_connectors as $one_post_connector) {
 			$arr_post_types = array_merge($arr_post_types, (array) $one_post_connector["post_types"]);
@@ -378,7 +351,7 @@ class simple_fields {
 		$field_group_id = (int) $_POST["field_group_id"];
 	
 		$num_in_set = "new{$simple_fields_new_fields_count}";
-		$sf->meta_box_output_one_field_group($field_group_id, $num_in_set, $post_id, true);
+		$this->meta_box_output_one_field_group($field_group_id, $num_in_set, $post_id, true);
 	
 		exit;
 	}
@@ -767,7 +740,7 @@ class simple_fields {
 		if ($post) {
 	
 			$post_type = $post->post_type;
-			$arr_post_types = $sf->get_post_connector_attached_types();
+			$arr_post_types = $this->get_post_connector_attached_types();
 			
 			// check if the post type being edited is among the post types we want to add boxes for
 			if (in_array($post_type, $arr_post_types)) {
@@ -775,13 +748,13 @@ class simple_fields {
 				// general meta box to select fields for the post
 				add_meta_box('simple-fields-post-edit-side-field-settings', 'Simple Fields', array($this, 'edit_post_side_field_settings'), $post_type, 'side', 'low');
 				
-				$connector_to_use = $sf->get_selected_connector_for_post($post);
+				$connector_to_use = $this->get_selected_connector_for_post($post);
 				
 				// get connector to use for this post
-				$post_connectors = $sf->get_post_connectors();
+				$post_connectors = $this->get_post_connectors();
 				if (isset($post_connectors[$connector_to_use])) {
 					
-					$field_groups = $sf->get_field_groups();
+					$field_groups = $this->get_field_groups();
 					$selected_post_connector = $post_connectors[$connector_to_use];
 					
 					// check if we should hide the editor, using css to keep things simple
@@ -871,7 +844,7 @@ class simple_fields {
 	        // now add them. ooooh my, this is fancy stuff.
 	        $use_defaults = null;
 	        for ($num_in_set=0; $num_in_set<$num_added_field_groups; $num_in_set++) {
-	            $sf->meta_box_output_one_field_group($post_connector_field_id, $num_in_set, $post_id, $use_defaults);  
+	            $this->meta_box_output_one_field_group($post_connector_field_id, $num_in_set, $post_id, $use_defaults);  
 	        }
 	 
 	        echo "</ul>";
@@ -883,7 +856,7 @@ class simple_fields {
 	        if ($been_saved) { $use_defaults = false; } else { $use_defaults = true; }
 	         
 	        echo "<ul>";
-	        $sf->meta_box_output_one_field_group($post_connector_field_id, 0, $post_id, $use_defaults);
+	        $this->meta_box_output_one_field_group($post_connector_field_id, 0, $post_id, $use_defaults);
 	        echo "</ul>";
 	 
 	    }
@@ -943,9 +916,9 @@ class simple_fields {
 		
 		global $post, $sf;
 		
-		$arr_connectors = $sf->get_post_connectors_for_post_type($post->post_type);
-		$connector_default = $sf->get_default_connector_for_post_type($post->post_type);
-		$connector_selected = $sf->get_selected_connector_for_post($post);
+		$arr_connectors = $this->get_post_connectors_for_post_type($post->post_type);
+		$connector_default = $this->get_default_connector_for_post_type($post->post_type);
+		$connector_selected = $this->get_selected_connector_for_post($post);
 	
 		// $connector_selected returns the id of the connector to use, yes, but we want the "real" connector, not the id of the inherited or so
 		// this will be empty if this is a new post and default connector is __inherit__
@@ -969,7 +942,7 @@ class simple_fields {
 		if (empty($parents)) {
 		} else {
 			$post_parent = get_post($post->post_parent);
-			$parent_selected_connector = $sf->get_selected_connector_for_post($post_parent);
+			$parent_selected_connector = $this->get_selected_connector_for_post($post_parent);
 			$str_parent_connector_name = "";
 			if ($parent_selected_connector)
 			foreach ($arr_connectors as $one_connector) {
@@ -1028,14 +1001,14 @@ class simple_fields {
 		$connector_to_use = null;
 		if (!$post->ID) {
 			// no id (new post), use default for post type
-			$connector_to_use = $sf->get_default_connector_for_post_type($post_type);
+			$connector_to_use = $this->get_default_connector_for_post_type($post_type);
 		} elseif ($post->ID) {
 			// get saved connector for post
 			$connector_to_use = get_post_meta($post->ID, "_simple_fields_selected_connector", true);
 			#var_dump($connector_to_use);
 			if ($connector_to_use == "") {
 				// no previous post connector saved, use default for post type
-				$connector_to_use = $sf->get_default_connector_for_post_type($post_type);
+				$connector_to_use = $this->get_default_connector_for_post_type($post_type);
 			}
 		}
 		
@@ -1045,7 +1018,7 @@ class simple_fields {
 		if ("__inherit__" == $connector_to_use && $post->post_parent > 0) {
 			$parent_post_id = $post->post_parent;
 			$parent_post = get_post($parent_post_id);
-			$connector_to_use = $sf->get_selected_connector_for_post($parent_post);
+			$connector_to_use = $this->get_selected_connector_for_post($parent_post);
 		} elseif ("__inherit__" == $connector_to_use && 0 == $post->post_parent) {
 			// already at the top, so inherit should mean... __none__..? right?
 			// hm.. no.. then the wrong value is selected in the drop down.. hm...
@@ -1053,7 +1026,7 @@ class simple_fields {
 		}
 		
 		// if selected connector is deleted, then return none
-		$post_connectors = $sf->get_post_connectors();
+		$post_connectors = $this->get_post_connectors();
 		if (isset($post_connectors[$connector_to_use]["deleted"]) && $post_connectors[$connector_to_use]["deleted"]) {
 			$connector_to_use = "__none__";
 		}
@@ -1099,7 +1072,7 @@ class simple_fields {
 			$args_childs["parent"] = $one_page->ID;
 			$args_childs["post_parent"] = $one_page->ID;
 			$args_childs["child_of"] = $one_page->ID;
-			$str_child_output = $sf->get_pages($args_childs);
+			$str_child_output = $this->get_pages($args_childs);
 			
 			$output .= "<li class='$class'>";
 			$output .= "<a href='$edit_link' data-post-id='".$one_page->ID."'>";
@@ -1119,6 +1092,25 @@ class simple_fields {
 		
 		return $output;
 	}
+
+
+	/**
+	 * File browser dialog:
+	 * hide some things there to make it more clean and user friendly
+	 */
+	function admin_head_select_file() {
+		// Only output this css when we are showing a file dialog for simple fields
+		if (isset($_GET["simple_fields_action"]) && $_GET["simple_fields_action"] == "select_file") {
+			?>
+			<style type="text/css">
+				.wp-post-thumbnail, tr.image_alt, tr.post_title, tr.align, tr.image-size,tr.post_excerpt, tr.url, tr.post_content {
+					display: none; 
+				}
+			</style>
+			<?php
+		}
+	}
+
 	
 	/**
 	 * used from file selector popup
@@ -1295,7 +1287,7 @@ class simple_fields {
 					$args = wp_parse_args( $additional_arguments, $args );
 				}
 			
-				$output = $sf->get_pages($args);
+				$output = $this->get_pages($args);
 				echo $output;
 				?>
 			</ul>
@@ -1579,7 +1571,7 @@ class simple_fields {
 	function field_group_add_field() {
 		global $sf;
 		$simple_fields_highest_field_id = (int) $_POST["simple_fields_highest_field_id"];
-		echo $sf->field_group_add_field_template($simple_fields_highest_field_id);
+		echo $this->field_group_add_field_template($simple_fields_highest_field_id);
 		exit;
 	}
 
@@ -1592,8 +1584,8 @@ class simple_fields {
 	
 		global $sf;
 	
-		$field_groups = $sf->get_field_groups();
-		$post_connectors = $sf->get_post_connectors();
+		$field_groups = $this->get_field_groups();
+		$post_connectors = $this->get_post_connectors();
 	
 		/*
 		$field_groups = get_option("SIMPLE_FIELDS_groups");
@@ -1679,9 +1671,9 @@ class simple_fields {
 								<th><?php _e('Default post connector', 'simple-fields') ?></th>
 								<td>
 									<?php
-									$arr_post_connectors = $sf->get_post_connectors_for_post_type($post_type);
+									$arr_post_connectors = $this->get_post_connectors_for_post_type($post_type);
 									if ($arr_post_connectors) {
-										$selected_post_type_default = $sf->get_default_connector_for_post_type($post_type);
+										$selected_post_type_default = $this->get_default_connector_for_post_type($post_type);
 										?>
 										<select name="simple_fields_save-post_type_connector">
 											<option <?php echo ($selected_post_type_default==="__none__") ? " selected='selected' " : "" ?> value="__none__"><?php _e('No post connector', 'simple-fields') ?></option>
@@ -1792,7 +1784,7 @@ class simple_fields {
 					update_option("simple_fields_groups", $field_groups);
 					// echo "<pre>";print_r($field_groups);echo "</pre>";
 					// we can have changed the options of a field group, so update connectors using this field group
-					$post_connectors = (array) $sf->get_post_connectors();
+					$post_connectors = (array) $this->get_post_connectors();
 					foreach ($post_connectors as $connector_id => $connector_options) {
 						if (isset($connector_options["field_groups"][$field_group_id])) {
 							// field group existed, update name
@@ -2082,7 +2074,7 @@ class simple_fields {
 										<?php
 										foreach ($field_group_in_edit["fields"] as $oneField) {
 											if (!$oneField["deleted"]) {
-												echo $sf->field_group_add_field_template($oneField["id"], $field_group_in_edit);
+												echo $this->field_group_add_field_template($oneField["id"], $field_group_in_edit);
 											}
 										}
 										?>
@@ -2121,7 +2113,7 @@ class simple_fields {
 				echo "<h3>Post Connectors</h3>\n";
 				echo "<p>Called with function <code>simple_fields_get_post_connectors()</code>";
 				echo "<pre>";
-				print_r( $sf->get_post_connectors() );
+				print_r( $this->get_post_connectors() );
 				echo "</pre>";
 	
 				echo "<hr />";
@@ -2129,7 +2121,7 @@ class simple_fields {
 				echo "<h3>Field Groups</h3>\n";
 				echo "<p>Called with function <code>simple_fields_get_field_groups()</code>";
 				echo "<pre>";
-				print_r( $sf->get_field_groups() );
+				print_r( $this->get_field_groups() );
 				echo "</pre>";
 				
 			}
@@ -2251,7 +2243,7 @@ class simple_fields {
 							$one_post_type_info = get_post_type_object($one_post_type);
 							if (!in_array($one_post_type, $arr_post_types_to_ignore)) {
 	
-								$default_connector = $sf->get_default_connector_for_post_type($one_post_type);
+								$default_connector = $this->get_default_connector_for_post_type($one_post_type);
 								switch ($default_connector) {
 									case "__none__":
 										$default_connector_str = __('Default is to use <em>no connector</em>', 'simple-fields');
@@ -2262,7 +2254,7 @@ class simple_fields {
 									default:
 										if (is_numeric($default_connector)) {
 											
-											$connector = $sf->get_connector_by_id($default_connector);
+											$connector = $this->get_connector_by_id($default_connector);
 											if ($connector !== FALSE) {
 												$default_connector_str = sprintf(__('Default is to use connector <em>%s</em>', 'simple-fields'), $connector["name"]);
 											}
@@ -2315,7 +2307,7 @@ class simple_fields {
 		
 		global $sf;
 		
-		$arr_post_connectors = $sf->get_post_connectors();
+		$arr_post_connectors = $this->get_post_connectors();
 		$arr_found_connectors = array();
 	
 		foreach ($arr_post_connectors as $one_connector) {
