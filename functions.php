@@ -12,7 +12,7 @@
 if (!function_exists("sf_d")) {
 function sf_d($var) {
 
-	echo "<pre>";
+	echo "<pre class='sf_box_debug'>";
 	if (is_array($var) || is_object($var)) {
 		print_r($var);
 	} else if( is_null($var) ) {

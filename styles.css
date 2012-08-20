@@ -76,8 +76,10 @@ simple-fields-post-connector-delete a:hover
 }
 
 .simple-fields-edit-post-connectors,
-.simple-fields-edit-field-groups {
-
+.simple-fields-post-type-defaults,
+.simple-fields-debug
+ {
+	 margin-top: 2em;
 }
 .simple-fields-edit-post-connectors {
 }
@@ -175,7 +177,7 @@ ul#simple-fields-post-connector-added-fields li {
 .simple-fields-post-type-defaults,
 .simple-fields-edit-post-connectors
  {
-	margin-top: 2.5em;
+	
 }
 
 #simple-fields-post-edit-side-field-settings-select-connector-please-save {

@@ -37,8 +37,14 @@ class simple_fields {
 	const DEBUG_ENABLED = TRUE; // set to true to enable some debug output
 	
 	public 
+
 		// Looks something like this: "Simple-Fields-GIT/simple_fields.php"
-		$plugin_foldername_and_filename;
+		$plugin_foldername_and_filename,
+	
+		// array with registred field type objects
+		$registered_field_types
+	
+	;
 		
 
 	/**
@@ -54,6 +60,7 @@ class simple_fields {
 		require( dirname(__FILE__) . "/functions.php" );
 
 		$this->plugin_foldername_and_filename = basename(dirname(__FILE__)) . "/" . basename(__FILE__);
+		$this->registered_field_types = array();
 
 		// Actions and filters
 		add_action( 'admin_init', array($this, 'admin_init') );
@@ -1305,97 +1312,128 @@ class simple_fields {
 	}
 	
 	/**
-	 * Returns the output for a new or existing field
-	 * That it: 
+	 * Returns the output for a new or existing field with all it's options
+	 * Used in options screen / admin screen
 	 */
 	function field_group_add_field_template($fieldID, $field_group_in_edit = null) {
-	$fields = $field_group_in_edit["fields"];
-	$field_name = esc_html($fields[$fieldID]["name"]);
-	$field_description = esc_html($fields[$fieldID]["description"]);
-	$field_type = $fields[$fieldID]["type"];
-	$field_deleted = (int) $fields[$fieldID]["deleted"];
-	
-	$field_type_textarea_option_use_html_editor = (int) @$fields[$fieldID]["type_textarea_options"]["use_html_editor"];
-	$field_type_checkbox_option_checked_by_default = (int) @$fields[$fieldID]["type_checkbox_options"]["checked_by_default"];
-	$field_type_radiobuttons_options = (array) @$fields[$fieldID]["type_radiobuttons_options"];
-	$field_type_dropdown_options = (array) @$fields[$fieldID]["type_dropdown_options"];
 
-	$field_type_post_options = (array) @$fields[$fieldID]["type_post_options"];
-	$field_type_post_options["enabled_post_types"] = (array) @$field_type_post_options["enabled_post_types"];
-
-	$field_type_taxonomy_options = (array) @$fields[$fieldID]["type_taxonomy_options"];
-	$field_type_taxonomy_options["enabled_taxonomies"] = (array) @$field_type_taxonomy_options["enabled_taxonomies"];
-
-	$field_type_date_options = (array) @$fields[$fieldID]["type_date_options"];
-	$field_type_date_option_use_time = @$field_type_date_options["use_time"];
-
-	$field_type_taxonomyterm_options = (array) @$fields[$fieldID]["type_taxonomyterm_options"];
-	$field_type_taxonomyterm_options["enabled_taxonomy"] = (string) @$field_type_taxonomyterm_options["enabled_taxonomy"];
-
-	// echo "<pre>field_type_post_options:"; print_r($field_type_post_options);
-	// echo "<pre>";print_r($field_type_taxonomy_options);echo "</pre>";
-	// echo "<pre>";print_r($fields[$fieldID]);echo "</pre>";
-	
-	$out = "";
-	$out .= "
-	<li class='simple-fields-field-group-one-field simple-fields-field-group-one-field-id-{$fieldID}'>
-		<div class='simple-fields-field-group-one-field-handle'></div>
-
-		<div class='simple-fields-field-group-one-field-row'>
-			<label class='simple-fields-field-group-one-field-name-label'>".__('Name', 'simple-fields')."</label>
-			<input type='text' class='regular-text simple-fields-field-group-one-field-name' name='field[{$fieldID}][name]' value='{$field_name}' />
-		</div>
+		$fields = $field_group_in_edit["fields"];
+		$field_name = esc_html($fields[$fieldID]["name"]);
+		$field_description = esc_html($fields[$fieldID]["description"]);
+		$field_type = $fields[$fieldID]["type"];
+		$field_deleted = (int) $fields[$fieldID]["deleted"];
 		
-		<div class='simple-fields-field-group-one-field-row simple-fields-field-group-one-field-row-description'>
-			<label>".__('Description', 'simple-fields')."</label>
-			<input type='text' class='regular-text' name='field[{$fieldID}][description]' value='{$field_description}' />
-		</div>
-		
-		<div class='simple-fields-field-group-one-field-row'>
-			<label>".__('Type', 'simple-fields')."</label>
-			<!-- <br /> -->
-			<select name='field[{$fieldID}][type]' class='simple-fields-field-type'>
-				<option value=''>".__('Select', 'simple-fields')."...</option>
-				<option value='text'" . (($field_type=="text") ? " selected='selected' " : "") . ">".__('Text', 'simple-fields')."</option>
-				<option value='textarea'" . (($field_type=="textarea") ? " selected='selected' " : "") . ">".__('Textarea', 'simple-fields')."</option>
-				<option value='checkbox'" . (($field_type=="checkbox") ? " selected='selected' " : "") . ">".__('Checkbox', 'simple-fields')."</option>
-				<option value='radiobuttons'" . (($field_type=="radiobuttons") ? " selected='selected' " : "") . ">".__('Radio buttons', 'simple-fields')."</option>
-				<option value='dropdown'" . (($field_type=="dropdown") ? " selected='selected' " : "") . ">".__('Dropdown', 'simple-fields')."</option>
-				<option value='file'" . (($field_type=="file") ? " selected='selected' " : "") . ">".__('File', 'simple-fields')."</option>
-				<option value='post'" . (($field_type=="post") ? " selected='selected' " : "") . ">".__('Post', 'simple-fields')."</option>
-				<option value='taxonomy'" . (($field_type=="taxonomy") ? " selected='selected' " : "") . ">".__('Taxonomy', 'simple-fields')."</option>
-				<option value='taxonomyterm'" . (($field_type=="taxonomyterm") ? " selected='selected' " : "") . ">".__('Taxonomy Term', 'simple-fields')."</option>
-				<option value='color'" . (($field_type=="color") ? " selected='selected' " : "") . ">".__('Color', 'simple-fields')."</option>
-				<option value='date'" . (($field_type=="date") ? " selected='selected' " : "") . ">".__('Date', 'simple-fields')."</option>
-				<option value='user'" . (($field_type=="user") ? " selected='selected' " : "") . ">".__('User', 'simple-fields')."</option>
-			</select>
+		$field_type_textarea_option_use_html_editor = (int) @$fields[$fieldID]["type_textarea_options"]["use_html_editor"];
+		$field_type_checkbox_option_checked_by_default = (int) @$fields[$fieldID]["type_checkbox_options"]["checked_by_default"];
+		$field_type_radiobuttons_options = (array) @$fields[$fieldID]["type_radiobuttons_options"];
+		$field_type_dropdown_options = (array) @$fields[$fieldID]["type_dropdown_options"];
+	
+		$field_type_post_options = (array) @$fields[$fieldID]["type_post_options"];
+		$field_type_post_options["enabled_post_types"] = (array) @$field_type_post_options["enabled_post_types"];
+	
+		$field_type_taxonomy_options = (array) @$fields[$fieldID]["type_taxonomy_options"];
+		$field_type_taxonomy_options["enabled_taxonomies"] = (array) @$field_type_taxonomy_options["enabled_taxonomies"];
+	
+		$field_type_date_options = (array) @$fields[$fieldID]["type_date_options"];
+		$field_type_date_option_use_time = @$field_type_date_options["use_time"];
+	
+		$field_type_taxonomyterm_options = (array) @$fields[$fieldID]["type_taxonomyterm_options"];
+		$field_type_taxonomyterm_options["enabled_taxonomy"] = (string) @$field_type_taxonomyterm_options["enabled_taxonomy"];
+	
+		// Generate output for registred field types
+		$registred_field_types_output = "";
+		$registred_field_types_output_options = "";
+		foreach ($this->registered_field_types as $one_field_type) {
 
-			<div class='simple-fields-field-group-one-field-row " . (($field_type=="text") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-text'>
+			$registred_field_types_output .= sprintf('<option %3$s value="%1$s">%2$s</option>', 
+				$one_field_type->key, 
+				$one_field_type->name, 
+				($field_type == $one_field_type->key) ? " selected " : ""
+			);
+			// xxx
+			$div_class  = "simple-fields-field-group-one-field-row ";
+			$div_class .= "simple-fields-field-type-options ";
+			$div_class .= "simple-fields-field-type-options-" . $one_field_type->key . " ";
+			$div_class .= ($field_type == $one_field_type->key) ? "" : " hidden ";
+			
+			$field_options_name	= "field[$fieldID][options][" . $one_field_type->key . "]";
+			$field_options_id 	= "field_{$fieldID}_options_" . $one_field_type->key . "";
+			
+			$registred_field_types_output_options .= sprintf(
+				'
+					<div class="%1$s">
+						%2$s
+					</div>
+				', 
+				$div_class, 
+				$one_field_type->options_output($field_options_name, $field_options_id)
+			);
+
+		}
+		
+		$out = "";
+		$out .= "
+		<li class='simple-fields-field-group-one-field simple-fields-field-group-one-field-id-{$fieldID}'>
+			<div class='simple-fields-field-group-one-field-handle'></div>
+	
+			<div class='simple-fields-field-group-one-field-row'>
+				<label class='simple-fields-field-group-one-field-name-label'>".__('Name', 'simple-fields')."</label>
+				<input type='text' class='regular-text simple-fields-field-group-one-field-name' name='field[{$fieldID}][name]' value='{$field_name}' />
 			</div>
-		</div>
-
-		<div class='simple-fields-field-group-one-field-row " . (($field_type=="textarea") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-textarea'>
-			<input type='checkbox' name='field[{$fieldID}][type_textarea_options][use_html_editor]' " . (($field_type_textarea_option_use_html_editor) ? " checked='checked'" : "") . " value='1' /> ".__('Use HTML-editor', 'simple-fields')."
-		</div>
-		";
-		
-		// date
-		$out .= "<div class='" . (($field_type=="date") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-date'>";
-		$out .= "<input type='checkbox' name='field[{$fieldID}][type_date_options][use_time]' " . (($field_type_date_option_use_time) ? " checked='checked'" : "") . " value='1' /> ".__('Also show time', 'simple-fields');
-		$out .= "</div>";
+			
+			<div class='simple-fields-field-group-one-field-row simple-fields-field-group-one-field-row-description'>
+				<label>".__('Description', 'simple-fields')."</label>
+				<input type='text' class='regular-text' name='field[{$fieldID}][description]' value='{$field_description}' />
+			</div>
+			
+			<div class='simple-fields-field-group-one-field-row'>
+				<label>".__('Type', 'simple-fields')."</label>
+				<!-- <br /> -->
+				<select name='field[{$fieldID}][type]' class='simple-fields-field-type'>
+					<option value=''>".__('Select', 'simple-fields')."...</option>
+					<option value='text'" . (($field_type=="text") ? " selected='selected' " : "") . ">".__('Text', 'simple-fields')."</option>
+					<option value='textarea'" . (($field_type=="textarea") ? " selected='selected' " : "") . ">".__('Textarea', 'simple-fields')."</option>
+					<option value='checkbox'" . (($field_type=="checkbox") ? " selected='selected' " : "") . ">".__('Checkbox', 'simple-fields')."</option>
+					<option value='radiobuttons'" . (($field_type=="radiobuttons") ? " selected='selected' " : "") . ">".__('Radio buttons', 'simple-fields')."</option>
+					<option value='dropdown'" . (($field_type=="dropdown") ? " selected='selected' " : "") . ">".__('Dropdown', 'simple-fields')."</option>
+					<option value='file'" . (($field_type=="file") ? " selected='selected' " : "") . ">".__('File', 'simple-fields')."</option>
+					<option value='post'" . (($field_type=="post") ? " selected='selected' " : "") . ">".__('Post', 'simple-fields')."</option>
+					<option value='taxonomy'" . (($field_type=="taxonomy") ? " selected='selected' " : "") . ">".__('Taxonomy', 'simple-fields')."</option>
+					<option value='taxonomyterm'" . (($field_type=="taxonomyterm") ? " selected='selected' " : "") . ">".__('Taxonomy Term', 'simple-fields')."</option>
+					<option value='color'" . (($field_type=="color") ? " selected='selected' " : "") . ">".__('Color', 'simple-fields')."</option>
+					<option value='date'" . (($field_type=="date") ? " selected='selected' " : "") . ">".__('Date', 'simple-fields')."</option>
+					<option value='user'" . (($field_type=="user") ? " selected='selected' " : "") . ">".__('User', 'simple-fields')."</option>
+					$registred_field_types_output
+				</select>
 	
+				<div class='simple-fields-field-group-one-field-row " . (($field_type=="text") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-text'>
+				</div>
+			</div>
+	
+			$registred_field_types_output_options
 
-		// connect post - select post types
-		$out .= "<div class='" . (($field_type=="post") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-post'>";
-		$out .= "<div class='simple-fields-field-group-one-field-row'>";
-		$out .= sprintf("<label>%s</label>", __('Post types to select from', 'simple-fields'));
-		//$out .= sprintf("<select name='%s'>", "field[$fieldID][type_post_options][post_type]");
-		//$out .= sprintf("<option %s value='%s'>%s</option>", (empty($field_type_post_options["post_type"]) ? " selected='selected' " : "") ,"", "Any");
-
-		// list all post types in checkboxes
-		$post_types = get_post_types(NULL, "objects");
-		$loopnum = 0;
-		foreach ($post_types as $one_post_type) {
+			<div class='simple-fields-field-group-one-field-row " . (($field_type=="textarea") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-textarea'>
+				<input type='checkbox' name='field[{$fieldID}][type_textarea_options][use_html_editor]' " . (($field_type_textarea_option_use_html_editor) ? " checked='checked'" : "") . " value='1' /> ".__('Use HTML-editor', 'simple-fields')."
+			</div>
+			";
+			
+			// date
+			$out .= "<div class='" . (($field_type=="date") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-date'>";
+			$out .= "<input type='checkbox' name='field[{$fieldID}][type_date_options][use_time]' " . (($field_type_date_option_use_time) ? " checked='checked'" : "") . " value='1' /> ".__('Also show time', 'simple-fields');
+			$out .= "</div>";
+		
+	
+			// connect post - select post types
+			$out .= "<div class='" . (($field_type=="post") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-post'>";
+			$out .= "<div class='simple-fields-field-group-one-field-row'>";
+			$out .= sprintf("<label>%s</label>", __('Post types to select from', 'simple-fields'));
+			//$out .= sprintf("<select name='%s'>", "field[$fieldID][type_post_options][post_type]");
+			//$out .= sprintf("<option %s value='%s'>%s</option>", (empty($field_type_post_options["post_type"]) ? " selected='selected' " : "") ,"", "Any");
+	
+			// list all post types in checkboxes
+			$post_types = get_post_types(NULL, "objects");
+			$loopnum = 0;
+			foreach ($post_types as $one_post_type) {
 			// skip some built in types
 			if (in_array($one_post_type->name, array("attachment", "revision", "nav_menu_item"))) {
 				continue;
@@ -1410,22 +1448,22 @@ class simple_fields {
 							);
 			$loopnum++;
 		}
-		$out .= "</div>";
-
-		$out .= "<div class='simple-fields-field-group-one-field-row'>";
-		$out .= "<label>Additional arguments</label>";
-		$out .= sprintf("<input type='text' name='%s' value='%s' />", "field[$fieldID][type_post_options][additional_arguments]", @$field_type_post_options["additional_arguments"]);
-		$out .= sprintf("<br /><span class='description'>Here you can <a href='http://codex.wordpress.org/How_to_Pass_Tag_Parameters#Tags_with_query-string-style_parameters'>pass your own parameters</a> to <a href='http://codex.wordpress.org/Class_Reference/WP_Query'>WP_Query</a>.</span>");
-		$out .= "</div>";
-		$out .= "</div>"; // whole divs that shows/hides
-
-
-		// connect taxonomy - select taxonomies
-		$out .= "<div class='" . (($field_type=="taxonomy") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-taxonomy'>";
-		$out .= sprintf("<label>%s</label>", __('Taxonomies to show in dropdown', 'simple-fields'));
-		$taxonomies = get_taxonomies(NULL, "objects");
-		$loopnum = 0;
-		foreach ($taxonomies as $one_tax) {
+			$out .= "</div>";
+	
+			$out .= "<div class='simple-fields-field-group-one-field-row'>";
+			$out .= "<label>Additional arguments</label>";
+			$out .= sprintf("<input type='text' name='%s' value='%s' />", "field[$fieldID][type_post_options][additional_arguments]", @$field_type_post_options["additional_arguments"]);
+			$out .= sprintf("<br /><span class='description'>Here you can <a href='http://codex.wordpress.org/How_to_Pass_Tag_Parameters#Tags_with_query-string-style_parameters'>pass your own parameters</a> to <a href='http://codex.wordpress.org/Class_Reference/WP_Query'>WP_Query</a>.</span>");
+			$out .= "</div>";
+			$out .= "</div>"; // whole divs that shows/hides
+	
+	
+			// connect taxonomy - select taxonomies
+			$out .= "<div class='" . (($field_type=="taxonomy") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-taxonomy'>";
+			$out .= sprintf("<label>%s</label>", __('Taxonomies to show in dropdown', 'simple-fields'));
+			$taxonomies = get_taxonomies(NULL, "objects");
+			$loopnum = 0;
+			foreach ($taxonomies as $one_tax) {
 			// skip some built in types
 			if (in_array($one_tax->name, array("attachment", "revision", "nav_menu_item"))) {
 			    continue;
@@ -1440,15 +1478,15 @@ class simple_fields {
 							);
 			$loopnum++;
 		}
-		$out .= "</div>";
-
-		// taxonomyterm - select taxonomies, like above
-		$out .= "<div class='" . (($field_type=="taxonomyterm") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-taxonomyterm'>";
-		$out .= "<div class='simple-fields-field-group-one-field-row'>";
-		$out .= sprintf("<label>%s</label>", __('Taxonomy to select terms from', 'simple-fields'));
-		$taxonomies = get_taxonomies(NULL, "objects");
-		$loopnum = 0;
-		foreach ($taxonomies as $one_tax) {
+			$out .= "</div>";
+	
+			// taxonomyterm - select taxonomies, like above
+			$out .= "<div class='" . (($field_type=="taxonomyterm") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-taxonomyterm'>";
+			$out .= "<div class='simple-fields-field-group-one-field-row'>";
+			$out .= sprintf("<label>%s</label>", __('Taxonomy to select terms from', 'simple-fields'));
+			$taxonomies = get_taxonomies(NULL, "objects");
+			$loopnum = 0;
+			foreach ($taxonomies as $one_tax) {
 			// skip some built in types
 			if (in_array($one_tax->name, array("attachment", "revision", "nav_menu_item"))) {
 			    continue;
@@ -1463,20 +1501,20 @@ class simple_fields {
 							);
 			$loopnum++;
 		}
-		$out .= "</div>";
-		
-		$out .= "<div class='simple-fields-field-group-one-field-row'>";
-		$out .= "<label>Additional arguments</label>";
-		$out .= sprintf("<input type='text' name='%s' value='%s' />", "field[$fieldID][type_taxonomyterm_options][additional_arguments]", @$field_type_taxonomyterm_options["additional_arguments"]);
-		$out .= sprintf("<br /><span class='description'>Here you can <a href='http://codex.wordpress.org/How_to_Pass_Tag_Parameters#Tags_with_query-string-style_parameters'>pass your own parameters</a> to <a href='http://codex.wordpress.org/Function_Reference/get_terms#Parameters'>get_terms()</a>.</span>");
-		$out .= "</div>";
-		
-		$out .= "</div>";
-
-		// radiobuttons
-		$radio_buttons_added = "";
-		$radio_buttons_highest_id = 0;
-		if ($field_type_radiobuttons_options) {
+			$out .= "</div>";
+			
+			$out .= "<div class='simple-fields-field-group-one-field-row'>";
+			$out .= "<label>Additional arguments</label>";
+			$out .= sprintf("<input type='text' name='%s' value='%s' />", "field[$fieldID][type_taxonomyterm_options][additional_arguments]", @$field_type_taxonomyterm_options["additional_arguments"]);
+			$out .= sprintf("<br /><span class='description'>Here you can <a href='http://codex.wordpress.org/How_to_Pass_Tag_Parameters#Tags_with_query-string-style_parameters'>pass your own parameters</a> to <a href='http://codex.wordpress.org/Function_Reference/get_terms#Parameters'>get_terms()</a>.</span>");
+			$out .= "</div>";
+			
+			$out .= "</div>";
+	
+			// radiobuttons
+			$radio_buttons_added = "";
+			$radio_buttons_highest_id = 0;
+			if ($field_type_radiobuttons_options) {
 			foreach ($field_type_radiobuttons_options as $key => $val) {
 				if (strpos($key, "radiobutton_num_") !== false && $val["deleted"] != true) {
 					// found one button in format radiobutton_num_0
@@ -1497,32 +1535,32 @@ class simple_fields {
 				}
 			}
 		}
-		$radio_buttons_highest_id++;
-		$out .= "
-			<div class='" . (($field_type=="radiobuttons") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-radiobuttons'>
-				<div>Added radio buttons</div>
-				<div class='simple-fields-field-type-options-radiobutton-checked-by-default'>".__('Default', 'simple-fields')."</div>
-				<ul class='simple-fields-field-type-options-radiobutton-values-added'>
-					$radio_buttons_added
-				</ul>
-				<div><a class='simple-fields-field-type-options-radiobutton-values-add' href='#'>+ ".__('Add radio button', 'simple-fields')."</a></div>
-				<input type='hidden' name='' class='simple-fields-field-group-one-field-radiobuttons-highest-id' value='{$radio_buttons_highest_id}' />
+			$radio_buttons_highest_id++;
+			$out .= "
+				<div class='" . (($field_type=="radiobuttons") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-radiobuttons'>
+					<div>Added radio buttons</div>
+					<div class='simple-fields-field-type-options-radiobutton-checked-by-default'>".__('Default', 'simple-fields')."</div>
+					<ul class='simple-fields-field-type-options-radiobutton-values-added'>
+						$radio_buttons_added
+					</ul>
+					<div><a class='simple-fields-field-type-options-radiobutton-values-add' href='#'>+ ".__('Add radio button', 'simple-fields')."</a></div>
+					<input type='hidden' name='' class='simple-fields-field-group-one-field-radiobuttons-highest-id' value='{$radio_buttons_highest_id}' />
+				</div>
+			";
+			// end radiobuttons
+	
+			// checkbox
+			$out .= "
+			<div class='simple-fields-field-group-one-field-row " . (($field_type=="checkbox") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-checkbox'>
+				<input type='checkbox' name='field[{$fieldID}][type_checkbox_options][checked_by_default]' " . (($field_type_checkbox_option_checked_by_default) ? " checked='checked'" : "") . " value='1' /> ".__('Checked by default', 'simple-fields')."
 			</div>
-		";
-		// end radiobuttons
-
-		// checkbox
-		$out .= "
-		<div class='simple-fields-field-group-one-field-row " . (($field_type=="checkbox") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-checkbox'>
-			<input type='checkbox' name='field[{$fieldID}][type_checkbox_options][checked_by_default]' " . (($field_type_checkbox_option_checked_by_default) ? " checked='checked'" : "") . " value='1' /> ".__('Checked by default', 'simple-fields')."
-		</div>
-		";
-		// end checkbox
-
-		// start dropdown
-		$dropdown_values_added = "";
-		$dropdown_values_highest_id = 0;
-		if ($field_type_dropdown_options) {
+			";
+			// end checkbox
+	
+			// start dropdown
+			$dropdown_values_added = "";
+			$dropdown_values_highest_id = 0;
+			if ($field_type_dropdown_options) {
 			foreach ($field_type_dropdown_options as $key => $val) {
 				if (strpos($key, "dropdown_num_") !== false && $val["deleted"] != true) {
 					// found one button in format radiobutton_num_0
@@ -1541,31 +1579,31 @@ class simple_fields {
 				}
 			}
 		}
-		$dropdown_values_highest_id++;
-		$out .= "
-			<div class='" . (($field_type=="dropdown") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-dropdown'>
-				<div>".__('Added dropdown values', 'simple-fields')."</div>
-				<ul class='simple-fields-field-type-options-dropdown-values-added'>
-					$dropdown_values_added
-				</ul>
-				<div><a class='simple-fields-field-type-options-dropdown-values-add' href='#'>+ ".__('Add dropdown value', 'simple-fields')."</a></div>
-				<input type='hidden' name='' class='simple-fields-field-group-one-field-dropdown-highest-id' value='{$dropdown_values_highest_id}' />
+			$dropdown_values_highest_id++;
+			$out .= "
+				<div class='" . (($field_type=="dropdown") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-dropdown'>
+					<div>".__('Added dropdown values', 'simple-fields')."</div>
+					<ul class='simple-fields-field-type-options-dropdown-values-added'>
+						$dropdown_values_added
+					</ul>
+					<div><a class='simple-fields-field-type-options-dropdown-values-add' href='#'>+ ".__('Add dropdown value', 'simple-fields')."</a></div>
+					<input type='hidden' name='' class='simple-fields-field-group-one-field-dropdown-highest-id' value='{$dropdown_values_highest_id}' />
+				</div>
+			";
+			// end dropdown
+	
+	
+			$out .= "
+			<div class='delete'>
+				<a href='#'>".__('Delete field', 'simple-fields')."</a>
 			</div>
-		";
-		// end dropdown
-
-
-		$out .= "
-		<div class='delete'>
-			<a href='#'>".__('Delete field', 'simple-fields')."</a>
-		</div>
-		<input type='hidden' name='field[{$fieldID}][id]' class='simple-fields-field-group-one-field-id' value='{$fieldID}' />
-		<input type='hidden' name='field[{$fieldID}][deleted]' value='{$field_deleted}' class='hidden_deleted' />
-
-	</li>";
-	return $out;
-
-} // /simple_fields_field_group_add_field_template
+			<input type='hidden' name='field[{$fieldID}][id]' class='simple-fields-field-group-one-field-id' value='{$fieldID}' />
+			<input type='hidden' name='field[{$fieldID}][deleted]' value='{$field_deleted}' class='hidden_deleted' />
+	
+		</li>";
+		return $out;
+	
+	} // /simple_fields_field_group_add_field_template
 
 	/**
 	 * Called from AJAX call to add a field group to the post in edit
@@ -2114,17 +2152,18 @@ class simple_fields {
 	
 				echo "<h3>Post Connectors</h3>\n";
 				echo "<p>Called with function <code>simple_fields_get_post_connectors()</code>";
-				echo "<pre>";
-				print_r( $this->get_post_connectors() );
-				echo "</pre>";
+				sf_d( $this->get_post_connectors() );
 	
-				echo "<hr />";
+				echo "<hr>";
 				
 				echo "<h3>Field Groups</h3>\n";
 				echo "<p>Called with function <code>simple_fields_get_field_groups()</code>";
-				echo "<pre>";
-				print_r( $this->get_field_groups() );
-				echo "</pre>";
+				sf_d( $this->get_field_groups() );
+				
+				echo "<hr>";
+				echo "<h3>simple_fields_post_type_defaults</h3>";
+				echo '<p>Called with: get_option("simple_fields_post_type_defaults")';
+				sf_d( get_option("simple_fields_post_type_defaults") );
 				
 			}
 	
@@ -2320,7 +2359,81 @@ class simple_fields {
 		return $arr_found_connectors;
 	}
 	
+	/**
+	 * Registers a new field type
+	 * @param string $field_type_name Name of the class with the new field type
+	 */
+	static function register_field_type($field_type_name) {
+		global $sf;
+		$sf->_register_field_type($field_type_name);
+	}
+
+	function _register_field_type($field_type_name) {
+		$this->registered_field_types[] = new $field_type_name;
+	}
+	
 } // end class
+
+ 
+class simple_fields_field {
+
+	function __construct() {
+	}
+	function get_field_id() {}
+	function options_output() {
+		return "<p>Please add method functions().</p>";
+	}
+	function options_save() {}
+	function edit_output() {}
+	function get_value() {}
+	function set_value() {}
+	
+}
+
+// Make sure simple fields are loaded before trying to instantiate class that extends simple_fields_field
+// however, if this is being run after simple fields, then init is already runned, so...lets run somethere else?
+// perhaps on "plugins_loaded"?
+add_action("plugins_loaded", function() {
+
+	class simple_fields_field_maps extends simple_fields_field {
+	
+		public
+			$key = "maps", // unique key for this field type. 
+						   // just a-z, no spaces or funky stuff
+			$name = "Google Maps",
+			$description = "Adds a Google Maps-field",
+			$options = array()	// General settings for field type
+							  	// used in options screen
+			;
+	
+		function __construct() {
+			parent::__construct();
+		}
+		
+		function options_output($field_options_name, $field_options_id) {
+			// field[{$fieldID}][type_checkbox_options][checked_by_default]
+			// 			$out .= "<input type='checkbox' name='field[{$fieldID}][type_date_options][use_time]' " . (($field_type_date_option_use_time) ? " checked='checked'" : "") . " value='1' /> ".__('Also show time', 'simple-fields');
+
+			$output = sprintf(
+				'
+				<p>This is options for my field type</p>
+				<p>name for input 1:<br>%1$s</p>
+				<p>name for input 2:<br>%2$s</p>
+				<p>id for input 1:<br>%3$s</p>
+				<p>id for input 2:<br>%4$s</p>
+				',
+				$field_options_name . "[key1]",
+				$field_options_name . "[key2]",
+				$field_options_id . "_one",
+				$field_options_id . "_two"
+			);
+			return $output;
+		}
+	
+	}
+
+	simple_fields::register_field_type("simple_fields_field_maps");	
+});
 
 // Boot it up!
 $sf = new simple_fields();
