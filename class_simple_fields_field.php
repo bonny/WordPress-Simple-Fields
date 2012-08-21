@@ -86,6 +86,13 @@ class simple_fields_field {
 	 */
 	function return_values($values) {
 		// Simply return values if not redefined by child class
+		// Thought: to make it more work like core/legacy plugins, let's return the first thing if only one thing exists
+		// Or always, as long as developer does not haz overridz the methodz
+		foreach ($values as &$one_value) {
+			if (sizeof($one_value) == 1) {
+				$one_value = current($one_value);
+			}
+		}
 		return $values;
 	}
 
