@@ -260,12 +260,13 @@ class simple_fields {
 	
 		$post_id = (int) $post_id;
 		$fieldgroups = (isset($_POST["simple_fields_fieldgroups"])) ? $_POST["simple_fields_fieldgroups"] : null;
-		
-		$field_groups_option = get_option("simple_fields_groups");
+		$field_groups_option = $this->get_field_groups();
 	
 		if ( !$table = _get_meta_table("post") ) { return false; }
+
 		global $wpdb;
-	
+
+		// We have a post_id and we have fieldgroups
 		if ($post_id && is_array($fieldgroups)) {
 	
 			// remove existing simple fields custom fields for this post
@@ -277,20 +278,11 @@ class simple_fields {
 			
 				foreach ($one_field_group_fields as $posted_id => $posted_vals) {
 					if ($posted_id == "added") {
-						// echo "<br><br>posted_id: $posted_id";
-						// echo "<br>posted_vals: "; bonny_d($posted_vals);
-						// $fieldgroups_fixed[$one_field_group_id][$posted_id]["added"] = $posted_vals;
 						continue;
 					}
 					$fieldgroups_fixed[$one_field_group_id][$posted_id] = array();
-					// echo "<br><br>posted_id: $posted_id";
-					// echo "<br>posted_vals: "; bonny_d($posted_vals);
-					// bonny_d($added_vals);
 					// loopa igenom "added"-värdena och fixa så att allt finns
 					foreach ($one_field_group_fields["added"] as $added_id => $added_val) {
-						// $fieldgroups_fixed
-						// echo "<br>added_id: $added_id";
-						// echo "<br>added_val: $added_val";
 						$fieldgroups_fixed[$one_field_group_id][$posted_id][$added_id] = $fieldgroups[$one_field_group_id][$posted_id][$added_id];
 					}
 				}
@@ -298,41 +290,55 @@ class simple_fields {
 			}
 			$fieldgroups = $fieldgroups_fixed;
 	
+			// Save info about the fact that this post have been saved. This info is used to determine if a post should get default values or not.
 			update_post_meta($post_id, "_simple_fields_been_saved", "1");
-			foreach ($fieldgroups as $one_field_group_id => $one_field_group_fields) {
 	
+			// Loop through each fieldgroups
+			foreach ($fieldgroups as $one_field_group_id => $one_field_group_fields) {
+				
+				// Loop through each field in each field group
+#simple_fields::debug("one_field_group_fields", $one_field_group_fields);
 				foreach ($one_field_group_fields as $one_field_id => $one_field_values) {
+
 					// one_field_id = id på fältet vi sparar. t.ex. id:et på "måndag" eller "tisdag"
 					// one_field_values = sparade värden för detta fält, sorterat i den ordning som syns i admin
 					//					  dvs. nyaste överst (med key "new0"), och sedan key 0, key 1, osv.
-					
-				
+
+#simple_fields::debug("save, loop fields, one_field_id", $one_field_id);
+#simple_fields::debug("save, loop fields, one_field_values", $one_field_values);
+
 					// determine type of field we are saving
 					$field_info = isset($field_groups_option[$one_field_group_id]["fields"][$one_field_id]) ? $field_groups_option[$one_field_group_id]["fields"][$one_field_id] : NULL;
 					$field_type = $field_info["type"]; // @todo: this should be a function
+
+#simple_fields::debug("save, field_type", $field_type);
+
 					$do_wpautop = false;
 					if ($field_type == "textarea" && isset($field_info["type_textarea_options"]["use_html_editor"]) && $field_info["type_textarea_options"]["use_html_editor"] == 1) {
 						// it's a tiny edit area, so use wpautop to fix p and br
 						$do_wpautop = true;
 					}
 					
-					// @todo: empty checkboxes = values saved for the wrong fieldgroup
-					// it "jumps" past one of the groups when saving, so the wrong group gets the value
-					// ide: korrigera arrayen? istället för sparandet
-					$num_in_set = 0;
 					// save entered value for each added group
+					$num_in_set = 0;
 					foreach ($one_field_values as $one_field_value) {
 					
 						$custom_field_key = "_simple_fields_fieldGroupID_{$one_field_group_id}_fieldID_{$one_field_id}_numInSet_{$num_in_set}";
 						$custom_field_value = $one_field_value;
+
+						if (array_key_exists($field_type, $this->registered_field_types)) {
+							// Custom field type							
+							// @todo: callback to filter this, from fields class or hook
+							
+						} else {
+							// core/legacy field type
+							if ($do_wpautop) {
+								$custom_field_value = wpautop($custom_field_value);
+							}
 	
-						if ($do_wpautop) {
-							$custom_field_value = wpautop($custom_field_value);
-							#var_dump($custom_field_value);#exit;
 						}
-	
+
 						update_post_meta($post_id, $custom_field_key, $custom_field_value);
-	
 						$num_in_set++;
 					
 					}
@@ -376,7 +382,6 @@ class simple_fields {
 	
 		$post = get_post($post_id);
 		
-		// $field_groups = get_option("simple_fields_groups");
 		$field_groups = $this->get_field_groups();
 		$current_field_group = $field_groups[$field_group_id];
 		$repeatable = (bool) $current_field_group["repeatable"];
@@ -2406,8 +2411,10 @@ class simple_fields_field {
 	}
 
 	/**
-	 * Output on edit post screen
-	 * @param mixed $saved_value
+	 * Output fields and stuff on post edit page
+	 * This is the output a regular user will see
+	 *
+	 * @param array $saved_values key => value with saved values
 	 * @param array $options array with the options that are set for this field in the options screen
 	 * @return string
 	 */
@@ -2542,28 +2549,27 @@ add_action("plugins_loaded", function() {
 		}
 		
 		/**
-		 * 
+		 * Output fields and stuff on post edit page
+		 * This is the output a regular user will see
 		 */
-		function edit_output($saved_value, $options) {
+		function edit_output($saved_values, $options) {
 
-			/*
-				saved_value is the value that the field type has saved
-				it's just one value, no matter how much stuff the field saves
-				but it can be an array, so that's cool anyway.
-			*/
-
-			$output = "";
-			
+			// name tex. date: simple_fields_fieldgroups[3][1][new0]
+			// name denna: simple_fields_fieldgroups[3][2][new0][option1]
+			// alltså ett steg till = bra för vi kan lagra fler saker med mindre problem. hej hopp.
+			$output = "";			
 			$output .= sprintf(
 				'
-					<input type="text" name="%1$s" id="%2$s" value="%3$s">
+					<input type="text" name="%1$s" id="%2$s" value="%3$s"><br>
+					<input type="text" name="%4$s" id="%5$s" value="%6$s">
 				',
 				$this->get_options_name("option1"),
 				$this->get_options_id("option1"),
-				esc_attr($saved_value)
+				esc_attr(@$saved_values["option1"]),
+				$this->get_options_name("option2"),
+				$this->get_options_id("option2"),
+				esc_attr(@$saved_values["option2"])
 			);
-			
-			$output .= ($options["myTextOption"]);
 
 			return $output;
 			
