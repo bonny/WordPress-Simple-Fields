@@ -79,5 +79,14 @@ class simple_fields_field {
 	function get_options_name($name) {
 		return $this->options_base_name . "[$name]";
 	}
+	
+	/**
+	 * Possibly modify values before returning them
+	 * Used from functions simple_fields_value and simple_fields_values
+	 */
+	function return_values($values) {
+		// Simply return values if not redefined by child class
+		return $values;
+	}
 
 } // class

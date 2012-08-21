@@ -60,6 +60,7 @@ class simple_fields {
 		require( dirname(__FILE__) . "/functions.php" );
 		require( dirname(__FILE__) . "/class_simple_fields_field.php" );
 		require( dirname(__FILE__) . "/field_types/field_example.php" );
+		require( dirname(__FILE__) . "/field_types/field_minimalistic_example.php" );
 
 		$this->plugin_foldername_and_filename = basename(dirname(__FILE__)) . "/" . basename(__FILE__);
 		$this->registered_field_types = array();
@@ -2418,6 +2419,8 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL) {
 		$post_id = get_the_ID();
 	}
 	
+	global $sf;
+	
 	// Post connector for this post, with lots of info
 	$post_connector_info = simple_fields_get_all_fields_and_values_for_post($post_id);
 
@@ -2465,7 +2468,13 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL) {
 				if (is_array($saved_values[0])) {
 					// custom field type. should it be responsible for the return of the values?
 					// some fields may have several stuff entered in the. some just one thing. we don't want to guess!
-					return $saved_values;
+					
+					// Use the custom field object to output this value, since we can't guess how the data is supposed to be used
+					$custom_field_type = $sf->registered_field_types[$one_field_group_field["type"]];
+					
+					return $custom_field_type->return_values($saved_values);
+					
+					#return $saved_values;
 				} else {
 					// legace/core field type
 					return $saved_values;

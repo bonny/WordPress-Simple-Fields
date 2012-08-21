@@ -122,7 +122,21 @@ add_action("plugins_loaded", function() {
 			return $output;
 			
 		}
-	
+		
+		/**
+		 * Before the values are returned
+		 */
+		function return_values($values) {
+			foreach ($values as &$one_field) {
+				foreach ($one_field as $one_field_key => &$one_field_value) {
+					if ($one_field_key == "option1") {
+						$one_field_value = $one_field_value . " with some text always appended by class return method";
+					}
+				}
+			}
+			return $values;
+		}
+		
 	}
 
 	simple_fields::register_field_type("simple_fields_field_example");	
