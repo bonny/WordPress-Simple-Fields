@@ -117,7 +117,7 @@ class simple_fields {
 			echo "<strong>".$description."</strong>";
 			if ($details) {
 				echo "<br>";
-				echo htmlspecialchars(print_r($details, TRUE));
+				echo htmlspecialchars(print_r($details, TRUE), ENT_QUOTES, 'UTF-8');
 			} else {
 				echo "<br>&lt;Empty thing.&gt;";
 			}
@@ -1340,6 +1340,7 @@ class simple_fields {
 		// simple_fields::debug("field_grup_in_edit", $fields);
 		$field_name = esc_html($fields[$fieldID]["name"]);
 		$field_description = esc_html($fields[$fieldID]["description"]);
+		$field_slug = esc_html(@$fields[$fieldID]["slug"]);
 		$field_type = $fields[$fieldID]["type"];
 		$field_deleted = (int) $fields[$fieldID]["deleted"];
 		
@@ -1375,7 +1376,6 @@ class simple_fields {
 				$one_field_type->name, 
 				($field_type == $one_field_type->key) ? " selected " : ""
 			);
-			// xxx
 
 			$field_type_options = isset($field_options[$one_field_type->key]) && is_array($field_options[$one_field_type->key]) ? $field_options[$one_field_type->key] : array();
 			/*
@@ -1431,9 +1431,19 @@ class simple_fields {
 				<input type='text' class='regular-text' name='field[{$fieldID}][description]' value='{$field_description}' />
 			</div>
 			
+			<div class='simple-fields-field-group-one-field-row simple-fields-field-group-one-field-row-slug'>
+				<label>".__('Slug', 'simple-fields')."</label>
+				<input 
+					type='text' class='regular-text' 
+					name='field[{$fieldID}][slug]' 
+					value='{$field_slug}' 
+					pattern='[A-Za-z]+' /> 
+				<br><span class='description'>" . __('The slug is used in your theme to get the saved values of this field. It must only contain characters between A and Z.', 'simple-fields') . "</span>
+			</div>
+			
 			<div class='simple-fields-field-group-one-field-row'>
 				<label>".__('Type', 'simple-fields')."</label>
-				<!-- <br /> -->
+				<!-- <br> -->
 				<select name='field[{$fieldID}][type]' class='simple-fields-field-type'>
 					<option value=''>".__('Select', 'simple-fields')."...</option>
 					<option value='text'" . (($field_type=="text") ? " selected='selected' " : "") . ">".__('Text', 'simple-fields')."</option>
@@ -1485,7 +1495,7 @@ class simple_fields {
 			}
 			$input_name = "field[{$fieldID}][type_post_options][enabled_post_types][]";
 			$out .= sprintf("%s<input name='%s' type='checkbox' %s value='%s'> %s</input>", 
-								($loopnum>0 ? "<br />" : ""), 
+								($loopnum>0 ? "<br>" : ""), 
 								$input_name,
 								((in_array($one_post_type->name, $field_type_post_options["enabled_post_types"])) ? " checked='checked' " : ""), 
 								$one_post_type->name, 
@@ -1498,7 +1508,7 @@ class simple_fields {
 			$out .= "<div class='simple-fields-field-group-one-field-row'>";
 			$out .= "<label>Additional arguments</label>";
 			$out .= sprintf("<input type='text' name='%s' value='%s' />", "field[$fieldID][type_post_options][additional_arguments]", @$field_type_post_options["additional_arguments"]);
-			$out .= sprintf("<br /><span class='description'>Here you can <a href='http://codex.wordpress.org/How_to_Pass_Tag_Parameters#Tags_with_query-string-style_parameters'>pass your own parameters</a> to <a href='http://codex.wordpress.org/Class_Reference/WP_Query'>WP_Query</a>.</span>");
+			$out .= sprintf("<br><span class='description'>Here you can <a href='http://codex.wordpress.org/How_to_Pass_Tag_Parameters#Tags_with_query-string-style_parameters'>pass your own parameters</a> to <a href='http://codex.wordpress.org/Class_Reference/WP_Query'>WP_Query</a>.</span>");
 			$out .= "</div>";
 			$out .= "</div>"; // whole divs that shows/hides
 	
@@ -1515,7 +1525,7 @@ class simple_fields {
 			}
 			$input_name = "field[{$fieldID}][type_taxonomy_options][enabled_taxonomies][]";
 			$out .= sprintf("%s<input name='%s' type='checkbox' %s value='%s'> %s", 
-								($loopnum>0 ? "<br />" : ""), 
+								($loopnum>0 ? "<br>" : ""), 
 								$input_name, 
 								((in_array($one_tax->name, $field_type_taxonomy_options["enabled_taxonomies"])) ? " checked='checked' " : ""), 
 								$one_tax->name, 
@@ -1538,7 +1548,7 @@ class simple_fields {
 			}
 			$input_name = "field[{$fieldID}][type_taxonomyterm_options][enabled_taxonomy]";
 			$out .= sprintf("%s<input name='%s' type='radio' %s value='%s'> %s", 
-								($loopnum>0 ? "<br />" : ""), 
+								($loopnum>0 ? "<br>" : ""), 
 								$input_name, 
 								($one_tax->name == $field_type_taxonomyterm_options["enabled_taxonomy"]) ? " checked='checked' " : "", 
 								$one_tax->name, 
@@ -1551,7 +1561,7 @@ class simple_fields {
 			$out .= "<div class='simple-fields-field-group-one-field-row'>";
 			$out .= "<label>Additional arguments</label>";
 			$out .= sprintf("<input type='text' name='%s' value='%s' />", "field[$fieldID][type_taxonomyterm_options][additional_arguments]", @$field_type_taxonomyterm_options["additional_arguments"]);
-			$out .= sprintf("<br /><span class='description'>Here you can <a href='http://codex.wordpress.org/How_to_Pass_Tag_Parameters#Tags_with_query-string-style_parameters'>pass your own parameters</a> to <a href='http://codex.wordpress.org/Function_Reference/get_terms#Parameters'>get_terms()</a>.</span>");
+			$out .= sprintf("<br><span class='description'>Here you can <a href='http://codex.wordpress.org/How_to_Pass_Tag_Parameters#Tags_with_query-string-style_parameters'>pass your own parameters</a> to <a href='http://codex.wordpress.org/Function_Reference/get_terms#Parameters'>get_terms()</a>.</span>");
 			$out .= "</div>";
 			
 			$out .= "</div>";
@@ -1665,7 +1675,7 @@ class simple_fields {
 	 * Output all stuff for the options page
 	 * Should be modularized a bit, it's way to long/big right now
 	 */
-	function options() {
+	function options_page() {
 	
 		global $sf;
 	
@@ -1849,7 +1859,6 @@ class simple_fields {
 					
 					$simple_fields_did_save = true;
 				}
-				#$action = "simple-fields-edit-field-groups";
 				$action = "";
 						
 			}
@@ -2058,7 +2067,7 @@ class simple_fields {
 	
 		
 			/**
-			 * edit new or existing group
+			 * Edit new or existing Field Group
 			 */
 			if ("edit-field-group" == $action) {
 				
@@ -2085,11 +2094,8 @@ class simple_fields {
 					$field_group_in_edit = $field_groups[$field_group_id];
 				}
 				
-	
-				// echo "<pre>" . print_r($field_group_in_edit) . "</pre>";
 				?>
 				<form method="post" action="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-field-group-save">
-					<?php #settings_fields('simple_fields_options'); ?>
 		            <h3><?php _e('Field group details', 'simple-fields') ?></h3>
 		            <table class="form-table">
 		            	<tr>
@@ -2106,7 +2112,7 @@ class simple_fields {
 							</th>
 							<td>
 								<input 	type="text" name="field_group_description" id="field_group_description" class="regular-text" 
-										value="<?php echo esc_html($field_group_in_edit["description"]) ?>" />
+										value="<?php echo esc_html(@$field_group_in_edit["description"]) ?>" />
 							</td>
 						</th>
 						<tr>
@@ -2349,7 +2355,7 @@ class simple_fields {
 	} // end func simple_fields_options
 
 	function admin_menu() {
-		add_submenu_page( 'options-general.php' , SIMPLE_FIELDS_NAME, SIMPLE_FIELDS_NAME, "administrator", "simple-fields-options", array($this, "options"));
+		add_submenu_page( 'options-general.php' , SIMPLE_FIELDS_NAME, SIMPLE_FIELDS_NAME, "administrator", "simple-fields-options", array($this, "options_page"));
 	}
 
 
@@ -2389,6 +2395,86 @@ class simple_fields {
 	
 } // end class
 
+/**
+ * Gets a single value.
+ * The first value if field group is repeatable
+ */
+function simple_fields_value($field_slug = NULL, $post_id = NULL) {
+	$values = simple_fields_values($field_slug, $post_id);
+	$value = $values[0];
+	return $value;
+}
+
+/**
+ * Gets all values as array
+ */
+function simple_fields_values($field_slug = NULL, $post_id = NULL) {
+	
+	if (empty($field_slug)) {
+		return FALSE;
+	}
+	
+	if (is_null($post_id)) {
+		$post_id = get_the_ID();
+	}
+	
+	// Post connector for this post, with lots of info
+	$post_connector_info = simple_fields_get_all_fields_and_values_for_post($post_id);
+
+	// Loop through the field groups that this post connector has and locate the field_slug we are looking for
+	foreach ($post_connector_info["field_groups"] as $one_field_group) {
+		// Loop the fields in this field group
+		foreach ($one_field_group["fields"] as $one_field_group_field) { 
+
+			if ($field_slug === $one_field_group_field["slug"]) {
+				
+				// Slug is found. Get and return values.
+				$saved_values = $one_field_group_field["saved_values"];
+				
+				// If no values just return
+				if (!sizeof($saved_values)) return;
+				
+				/*
+					For old/core/legacy fields it's like this:
+					Array
+					(
+					    [0] => Entered text into field one
+					    [1] => Entered text into field two
+					)
+					
+					For new/cool/custom field types it's like this:
+					Array
+					(
+					    [0] => Array
+					        (
+					            [option1] => Yeah
+					            [option2] => aha
+					        )
+					
+					    [1] => Array
+					        (
+					            [option1] => hejhopp
+					            [option2] => snopp-pop
+					        )
+					)
+				*/
+				// If first element is an array then it's a new cool and funky custom field value
+				if (is_array($saved_values[0])) {
+					// custom field type. should it be responsible for the return of the values?
+					// some fields may have several stuff entered in the. some just one thing. we don't want to guess!
+					return $saved_values;
+				} else {
+					// legace/core field type
+					return $saved_values;
+				}
+
+			}
+		}
+	}
+
+	
+}
+
 
 
 // Some debug functions
@@ -2400,11 +2486,28 @@ if (simple_fields::DEBUG_ENABLED) {
 	
 		$post_connector_with_values = simple_fields_get_all_fields_and_values_for_post(get_the_ID());
 		foreach ($post_connector_with_values["field_groups"] as $one_field_group) {
-			foreach ($one_field_group["fields"] as $one_field) {}
-			$fieldgroup_values = simple_fields_get_post_group_values(get_the_ID(), $one_field_group["id"], false, 2);
-			echo "<p>Simple Fields, Field Group name: <b>" . $one_field_group["name"] . "</b></p>";
-			echo "<p>Values in this Field Group:</p>";
-			sf_d($fieldgroup_values);
+			foreach ($one_field_group["fields"] as $one_field) {
+				echo "<hr>";
+				echo "field name:<br><b>" . $one_field["name"] . "</b>";
+				echo "<br>field slug:<br><b>" . $one_field["slug"] . "</b>";
+				echo '<br>function to use to get first/one value:';
+				echo '<br><code>simple_fields_value("'.$one_field["slug"].'");</code>';
+				echo '<br>function to use to all values, as array:';
+				echo '<br><code>simple_fields_values("'.$one_field["slug"].'");</code>';
+				echo "<br><b>saved values</b>:";
+				sf_d($one_field["saved_values"]);
+				
+				echo "Output of <b>simple_fields_values('".$one_field["slug"]."')</b>:";
+				sf_d( simple_fields_values($one_field["slug"]) );
+
+				echo "Output of <b>simple_fields_value('".$one_field["slug"]."')</b>:";
+				sf_d( simple_fields_value($one_field["slug"]) );
+				
+			}
+			#$fieldgroup_values = simple_fields_get_post_group_values(get_the_ID(), $one_field_group["id"], false, 2);
+			#echo "<p>Simple Fields, Field Group name: <b>" . $one_field_group["name"] . "</b></p>";
+			#echo "<p>Values in this Field Group:</p>";
+			#sf_d($fieldgroup_values);
 		}
 		
 		return $content;

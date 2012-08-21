@@ -6,6 +6,12 @@
  */ 
 class simple_fields_field {
 
+	public
+		$key         = "", // Unique key for this field type. just a-z please, no spaces or funky stuff. don't change this once set.
+		$name        = "", // The name that users will see.
+		$description = "" // A longer description. Not used right now...
+		;
+
 	private
 		// Variables used as base when outputing form fields on options page
 		$options_base_id,
