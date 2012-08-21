@@ -13,16 +13,16 @@ add_action("plugins_loaded", function() {
 		function options_output($existing_vals) {
 			return sprintf('
 				<p>
-					<label for="%2$s">Default name</label>
+					<label>Default name</label>
 					<span class="description">Enter a name that will be shown as default</span>
-					<input type="text" name="%1$s" id="%2$s" value="%3$s">
+					<input type="text" name="%1$s" value="%2$s">
 				</p>',
-				$this->get_options_name("textDefaultName"), $this->get_options_id("textDefaultName"), isset($existing_vals["textDefaultName"]) ? esc_attr($existing_vals["textDefaultName"]) : ""
+				$this->get_options_name("textDefaultName"), isset($existing_vals["textDefaultName"]) ? esc_attr($existing_vals["textDefaultName"]) : ""
 			);
 		}
 		
 		function edit_output($saved_values, $options) {
-			return sprintf('<input type="text" name="%1$s" id="%2$s" value="%3$s">', $this->get_options_name("name"), $this->get_options_id("name"), empty($saved_values["name"]) ? esc_attr($options["textDefaultName"]) : esc_attr($saved_values["name"]));		
+			return sprintf('<input type="text" name="%1$s" value="%2$s">', $this->get_options_name("name"), empty($saved_values["name"]) ? esc_attr($options["textDefaultName"]) : esc_attr($saved_values["name"]));		
 		}			
 
 	}
