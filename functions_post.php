@@ -1172,7 +1172,6 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 			}
 		}
 	}
-	echo "</pre>";
 	return; // oh no! nothing found. bummer.
 }
 
