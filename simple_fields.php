@@ -2425,7 +2425,10 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL) {
 	foreach ($post_connector_info["field_groups"] as $one_field_group) {
 		// Loop the fields in this field group
 		foreach ($one_field_group["fields"] as $one_field_group_field) { 
-
+			
+			// Skip deleted fields
+			if ($one_field_group_field["deleted"]) continue;
+			
 			if ($field_slug === $one_field_group_field["slug"]) {
 				
 				// Slug is found. Get and return values.
@@ -2486,21 +2489,23 @@ if (simple_fields::DEBUG_ENABLED) {
 	
 		$post_connector_with_values = simple_fields_get_all_fields_and_values_for_post(get_the_ID());
 		foreach ($post_connector_with_values["field_groups"] as $one_field_group) {
+			if ($one_field_group["deleted"]) continue;
 			foreach ($one_field_group["fields"] as $one_field) {
+				if ($one_field["deleted"]) continue;
 				echo "<hr>";
-				echo "field name:<br><b>" . $one_field["name"] . "</b>";
-				echo "<br>field slug:<br><b>" . $one_field["slug"] . "</b>";
-				echo '<br>function to use to get first/one value:';
-				echo '<br><code>simple_fields_value("'.$one_field["slug"].'");</code>';
-				echo '<br>function to use to all values, as array:';
-				echo '<br><code>simple_fields_values("'.$one_field["slug"].'");</code>';
-				echo "<br><b>saved values</b>:";
-				sf_d($one_field["saved_values"]);
+				echo "Field Name: <b>" . $one_field["name"] . "</b>";
+				echo " | Field Slug: <b>" . $one_field["slug"] . "</b>";
+				#echo '<br>function to use to get first/one value:';
+				#echo '<br><code>simple_fields_value("'.$one_field["slug"].'");</code>';
+				#echo '<br>function to use to get all values, as array:';
+				#echo '<br><code>simple_fields_values("'.$one_field["slug"].'");</code>';
+				#echo "<br><b>saved values</b>:";
+				#sf_d($one_field["saved_values"]);
 				
-				echo "Output of <b>simple_fields_values('".$one_field["slug"]."')</b>:";
+				echo "<br><b>simple_fields_values('".$one_field["slug"]."')</b>:";
 				sf_d( simple_fields_values($one_field["slug"]) );
 
-				echo "Output of <b>simple_fields_value('".$one_field["slug"]."')</b>:";
+				echo "<b>simple_fields_value('".$one_field["slug"]."')</b>:";
 				sf_d( simple_fields_value($one_field["slug"]) );
 				
 			}
