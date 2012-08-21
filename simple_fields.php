@@ -58,7 +58,8 @@ class simple_fields {
 		define( "SIMPLE_FIELDS_VERSION", "0.x");
 
 		require( dirname(__FILE__) . "/functions.php" );
-		require( dirname(__FILE__) . "/field_types/example.php" );
+		require( dirname(__FILE__) . "/class_simple_fields_field.php" );
+		require( dirname(__FILE__) . "/field_types/field_example.php" );
 
 		$this->plugin_foldername_and_filename = basename(dirname(__FILE__)) . "/" . basename(__FILE__);
 		$this->registered_field_types = array();
@@ -2388,84 +2389,13 @@ class simple_fields {
 	
 } // end class
 
- 
-class simple_fields_field {
-
-	private
-		// Variables used as base when outputing form fields on options page
-		$options_base_id,
-		$options_base_name
-		;
-
-	function __construct() {
-	}
-
-	/**
-	 * Output on options screen
-	 * @return string
-	 */
-	function options_output() {
-		return "<p>Please add method ".__METHOD__."().</p>";
-	}
-	function options_save() {
-		// should we be able to hook onto to save process?
-	}
-
-	/**
-	 * Output fields and stuff on post edit page
-	 * This is the output a regular user will see
-	 *
-	 * @param array $saved_values key => value with saved values
-	 * @param array $options array with the options that are set for this field in the options screen
-	 * @return string
-	 */
-	function edit_output($saved_value, $options) {
-		return "<p>Please add method " . __METHOD__ . "().</p>";
-	}
-	
-	/**
-	 * Sets the base for the generation of input ids in options screen
-	 * Called by options screen.
-	 * @param string $string
-	 */
-	function set_options_base_id($string) {
-		$this->options_base_id = $string;
-	}
-
-	/**
-	 * Sets the base for the generation of input names in options screen
-	 * Called by options screen.
-	 * @param string $string;
-	 */
-	function set_options_base_name($string) {
-		$this->options_base_name = $string;
-	}
-	
-	/**
-	 * Get the id to use in input or label or similiar to be used in options screen
-	 * @param $name a-z
-	 * @return string 
-	 */
-	function get_options_id($name) {
-		return $this->options_base_id . "_$name";
-	}
-
-	/**
-	 * Get the name to use in input or label or similiar to be used in options screen
-	 * @param $name a-z
-	 * @return string 
-	 */
-	function get_options_name($name) {
-		return $this->options_base_name . "[$name]";
-	}
-
-}
 
 
 // Some debug functions
 if (simple_fields::DEBUG_ENABLED) {
-	add_filter("the_content", "simple_fields_value_get_functions_test");
+
 	// Outputs the names of the post connectors attached to the post you view + outputs the values
+	add_filter("the_content", "simple_fields_value_get_functions_test");
 	function simple_fields_value_get_functions_test($content) {
 	
 		$post_connector_with_values = simple_fields_get_all_fields_and_values_for_post(get_the_ID());
@@ -2479,6 +2409,7 @@ if (simple_fields::DEBUG_ENABLED) {
 		
 		return $content;
 	}
+
 }
 
 // Boot it up!
