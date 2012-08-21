@@ -115,7 +115,7 @@ class simple_fields {
 			echo "<strong>".$description."</strong>";
 			if ($details) {
 				echo "<br>";
-				print_r($details);
+				echo htmlspecialchars(print_r($details, TRUE));
 			}
 			echo "</pre>";
 		}
@@ -2380,24 +2380,47 @@ class simple_fields_field {
 
 	function __construct() {
 	}
-	function get_field_id() {}
+
 	function options_output() {
 		return "<p>Please add method functions().</p>";
 	}
-	function options_save() {}
+	function options_save() {
+		// should we be able to hook onto to save process?
+	}
 	function edit_output() {}
-	function get_value() {}
-	function set_value() {}
 	
-	function set_options_base_id($id) {
-		$this->options_base_id = $id;
+	/**
+	 * Sets the base for the generation of input ids in options screen
+	 * Called by options screen.
+	 * @param string $string
+	 */
+	function set_options_base_id($string) {
+		$this->options_base_id = $string;
 	}
-	function set_options_base_name($name) {
-		$this->options_base_name = $name;
+
+	/**
+	 * Sets the base for the generation of input names in options screen
+	 * Called by options screen.
+	 * @param string $string;
+	 */
+	function set_options_base_name($string) {
+		$this->options_base_name = $string;
 	}
+	
+	/**
+	 * Get the id to use in input or label or similiar to be used in options screen
+	 * @param $name a-z
+	 * @return string 
+	 */
 	function get_options_id($name) {
 		return $this->options_base_id . "_$name";
 	}
+
+	/**
+	 * Get the name to use in input or label or similiar to be used in options screen
+	 * @param $name a-z
+	 * @return string 
+	 */
 	function get_options_name($name) {
 		return $this->options_base_name . "[$name]";
 	}
@@ -2412,18 +2435,19 @@ add_action("plugins_loaded", function() {
 	class simple_fields_field_example extends simple_fields_field {
 	
 		public
-			$key = "fieldExample", // unique key for this field type. 
-						   // just a-z, no spaces or funky stuff
+			$key = "fieldExample", // unique key for this field type. just a-z please, no spaces or funky stuff.
 			$name = "A new example field",
-			$description = "This is an example field. Check out it's source!",
-			$options = array()	// General settings for field type
-							  	// used in options screen
+			$description = "This is an example field. Check out it's source!"
 			;
 		
 		function __construct() {
 			parent::__construct();
 		}
 		
+		/**
+		 * Output options this field type
+		 * Don't worry about saving the values or how they get back. Simple Fields takes care of that.
+		 */
 		function options_output($existing_vals) {
 			
 			$output = "";
@@ -2439,7 +2463,7 @@ add_action("plugins_loaded", function() {
 				',
 				$this->get_options_name("myTextOption"),
 				$this->get_options_id("myTextOption"),
-				isset($existing_vals["myTextOption"]) ? $existing_vals["myTextOption"] : "No value entered yet"
+				isset($existing_vals["myTextOption"]) ? esc_attr($existing_vals["myTextOption"]) : "No value entered yet"
 			);
 
 			// Text area
@@ -2451,7 +2475,7 @@ add_action("plugins_loaded", function() {
 				',
 				$this->get_options_name("mapsTextarea"),
 				$this->get_options_id("mapsTextarea"),
-				isset($existing_vals["mapsTextarea"]) ? $existing_vals["mapsTextarea"] : "Enter some cool text here please!"
+				isset($existing_vals["mapsTextarea"]) ? esc_attr($existing_vals["mapsTextarea"]) : "Enter some cool text here please!"
 			);
 
 			// Checkbox

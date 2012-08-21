@@ -35,10 +35,10 @@ ul.simple-fields-edit-field-groups-added-fields li:nth-child(odd) {
 
 .simple-fields-field-group-one-field-row fieldset {
 	border: 1px solid silver;
-	padding: 1em;
+	padding: 0em 1em;
 }
 .simple-fields-field-group-one-field-row legend {
-	
+	font-weight: bold;
 }
 
 .simple-fields-field-group-one-field-row label,
