@@ -116,6 +116,8 @@ class simple_fields {
 			if ($details) {
 				echo "<br>";
 				echo htmlspecialchars(print_r($details, TRUE));
+			} else {
+				echo "<br>&lt;Empty thing.&gt;";
 			}
 			echo "</pre>";
 		}
@@ -367,13 +369,15 @@ class simple_fields {
 
 
 	/**
-	 * output the html for a field group in the meta box
+	 * Output the html for a field group in the meta box on the post edit screen
+	 * Also called from ajax when clicking "+ add"
 	 */
 	function meta_box_output_one_field_group($field_group_id, $num_in_set, $post_id, $use_defaults) {
 	
 		$post = get_post($post_id);
 		
-		$field_groups = get_option("simple_fields_groups");
+		// $field_groups = get_option("simple_fields_groups");
+		$field_groups = $this->get_field_groups();
 		$current_field_group = $field_groups[$field_group_id];
 		$repeatable = (bool) $current_field_group["repeatable"];
 		$field_group_css = "simple-fields-fieldgroup-$field_group_id";
@@ -683,22 +687,6 @@ class simple_fields {
 						$users_query = new WP_User_Query( $args );
 						$users = $users_query->results;
 						
-						// echo "<pre>";print_r($users);
-						/*
-					    [0] => stdClass Object
-					        (
-					            [ID] => 1
-					            [user_login] => admin
-					            [user_pass] => $P$BKPla7vRGQ4h/6tgUDdIad11Jv5GHX.
-					            [user_nicename] => admin
-					            [user_email] => par.thernstrom@gmail.com
-					            [user_url] => 
-					            [user_registered] => 2011-05-06 07:53:19
-					            [user_activation_key] => 
-					            [user_status] => 0
-					            [display_name] => admin
-					        )					
-						*/
 						echo "<select name='$field_name' id='$field_unique_id'>";
 						printf("<option value=''>%s</option>", __('Select...', 'simple-fields'));
 						foreach ($users as $one_user) {
@@ -722,8 +710,30 @@ class simple_fields {
 						echo "</div>";
 	
 	
+					} else {
+						
+						// Filed type is not "core", so check for added field types
+						if (isset($this->registered_field_types[$field["type"]])) {
+						
+							$custom_field_type = $this->registered_field_types[$field["type"]];
+							$custom_field_type->set_options_base_id($field_unique_id);
+							$custom_field_type->set_options_base_name($field_name);
+
+							// Get the options that are saved for this field type.
+							// @todo: should be a method of the class? must know what field group it's connected to to be able to fetch the right one
+							$custom_field_type_options = isset($field["options"][$field["type"]]) ? $field["options"][$field["type"]] : array();
+
+							// Always output label and description, for consistency
+							echo "<label>" . $field["name"] . "</label>";
+							echo $description;
+							
+							// Get and output the edit-output from the field type
+							echo $custom_field_type->edit_output($saved_value, $custom_field_type_options);
+
+						}
+					
 					} // field types
-					// echo "<pre>";print_r($field);echo "</pre>";
+
 					?>
 					<div class="simple-fields-metabox-field-custom-field-key hidden highlight"><strong><?php _e('Meta key:', 'simple-fields') ?></strong> <?php echo $custom_field_key ?></div>
 				</div><!-- // end simple-fields-metabox-field -->
@@ -2364,7 +2374,8 @@ class simple_fields {
 	}
 
 	function _register_field_type($field_type_name) {
-		$this->registered_field_types[] = new $field_type_name;
+		$custom_field_type = new $field_type_name;
+		$this->registered_field_types[$custom_field_type->key] = $custom_field_type;
 	}
 	
 } // end class
@@ -2381,13 +2392,26 @@ class simple_fields_field {
 	function __construct() {
 	}
 
+	/**
+	 * Output on options screen
+	 * @return string
+	 */
 	function options_output() {
-		return "<p>Please add method functions().</p>";
+		return "<p>Please add method ".__METHOD__."().</p>";
 	}
 	function options_save() {
 		// should we be able to hook onto to save process?
 	}
-	function edit_output() {}
+
+	/**
+	 * Output on edit post screen
+	 * @param mixed $saved_value
+	 * @param array $options array with the options that are set for this field in the options screen
+	 * @return string
+	 */
+	function edit_output($saved_value, $options) {
+		return "<p>Please add method " . __METHOD__ . "().</p>";
+	}
 	
 	/**
 	 * Sets the base for the generation of input ids in options screen
@@ -2513,6 +2537,55 @@ add_action("plugins_loaded", function() {
 			
 			return $output;
 
+		}
+		
+		/**
+		 * 
+		 */
+		function edit_output($saved_value, $options) {
+
+			/*
+				saved_value is the value that the field type has saved
+				it's just one value, no matter how much stuff the field saves
+				but it can be an array, so that's cool anyway.
+			*/
+
+			$output = "";
+			
+			$output .= sprintf(
+				'
+					<input type="text" name="%1$s" id="%2$s" value="%3$s">
+					<br>
+					%4$s
+					<br>
+					%4$s
+					<br>
+				',
+				$this->get_options_name("option1"),
+				$this->get_options_id("option1"),
+				esc_attr($saved_value),
+				$this->get_options_id("option_arr[]")
+			);
+			
+			$output .= ($options["myTextOption"]);
+
+			/*
+			Output HTML is like this:
+			<div class="simple-fields-metabox-field simple-fields-fieldgroups-field-3-1">
+			<label for="simple_fields_fieldgroups_3_1_new3"> Date is funky</label><input class="text simple-fields-field-type-date dp-applied" name="simple_fields_fieldgroups[3][1][new3]" id="simple_fields_fieldgroups_3_1_new3" value=""><a href="#" class="dp-choose-date" title="Choose date">Choose date</a>					<div class="simple-fields-metabox-field-custom-field-key hidden highlight"><strong>Meta key:</strong> _simple_fields_fieldGroupID_3_fieldID_1_numInSet_new3</div>
+			</div>
+			
+			<div class="simple-fields-metabox-field simple-fields-fieldgroups-field-3-4">
+				<label>Radio buttons</label><div class="simple-fields-metabox-field-radiobutton"><input checked="checked" name="simple_fields_fieldgroups[3][4][new0]" id="simple_fields_fieldgroups_3_4_new0_radio_0" type="radio" value="radiobutton_num_2">
+				<label for="simple_fields_fieldgroups_3_4_new0_radio_0" class="simple-fields-for-radiobutton"> Button 1</label></div><div class="simple-fields-metabox-field-radiobutton"><input name="simple_fields_fieldgroups[3][4][new0]" id="simple_fields_fieldgroups_3_4_new0_radio_1" type="radio" value="radiobutton_num_3">
+				<label for="simple_fields_fieldgroups_3_4_new0_radio_1" class="simple-fields-for-radiobutton"> Button 2</label></div><div class="simple-fields-metabox-field-radiobutton"><input name="simple_fields_fieldgroups[3][4][new0]" id="simple_fields_fieldgroups_3_4_new0_radio_2" type="radio" value="radiobutton_num_4">
+				<label for="simple_fields_fieldgroups_3_4_new0_radio_2" class="simple-fields-for-radiobutton"> Button 3</label></div>					<div class="simple-fields-metabox-field-custom-field-key hidden highlight"><strong>Meta key:</strong> _simple_fields_fieldGroupID_3_fieldID_4_numInSet_new0</div>
+			</div>
+			*/
+
+
+			return $output;
+			
 		}
 	
 	}

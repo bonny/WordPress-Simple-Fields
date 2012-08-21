@@ -14,7 +14,7 @@ function sf_d($var) {
 
 	echo "<pre class='sf_box_debug'>";
 	if (is_array($var) || is_object($var)) {
-		print_r($var);
+		echo htmlentities( print_r($var, true) );
 	} else if( is_null($var) ) {
 		echo "Var is NULL";
 	} else {
