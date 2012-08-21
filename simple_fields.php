@@ -405,7 +405,8 @@ class simple_fields {
 				$field_id = $field["id"];
 				$field_unique_id = "simple_fields_fieldgroups_{$field_group_id}_{$field_id}_{$num_in_set}";
 				$field_name = "simple_fields_fieldgroups[$field_group_id][$field_id][$num_in_set]";
-				$field_class = "simple-fields-fieldgroups-field-{$field_group_id}-{$field_id}";
+				$field_class = "simple-fields-fieldgroups-field-{$field_group_id}-{$field_id} ";
+				$field_class .= "simple-fields-fieldgroups-field-type-" . $field["type"];
 	
 				$custom_field_key = "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_{$field_id}_numInSet_{$num_in_set}";
 				$saved_value = get_post_meta($post_id, $custom_field_key, true); // empty string if does not exist
@@ -733,7 +734,8 @@ class simple_fields {
 						}
 					
 					} // field types
-
+					
+					// @todo: what's this div for? document it bitte!
 					?>
 					<div class="simple-fields-metabox-field-custom-field-key hidden highlight"><strong><?php _e('Meta key:', 'simple-fields') ?></strong> <?php echo $custom_field_key ?></div>
 				</div><!-- // end simple-fields-metabox-field -->
@@ -2555,34 +2557,13 @@ add_action("plugins_loaded", function() {
 			$output .= sprintf(
 				'
 					<input type="text" name="%1$s" id="%2$s" value="%3$s">
-					<br>
-					%4$s
-					<br>
-					%4$s
-					<br>
 				',
 				$this->get_options_name("option1"),
 				$this->get_options_id("option1"),
-				esc_attr($saved_value),
-				$this->get_options_id("option_arr[]")
+				esc_attr($saved_value)
 			);
 			
 			$output .= ($options["myTextOption"]);
-
-			/*
-			Output HTML is like this:
-			<div class="simple-fields-metabox-field simple-fields-fieldgroups-field-3-1">
-			<label for="simple_fields_fieldgroups_3_1_new3"> Date is funky</label><input class="text simple-fields-field-type-date dp-applied" name="simple_fields_fieldgroups[3][1][new3]" id="simple_fields_fieldgroups_3_1_new3" value=""><a href="#" class="dp-choose-date" title="Choose date">Choose date</a>					<div class="simple-fields-metabox-field-custom-field-key hidden highlight"><strong>Meta key:</strong> _simple_fields_fieldGroupID_3_fieldID_1_numInSet_new3</div>
-			</div>
-			
-			<div class="simple-fields-metabox-field simple-fields-fieldgroups-field-3-4">
-				<label>Radio buttons</label><div class="simple-fields-metabox-field-radiobutton"><input checked="checked" name="simple_fields_fieldgroups[3][4][new0]" id="simple_fields_fieldgroups_3_4_new0_radio_0" type="radio" value="radiobutton_num_2">
-				<label for="simple_fields_fieldgroups_3_4_new0_radio_0" class="simple-fields-for-radiobutton"> Button 1</label></div><div class="simple-fields-metabox-field-radiobutton"><input name="simple_fields_fieldgroups[3][4][new0]" id="simple_fields_fieldgroups_3_4_new0_radio_1" type="radio" value="radiobutton_num_3">
-				<label for="simple_fields_fieldgroups_3_4_new0_radio_1" class="simple-fields-for-radiobutton"> Button 2</label></div><div class="simple-fields-metabox-field-radiobutton"><input name="simple_fields_fieldgroups[3][4][new0]" id="simple_fields_fieldgroups_3_4_new0_radio_2" type="radio" value="radiobutton_num_4">
-				<label for="simple_fields_fieldgroups_3_4_new0_radio_2" class="simple-fields-for-radiobutton"> Button 3</label></div>					<div class="simple-fields-metabox-field-custom-field-key hidden highlight"><strong>Meta key:</strong> _simple_fields_fieldGroupID_3_fieldID_4_numInSet_new0</div>
-			</div>
-			*/
-
 
 			return $output;
 			
