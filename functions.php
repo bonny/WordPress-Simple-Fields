@@ -182,11 +182,11 @@ function simple_fields_get_all_fields_and_values_for_post($post_id) {
 	
 	global $sf;
 	
-	$post = get_post($post_id);
-	$connector_to_use = $sf->get_selected_connector_for_post($post);
+	$post                     = get_post($post_id);
+	$connector_to_use         = $sf->get_selected_connector_for_post($post);
 	$existing_post_connectors = $sf->get_post_connectors();
-	$field_groups = get_option("simple_fields_groups");
-	$selected_post_connector = $existing_post_connectors[$connector_to_use];
+	$field_groups             = $sf->get_field_groups();
+	$selected_post_connector  = $existing_post_connectors[$connector_to_use];
 	if($selected_post_connector == null) {
 		return false;
 	}

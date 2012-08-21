@@ -58,6 +58,7 @@ class simple_fields {
 		define( "SIMPLE_FIELDS_VERSION", "0.x");
 
 		require( dirname(__FILE__) . "/functions.php" );
+		require( dirname(__FILE__) . "/field_types/example.php" );
 
 		$this->plugin_foldername_and_filename = basename(dirname(__FILE__)) . "/" . basename(__FILE__);
 		$this->registered_field_types = array();
@@ -2460,125 +2461,25 @@ class simple_fields_field {
 
 }
 
-// Make sure simple fields are loaded before trying to instantiate class that extends simple_fields_field
-// however, if this is being run after simple fields, then init is already runned, so...lets run somethere else?
-// perhaps on "plugins_loaded"?
-add_action("plugins_loaded", function() {
 
-	class simple_fields_field_example extends simple_fields_field {
-	
-		public
-			$key = "fieldExample", // unique key for this field type. just a-z please, no spaces or funky stuff.
-			$name = "A new example field",
-			$description = "This is an example field. Check out it's source!"
-			;
-		
-		function __construct() {
-			parent::__construct();
-		}
-		
-		/**
-		 * Output options this field type
-		 * Don't worry about saving the values or how they get back. Simple Fields takes care of that.
-		 */
-		function options_output($existing_vals) {
-			
-			$output = "";
-			
-			simple_fields::debug("existing option vals for this field type", $existing_vals);
-			
-			// Text field
-			$output .= sprintf('
-				<p>
-					<label for="%2$s">My text option</label>
-					<input type="text" name="%1$s" id="%2$s" value="%3$s">
-				</p>
-				',
-				$this->get_options_name("myTextOption"),
-				$this->get_options_id("myTextOption"),
-				isset($existing_vals["myTextOption"]) ? esc_attr($existing_vals["myTextOption"]) : "No value entered yet"
-			);
+// Some debug functions
+add_filter("the_content", "simple_fields_value_get_functions_test");
+// Outputs the names of the post connectors attached to the post you view + outputs the values
+function simple_fields_value_get_functions_test($content) {
 
-			// Text area
-			$output .= sprintf('
-				<p>
-					<label for="%2$s">Textareas are fine too</label>
-					<textarea name="%1$s" id="%2$s">%3$s</textarea>
-				</p>
-				',
-				$this->get_options_name("mapsTextarea"),
-				$this->get_options_id("mapsTextarea"),
-				isset($existing_vals["mapsTextarea"]) ? esc_attr($existing_vals["mapsTextarea"]) : "Enter some cool text here please!"
-			);
-
-			// Checkbox
-			$output .= sprintf('
-				<p>
-					<input type="checkbox" name="%1$s" id="%2$s" %3$s>
-					Check it!
-				</p>
-				',
-				$this->get_options_name("aCheckbox"),
-				$this->get_options_id("aCheckbox"),
-				isset($existing_vals["aCheckbox"]) && $existing_vals["aCheckbox"] ? "checked" : ""
-			);
-
-			// Dropdown
-			$output .= sprintf('
-				<p>
-					<label for="%2$s">Please select something in my dropdown</label>
-					<select name="%1$s" id="%2$s">
-						<option value="">Choose ...</option>
-						<option value="val1" %3$s>Value number one</option>
-						<option value="val2" %4$s>Value number two</option>
-						<option value="val3" %5$s>Value number three</option>
-						<option value="val4" %6$s>Value number four</option>
-					</select>
-				</p>
-				',
-				$this->get_options_name("funkyDropdown"),
-				$this->get_options_id("funkyDropdown"),
-				isset($existing_vals["funkyDropdown"]) && ($existing_vals["funkyDropdown"] == "val1" ) ? "selected" : "",
-				isset($existing_vals["funkyDropdown"]) && ($existing_vals["funkyDropdown"] == "val2" ) ? "selected" : "",
-				isset($existing_vals["funkyDropdown"]) && ($existing_vals["funkyDropdown"] == "val3" ) ? "selected" : "",
-				isset($existing_vals["funkyDropdown"]) && ($existing_vals["funkyDropdown"] == "val4" ) ? "selected" : ""
-			);
-			
-			return $output;
-
-		}
-		
-		/**
-		 * Output fields and stuff on post edit page
-		 * This is the output a regular user will see
-		 */
-		function edit_output($saved_values, $options) {
-
-			// name tex. date: simple_fields_fieldgroups[3][1][new0]
-			// name denna: simple_fields_fieldgroups[3][2][new0][option1]
-			// alltså ett steg till = bra för vi kan lagra fler saker med mindre problem. hej hopp.
-			$output = "";			
-			$output .= sprintf(
-				'
-					<input type="text" name="%1$s" id="%2$s" value="%3$s"><br>
-					<input type="text" name="%4$s" id="%5$s" value="%6$s">
-				',
-				$this->get_options_name("option1"),
-				$this->get_options_id("option1"),
-				esc_attr(@$saved_values["option1"]),
-				$this->get_options_name("option2"),
-				$this->get_options_id("option2"),
-				esc_attr(@$saved_values["option2"])
-			);
-
-			return $output;
-			
-		}
-	
+	$post_connector_with_values = simple_fields_get_all_fields_and_values_for_post(get_the_ID());
+	foreach ($post_connector_with_values["field_groups"] as $one_field_group) {
+		foreach ($one_field_group["fields"] as $one_field) {}
+		$fieldgroup_values = simple_fields_get_post_group_values(get_the_ID(), $one_field_group["id"], false, 2);
+		echo "<p>Field group name: <b>" . $one_field_group["name"] . "</b></p>";
+		echo "<p>Values in this field group:</p>";
+		sf_d($fieldgroup_values);
 	}
 
-	simple_fields::register_field_type("simple_fields_field_example");	
-});
+
+	
+	return $content;
+}
 
 // Boot it up!
 $sf = new simple_fields();
