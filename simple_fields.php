@@ -41,7 +41,7 @@ class simple_fields {
 		// Looks something like this: "Simple-Fields-GIT/simple_fields.php"
 		$plugin_foldername_and_filename,
 	
-		// array with registred field type objects
+		// array with registered field type objects
 		$registered_field_types
 	
 	;
@@ -83,7 +83,7 @@ class simple_fields {
 		add_action( 'wp_ajax_simple_fields_metabox_fieldgroup_add', array($this, 'metabox_fieldgroup_add') );
 		add_action( 'wp_ajax_simple_fields_field_type_post_dialog_load', array($this, 'field_type_post_dialog_load') );
 		add_action( 'wp_ajax_simple_fields_field_group_add_field', array($this, 'field_group_add_field') );
-	
+		
 		do_action("simple_fields_init", $this);
 		
 	}
@@ -2463,22 +2463,22 @@ class simple_fields_field {
 
 
 // Some debug functions
-add_filter("the_content", "simple_fields_value_get_functions_test");
-// Outputs the names of the post connectors attached to the post you view + outputs the values
-function simple_fields_value_get_functions_test($content) {
-
-	$post_connector_with_values = simple_fields_get_all_fields_and_values_for_post(get_the_ID());
-	foreach ($post_connector_with_values["field_groups"] as $one_field_group) {
-		foreach ($one_field_group["fields"] as $one_field) {}
-		$fieldgroup_values = simple_fields_get_post_group_values(get_the_ID(), $one_field_group["id"], false, 2);
-		echo "<p>Field group name: <b>" . $one_field_group["name"] . "</b></p>";
-		echo "<p>Values in this field group:</p>";
-		sf_d($fieldgroup_values);
-	}
-
-
+if (simple_fields::DEBUG_ENABLED) {
+	add_filter("the_content", "simple_fields_value_get_functions_test");
+	// Outputs the names of the post connectors attached to the post you view + outputs the values
+	function simple_fields_value_get_functions_test($content) {
 	
-	return $content;
+		$post_connector_with_values = simple_fields_get_all_fields_and_values_for_post(get_the_ID());
+		foreach ($post_connector_with_values["field_groups"] as $one_field_group) {
+			foreach ($one_field_group["fields"] as $one_field) {}
+			$fieldgroup_values = simple_fields_get_post_group_values(get_the_ID(), $one_field_group["id"], false, 2);
+			echo "<p>Simple Fields, Field Group name: <b>" . $one_field_group["name"] . "</b></p>";
+			echo "<p>Values in this Field Group:</p>";
+			sf_d($fieldgroup_values);
+		}
+		
+		return $content;
+	}
 }
 
 // Boot it up!
