@@ -33,6 +33,14 @@ ul.simple-fields-edit-field-groups-added-fields li:nth-child(odd) {
 	margin-bottom: .75em;
 }
 
+.simple-fields-field-group-one-field-row fieldset {
+	border: 1px solid silver;
+	padding: 1em;
+}
+.simple-fields-field-group-one-field-row legend {
+	
+}
+
 .simple-fields-field-group-one-field-row label,
 .simple-fields-field-type-options label
  {
@@ -64,8 +72,8 @@ li.simple-fields-field-group-one-field {
 li.simple-fields-field-group-one-field div.delete {
 	display: none;
 	position: absolute;
-	right: 0;
-	bottom: 1em;
+	right: .5em;
+	top: .5em;
 }
 .simple-fields-field-group-delete,
 .simple-fields-post-connector-delete

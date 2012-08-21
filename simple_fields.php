@@ -1318,6 +1318,7 @@ class simple_fields {
 	function field_group_add_field_template($fieldID, $field_group_in_edit = null) {
 
 		$fields = $field_group_in_edit["fields"];
+		// simple_fields::debug("field_grup_in_edit", $fields);
 		$field_name = esc_html($fields[$fieldID]["name"]);
 		$field_description = esc_html($fields[$fieldID]["description"]);
 		$field_type = $fields[$fieldID]["type"];
@@ -1340,11 +1341,16 @@ class simple_fields {
 		$field_type_taxonomyterm_options = (array) @$fields[$fieldID]["type_taxonomyterm_options"];
 		$field_type_taxonomyterm_options["enabled_taxonomy"] = (string) @$field_type_taxonomyterm_options["enabled_taxonomy"];
 	
+		// Options saved for this field
+		// Options is an array with key = field_type and value = array with options key => saved value
+		$field_options = (array) @$fields[$fieldID]["options"];
+
 		// Generate output for registred field types
 		$registred_field_types_output = "";
 		$registred_field_types_output_options = "";
 		foreach ($this->registered_field_types as $one_field_type) {
 
+			// Output for field type selection dropdown
 			$registred_field_types_output .= sprintf('<option %3$s value="%1$s">%2$s</option>', 
 				$one_field_type->key, 
 				$one_field_type->name, 
@@ -1352,28 +1358,41 @@ class simple_fields {
 			);
 			// xxx
 
+			$field_type_options = isset($field_options[$one_field_type->key]) && is_array($field_options[$one_field_type->key]) ? $field_options[$one_field_type->key] : array();
+			/*
+			$field_type_options looks like this:
+			Array
+			(
+			    [myTextOption] => No value entered yet
+			    [mapsTextarea] => Enter some cool text here please!
+			    [funkyDropdown] => 
+			)
+			*/
+			
+			// Generate common and unique classes for this field types options row
 			$div_class  = "simple-fields-field-group-one-field-row ";
 			$div_class .= "simple-fields-field-type-options ";
 			$div_class .= "simple-fields-field-type-options-" . $one_field_type->key . " ";
 			$div_class .= ($field_type == $one_field_type->key) ? "" : " hidden ";
 			
+			// Generate and set the base for ids and names that the field will use for input-elements and similar
 			$field_options_id 	= "field_{$fieldID}_options_" . $one_field_type->key . "";
 			$field_options_name	= "field[$fieldID][options][" . $one_field_type->key . "]";
 			$one_field_type->set_options_base_id($field_options_id);
 			$one_field_type->set_options_base_name($field_options_name);
 			
+			// Gather together the options output for this field type
 			$registred_field_types_output_options .= sprintf(
 				'
 					<div class="%1$s">
-						<!-- <fieldset> 
+						<fieldset> 
 							<legend>Options</legend>
-						-->
 							%2$s
-						<!-- </fieldset> -->
+						</fieldset>
 					</div>
 				', 
 				$div_class, 
-				$one_field_type->options_output(array())
+				$one_field_type->options_output($field_type_options)
 			);
 
 		}
@@ -1633,14 +1652,7 @@ class simple_fields {
 	
 		$field_groups = $this->get_field_groups();
 		$post_connectors = $this->get_post_connectors();
-	
-		/*
-		$field_groups = get_option("SIMPLE_FIELDS_groups");
-		$post_connectors = get_option("SIMPLE_FIELDS_post_connectors");
-		update_option("simple_fields_groups", $field_groups);
-		update_option("simple_fields_post_connectors", $post_connectors);
-		// */
-	
+
 		// for debug purposes, here we can reset the option
 		#$field_groups = array(); update_option("simple_fields_groups", $field_groups);
 		#$post_connectors = array(); update_option("simple_fields_post_connectors", $post_connectors);
@@ -1653,12 +1665,7 @@ class simple_fields {
 		
 		uasort($field_groups, "simple_fields_uasort");
 		uasort($post_connectors, "simple_fields_uasort");
-		
-		// sometimes we get a empty field group on pos zero.. wierd.. can't find the reason for it right now.. :(
-		#if ($field_groups[0] && empty($field_groups[0]["name"])) {
-		#	unset($field_groups[0]);
-		#}
-	
+			
 		?>
 		<div class="wrap">
 	
@@ -1685,7 +1692,7 @@ class simple_fields {
 			<?php
 			
 			$action = (isset($_GET["action"])) ? $_GET["action"] : null;
-			
+
 			/**
 			 * save post type defaults
 			 */
@@ -1779,27 +1786,7 @@ class simple_fields {
 			 * including fields
 			 */
 			if ("edit-field-group-save" == $action) {
-				/*
-				Array
-				(
-				    [field_group_name] => Unnamed field group 59 changed
-				    [action] => update
-				    [page_options] => field_group_name
-				    [field_group_id] => 59
-				)
-						[type_taxonomy_options] => Array
-	                        (
-	                            [enabled_taxonomies] => Array
-	                                (
-	                                    [0] => category
-	                                    [1] => post_tag
-	                                    [2] => post_format
-	                                    [3] => mentions
-	                                )
-	
-	                        )
-				*/
-				#echo "<pre>";print_r($_POST);exit;
+			
 				if ($_POST) {
 				
 					$field_group_id = (int) $_POST["field_group_id"];
@@ -1821,13 +1808,14 @@ class simple_fields {
 					}
 					
 					// @todo: are these used? options are saved on a per field basis… right?!
-					$field_groups[$field_group_id]["type_textarea_options"] = (array) @$_POST["type_textarea_options"];
+					/* $field_groups[$field_group_id]["type_textarea_options"] = (array) @$_POST["type_textarea_options"];
 					$field_groups[$field_group_id]["type_radiobuttons_options"] = (array) @$_POST["type_radiobuttons_options"];
 					$field_groups[$field_group_id]["type_taxonomy_options"] = (array) @$_POST["type_taxonomy_options"];
+					*/
 					//$field_groups[$field_group_id]["type_taxonomyterm_options"] = (array) @$_POST["type_taxonomyterm_options"];
 	
 					// echo "<pre>fields_groups:"; print_r($field_groups);exit;
-							
+
 					update_option("simple_fields_groups", $field_groups);
 					// echo "<pre>";print_r($field_groups);echo "</pre>";
 					// we can have changed the options of a field group, so update connectors using this field group
@@ -2421,7 +2409,7 @@ class simple_fields_field {
 // perhaps on "plugins_loaded"?
 add_action("plugins_loaded", function() {
 
-	class simple_fields_field_maps extends simple_fields_field {
+	class simple_fields_field_example extends simple_fields_field {
 	
 		public
 			$key = "fieldExample", // unique key for this field type. 
@@ -2439,6 +2427,8 @@ add_action("plugins_loaded", function() {
 		function options_output($existing_vals) {
 			
 			$output = "";
+			
+			simple_fields::debug("existing option vals for this field type", $existing_vals);
 			
 			// Text field
 			$output .= sprintf('
@@ -2503,7 +2493,7 @@ add_action("plugins_loaded", function() {
 	
 	}
 
-	simple_fields::register_field_type("simple_fields_field_maps");	
+	simple_fields::register_field_type("simple_fields_field_example");	
 });
 
 // Boot it up!
