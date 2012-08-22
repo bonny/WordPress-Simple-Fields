@@ -200,6 +200,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 	}
 	
 	$post_connectors[$connector_id] = simple_fields_merge_arrays($post_connector_defaults, $new_post_connector);
+	$post_connectors[$connector_id]['post_types'] = array_unique($post_connectors[$connector_id]['post_types']);
 	
 	if (is_array($new_post_connector["field_groups"]) && !empty($new_post_connector["field_groups"])) {
 		$field_group_connectors = array();
@@ -247,6 +248,8 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 		$post_connectors[$connector_id]["field_groups"] = $field_group_connectors;
 		
 	}
+	
+	// echo "<pre>" . print_r($post_connectors, true) . "</pre>";
 	
 	update_option("simple_fields_post_connectors", $post_connectors);
 }
@@ -1225,4 +1228,3 @@ function simple_fields_field_group_add_field_template($fieldID, $field_group_in_
 	return $out;
 
 }
-
