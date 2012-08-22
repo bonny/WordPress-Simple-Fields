@@ -3,6 +3,18 @@ jscolor.bindClass = "simple-fields-field-type-color";
 var simple_fields_datepicker_args = { "clickInput": true };
 var simple_fields_tinymce_iframes = new Array;
 
+// Global module for Simple Fields, using the reveal module pattern
+var simple_fields = (function() {
+	
+	var
+		i_am_simple_fields = true;
+	
+	return {
+		
+	}
+	
+})();
+
 (function($) {
 
 	// add new field to the field group
@@ -257,18 +269,24 @@ var simple_fields_tinymce_iframes = new Array;
 		};
 	
 		$.post(ajaxurl, data, function(response) {
-			// alert('Got this from the server: ' + response);
+
 			$ul = $wrapper.find("ul.simple-fields-metabox-field-group-fields");
 			$response = $(response);
 			$response.hide();
 			$ul.prepend($response);
 			$response.slideDown("slow", function() {
+				
 				simple_fields_metabox_tinymce_attach();
 				$response.effect("highlight", 1000);
 				// add jscolor to possibly new fields
 				jscolor.init();
 				// add datepicker too
 				$('input.simple-fields-field-type-date', $ul).datePicker(simple_fields_datepicker_args);
+				
+				// Fire event so plugins can listen to the add-button
+				//simple_fields.trigger("field_group_added");
+				//simple_fields.dispatchEvent();
+				$(document.body).trigger("field_group_added", $response);
 			});
 			$t.html("<a href='#'>+ "+sfstrings.add+"</a>");
 

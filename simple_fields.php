@@ -75,6 +75,7 @@ class simple_fields {
 		add_action( 'admin_init', array($this,'post_admin_init') );
 		add_action( 'dbx_post_sidebar', array($this, 'post_dbx_post_sidebar') );
 		add_action( 'save_post', array($this, 'save_postdata') );
+		add_action( 'plugins_loaded', array($this, 'plugins_loaded') );
 
 		// Hacks for media select dialog
 		add_filter( 'media_send_to_editor', array($this, 'media_send_to_editor'), 15, 2 );
@@ -85,10 +86,18 @@ class simple_fields {
 		add_action( 'wp_ajax_simple_fields_metabox_fieldgroup_add', array($this, 'metabox_fieldgroup_add') );
 		add_action( 'wp_ajax_simple_fields_field_type_post_dialog_load', array($this, 'field_type_post_dialog_load') );
 		add_action( 'wp_ajax_simple_fields_field_group_add_field', array($this, 'field_group_add_field') );
-		
+				
 		do_action("simple_fields_init", $this);
 		
 	}
+	
+	/**
+	 * When all plugins have loaded = simple fields has also loaded = safe to add custom field types
+	 */
+	function plugins_loaded() {
+		do_action("simple_fields_register_field_types");
+	}
+
 	
 	/**
 	 * Returns a post connector
@@ -425,7 +434,11 @@ class simple_fields {
 				}
 				
 				?>
-				<div class="simple-fields-metabox-field <?php echo $field_class ?>">
+				<div class="simple-fields-metabox-field <?php echo $field_class ?>" 
+					data-fieldgroup_id=<?php echo $field_group_id ?>
+					data-field_id="<?php echo $field_id ?>"
+					data-num_in_set=<?php echo $num_in_set ?>
+					>
 					<?php
 					// different output depending on field type
 					if ("checkbox" == $field["type"]) {
@@ -737,7 +750,7 @@ class simple_fields {
 							echo $description;
 							
 							// Get and output the edit-output from the field type
-							echo $custom_field_type->edit_output($saved_value, $custom_field_type_options);
+							echo $custom_field_type->edit_output( (array) $saved_value, $custom_field_type_options);
 
 						}
 					
@@ -1402,17 +1415,25 @@ class simple_fields {
 			$one_field_type->set_options_base_name($field_options_name);
 			
 			// Gather together the options output for this field type
+			// Only output fieldset if field has options
+			$field_options_output = $one_field_type->options_output($field_type_options);
+			if ($field_options_output) {
+				$field_options_output = "
+					<fieldset> 
+						<legend>Options</legend>
+						$field_options_output
+					</fieldset>
+				";
+				
+			}
 			$registred_field_types_output_options .= sprintf(
 				'
 					<div class="%1$s">
-						<fieldset> 
-							<legend>Options</legend>
-							%2$s
-						</fieldset>
+						%2$s
 					</div>
 				', 
 				$div_class, 
-				$one_field_type->options_output($field_type_options)
+				$field_options_output
 			);
 
 		}
@@ -1438,7 +1459,9 @@ class simple_fields {
 					type='text' class='regular-text' 
 					name='field[{$fieldID}][slug]' 
 					value='{$field_slug}' 
-					pattern='[A-Za-z]+' /> 
+					pattern='[A-Za-z]+'
+					required
+					 /> 
 				<br><span class='description'>" . __('The slug is used in your theme to get the saved values of this field. It must only contain characters between A and Z.', 'simple-fields') . "</span>
 			</div>
 			
