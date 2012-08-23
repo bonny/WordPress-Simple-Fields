@@ -42,7 +42,7 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 		$field_id = $field_name_or_id[1];
 		$fetch_by_id = false;
 	}
-	
+
 	$connector = simple_fields_get_all_fields_and_values_for_post($post_id);
 	
 	$return_val = null;
@@ -50,10 +50,10 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 		foreach ($connector["field_groups"] as $one_field_group) {
 			$is_found = false;
 			foreach ($one_field_group["fields"] as $one_field) {
+
 				if ($fetch_by_id && $one_field["name"] == $field_name_or_id) {
-					// we got our field, get the value(s)
 					$is_found = true;
-				} else if (!$fetch_by_id && ($one_field_group["id"] === $field_group_id) && ($one_field["id"] === $field_id)) {
+				} else if (!$fetch_by_id && (intval($one_field_group["id"]) === intval($field_group_id)) && (intval($one_field["id"]) === intval($field_id))) {
 					$is_found = true;
 				}
 	
