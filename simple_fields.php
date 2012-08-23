@@ -34,7 +34,7 @@ load_plugin_textdomain( 'simple-fields', null, basename(dirname(__FILE__)).'/lan
  */ 
 class simple_fields {
 
-	const DEBUG_ENABLED = true; // set to true to enable some debug output
+	const DEBUG_ENABLED = false; // set to true to enable some debug output
 	
 	public 
 
@@ -1461,10 +1461,10 @@ class simple_fields {
 					type='text' class='regular-text' 
 					name='field[{$fieldID}][slug]' 
 					value='{$field_slug}' 
-					pattern='[A-Za-z]+'
+					pattern='[A-Za-z_]+'
 					required
 					 /> 
-				<br><span class='description'>" . __('The slug is used in your theme to get the saved values of this field. It must only contain characters between A and Z.', 'simple-fields') . "</span>
+				<br><span class='description'>" . __('The slug is a unique identifier used in your theme to get the saved values of this field. It must only contain characters between A and Z.', 'simple-fields') . "</span>
 			</div>
 			
 			<div class='simple-fields-field-group-one-field-row'>
@@ -1844,12 +1844,18 @@ class simple_fields {
 			
 				if ($_POST) {
 				
-					$field_group_id = (int) $_POST["field_group_id"];
-					$field_groups[$field_group_id]["name"] = stripslashes($_POST["field_group_name"]);
+					$field_group_id                               = (int) $_POST["field_group_id"];
+					$field_groups[$field_group_id]["name"]        = stripslashes($_POST["field_group_name"]);
 					$field_groups[$field_group_id]["description"] = stripslashes($_POST["field_group_description"]);
-					$field_groups[$field_group_id]["repeatable"] = (bool) (isset($_POST["field_group_repeatable"]));
+					$field_groups[$field_group_id]["slug"]        = stripslashes($_POST["field_group_slug"]);
+					$field_groups[$field_group_id]["repeatable"]  = (bool) (isset($_POST["field_group_repeatable"]));					
+					$field_groups[$field_group_id]["fields"]      = (array) stripslashes_deep($_POST["field"]);
+
+					// Since 0.6 we really want all things to have slugs, so add one if it's not set
+					if (empty($field_groups[$field_group_id]["slug"])) {
+						$field_groups[$field_group_id]["slug"] = "field_group_" . $field_group_id;
+					}
 					
-					$field_groups[$field_group_id]["fields"] = (array) stripslashes_deep($_POST["field"]);
 					/*
 					if just one empty array like this, unset first elm
 					happens if no fields have been added (now why would you do such an evil thing?!)
@@ -2100,12 +2106,13 @@ class simple_fields {
 				$field_group_id = (isset($_GET["group-id"])) ? intval($_GET["group-id"]) : false;
 				
 				$highest_field_id = 0;
-		
+
 				// check if field group is new or existing
 				if ($field_group_id === 0) {
-	
+
 					// new: save it as unnamed, and then set to edit that
 					$field_group_in_edit = simple_fields_register_field_group();
+
 					simple_fields::debug("Added new field group", $field_group_in_edit);
 	
 				} else {
@@ -2119,7 +2126,7 @@ class simple_fields {
 	
 					$field_group_in_edit = $field_groups[$field_group_id];
 				}
-				
+
 				?>
 				<form method="post" action="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-field-group-save">
 		            <h3><?php _e('Field group details', 'simple-fields') ?></h3>
@@ -2129,7 +2136,7 @@ class simple_fields {
 		            			<label for="field_group_name"><?php _e('Name', 'simple-fields') ?></label>
 		            		</th>
 		            		<td>
-		            			<input type="text" name="field_group_name" id="field_group_name" class="regular-text" value="<?php echo esc_html($field_group_in_edit["name"]) ?>" />
+		            			<input type="text" name="field_group_name" id="field_group_name" class="regular-text" value="<?php echo esc_html($field_group_in_edit["name"]) ?>" required />
 							</td>
 						</tr>
 						<tr>
@@ -2138,9 +2145,26 @@ class simple_fields {
 							</th>
 							<td>
 								<input 	type="text" name="field_group_description" id="field_group_description" class="regular-text" 
-										value="<?php echo esc_html(@$field_group_in_edit["description"]) ?>" />
+										value="<?php echo esc_html(@$field_group_in_edit["description"]) ?>"
+										 />
 							</td>
 						</th>
+
+						<tr>
+							<th>
+								<label for="field_group_slug"><?php _e('Slug', 'simple-fields') ?></label>
+							</th>
+							<td>
+								<input 	type="text" name="field_group_slug" id="field_group_slug" class="regular-text" 
+										value="<?php echo esc_html(@$field_group_in_edit["slug"]) ?>"
+										pattern='[A-Za-z_]+'
+										required
+										 />
+								 <br>
+								 <span class="description"><?php echo __("A unique identifier for this field group", 'simple-fields') ?></span>
+							</td>
+						</th>
+
 						<tr>
 							<th>
 								<?php echo __("Options", 'simple-fields') ?>

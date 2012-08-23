@@ -429,9 +429,14 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 	$field_groups = $sf->get_field_groups();
 	
 	$highest_id = 0;
+
 	foreach ($field_groups as $oneGroup) {
-		if ($oneGroup["key"] == $unique_name) {
+		if ($oneGroup["key"] == $unique_name && !empty($unique_name)) {
 			// Field group already exists
+
+			// @todo: but if we don't have a unique name when we are creating a new connector
+			// and there are old connectors with no names either
+
 			$field_group_id = $oneGroup["id"];
 		} else if (!isset($field_group_id) && $oneGroup["id"] > $highest_id) {
 			$highest_id = $oneGroup["id"];
