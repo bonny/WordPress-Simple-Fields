@@ -34,7 +34,7 @@ load_plugin_textdomain( 'simple-fields', null, basename(dirname(__FILE__)).'/lan
  */ 
 class simple_fields {
 
-	const DEBUG_ENABLED = TRUE; // set to true to enable some debug output
+	const DEBUG_ENABLED = true; // set to true to enable some debug output
 	
 	public 
 
@@ -398,6 +398,7 @@ class simple_fields {
 		$current_field_group = $field_groups[$field_group_id];
 		$repeatable = (bool) $current_field_group["repeatable"];
 		$field_group_css = "simple-fields-fieldgroup-$field_group_id";
+
 		?>
 		<li class="simple-fields-metabox-field-group <?php echo $field_group_css ?>">
 			<?php // must use this "added"-thingie do be able to track added field group that has no added values (like unchecked checkboxes, that we can't detect ?>
@@ -415,10 +416,11 @@ class simple_fields {
 			// Output content for each field in this fieldgroup
 			// LI = fieldgroup
 			// DIV = field
+
 			foreach ($current_field_group["fields"] as $field) {
-				
+			
 				if ($field["deleted"]) { continue; }
-				
+
 				$field_id = $field["id"];
 				$field_unique_id = "simple_fields_fieldgroups_{$field_group_id}_{$field_id}_{$num_in_set}";
 				$field_name = "simple_fields_fieldgroups[$field_group_id][$field_id][$num_in_set]";
