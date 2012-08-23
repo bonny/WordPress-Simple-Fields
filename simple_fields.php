@@ -34,7 +34,7 @@ load_plugin_textdomain( 'simple-fields', null, basename(dirname(__FILE__)).'/lan
  */ 
 class simple_fields {
 
-	const DEBUG_ENABLED = false; // set to true to enable some debug output
+	const DEBUG_ENABLED = true; // set to true to enable some debug output
 	
 	public 
 
@@ -2445,138 +2445,6 @@ class simple_fields {
 	
 } // end class
 
-/**
- * Gets a single value.
- * The first value if field group is repeatable
- */
-function simple_fields_value($field_slug = NULL, $post_id = NULL) {
-	$values = simple_fields_values($field_slug, $post_id);
-	$value = $values[0];
-	return $value;
-}
-
-/**
- * Gets all values as array
- */
-function simple_fields_values($field_slug = NULL, $post_id = NULL) {
-	
-	if (empty($field_slug)) {
-		return FALSE;
-	}
-	
-	if (is_null($post_id)) {
-		$post_id = get_the_ID();
-	}
-	
-	global $sf;
-	
-	// Post connector for this post, with lots of info
-	$post_connector_info = simple_fields_get_all_fields_and_values_for_post($post_id);
-
-	// Loop through the field groups that this post connector has and locate the field_slug we are looking for
-	foreach ($post_connector_info["field_groups"] as $one_field_group) {
-		// Loop the fields in this field group
-		foreach ($one_field_group["fields"] as $one_field_group_field) { 
-			
-			// Skip deleted fields
-			if ($one_field_group_field["deleted"]) continue;
-			
-			if ($field_slug === $one_field_group_field["slug"]) {
-				
-				// Slug is found. Get and return values.
-				$saved_values = $one_field_group_field["saved_values"];
-				
-				// If no values just return
-				if (!sizeof($saved_values)) return;
-				
-				/*
-					For old/core/legacy fields it's like this:
-					Array
-					(
-					    [0] => Entered text into field one
-					    [1] => Entered text into field two
-					)
-					
-					For new/cool/custom field types it's like this:
-					Array
-					(
-					    [0] => Array
-					        (
-					            [option1] => Yeah
-					            [option2] => aha
-					        )
-					
-					    [1] => Array
-					        (
-					            [option1] => hejhopp
-					            [option2] => snopp-pop
-					        )
-					)
-				*/
-				// If first element is an array then it's a new cool and funky custom field value
-				if (is_array($saved_values[0])) {
-					// custom field type. should it be responsible for the return of the values?
-					// some fields may have several stuff entered in the. some just one thing. we don't want to guess!
-					
-					// Use the custom field object to output this value, since we can't guess how the data is supposed to be used
-					$custom_field_type = $sf->registered_field_types[$one_field_group_field["type"]];
-					
-					return $custom_field_type->return_values($saved_values);
-					
-					#return $saved_values;
-				} else {
-					// legace/core field type
-					return $saved_values;
-				}
-
-			}
-		}
-	}
-
-	
-}
-
-
-
-// Some debug functions
-if (simple_fields::DEBUG_ENABLED) {
-
-	// Outputs the names of the post connectors attached to the post you view + outputs the values
-	add_filter("the_content", "simple_fields_value_get_functions_test");
-	function simple_fields_value_get_functions_test($content) {
-	
-		$post_connector_with_values = simple_fields_get_all_fields_and_values_for_post(get_the_ID());
-		foreach ($post_connector_with_values["field_groups"] as $one_field_group) {
-			if ($one_field_group["deleted"]) continue;
-			foreach ($one_field_group["fields"] as $one_field) {
-				if ($one_field["deleted"]) continue;
-				echo "<hr>";
-				echo "Field Name: <b>" . $one_field["name"] . "</b>";
-				echo " | Field Slug: <b>" . $one_field["slug"] . "</b>";
-				#echo '<br>function to use to get first/one value:';
-				#echo '<br><code>simple_fields_value("'.$one_field["slug"].'");</code>';
-				#echo '<br>function to use to get all values, as array:';
-				#echo '<br><code>simple_fields_values("'.$one_field["slug"].'");</code>';
-				#echo "<br><b>saved values</b>:";
-				#sf_d($one_field["saved_values"]);
-				
-				echo "<br><b>simple_fields_values('".$one_field["slug"]."')</b>:";
-				sf_d( simple_fields_values($one_field["slug"]) );
-
-				echo "<b>simple_fields_value('".$one_field["slug"]."')</b>:";
-				sf_d( simple_fields_value($one_field["slug"]) );
-				
-			}
-			#$fieldgroup_values = simple_fields_get_post_group_values(get_the_ID(), $one_field_group["id"], false, 2);
-			#echo "<p>Simple Fields, Field Group name: <b>" . $one_field_group["name"] . "</b></p>";
-			#echo "<p>Values in this Field Group:</p>";
-			#sf_d($fieldgroup_values);
-		}
-		
-		return $content;
-	}
-
-}
 
 // Boot it up!
 $sf = new simple_fields();

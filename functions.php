@@ -198,25 +198,19 @@ function simple_fields_get_all_fields_and_values_for_post($post_id) {
 		// loop through all fields within this field group
 		// now find out how many times this field group has been added
 		// can be zero, 1 and several (if field group is repeatable)
-	
 		$num_added_field_groups = 0;
+
 		while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
 			$num_added_field_groups++;
 		}
-		
+
 		// now fetch the stored values, one field at a time
 		for ($num_in_set = 0; $num_in_set < $num_added_field_groups; $num_in_set++) {
-			/* echo "<pre>";
-			var_dump($one_field_group["id"]);
-			var_dump(array_keys($selected_post_connector["field_groups"]));
-			var_dump($selected_post_connector["field_groups"]);
-			var_dump($selected_post_connector["field_groups"][$one_field_group["id"]]);
-			*/
+
 			// fetch value for each field
 			foreach ($selected_post_connector["field_groups"][$one_field_group["id"]]["fields"] as $one_field_id => $one_field_value) {
 
 				$custom_field_key = "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_{$one_field_id}_numInSet_{$num_in_set}";
-				
 				$saved_value = get_post_meta($post_id, $custom_field_key, true); // empty string if does not exist
 
 				if ($one_field_value["type"] == "textarea") {
@@ -550,7 +544,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 	
 	$highest_connector_id = 0;
 	foreach ($post_connectors as $oneConnector) {
-		if ($oneConnector["key"] == $unique_name) {
+		if ($oneConnector["key"] == $unique_name && !empty($unique_name)) {
 			// Connector already exists
 			$connector_id = $oneConnector["id"];
 		} else if (!isset($connector_id) && $oneConnector["id"] > $highest_connector_id) {
@@ -697,4 +691,229 @@ function simple_fields_register_post_type_default($connector_id_or_special_type 
 
 }
 
+
+/**
+ * Update/Set a value for a field for a post
+ * Warning: Highly untested!
+ *
+ * @param int $post_id
+ * @param string $field_slug field key
+ * @param int $numInSet if field is repeatable this tells what position it should be stored at. Default is null = add new
+ * @param mixed $post_connector string __none__, __inherit__, or int id of post connector to use for this post, if no connector is defined already
+ * @param probably array @new_value A bit sneaky, since every field can store it's field in it's own way. An array with key -> value is not that uncommon and is a pretty good guess.
+ *		  the map plugins stores it like this anyway:
+ * 			Array
+ * 			(
+ * 			    [lat] => 59.94765909298758
+ * 			    [lng] => 17.537915482803328
+ * 			)
+ */
+function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $new_post_connector = null, $new_value) {
+
+	global $sf;
+	
+	// First check the post connector for this post
+	// The post must have a connector or there will be problems getting the saved values
+	$post = get_post($post_id);
+	$saved_connector = get_post_meta($post->ID, "_simple_fields_selected_connector", true);
+	// $selected_connector = $sf->get_selected_connector_for_post($post);
+	$default_connector_to_use = $sf->get_default_connector_for_post_type($post->post_type);
+
+	// if no saved connector, set it to $post_connector.
+	// if no $post_connector, set it to default connector to use
+	$set_post_connector_to = null;
+	if (empty($saved_connector)) {
+		
+		if (empty($new_post_connector)) {
+			$set_post_connector_to = $default_connector_to_use;
+		} else {
+			$set_post_connector_to = $new_post_connector;
+		}
+		
+		update_post_meta($post->ID, "_simple_fields_selected_connector", $set_post_connector_to);			
+
+	}
+	
+	// Loop through the field groups that this post connector has and locate the field_slug we are looking for
+	$post_connector_info = simple_fields_get_all_fields_and_values_for_post($post_id);
+	foreach ($post_connector_info["field_groups"] as $one_field_group) {
+
+		// Loop the fields in this field group
+		foreach ($one_field_group["fields"] as $one_field_group_field) { 
+			
+			// Skip deleted fields
+			if ($one_field_group_field["deleted"]) continue;
+			
+			if ($field_slug === $one_field_group_field["slug"]) {
+				
+				// Found field with selected slug
+				
+				$field_group_id = $one_field_group["id"];
+				$field_id = $one_field_group_field["id"];
+				
+				// check number of added field groups
+		        $num_added_field_groups = 0; 
+		        while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
+		            $num_added_field_groups++;
+		        }
+		        
+		        if (empty($new_numInSet)) {
+			        $num_in_set = $new_numInSet;
+		        } else {
+			        $num_in_set = $num_added_field_groups;			        
+		        }
+
+				update_post_meta($post_id, "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_{$field_id}_numInSet_{$num_in_set}", $new_value);
+				update_post_meta($post_id, "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_added_numInSet_{$num_in_set}", 1);
+
+				// value updated. exit function.
+				return;
+
+			} // if
+			
+		} // foreach
+		
+	} // foreach
+}
+
+
+/**
+ * Gets a single value.
+ * The first value if field group is repeatable
+ */
+function simple_fields_value($field_slug = NULL, $post_id = NULL) {
+	$values = simple_fields_values($field_slug, $post_id);
+	$value = $values[0];
+	return $value;
+}
+
+/**
+ * Gets all values as array
+ */
+function simple_fields_values($field_slug = NULL, $post_id = NULL) {
+	
+	if (empty($field_slug)) {
+		return FALSE;
+	}
+	
+	if (is_null($post_id)) {
+		$post_id = get_the_ID();
+	}
+	
+	global $sf;
+	
+	// Post connector for this post, with lots of info
+	$post_connector_info = simple_fields_get_all_fields_and_values_for_post($post_id);
+#sf_d($post_connector_info);
+	// Loop through the field groups that this post connector has and locate the field_slug we are looking for
+	foreach ($post_connector_info["field_groups"] as $one_field_group) {
+		// Loop the fields in this field group
+		foreach ($one_field_group["fields"] as $one_field_group_field) { 
+			
+			// Skip deleted fields
+			if ($one_field_group_field["deleted"]) continue;
+			
+			if ($field_slug === $one_field_group_field["slug"]) {
+				
+				// Slug is found. Get and return values.
+				$saved_values = $one_field_group_field["saved_values"];
+				
+				// If no values just return
+				if (!sizeof($saved_values)) return;
+				
+				/*
+					For old/core/legacy fields it's like this:
+					Array
+					(
+					    [0] => Entered text into field one
+					    [1] => Entered text into field two
+					)
+					
+					For new/cool/custom field types it's like this:
+					Array
+					(
+					    [0] => Array
+					        (
+					            [option1] => Yeah
+					            [option2] => aha
+					        )
+					
+					    [1] => Array
+					        (
+					            [option1] => hejhopp
+					            [option2] => snopp-pop
+					        )
+					)
+				*/
+				// If first element is an array then it's a new cool and funky custom field value
+				if (is_array($saved_values[0])) {
+					// custom field type. should it be responsible for the return of the values?
+					// some fields may have several stuff entered in the. some just one thing. we don't want to guess!
+					
+					// Use the custom field object to output this value, since we can't guess how the data is supposed to be used
+					$custom_field_type = $sf->registered_field_types[$one_field_group_field["type"]];
+					
+					return $custom_field_type->return_values($saved_values);
+					
+					#return $saved_values;
+				} else {
+					// legace/core field type
+					return $saved_values;
+				}
+
+			}
+		}
+	}
+
+	
+}
+
+
+
+// Some debug functions
+if (simple_fields::DEBUG_ENABLED) {
+
+	// Outputs the names of the post connectors attached to the post you view + outputs the values
+	add_filter("the_content", "simple_fields_value_get_functions_test");
+	function simple_fields_value_get_functions_test($content) {
+	
+		$post_connector_with_values = simple_fields_get_all_fields_and_values_for_post(get_the_ID());
+		if ($post_connector_with_values) {
+			foreach ($post_connector_with_values["field_groups"] as $one_field_group) {
+				if ($one_field_group["deleted"]) continue;
+				foreach ($one_field_group["fields"] as $one_field) {
+					if ($one_field["deleted"]) continue;
+					$content .= "<hr>";
+					$content .=  "Found Simple Fields Field:";
+					$content .=  "<br><br>Name: <b>" . $one_field["name"] . "</b>";
+					$content .=  "<br>Slug: <b>" . $one_field["slug"] . "</b>";
+					#echo '<br>function to use to get first/one value:';
+					#echo '<br><code>simple_fields_value("'.$one_field["slug"].'");</code>';
+					#echo '<br>function to use to get all values, as array:';
+					#echo '<br><code>simple_fields_values("'.$one_field["slug"].'");</code>';
+					#echo "<br><b>saved values</b>:";
+					#sf_d($one_field["saved_values"]);
+					
+					$content .= "<br><br>Use <code><b>simple_fields_values('".$one_field["slug"]."')</b> to get:</code>:";
+					ob_start();
+					sf_d( simple_fields_values($one_field["slug"]) );
+					$content .= ob_get_clean();
+	
+					$content .= "<br>Use <code><b>simple_fields_value('".$one_field["slug"]."')</b> to get:</code>:";
+					ob_start();
+					sf_d( simple_fields_value($one_field["slug"]) );
+					$content .= ob_get_clean();
+					
+				}
+				#$fieldgroup_values = simple_fields_get_post_group_values(get_the_ID(), $one_field_group["id"], false, 2);
+				#echo "<p>Simple Fields, Field Group name: <b>" . $one_field_group["name"] . "</b></p>";
+				#echo "<p>Values in this Field Group:</p>";
+				#sf_d($fieldgroup_values);
+			}
+		}
+		
+		return $content;
+	}
+
+}
 
