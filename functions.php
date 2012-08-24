@@ -886,23 +886,27 @@ if (simple_fields::DEBUG_ENABLED) {
 					$content .= "<hr>";
 					$content .=  "Found Simple Fields Field:";
 					$content .=  "<br><br>Name: <b>" . $one_field["name"] . "</b>";
-					$content .=  "<br>Slug: <b>" . $one_field["slug"] . "</b>";
-					#echo '<br>function to use to get first/one value:';
-					#echo '<br><code>simple_fields_value("'.$one_field["slug"].'");</code>';
-					#echo '<br>function to use to get all values, as array:';
-					#echo '<br><code>simple_fields_values("'.$one_field["slug"].'");</code>';
-					#echo "<br><b>saved values</b>:";
-					#sf_d($one_field["saved_values"]);
-					
-					$content .= "<br><br>Use <code><b>simple_fields_values('".$one_field["slug"]."')</b> to get:</code>:";
-					ob_start();
-					sf_d( simple_fields_values($one_field["slug"]) );
-					$content .= ob_get_clean();
-	
-					$content .= "<br>Use <code><b>simple_fields_value('".$one_field["slug"]."')</b> to get:</code>:";
-					ob_start();
-					sf_d( simple_fields_value($one_field["slug"]) );
-					$content .= ob_get_clean();
+					if (isset($one_field["slug"])) {
+						$content .=  "<br>Slug: <b>" . $one_field["slug"] . "</b>";
+						#echo '<br>function to use to get first/one value:';
+						#echo '<br><code>simple_fields_value("'.$one_field["slug"].'");</code>';
+						#echo '<br>function to use to get all values, as array:';
+						#echo '<br><code>simple_fields_values("'.$one_field["slug"].'");</code>';
+						#echo "<br><b>saved values</b>:";
+						#sf_d($one_field["saved_values"]);
+						
+						$content .= "<br><br>Use <code><b>simple_fields_values('".$one_field["slug"]."')</b> to get:</code>:";
+						ob_start();
+						sf_d( simple_fields_values($one_field["slug"]) );
+						$content .= ob_get_clean();
+		
+						$content .= "<br>Use <code><b>simple_fields_value('".$one_field["slug"]."')</b> to get:</code>:";
+						ob_start();
+						sf_d( simple_fields_value($one_field["slug"]) );
+						$content .= ob_get_clean();
+					} else {
+						$content .= "<br>No slug for this field found (probably old field that has not been edited and saved).";
+					}
 					
 				}
 				#$fieldgroup_values = simple_fields_get_post_group_values(get_the_ID(), $one_field_group["id"], false, 2);

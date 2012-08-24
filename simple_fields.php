@@ -758,9 +758,16 @@ class simple_fields {
 					
 					} // field types
 					
-					// @todo: what's this div for? document it bitte!
+					// Output hidden field that can be shown with JS to see the name and slug of a field
 					?>
-					<div class="simple-fields-metabox-field-custom-field-key hidden highlight"><strong><?php _e('Meta key:', 'simple-fields') ?></strong> <?php echo $custom_field_key ?></div>
+					<div class="simple-fields-metabox-field-custom-field-key hidden highlight">
+						<strong><?php _e('Meta key:', 'simple-fields') ?></strong>
+						<?php echo $custom_field_key ?>
+						<?php if (isset($field["slug"])) { ?>
+							<br><strong><?php _e('Field slug:', 'simple-fields') ?></strong>
+							<?php echo $field["slug"] ?>
+						<?php } ?>
+					</div>
 				</div><!-- // end simple-fields-metabox-field -->
 				<?php
 			} // foreach
