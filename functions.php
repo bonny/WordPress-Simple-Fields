@@ -103,9 +103,11 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 function simple_fields_get_post_group_values($post_id, $field_group_name_or_id, $use_name = true, $return_format = 1) {
 
 	$fetch_by_id = false;
-	if (is_int($field_group_name_or_id)) {
+	if (is_numeric($field_group_name_or_id)) {
+		$field_group_name_or_id = (int) $field_group_name_or_id;
 		$fetch_by_id = true;
 	}
+
 	$connector = simple_fields_get_all_fields_and_values_for_post($post_id);
 
 	if (!$connector) {
@@ -895,12 +897,12 @@ if (simple_fields::DEBUG_ENABLED) {
 						#echo "<br><b>saved values</b>:";
 						#sf_d($one_field["saved_values"]);
 						
-						$content .= "<br><br>Use <code><b>simple_fields_values('".$one_field["slug"]."')</b> to get:</code>:";
+						$content .= "<br><br>Use <code><b>simple_fields_values('".$one_field["slug"]."')</b></code> to get:";
 						ob_start();
 						sf_d( simple_fields_values($one_field["slug"]) );
 						$content .= ob_get_clean();
 		
-						$content .= "<br>Use <code><b>simple_fields_value('".$one_field["slug"]."')</b> to get:</code>:";
+						$content .= "<br>Use <code><b>simple_fields_value('".$one_field["slug"]."')</b></code> to get:";
 						ob_start();
 						sf_d( simple_fields_value($one_field["slug"]) );
 						$content .= ob_get_clean();

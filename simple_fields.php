@@ -446,7 +446,7 @@ class simple_fields {
 					if ("checkbox" == $field["type"]) {
 		
 						if ($use_defaults) {
-							$checked = $field["type_checkbox_options"]["checked_by_default"];
+							$checked = @$field["type_checkbox_options"]["checked_by_default"];
 						} else {
 							$checked = (bool) $saved_value;
 						}
@@ -465,7 +465,7 @@ class simple_fields {
 						echo "<label>" . $field["name"] . "</label>";
 						echo $description;
 						$radio_options = $field["type_radiobuttons_options"];
-						$radio_checked_by_default_num = $radio_options["checked_by_default_num"];
+						$radio_checked_by_default_num = @$radio_options["checked_by_default_num"];
 	
 						$loopNum = 0;
 						foreach ($radio_options as $one_radio_option_key => $one_radio_option_val) {
@@ -1611,7 +1611,7 @@ class simple_fields {
 						$radio_buttons_highest_id = $radiobutton_num;
 					}
 					$radiobutton_val = esc_html($val["value"]);
-					$checked = ($key == $field_type_radiobuttons_options["checked_by_default_num"]) ? " checked='checked' " : "";
+					$checked = ($key == @$field_type_radiobuttons_options["checked_by_default_num"]) ? " checked='checked' " : "";
 					$radio_buttons_added .= "
 						<li>
 							<div class='simple-fields-field-type-options-radiobutton-handle'></div>
