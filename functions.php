@@ -848,16 +848,16 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL) {
 					)
 				*/
 				// If first element is an array then it's a new cool and funky custom field value
-				if (is_array($saved_values[0])) {
+				// Oups, some old types have arrays to, like taxonomyterm
+				// So this should work: if the type is among the registered_field_types then use it
+				if (isset($sf->registered_field_types[$one_field_group_field["type"]]) && is_array($saved_values[0])) {
 					// custom field type. should it be responsible for the return of the values?
 					// some fields may have several stuff entered in the. some just one thing. we don't want to guess!
 					
 					// Use the custom field object to output this value, since we can't guess how the data is supposed to be used
 					$custom_field_type = $sf->registered_field_types[$one_field_group_field["type"]];
-					
 					return $custom_field_type->return_values($saved_values);
-					
-					#return $saved_values;
+
 				} else {
 					// legace/core field type
 					return $saved_values;
