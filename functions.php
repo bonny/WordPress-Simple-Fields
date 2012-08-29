@@ -783,8 +783,8 @@ function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $n
  * Gets a single value.
  * The first value if field group is repeatable
  */
-function simple_fields_value($field_slug = NULL, $post_id = NULL) {
-	$values = simple_fields_values($field_slug, $post_id);
+function simple_fields_value($field_slug = NULL, $post_id = NULL, $options = NULL) {
+	$values = simple_fields_values($field_slug, $post_id, $options);
 	$value = $values[0];
 	return $value;
 }
@@ -792,7 +792,7 @@ function simple_fields_value($field_slug = NULL, $post_id = NULL) {
 /**
  * Gets all values as array
  */
-function simple_fields_values($field_slug = NULL, $post_id = NULL) {
+function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NULL) {
 	
 	if (empty($field_slug)) {
 		return FALSE;
@@ -856,7 +856,7 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL) {
 					
 					// Use the custom field object to output this value, since we can't guess how the data is supposed to be used
 					$custom_field_type = $sf->registered_field_types[$one_field_group_field["type"]];
-					return $custom_field_type->return_values($saved_values);
+					return $custom_field_type->return_values($saved_values, $options);
 
 				} else {
 					// legace/core field type
