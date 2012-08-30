@@ -2444,8 +2444,25 @@ class simple_fields {
 		<?php
 	} // end func simple_fields_options
 
+
+	/**
+	 * Add the admin menu page for simple fields
+	 * If you want to hide this for some reason (maybe you are a theme developer that want to use simple fields, but not show the options page to your users)
+	 * you can add a filter like this:
+	 *
+	 * add_filter("simple-fields-add-admin-menu", function($bool) {
+	 *     return FALSE;
+	 * });
+	 *
+	 */
 	function admin_menu() {
-		add_submenu_page( 'options-general.php' , SIMPLE_FIELDS_NAME, SIMPLE_FIELDS_NAME, "administrator", "simple-fields-options", array($this, "options_page"));
+				
+		$show_submenu_page = TRUE;
+		$show_submenu_page = apply_filters("simple-fields-add-admin-menu", $show_submenu_page);
+		if ($show_submenu_page) {
+			add_submenu_page( 'options-general.php' , SIMPLE_FIELDS_NAME, SIMPLE_FIELDS_NAME, "administrator", "simple-fields-options", array($this, "options_page"));
+		}
+		
 	}
 
 
