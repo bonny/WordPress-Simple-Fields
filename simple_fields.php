@@ -98,6 +98,21 @@ class simple_fields {
 		do_action("simple_fields_register_field_types");
 	}
 
+	/**
+	 * Gets the pattern that are allowed for slugs
+	 * @return string
+	 */
+	function get_slug_pattern() {
+		return "[A-Za-z_]+";
+	}
+	
+	/**
+	 * Get the title for a slug
+	 * I.e. the help text that the input field will show when the slug pattern is not matched
+	 */
+	function get_slug_title() {
+		return __("Allowed chars: a-z and underscore.", 'simple-fields');
+	}
 	
 	/**
 	 * Returns a post connector
@@ -1468,10 +1483,11 @@ class simple_fields {
 					type='text' class='regular-text' 
 					name='field[{$fieldID}][slug]' 
 					value='{$field_slug}' 
-					pattern='[A-Za-z_]+'
+					pattern='".$this->get_slug_pattern()."'
+					title='".$this->get_slug_title()."'
 					required
 					 /> 
-				<br><span class='description'>" . __('The slug is a unique identifier used in your theme to get the saved values of this field. It must only contain characters between A and Z.', 'simple-fields') . "</span>
+				<br><span class='description'>" . __('A unique identifier used in your theme to get the saved values of this field.', 'simple-fields') . "</span>
 			</div>
 			
 			<div class='simple-fields-field-group-one-field-row'>
@@ -1993,7 +2009,8 @@ class simple_fields {
 							<td>
 								<input 	type="text" name="post_connector_slug" id="post_connector_slug" class="regular-text" 
 										value="<?php echo esc_html(@$post_connector_in_edit["slug"]) ?>"
-										pattern='[A-Za-z_]+'
+										pattern='<?php echo $this->get_slug_pattern() ?>'
+										title='<?php echo $this->get_slug_title() ?>'
 										required
 										 />
 								 <br>
@@ -2178,11 +2195,13 @@ class simple_fields {
 							<td>
 								<input 	type="text" name="field_group_slug" id="field_group_slug" class="regular-text" 
 										value="<?php echo esc_html(@$field_group_in_edit["slug"]) ?>"
-										pattern='[A-Za-z_]+'
+										pattern='<?php echo $this->get_slug_pattern() ?>'
+										title='<?php echo $this->get_slug_title() ?>'
 										required
+										title="<?php _e("Allowed chars: a-z and underscore.", 'simple-fields') ?>"
 										 />
 								 <br>
-								 <span class="description"><?php echo __("A unique identifier for this field group", 'simple-fields') ?></span>
+								 <span class="description"><?php echo __("A unique identifier for this field group.", 'simple-fields') ?></span>
 							</td>
 						</tr>
 
