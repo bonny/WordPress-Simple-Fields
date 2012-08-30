@@ -1143,7 +1143,7 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 					$is_found = true;
 				}
 	
-				$saved_values = $one_field["saved_values"];
+				$saved_values = isset($one_field["saved_values"]) ? $one_field["saved_values"] : null;
 	
 				if ($one_field["type"] == "radiobuttons" || $one_field["type"] == "dropdown") {
 					if ($one_field["type"] == "radiobuttons") {
