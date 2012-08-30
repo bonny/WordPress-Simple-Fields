@@ -166,9 +166,17 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 == Changelog ==
 
 #### 0.x
-- Added: German translation by Johann Heyne (http://johannheyne.de). Thanks a lot!
-- Fixed: Various bugfixes.
+- This is a pretty big update, so please backup your databases before installation!
+- Added: Support for adding Custom Field Types/Field Type extensions.
 - Added: New functions for registering field groups and fields in php, see example usage.
+- Added: new better/easier functions for getting the saved values for a post: simple_fields_value() and simple_fields_values()
+- Added: field slugs and field group slugs. Now you can use the slug instead of the id to get the values.
+- Added: added CSS classes to field groups in admin area, so developers can style things there.
+- Added: actions so developers can modify parts of Simple Fields behavior.
+- Added: German translation by Johann Heyne (http://johannheyne.de). Thanks a lot!
+- Added: Various fixes here and there.
+- Fixed: Simple Fields is now mostly a class.
+- Fixed: Various bugfixes.
 
 #### 0.5
 - Added: New function: simple_fields_query_posts(). Fetch and sort posts by simple fields value.

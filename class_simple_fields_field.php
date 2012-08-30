@@ -83,6 +83,8 @@ class simple_fields_field {
 	/**
 	 * Possibly modify values before returning them
 	 * Used from functions simple_fields_value and simple_fields_values
+	 * $values is an array beginning at 0, for each field,
+	 * so loop to change all your values (there are several if using repeatable)
 	 */
 	function return_values($values) {
 		// Simply return values if not redefined by child class
