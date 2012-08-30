@@ -25,10 +25,6 @@ License: GPL2
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-
-load_plugin_textdomain( 'simple-fields', null, basename(dirname(__FILE__)).'/languages/');
-
-
 /**
  * Class to keep all simple fields stuff together a bit better
  */ 
@@ -36,6 +32,7 @@ class simple_fields {
 
 	const DEBUG_ENABLED = true; // set to true to enable some debug output
 	const DEBUG_POST_ENABLED = true; // set to true to enable output of field info on posts automatically
+	// @todo: post debug should be an option to enable somewhere else. where? functions.php or gui?
 	
 	public 
 
@@ -58,6 +55,9 @@ class simple_fields {
 		define( "SIMPLE_FIELDS_NAME", "Simple Fields");
 		define( "SIMPLE_FIELDS_VERSION", "0.x");
 
+
+		load_plugin_textdomain( 'simple-fields', null, basename(dirname(__FILE__)).'/languages/');
+		
 		require( dirname(__FILE__) . "/functions.php" );
 		require( dirname(__FILE__) . "/class_simple_fields_field.php" );
 		require( dirname(__FILE__) . "/field_types/field_example.php" );
@@ -2331,7 +2331,7 @@ class simple_fields {
 								echo "<li>";
 								echo "<a href='" . SIMPLE_FIELDS_FILE . "&amp;action=edit-field-group&amp;group-id=$oneFieldGroup[id]'>$oneFieldGroup[name]</a>";
 								if ($oneFieldGroup["fields_count"]) {
-									$format = $oneFieldGroup["repeatable"] ? _n('One added field, repeatable', '%d added fields, repeatable', $oneFieldGroup["fields_count"]) : _n('One added field', '%d added fields', $oneFieldGroup["fields_count"]);
+									$format = $oneFieldGroup["repeatable"] ? _n('1 added field, repeatable', '%d added fields, repeatable', $oneFieldGroup["fields_count"]) : _n('One added field', '%d added fields', $oneFieldGroup["fields_count"]);
 									echo "<br>" . __( sprintf($format, $oneFieldGroup["fields_count"]) );
 								}
 								echo "</li>";
