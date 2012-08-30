@@ -35,6 +35,7 @@ load_plugin_textdomain( 'simple-fields', null, basename(dirname(__FILE__)).'/lan
 class simple_fields {
 
 	const DEBUG_ENABLED = true; // set to true to enable some debug output
+	const DEBUG_POST_ENABLED = true; // set to true to enable output of field info on posts automatically
 	
 	public 
 

@@ -18,7 +18,7 @@ function sf_d($var) {
 	} else if( is_null($var) ) {
 		echo "Var is NULL";
 	} else {
-		echo $var;
+		echo htmlspecialchars( $var, ENT_QUOTES, 'UTF-8' );
 	}
 	echo "</pre>";
 }
@@ -656,7 +656,7 @@ function simple_fields_register_post_type_default($connector_id_or_special_type 
 
 	global $sf;
 
-	simple_fields::debug("simple_fields_register_post_type_default()", array("post_type_connector" => $connector_id_or_special_type, "post_type" => $post_type));
+	// simple_fields::debug("simple_fields_register_post_type_default()", array("post_type_connector" => $connector_id_or_special_type, "post_type" => $post_type));
 
 	if (is_numeric($connector_id_or_special_type)) {
 		
@@ -891,53 +891,68 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 
 
 // Some debug functions
-if (simple_fields::DEBUG_ENABLED) {
+if (simple_fields::DEBUG_POST_ENABLED) {
 
 	// Outputs the names of the post connectors attached to the post you view + outputs the values
 	add_filter("the_content", "simple_fields_value_get_functions_test");
 	function simple_fields_value_get_functions_test($content) {
-	
+		
+		$output_all = "";
+		$field_count = 0;
+		
 		$post_connector_with_values = simple_fields_get_all_fields_and_values_for_post(get_the_ID());
 		if ($post_connector_with_values) {
 			foreach ($post_connector_with_values["field_groups"] as $one_field_group) {
 				if ($one_field_group["deleted"]) continue;
 				foreach ($one_field_group["fields"] as $one_field) {
 					if ($one_field["deleted"]) continue;
-					#$content .= "<hr>";
-					$content .=  "<br>Found Simple Fields Field:";
-					$content .=  " name: <b>" . $one_field["name"] . "</b>";
-					$content .=  " | type: <b>" . $one_field["type"] . "</b>";
+					$field_count++;
+					$content = "";
+					$content .= "<ul style='background:#eee;padding:.5em;'>";
+					$content .= "<li><b>" . $one_field["name"] . "</b><ul>";
+					$content .= "<li>Type <b>" . $one_field["type"] . "</b>";
 					if (isset($one_field["slug"])) {
-						$content .=  " | slug: <b>" . $one_field["slug"] . "</b>";
-						#echo '<br>function to use to get first/one value:';
-						#echo '<br><code>simple_fields_value("'.$one_field["slug"].'");</code>';
-						#echo '<br>function to use to get all values, as array:';
-						#echo '<br><code>simple_fields_values("'.$one_field["slug"].'");</code>';
-						#echo "<br><b>saved values</b>:";
-						#sf_d($one_field["saved_values"]);
+						$content .=  "<li>Slug <b>" . $one_field["slug"] . "</b>";
 						
-						$content .= "<br>Use <code><b>simple_fields_values('".$one_field["slug"]."')</b></code> to get:";
+						$content .= "<li>Use <code><b>simple_fields_values('".$one_field["slug"]."')</b></code> to get:";
 						ob_start();
 						sf_d( simple_fields_values($one_field["slug"]) );
 						$content .= ob_get_clean();
 		
-						$content .= "<br>Use <code><b>simple_fields_value('".$one_field["slug"]."')</b></code> to get:";
+						$content .= "<li>Use <code><b>simple_fields_value('".$one_field["slug"]."')</b></code> to get:";
 						ob_start();
 						sf_d( simple_fields_value($one_field["slug"]) );
 						$content .= ob_get_clean();
 					} else {
-						$content .= "<br>No slug for this field found (probably old field that has not been edited and saved).";
+						$content .= "<li>No slug for this field found (probably old field that has not been edited and saved).";
 					}
-					
+					$content .= "</ul></ul>";
+					$output_all .= $content;
 				}
-				#$fieldgroup_values = simple_fields_get_post_group_values(get_the_ID(), $one_field_group["id"], false, 2);
-				#echo "<p>Simple Fields, Field Group name: <b>" . $one_field_group["name"] . "</b></p>";
-				#echo "<p>Values in this Field Group:</p>";
-				#sf_d($fieldgroup_values);
 			}
 		}
 		
-		return $content;
+		if ($output_all) {
+			?>
+			<script>
+			window.simple_fields_post_debug_show_hide = window.simple_fields_post_debug_show_hide || function(t) {
+				var $t = jQuery(t);
+				var $div_wrap = $t.closest("div.simple-fields-post-debug-wrap");
+				$div_wrap.find("div.simple-fields-post-debug-content").toggle("fast");
+				return false;
+			}
+			</script>
+			<?php
+			
+			$output_all = '
+				<div class="simple-fields-post-debug-wrap">
+					This post has ' . $field_count . ' Simple Fields-fields attached. <a href="#" onclick="return simple_fields_post_debug_show_hide(this);">Show fields.</a>
+					<div class="simple-fields-post-debug-content" style="display:none;">'.$output_all.'</div>
+				</div>
+				';
+		}
+		
+		return $output_all;
 	}
 
 }
