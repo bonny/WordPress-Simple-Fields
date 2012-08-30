@@ -419,12 +419,12 @@ function simple_fields_merge_arrays($array1 = array(), $array2 = array()) {
 
 /**
  * Adds a new field group
- * @todo: this functions could use a bit more documentation. i'm kinda lost trying to follow it :=) /Pär
+ * @todo: this function could use a bit more documentation. i'm kinda lost trying to follow it :=) /Pär
  * @param string $unique_name the slug of this field group
  * @param array $new_field_group settings/options for the new group
  * @param return the new field group as an array
  */
-function simple_fields_register_field_group($unique_name = "", $new_field_group = array()) {
+function simple_fields_register_field_group($slug = "", $new_field_group = array()) {
 	
 	global $sf;
 	
@@ -432,20 +432,24 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 
 	$highest_id = 0;
 
-	foreach ($field_groups as $oneGroup) {
-	
-		if ($oneGroup["key"] == $unique_name && !empty($unique_name)) {
+	// First get the id of the field group we are adding. Existing or highest new.
+	// Loop through all existing field groups to see if the field group we are adding already exists
+	// Exists = an existing field group has the same slug as the group we are adding
+	foreach ($field_groups as $oneGroup) {	
+		if ($oneGroup["slug"] == $slug && !empty($slug)) {
 			// Field group already exists
-
 			// @todo: but if we don't have a unique name when we are creating a new connector
 			// and there are old connectors with no names either
-
 			$field_group_id = $oneGroup["id"];
+			// We found our group, no need to loop further
+			break;
 		} else if (!isset($field_group_id) && $oneGroup["id"] > $highest_id) {
+			// We have not found a field id yet and the id of the current group is higher than the current highest id
 			$highest_id = $oneGroup["id"];
 		}
 	}
 
+	// If the highest id is not found or not numeric
 	if (!isset($field_group_id) || !is_numeric($field_group_id)) {
 		if (!empty($field_groups[$highest_id]) || $highest_id > 0) {
 			$highest_id++;
@@ -453,23 +457,27 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 		$field_group_id = $highest_id;
 	}
 
-	// if $highest_id = 0 here then this is a new field group that is created
-	// the first group gets id 1
+	// If $highest_id = 0 here then this is a new field group that is created
+	// So the first group gets id 1
 	if ($highest_id === 0) {
 		$field_group_id = 1;
 	}
 	
-	if (empty($unique_name)) {
-		$unique_name = "field_group_" . $field_group_id;
+	// Set default values for slug and name
+	if (empty($slug)) {
+		// Make sure that the field group gets a slug
+		$slug = "field_group_" . $field_group_id;
 	} else if (!isset($new_field_group["name"]) || empty($new_field_group["name"])) {
-		$new_field_group["name"] = $unique_name;
+		// If no name is given the field group, use the slug as name
+		$new_field_group["name"] = $slug;
 	}
 	
 	if (!isset($field_groups[$field_group_id])) {
+		// Set up default values if this is a new field group
 		$field_group_defaults = array(
 			"id" => $field_group_id,
-			"key" => $unique_name,
-			"slug" => $unique_name,
+			"key" => $slug,
+			"slug" => $slug,
 			"name" => "Unnamed field group $field_group_id",
 			"description" => "",
 			"repeatable" => false,
@@ -480,15 +488,22 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 		$field_group_defaults = $field_groups[$field_group_id];
 	}
 	
+	// Merge the new values with the old values
+	// Let the new values overwrite the hold ones
+	// @todo: Should not http://codex.wordpress.org/Function_Reference/wp_parse_args work for this?
 	$field_groups[$field_group_id] = simple_fields_merge_arrays($field_group_defaults, $new_field_group);
 
+	// If the field group has an array of fields
+	// @todo: should check slug here, it does some wierd index thingie instead
 	if (isset($new_field_group["fields"]) && is_array($new_field_group["fields"]) && !empty($new_field_group["fields"])) {
 
 		$fields = array();
 		$field_id = 0;
 
+		// Loop through all fields
 		foreach($new_field_group["fields"] as $oneField) {
-
+			
+			// Set up default values for this field
 			$fields[$field_id] = array();
 			$field_slug = "field_$field_id";
 			$field_defaults = array(
@@ -507,11 +522,14 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 					"deleted" => 0
 			);
 			
+			// If a field with this index/id exists then merge that fields values with our default values
 			if (isset($field_groups[$field_group_id]['fields'][$field_id])) {
 				$field_defaults = simple_fields_merge_arrays($field_defaults, $field_groups[$field_group_id]['fields'][$field_id]);
 			}
-
+			
+			// Do wierd stuff with field default values
 			foreach($field_defaults as $oneDefaultFieldKey => $oneDefaultFieldValue) {
+				
 				if ($oneDefaultFieldKey == "id") {
 					$fields[$field_id]["id"] = $field_id;
 				} else {
@@ -520,11 +538,17 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 					}
 					
 				}
+				
+				// If the default key is an array
 				if (isset($oneField[$oneDefaultFieldKey]) && is_array($oneField[$oneDefaultFieldKey]) && !empty($oneField[$oneDefaultFieldKey])) {
+
+					// If this is an array with options for a field type
+					// For example "type_post_options" or "type_taxonomyterm_options"
 					$options_type = preg_replace("/type_([a-z]+)_options/i", '$1', $oneDefaultFieldKey);
 					if (!empty($options_type)) {
+					
 						foreach(array_keys($oneField[$oneDefaultFieldKey]) as $optionKey) {
-							//echo "<pre>" . print_r($fields[$field_id][$oneDefaultFieldKey][$optionKey], true) . "</pre>";
+
 							if (is_numeric($optionKey)) {
 								$newOptionKey = $options_type . "_num_" . $optionKey;
 								$fields[$field_id][$oneDefaultFieldKey][$newOptionKey] = $oneField[$oneDefaultFieldKey][$optionKey];
@@ -537,16 +561,21 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 								}
 							}
 							
-						}
+						} // foreach
+						
 					}
 				}
+				
 				if (!isset($fields[$field_id][$oneDefaultFieldKey])) {
 					$fields[$field_id][$oneDefaultFieldKey] = $oneDefaultFieldValue;
 				}
 			}
+			
 			$field_id++;
 		}
+		
 		$field_groups[$field_group_id]["fields"] = $fields;
+		
 	}
 
 	update_option("simple_fields_groups", $field_groups);
