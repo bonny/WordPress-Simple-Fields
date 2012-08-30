@@ -172,7 +172,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 - Added: new better/easier functions for getting the saved values for a post: simple_fields_value() and simple_fields_values()
 - Added: field slugs and field group slugs. Now you can use the slug instead of the id to get the values.
 - Added: added CSS classes to field groups in admin area, so developers can style things there.
-- Added: actions so developers can modify parts of Simple Fields behavior.
+- Added: actions and filter so developers can modify parts of Simple Fields behavior.
 - Added: German translation by Johann Heyne (http://johannheyne.de). Thanks a lot!
 - Added: Various fixes here and there.
 - Fixed: Simple Fields is now mostly a class.

@@ -857,23 +857,24 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 					
 					// Use the custom field object to output this value, since we can't guess how the data is supposed to be used
 					$custom_field_type = $sf->registered_field_types[$one_field_group_field["type"]];
-					return $custom_field_type->return_values($saved_values, $options);
+					$saved_values = $custom_field_type->return_values($saved_values, $options);
 
 				} else {
 					
 					// legacy/core field type
-					/*
-					// You can modify the return values by adding a filter for the field types you want to modify
-					// Example: adds "appended text" to all text values upon retrieval
-					add_filter("simple-fields-return-values-text", function($values) {
-						$values[0] = $values[0] . " appended text";
-						return $values;
-					});
-					*/
-					$saved_values = apply_filters("simple-fields-return-values-" . $one_field_group_field["type"], $saved_values);
-					return $saved_values;					
-					
+
 				}
+
+				/*
+				// You can modify the return values by adding a filter for the field type you want to modify
+				// Example: adds "appended text" to all text values upon retrieval
+				add_filter("simple-fields-return-values-text", function($values) {
+					$values[0] = $values[0] . " appended text";
+					return $values;
+				});
+				*/
+				$saved_values = apply_filters("simple-fields-return-values-" . $one_field_group_field["type"], $saved_values);
+				return $saved_values;					
 
 			}
 		}
