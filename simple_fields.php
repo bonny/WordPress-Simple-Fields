@@ -1907,12 +1907,10 @@ class simple_fields {
 			 */
 			if ("edit-post-connector-save" == $action) {
 				if ($_POST) {
-					
-					//d($_POST);
-					#d($post_connectors);
-					
+										
 					$connector_id = (int) $_POST["post_connector_id"];
 					$post_connectors[$connector_id]["name"] = (string) stripslashes($_POST["post_connector_name"]);
+					$post_connectors[$connector_id]["slug"] = (string) ($_POST["post_connector_slug"]);
 					$post_connectors[$connector_id]["field_groups"] = (array) $_POST["added_fields"];
 					$post_connectors[$connector_id]["post_types"] = (array) @$_POST["post_types"];
 					$post_connectors[$connector_id]["hide_editor"] = (bool) @$_POST["hide_editor"];
@@ -1947,7 +1945,6 @@ class simple_fields {
 	
 					$simple_fields_did_save_connector = true;
 				}
-				#$action = "simple-fields-edit-connectors";
 				$action = "";
 			}
 	
@@ -1977,19 +1974,36 @@ class simple_fields {
 					$post_connector_in_edit = $post_connectors[$connector_id];
 				}
 	
-	
-	
-				// echo "<pre>";print_r($post_connector_in_edit);echo "</pre>";
 				?>
 				<h3><?php _e('Post Connector details', 'simple-fields') ?></h3>
 	
 				<form method="post" action="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-post-connector-save">
 	
 					<table class="form-table">
+
 						<tr>
 							<th><label><?php _e('Name', 'simple-fields') ?></label></th>
 							<td><input type="text" id="post_connector_name" name="post_connector_name" class="regular-text" value="<?php echo esc_html($post_connector_in_edit["name"]) ?>" /></td>
 						</tr>
+
+						<tr>
+							<th>
+								<label for="post_connector_slug"><?php _e('Slug', 'simple-fields') ?></label>
+							</th>
+							<td>
+								<input 	type="text" name="post_connector_slug" id="post_connector_slug" class="regular-text" 
+										value="<?php echo esc_html(@$post_connector_in_edit["slug"]) ?>"
+										pattern='[A-Za-z_]+'
+										required
+										 />
+								 <br>
+								 <span class="description"><?php echo __("A unique identifier for this connector", 'simple-fields') ?></span>
+								 <?php
+								 sf_d($post_connector_in_edit);
+								 ?>
+							</td>
+						</tr>
+
 						<tr>
 							<th><?php _e('Field Groups', 'simple-fields') ?></th>
 							<td>
@@ -2170,7 +2184,7 @@ class simple_fields {
 								 <br>
 								 <span class="description"><?php echo __("A unique identifier for this field group", 'simple-fields') ?></span>
 							</td>
-						</th>
+						</tr>
 
 						<tr>
 							<th>
