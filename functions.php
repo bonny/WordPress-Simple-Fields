@@ -402,7 +402,7 @@ function simple_fields_query_posts($query_args = array()) {
 function simple_fields_merge_arrays($array1 = array(), $array2 = array()) {
 	foreach($array2 as $key => $value) {
 		if(is_array($value)) {
-			$array1[$key] = simple_fields_merge_arrays($array1[$key], $array2[$key]);
+			$array1[$key] = @simple_fields_merge_arrays($array1[$key], $array2[$key]);
 		} else {
 			$array1[$key] = $value;
 		}
@@ -503,7 +503,7 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 					}
 					
 				}
-				if (is_array($oneField[$oneDefaultFieldKey]) && !empty($oneField[$oneDefaultFieldKey])) {
+				if (@is_array($oneField[$oneDefaultFieldKey]) && !empty($oneField[$oneDefaultFieldKey])) {
 					$options_type = preg_replace("/type_([a-z]+)_options/i", '$1', $oneDefaultFieldKey);
 					if (!empty($options_type)) {
 						foreach(array_keys($oneField[$oneDefaultFieldKey]) as $optionKey) {
@@ -514,7 +514,7 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 								unset($fields[$field_id][$oneDefaultFieldKey][$optionKey]);
 								$optionKey = $newOptionKey;
 							}
-							if (is_array($fields[$field_id][$oneDefaultFieldKey][$optionKey]) && !empty($fields[$field_id][$oneDefaultFieldKey][$optionKey]["value"])) {
+							if (@is_array($fields[$field_id][$oneDefaultFieldKey][$optionKey]) && !empty($fields[$field_id][$oneDefaultFieldKey][$optionKey]["value"])) {
 								if (!isset($fields[$field_id][$oneDefaultFieldKey][$optionKey]["deleted"])) {
 									$fields[$field_id][$oneDefaultFieldKey][$optionKey]["deleted"] = 0;
 								}
@@ -602,7 +602,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 		foreach($new_post_connector["field_groups"] as $field_group_options) {
 			$field_group_found = false;
 			foreach ($field_groups as $oneGroup) {
-				if ($oneGroup["id"] == $field_group_options["id"] || $oneGroup["key"] == $field_group_options["key"]) {
+				if (@$oneGroup["id"] == @$field_group_options["id"] || $oneGroup["key"] == $field_group_options["key"]) {
 					// Field group found
 					$field_group_found = true;
 					$field_group_id = $oneGroup["id"];
