@@ -851,6 +851,7 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 				// Oups, some old types have arrays to, like taxonomyterm
 				// So this should work: if the type is among the registered_field_types then use it
 				if (isset($sf->registered_field_types[$one_field_group_field["type"]]) && is_array($saved_values[0])) {
+
 					// custom field type. should it be responsible for the return of the values?
 					// some fields may have several stuff entered in the. some just one thing. we don't want to guess!
 					
@@ -859,8 +860,19 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 					return $custom_field_type->return_values($saved_values, $options);
 
 				} else {
-					// legace/core field type
-					return $saved_values;
+					
+					// legacy/core field type
+					/*
+					// You can modify the return values by adding a filter for the field types you want to modify
+					// Example: adds "appended text" to all text values upon retrieval
+					add_filter("simple-fields-return-values-text", function($values) {
+						$values[0] = $values[0] . " appended text";
+						return $values;
+					});
+					*/
+					$saved_values = apply_filters("simple-fields-return-values-" . $one_field_group_field["type"], $saved_values);
+					return $saved_values;					
+					
 				}
 
 			}
