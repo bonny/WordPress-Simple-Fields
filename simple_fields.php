@@ -104,7 +104,7 @@ class simple_fields {
 	 * @return string
 	 */
 	function get_slug_pattern() {
-		return "[A-Za-z_]+";
+		return "[A-Za-z0-9_]+";
 	}
 	
 	/**
@@ -942,7 +942,15 @@ class simple_fields {
 	
 		// calculate number of active field groups
 		// @todo: check this a bit more, does not seem to be any deleted groups. i thought i saved the deletes ones to, but with deleted flag set
-		foreach ($connectors as $one_connector) {
+		foreach ($connectors as & $one_connector) {
+		
+			// compatibility fix key vs slug
+			if (isset($one_connector["slug"]) && $one_connector["slug"]) {
+				$one_connector["key"] = $one_connector["slug"];
+			} else if (isset($one_connector["key"]) && $one_connector["key"]) {
+				$one_connector["slug"] = $one_connector["key"];
+			}
+		
 			$num_fields_in_group = 0;
 			foreach ($one_connector["field_groups"] as $one_group) {
 				if (!$one_group["deleted"]) $num_fields_in_group++;
@@ -963,7 +971,16 @@ class simple_fields {
 		if ($field_groups === FALSE) $field_groups = array();
 		
 		// Calculate the number of active fields
+		// And some other things
 		foreach ($field_groups as & $one_group) {
+
+			// Make sure we have both key and slug set to same. key = old name for slug
+			if (isset($one_group["slug"]) && $one_group["slug"]) {
+				$one_group["key"] = $one_group["slug"];
+			} else if (isset($one_group["key"]) && $one_group["key"]) {
+				$one_group["slug"] = $one_group["key"];
+			}
+
 			$num_active_fields = 0;
 			foreach ($one_group["fields"] as $one_field) {
 				if (!$one_field["deleted"]) $num_active_fields++;
@@ -2155,7 +2172,7 @@ class simple_fields {
 					simple_fields::debug("Added new field group", $field_group_in_edit);
 	
 				} else {
-	
+
 					// existing: get highest field id
 					foreach ($field_groups[$field_group_id]["fields"] as $one_field) {
 						if ($one_field["id"] > $highest_field_id) {
@@ -2164,6 +2181,7 @@ class simple_fields {
 					}
 	
 					$field_group_in_edit = $field_groups[$field_group_id];
+
 				}
 
 				?>

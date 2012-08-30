@@ -419,7 +419,8 @@ function simple_fields_merge_arrays($array1 = array(), $array2 = array()) {
 
 /**
  * Adds a new field group
- * @param string $unique_name
+ * @todo: this functions could use a bit more documentation. i'm kinda lost trying to follow it :=) /Pär
+ * @param string $unique_name the slug of this field group
  * @param array $new_field_group settings/options for the new group
  * @param return the new field group as an array
  */
@@ -428,10 +429,11 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 	global $sf;
 	
 	$field_groups = $sf->get_field_groups();
-	
+
 	$highest_id = 0;
 
 	foreach ($field_groups as $oneGroup) {
+	
 		if ($oneGroup["key"] == $unique_name && !empty($unique_name)) {
 			// Field group already exists
 
@@ -467,6 +469,7 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 		$field_group_defaults = array(
 			"id" => $field_group_id,
 			"key" => $unique_name,
+			"slug" => $unique_name,
 			"name" => "Unnamed field group $field_group_id",
 			"description" => "",
 			"repeatable" => false,
@@ -480,25 +483,34 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 	$field_groups[$field_group_id] = simple_fields_merge_arrays($field_group_defaults, $new_field_group);
 
 	if (isset($new_field_group["fields"]) && is_array($new_field_group["fields"]) && !empty($new_field_group["fields"])) {
+
 		$fields = array();
 		$field_id = 0;
+
 		foreach($new_field_group["fields"] as $oneField) {
+
 			$fields[$field_id] = array();
-			
+			$field_slug = "field_$field_id";
 			$field_defaults = array(
-					"name" => "",
+					"name"        => "",
+					"slug"        => $field_slug,
 					"description" => "",
-					"type" => "",
-					"type_post_options" => array("enabled_post_types" => array(), "additional_arguments" => ""),
-					"type_taxonomyterm_options" => array("additional_arguments" => ""),
-					"id" => "",
+					"type"        => "",
+					"type_post_options" => array(
+						"enabled_post_types" => array(), 
+						"additional_arguments" => ""
+					),
+					"type_taxonomyterm_options" => array(
+						"additional_arguments" => ""
+					),
+					"id"      => "",
 					"deleted" => 0
 			);
 			
 			if (isset($field_groups[$field_group_id]['fields'][$field_id])) {
 				$field_defaults = simple_fields_merge_arrays($field_defaults, $field_groups[$field_group_id]['fields'][$field_id]);
 			}
-			
+
 			foreach($field_defaults as $oneDefaultFieldKey => $oneDefaultFieldValue) {
 				if ($oneDefaultFieldKey == "id") {
 					$fields[$field_id]["id"] = $field_id;
@@ -579,6 +591,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 	$post_connector_defaults = array(
 		"id" => $connector_id,
 		"key" => $unique_name,
+		"slug" => $unique_name,
 		"name" => $unique_name."_".$connector_id,
 		"field_groups" => array(),
 		"post_types" => array(),
@@ -598,6 +611,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 		$field_group_connector_defaults = array(
 							"id" => "",
 							"key" => "",
+							"slug" => "",
 							"name" => "",
 							"deleted" => 0,
 							"context" => "normal",
