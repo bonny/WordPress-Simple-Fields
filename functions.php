@@ -402,7 +402,12 @@ function simple_fields_query_posts($query_args = array()) {
 function simple_fields_merge_arrays($array1 = array(), $array2 = array()) {
 	foreach($array2 as $key => $value) {
 		if(is_array($value)) {
-			$array1[$key] = @simple_fields_merge_arrays($array1[$key], $array2[$key]);
+			if (isset($array1[$key]) && isset($array2[$key])) {
+				$array1[$key] = simple_fields_merge_arrays($array1[$key], $array2[$key]);
+			} else {
+				// only array 2 left
+				$array1[$key] = $array2[$key];
+			}
 		} else {
 			$array1[$key] = $value;
 		}
@@ -503,7 +508,7 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 					}
 					
 				}
-				if (@is_array($oneField[$oneDefaultFieldKey]) && !empty($oneField[$oneDefaultFieldKey])) {
+				if (isset($oneField[$oneDefaultFieldKey]) && is_array($oneField[$oneDefaultFieldKey]) && !empty($oneField[$oneDefaultFieldKey])) {
 					$options_type = preg_replace("/type_([a-z]+)_options/i", '$1', $oneDefaultFieldKey);
 					if (!empty($options_type)) {
 						foreach(array_keys($oneField[$oneDefaultFieldKey]) as $optionKey) {
@@ -514,7 +519,7 @@ function simple_fields_register_field_group($unique_name = "", $new_field_group 
 								unset($fields[$field_id][$oneDefaultFieldKey][$optionKey]);
 								$optionKey = $newOptionKey;
 							}
-							if (@is_array($fields[$field_id][$oneDefaultFieldKey][$optionKey]) && !empty($fields[$field_id][$oneDefaultFieldKey][$optionKey]["value"])) {
+							if (isset($fields[$field_id][$oneDefaultFieldKey][$optionKey]) && is_array($fields[$field_id][$oneDefaultFieldKey][$optionKey]) && !empty($fields[$field_id][$oneDefaultFieldKey][$optionKey]["value"])) {
 								if (!isset($fields[$field_id][$oneDefaultFieldKey][$optionKey]["deleted"])) {
 									$fields[$field_id][$oneDefaultFieldKey][$optionKey]["deleted"] = 0;
 								}
@@ -602,7 +607,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 		foreach($new_post_connector["field_groups"] as $field_group_options) {
 			$field_group_found = false;
 			foreach ($field_groups as $oneGroup) {
-				if (@$oneGroup["id"] == @$field_group_options["id"] || $oneGroup["key"] == $field_group_options["key"]) {
+				if ( (isset($oneGroup["id"]) && isset($field_group_options["id"]) && $oneGroup["id"] == $field_group_options["id"]) || ( $oneGroup["key"] == $field_group_options["key"] )) {
 					// Field group found
 					$field_group_found = true;
 					$field_group_id = $oneGroup["id"];
@@ -898,11 +903,12 @@ if (simple_fields::DEBUG_ENABLED) {
 				if ($one_field_group["deleted"]) continue;
 				foreach ($one_field_group["fields"] as $one_field) {
 					if ($one_field["deleted"]) continue;
-					$content .= "<hr>";
-					$content .=  "Found Simple Fields Field:";
-					$content .=  "<br><br>Name: <b>" . $one_field["name"] . "</b>";
+					#$content .= "<hr>";
+					$content .=  "<br>Found Simple Fields Field:";
+					$content .=  " name: <b>" . $one_field["name"] . "</b>";
+					$content .=  " | type: <b>" . $one_field["type"] . "</b>";
 					if (isset($one_field["slug"])) {
-						$content .=  "<br>Slug: <b>" . $one_field["slug"] . "</b>";
+						$content .=  " | slug: <b>" . $one_field["slug"] . "</b>";
 						#echo '<br>function to use to get first/one value:';
 						#echo '<br><code>simple_fields_value("'.$one_field["slug"].'");</code>';
 						#echo '<br>function to use to get all values, as array:';
@@ -910,7 +916,7 @@ if (simple_fields::DEBUG_ENABLED) {
 						#echo "<br><b>saved values</b>:";
 						#sf_d($one_field["saved_values"]);
 						
-						$content .= "<br><br>Use <code><b>simple_fields_values('".$one_field["slug"]."')</b></code> to get:";
+						$content .= "<br>Use <code><b>simple_fields_values('".$one_field["slug"]."')</b></code> to get:";
 						ob_start();
 						sf_d( simple_fields_values($one_field["slug"]) );
 						$content .= ob_get_clean();
