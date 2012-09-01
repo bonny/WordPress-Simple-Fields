@@ -1,6 +1,8 @@
 <?php
 
-add_action("plugins_loaded", function() {
+add_action("plugins_loaded", "init_simple_fields_field_minimalexample");
+
+function init_simple_fields_field_minimalexample() {
 
 	class simple_fields_field_minimalexample extends simple_fields_field {
 	
@@ -29,4 +31,4 @@ add_action("plugins_loaded", function() {
 
 	simple_fields::register_field_type("simple_fields_field_minimalexample");
 
-});
+}

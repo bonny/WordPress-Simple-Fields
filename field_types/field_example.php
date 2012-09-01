@@ -6,7 +6,9 @@
  */
 
 // Make sure simple fields have loaded before we try to do anything. Will get errors otherwise.
-add_action("plugins_loaded", function() {
+add_action("plugins_loaded", "init_simple_fields_field_example");
+
+function init_simple_fields_field_example() {
 	
 	// Setup an example field type
 	class simple_fields_field_example extends simple_fields_field {
@@ -140,4 +142,6 @@ add_action("plugins_loaded", function() {
 	}
 
 	simple_fields::register_field_type("simple_fields_field_example");	
-});
+}
+
+
