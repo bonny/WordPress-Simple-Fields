@@ -548,7 +548,7 @@ class simple_fields {
 	
 								$field_unique_id_esc = rawurlencode($field_unique_id);
 								// $file_url = "media-upload.php?simple_fields_dummy=1&simple_fields_action=select_file&simple_fields_file_field_unique_id=$field_unique_id_esc&post_id=$post_id&TB_iframe=true";
-								$file_url = get_bloginfo('url') . "/wp-admin/media-upload.php?simple_fields_dummy=1&simple_fields_action=select_file&simple_fields_file_field_unique_id=$field_unique_id_esc&post_id=$current_post_id&TB_iframe=true";
+								$file_url = get_bloginfo('wpurl') . "/wp-admin/media-upload.php?simple_fields_dummy=1&simple_fields_action=select_file&simple_fields_file_field_unique_id=$field_unique_id_esc&post_id=$current_post_id&TB_iframe=true";
 								echo "<a class='thickbox simple-fields-metabox-field-file-select' href='$file_url'>".__('Select file', 'simple-fields')."</a>";
 								
 								$class = ($attachment_id) ? " " : " hidden ";
