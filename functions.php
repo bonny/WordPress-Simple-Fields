@@ -995,7 +995,7 @@ if (simple_fields::DEBUG_POST_ENABLED) {
 				';
 		}
 		
-		return $output_all;
+		return $content . $output_all;
 	}
 
 }
