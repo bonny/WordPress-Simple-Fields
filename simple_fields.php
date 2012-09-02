@@ -610,7 +610,7 @@ class simple_fields {
 						$text_value_esc = esc_html($saved_value);
 						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
 						echo $description;
-						echo "<input class='text simple-fields-field-type-color' name='$field_name' id='$field_unique_id' value='$text_value_esc' />";
+						echo "<input class='text simple-fields-field-type-color {pickerClosable:true}' name='$field_name' id='$field_unique_id' value='$text_value_esc' />";
 	
 					} elseif ("date" == $field["type"]) {
 	

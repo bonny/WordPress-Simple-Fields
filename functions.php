@@ -938,8 +938,9 @@ if (simple_fields::DEBUG_POST_ENABLED) {
 
 	// Outputs the names of the post connectors attached to the post you view + outputs the values
 	add_filter("the_content", "simple_fields_value_get_functions_test");
-	function simple_fields_value_get_functions_test($content) {
+	function simple_fields_value_get_functions_test($the_content) {
 		
+		$output = "";
 		$output_all = "";
 		$field_count = 0;
 		
@@ -995,7 +996,7 @@ if (simple_fields::DEBUG_POST_ENABLED) {
 				';
 		}
 		
-		return $content . $output_all;
+		return $the_content . $output_all;
 	}
 
 }
