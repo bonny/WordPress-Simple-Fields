@@ -875,7 +875,7 @@ class simple_fields {
 	    
 	    global $sf;
 	 
-	    $field_groups = get_option("simple_fields_groups");
+	    $field_groups = $this->get_field_groups();
 	    $current_field_group = $field_groups[$post_connector_field_id];
 	 
 	    echo "<div class='simple-fields-meta-box-field-group-wrapper'>";
@@ -965,6 +965,7 @@ class simple_fields {
 	 * @return array
 	 */
 	function get_field_groups() {
+
 		$field_groups = get_option("simple_fields_groups");
 		if ($field_groups === FALSE) $field_groups = array();
 		
@@ -987,6 +988,60 @@ class simple_fields {
 		}
 		
 		return $field_groups;
+		
+	}
+
+	/**
+	 * Get a field group
+	 * @param int $group_id
+	 * @return array with field group or false if field group is not found
+	 */
+	function get_field_group($group_id) {
+		$field_groups = $this->get_field_groups();
+		$return = false;
+		if (is_array($field_groups)) {
+			foreach($field_groups as $field_group) {
+				if (is_numeric($group_id)) {
+					if ($field_group['id'] == $group_id) {
+						$return = $field_group;
+						break;
+					}
+				} else {
+					if ($field_group['name'] == $group_id) {
+						$return = $field_group;
+						break;
+					}
+				}
+			}
+		}
+		return $return;
+	}
+
+
+	/**
+	 * Returns a field from a field group
+	 * @param int $field_group
+	 * @param int $field_id
+	 * @return false on error
+	 */
+	function get_field_in_group($field_group, $field_id) {
+		$return = false;
+		if (is_array($field_group) && is_array($field_group['fields'])) {
+			foreach($field_group['fields'] as $field) {
+				if (is_numeric($field_id)) {
+					if ($field['id'] == $field_id) {
+						$return = $field;
+						break;
+					}
+				} else {
+					if ($field['name'] == $field_id) {
+						$return = $field;
+						break;
+					}
+				}
+			}
+		}
+		return $return;
 	}
 
 
@@ -1905,7 +1960,7 @@ class simple_fields {
 					}
 					
 					update_option("simple_fields_groups", $field_groups);
-					// echo "<pre>";print_r($field_groups);echo "</pre>";
+
 					// we can have changed the options of a field group, so update connectors using this field group
 					$post_connectors = (array) $this->get_post_connectors();
 					foreach ($post_connectors as $connector_id => $connector_options) {
@@ -2266,13 +2321,13 @@ class simple_fields {
 			if ("simple-fields-view-debug-info" == $action) {
 	
 				echo "<h3>Post Connectors</h3>\n";
-				echo "<p>Called with function <code>simple_fields_get_post_connectors()</code>";
+				echo "<p>Called with function <code>get_post_connectors()</code>";
 				sf_d( $this->get_post_connectors() );
 	
 				echo "<hr>";
 				
 				echo "<h3>Field Groups</h3>\n";
-				echo "<p>Called with function <code>simple_fields_get_field_groups()</code>";
+				echo "<p>Called with function <code>get_field_groups()</code>";
 				sf_d( $this->get_field_groups() );
 				
 				echo "<hr>";

@@ -277,60 +277,14 @@ class Simple_Fields_Walker_Category_Checklist extends Walker {
 }
 
 
-/**
- * @todo: add description
- */
-function simple_fields_get_field_group($group_id) {
-	$field_groups = get_option("simple_fields_groups");
-	$return = false;
-	if (is_array($field_groups)) {
-		foreach($field_groups as $field_group) {
-			if (is_numeric($group_id)) {
-				if ($field_group['id'] == $group_id) {
-					$return = $field_group;
-					break;
-				}
-			} else {
-				if ($field_group['name'] == $group_id) {
-					$return = $field_group;
-					break;
-				}
-			}
-		}
-	}
-	return $return;
-}
-
-/**
- * @todo: add description
- */
-function simple_fields_get_field_in_group($field_group, $field_id) {
-	$return = false;
-	if (is_array($field_group) && is_array($field_group['fields'])) {
-		foreach($field_group['fields'] as $field) {
-			if (is_numeric($field_id)) {
-				if ($field['id'] == $field_id) {
-					$return = $field;
-					break;
-				}
-			} else {
-				if ($field['name'] == $field_id) {
-					$return = $field;
-					break;
-				}
-			}
-		}
-	}
-	return $return;
-}
-
 // Returns an array for merging with WP_Query() arguments.
 // TODO: A variable in simple_fields_groups that keeps track of the most number
 // of times a field has been repeated on any single post so that $num_in_set can
 // be determined dynamically.
 function simple_fields_get_meta_query($group_id, $field_id, $value, $compare = "=", $type = "CHAR", $order = "", $num_in_set = 1) {
-	$field_group = simple_fields_get_field_group($group_id);
-	$field = simple_fields_get_field_in_group($field_group, $field_id);
+	global $sf;
+	$field_group = $sf->get_field_group($group_id);
+	$field 		 = $sf->get_field_in_group($field_group, $field_id);
 	if (!is_array($field_group) || !is_array($field)) {
 		return false;
 	}
