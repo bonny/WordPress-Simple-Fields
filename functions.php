@@ -785,6 +785,11 @@ function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $n
 /**
  * Gets a single value.
  * The first value if field group is repeatable
+ *
+ * @param string $field_slug
+ * @param int $post_id ID of post or null to use current post in loop
+ * @param array $options Array or query string of options to send to field type
+ * @return mixed string or array, depending on the field type
  */
 function simple_fields_value($field_slug = NULL, $post_id = NULL, $options = NULL) {
 	$values = simple_fields_values($field_slug, $post_id, $options);
@@ -794,6 +799,10 @@ function simple_fields_value($field_slug = NULL, $post_id = NULL, $options = NUL
 
 /**
  * Gets all values as array
+ * @param string $field_slug
+ * @param int $post_id ID of post or null to use current post in loop
+ * @param array $options Array or query string of options to send to field type
+ * @return mixed string or array, depending on the field type
  */
 function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NULL) {
 	
@@ -809,9 +818,10 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 	
 	// Post connector for this post, with lots of info
 	$post_connector_info = simple_fields_get_all_fields_and_values_for_post($post_id);
-#sf_d($post_connector_info);
+
 	// Loop through the field groups that this post connector has and locate the field_slug we are looking for
 	foreach ($post_connector_info["field_groups"] as $one_field_group) {
+
 		// Loop the fields in this field group
 		foreach ($one_field_group["fields"] as $one_field_group_field) { 
 			
@@ -850,21 +860,17 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 					        )
 					)
 				*/
-				// If first element is an array then it's a new cool and funky custom field value
-				// Oups, some old types have arrays to, like taxonomyterm
-				// So this should work: if the type is among the registered_field_types then use it
+				
+				// If the type is among the registered_field_types then use it
 				if (isset($sf->registered_field_types[$one_field_group_field["type"]]) && is_array($saved_values[0])) {
 
-					// custom field type. should it be responsible for the return of the values?
-					// some fields may have several stuff entered in the. some just one thing. we don't want to guess!
-					
 					// Use the custom field object to output this value, since we can't guess how the data is supposed to be used
 					$custom_field_type = $sf->registered_field_types[$one_field_group_field["type"]];
 					$saved_values = $custom_field_type->return_values($saved_values, $options);
 
 				} else {
 					
-					// legacy/core field type
+					// legacy/core field type, uses plain $saved_values
 
 				}
 
