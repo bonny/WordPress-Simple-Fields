@@ -31,8 +31,6 @@ License: GPL2
 class simple_fields {
 
 	const DEBUG_ENABLED = true; // set to true to enable some debug output
-	const DEBUG_POST_ENABLED = true; // set to true to enable output of field info on posts automatically
-	// @todo: post debug should be an option to enable somewhere else. where? functions.php or gui?
 	
 	public 
 
@@ -55,7 +53,6 @@ class simple_fields {
 		define( "SIMPLE_FIELDS_NAME", "Simple Fields");
 		define( "SIMPLE_FIELDS_VERSION", "0.x");
 
-
 		load_plugin_textdomain( 'simple-fields', null, basename(dirname(__FILE__)).'/languages/');
 		
 		require( dirname(__FILE__) . "/functions.php" );
@@ -77,6 +74,7 @@ class simple_fields {
 		add_action( 'dbx_post_sidebar', array($this, 'post_dbx_post_sidebar') );
 		add_action( 'save_post', array($this, 'save_postdata') );
 		add_action( 'plugins_loaded', array($this, 'plugins_loaded') );
+		add_action( 'init', array($this, "maybe_add_debug_info") ); 
 
 		// Hacks for media select dialog
 		add_filter( 'media_send_to_editor', array($this, 'media_send_to_editor'), 15, 2 );
@@ -1843,14 +1841,14 @@ class simple_fields {
 							</tr>
 						</table>
 						<p class="submit">
-							<input class="button-primary" type="submit" value="Save Changes" />
+							<input class="button-primary" type="submit" value="<?php _e("Save changes", "simple-fields") ?>" />
 							<input type="hidden" name="simple_fields_save-post_type" value="<?php echo $post_type ?>" />
 							<?php _e('or', 'simple_fields');  ?>
 							<a href="<?php echo SIMPLE_FIELDS_FILE ?>"><?php _e('cancel', 'simple-fields') ?></a>
 						</p>
 					</form>
 					<?php
-					#d($selected_post_type);
+					
 				}
 			}
 	
@@ -1864,6 +1862,7 @@ class simple_fields {
 				$simple_fields_did_delete = true;
 				$action = "";
 			}
+	
 	
 			/**
 			 * Delete a post connector
@@ -1900,24 +1899,11 @@ class simple_fields {
 					/*
 					if just one empty array like this, unset first elm
 					happens if no fields have been added (now why would you do such an evil thing?!)
-		            [fields] => Array
-		                (
-		                    [0] => 
-		                )
 					*/
 					if (sizeof($field_groups[$field_group_id]["fields"]) == 1 && empty($field_groups[$field_group_id]["fields"][0])) {
 						unset($field_groups[$field_group_id]["fields"][0]);
 					}
 					
-					// @todo: are these used? options are saved on a per field basis… right?!
-					/* $field_groups[$field_group_id]["type_textarea_options"] = (array) @$_POST["type_textarea_options"];
-					$field_groups[$field_group_id]["type_radiobuttons_options"] = (array) @$_POST["type_radiobuttons_options"];
-					$field_groups[$field_group_id]["type_taxonomy_options"] = (array) @$_POST["type_taxonomy_options"];
-					*/
-					//$field_groups[$field_group_id]["type_taxonomyterm_options"] = (array) @$_POST["type_taxonomyterm_options"];
-	
-					// echo "<pre>fields_groups:"; print_r($field_groups);exit;
-
 					update_option("simple_fields_groups", $field_groups);
 					// echo "<pre>";print_r($field_groups);echo "</pre>";
 					// we can have changed the options of a field group, so update connectors using this field group
@@ -2296,6 +2282,17 @@ class simple_fields {
 				
 			}
 	
+			// Save options
+			if ("edit-options-save" == $action) {
+				
+				$this->save_options(array(
+					"debug_type" => (int) $_POST["debug_type"]
+				));
+				
+				$action = "";
+				$simple_fields_did_save_options = TRUE;
+				
+			}
 	
 			// overview, if no action
 			if (!$action) {
@@ -2310,6 +2307,66 @@ class simple_fields {
 						$post_connector_count++;
 					}
 				}
+	
+				?>
+				
+				<div>
+					<h3>Options</h3>
+					<p>
+						<?php
+						/*
+							Debug automatically
+							for all
+							for admins
+						*/
+						// Debug type. 0 = no debug, 1 = debug for admins only, 2 = debug for all
+						$options = $this->get_options();
+						$debug_type = isset($options["debug_type"]) ? (int) $options["debug_type"] : "0";
+						// capability edit_themes
+						?>
+						<form action="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-options-save" method="post">
+							<table class='form-table'>
+								<tbody>
+									<tr>
+										<th>
+											<?php _e("Developer/debug information"); ?>
+										</th>
+										<td>
+											<?php
+											printf('
+												<p>
+													<select name=debug_type>
+														<option value=0 %1$s>%4$s</option>
+														<option value=1 %2$s>%5$s</option>
+														<option value=2 %3$s>%6$s</option>
+													</select>
+												</p>
+												', 
+												$debug_type === 0 ? "selected" : "",
+												$debug_type === 1 ? "selected" : "",
+												$debug_type === 2 ? "selected" : "",
+												__("Don't enable debug output", "simple-fields"),
+												__("Enable debug output for administrators", "simple-fields"),
+												__("Enable debug output for all users", "simple-fields")
+											);
+											?>
+											<p class=description>
+												<?php _e("Automatically append information about attached fields on posts (using filter 'the_content')."); ?>
+											</p>
+										</td>
+									</tr>
+									<tr>
+										<th></th>
+										<td>
+											<input class="button-primary" type=submit value="<?php _e("Save changes", "simple-fields") ?>">
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</form>
+					</div>
+				<?php
+	
 	
 				/**
 				 * view existing field groups
@@ -2330,6 +2387,8 @@ class simple_fields {
 						?><div id="message" class="updated"><p><?php _e('Post connector deleted', 'simple-fields') ?></p></div><?php
 					} elseif (isset($simple_fields_did_save_post_type_defaults) && $simple_fields_did_save_post_type_defaults) {
 						?><div id="message" class="updated"><p><?php _e('Post type defaults saved', 'simple-fields') ?></p></div><?php
+					} elseif (isset($simple_fields_did_save_options) && $simple_fields_did_save_options) {
+						?><div id="message" class="updated"><p><?php _e('Simple Fields options saved', 'simple-fields') ?></p></div><?php
 					}
 					
 					$field_group_count = 0;
@@ -2349,7 +2408,7 @@ class simple_fields {
 								echo "<li>";
 								echo "<a href='" . SIMPLE_FIELDS_FILE . "&amp;action=edit-field-group&amp;group-id=$oneFieldGroup[id]'>$oneFieldGroup[name]</a>";
 								if ($oneFieldGroup["fields_count"]) {
-									$format = $oneFieldGroup["repeatable"] ? _n('1 added field, repeatable', '%d added fields, repeatable', $oneFieldGroup["fields_count"]) : _n('One added field', '%d added fields', $oneFieldGroup["fields_count"]);
+									$format = $oneFieldGroup["repeatable"] ? _n('1 added field, repeatable', '%d added fields, repeatable', $oneFieldGroup["fields_count"]) : _n('1 added field', '%d added fields', $oneFieldGroup["fields_count"]);
 									echo "<br>" . __( sprintf($format, $oneFieldGroup["fields_count"]) );
 								}
 								echo "</li>";
@@ -2518,6 +2577,102 @@ class simple_fields {
 		$custom_field_type = new $field_type_name;
 		$this->registered_field_types[$custom_field_type->key] = $custom_field_type;
 	}
+
+	/**
+	 * Get all options
+	 * @return array
+	 */
+	function get_options() {
+		$options = (array) get_option("simple_fields_options");
+		return $options;
+	}
+	
+	/**
+	 * Save options
+	 * @param array $new_options. will be merged with old options, so you only need to add your modified stuff to the array, and then all old stuff will be untouched.
+	 */
+	function save_options($new_options) {
+		$old_options = $this->get_options();
+		$new_options = wp_parse_args($new_options, $old_options);
+		update_option("simple_fields_options", $new_options);
+	}
+	
+	// Some debug functions
+	function maybe_add_debug_info() {
+		global $sf;
+		$options = $sf->get_options();
+		if (isset($options["debug_type"]) && $options["debug_type"] !== 0) {
+		
+			// 1 = debug for admins only, 2 = debug for all
+			if ( ($options["debug_type"] === 1 && current_user_can("edit_themes")) ||  $options["debug_type"] === 2) {
+				add_filter("the_content", array($this, "simple_fields_value_get_functions_test"));
+			}	
+	
+		}
+	}
+	
+	// Outputs the names of the post connectors attached to the post you view + outputs the values
+	function simple_fields_value_get_functions_test($the_content) {
+		
+		$output = "";
+		$output_all = "";
+		$field_count = 0;
+		
+		$post_connector_with_values = simple_fields_get_all_fields_and_values_for_post(get_the_ID());
+		if ($post_connector_with_values) {
+			foreach ($post_connector_with_values["field_groups"] as $one_field_group) {
+				if ($one_field_group["deleted"]) continue;
+				foreach ($one_field_group["fields"] as $one_field) {
+					if ($one_field["deleted"]) continue;
+					$field_count++;
+					$content = "";
+					$content .= "<ul style='background:#eee;padding:.5em;'>";
+					$content .= "<li><b>" . $one_field["name"] . "</b><ul>";
+					$content .= "<li>Type <b>" . $one_field["type"] . "</b>";
+					if (isset($one_field["slug"])) {
+						$content .=  "<li>Slug <b>" . $one_field["slug"] . "</b>";
+						
+						$content .= "<li>Use <code><b>simple_fields_values('".$one_field["slug"]."')</b></code> to get:";
+						ob_start();
+						sf_d( simple_fields_values($one_field["slug"]) );
+						$content .= ob_get_clean();
+		
+						$content .= "<li>Use <code><b>simple_fields_value('".$one_field["slug"]."')</b></code> to get:";
+						ob_start();
+						sf_d( simple_fields_value($one_field["slug"]) );
+						$content .= ob_get_clean();
+					} else {
+						$content .= "<li>No slug for this field found (probably old field that has not been edited and saved).";
+					}
+					$content .= "</ul></ul>";
+					$output_all .= $content;
+				}
+			}
+		}
+		
+		if ($output_all) {
+			?>
+			<script>
+			window.simple_fields_post_debug_show_hide = window.simple_fields_post_debug_show_hide || function(t) {
+				var $t = jQuery(t);
+				var $div_wrap = $t.closest("div.simple-fields-post-debug-wrap");
+				$div_wrap.find("div.simple-fields-post-debug-content").toggle("fast");
+				return false;
+			}
+			</script>
+			<?php
+			
+			$output_all = '
+				<div class="simple-fields-post-debug-wrap">
+					This post has ' . $field_count . ' Simple Fields-fields attached. <a href="#" onclick="return simple_fields_post_debug_show_hide(this);">Show fields.</a>
+					<div class="simple-fields-post-debug-content" style="display:none;">'.$output_all.'</div>
+				</div>
+				';
+		}
+		
+		return $the_content . $output_all;
+	}
+
 	
 } // end class
 
