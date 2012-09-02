@@ -449,7 +449,6 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 	$field_groups[$field_group_id] = simple_fields_merge_arrays($field_group_defaults, $new_field_group);
 
 	// If the field group has an array of fields
-	// @todo: should check slug here, it does some wierd index thingie instead
 	if (isset($new_field_group["fields"]) && is_array($new_field_group["fields"]) && !empty($new_field_group["fields"])) {
 
 		$fields = array();
@@ -478,6 +477,10 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 			);
 			
 			// If a field with this index/id exists then merge that fields values with our default values
+			// @todo: should check slug here, it does some wierd index thingie instead
+			// so if you add one field in php, then one in the gui, and then extend the php with one more field = 
+			// field from gui is overwritten since it get's the id that the php version want
+			// use only slug instead and we should be fine
 			if (isset($field_groups[$field_group_id]['fields'][$field_id])) {
 				$field_defaults = simple_fields_merge_arrays($field_defaults, $field_groups[$field_group_id]['fields'][$field_id]);
 			}
