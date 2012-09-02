@@ -657,9 +657,6 @@ function simple_fields_thickbox(link) {
 	var t = link.title || link.name || null;
 	var a = link.href || link.alt;
 	var g = link.rel || false;
-	// alert(t); // title
-	// alert(a); // http://localhost/wp-admin/media-upload.php?type=image&post_id=1060&TB_iframe=true
-	// alert(g); // false
 	tb_show(t,a,g);
 	link.blur();
 	return false;
