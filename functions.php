@@ -188,7 +188,7 @@ function simple_fields_get_all_fields_and_values_for_post($post_id) {
 	$connector_to_use         = $sf->get_selected_connector_for_post($post);
 	$existing_post_connectors = $sf->get_post_connectors();
 	$field_groups             = $sf->get_field_groups();
-	$selected_post_connector  = $existing_post_connectors[$connector_to_use];
+	$selected_post_connector  = isset($existing_post_connectors[$connector_to_use]) ? $existing_post_connectors[$connector_to_use] : NULL;
 	if($selected_post_connector == null) {
 		return false;
 	}
@@ -796,7 +796,7 @@ function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $n
  */
 function simple_fields_value($field_slug = NULL, $post_id = NULL, $options = NULL) {
 	$values = simple_fields_values($field_slug, $post_id, $options);
-	$value = $values[0];
+	$value = isset($values[0]) ? $values[0] : "";
 	return $value;
 }
 
@@ -822,6 +822,10 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 	// Post connector for this post, with lots of info
 	$post_connector_info = simple_fields_get_all_fields_and_values_for_post($post_id);
 
+	if ($post_connector_info === FALSE) {
+		return FALSE;
+	}
+
 	// Loop through the field groups that this post connector has and locate the field_slug we are looking for
 	foreach ($post_connector_info["field_groups"] as $one_field_group) {
 
@@ -834,7 +838,7 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 			if ($field_slug === $one_field_group_field["slug"]) {
 				
 				// Slug is found. Get and return values.
-				$saved_values = $one_field_group_field["saved_values"];
+				$saved_values = isset($one_field_group_field["saved_values"]) ? $one_field_group_field["saved_values"] : "";
 				
 				// If no values just return
 				if (!sizeof($saved_values)) return;
@@ -865,7 +869,7 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 				*/
 				
 				// If the type is among the registered_field_types then use it
-				if (isset($sf->registered_field_types[$one_field_group_field["type"]]) && is_array($saved_values[0])) {
+				if (isset($sf->registered_field_types[$one_field_group_field["type"]]) && isset($saved_values[0]) && is_array($saved_values[0])) {
 
 					// Use the custom field object to output this value, since we can't guess how the data is supposed to be used
 					$custom_field_type = $sf->registered_field_types[$one_field_group_field["type"]];
