@@ -1452,6 +1452,9 @@ class simple_fields {
 		$field_slug = esc_html(@$fields[$fieldID]["slug"]);
 		$field_type = $fields[$fieldID]["type"];
 		$field_deleted = (int) $fields[$fieldID]["deleted"];
+
+		// If this is a new field then set default type to text so user does not save field with no field type set
+		if ($field_type === NULL) $field_type = "text";
 		
 		$field_type_textarea_option_use_html_editor = (int) @$fields[$fieldID]["type_textarea_options"]["use_html_editor"];
 		$field_type_checkbox_option_checked_by_default = (int) @$fields[$fieldID]["type_checkbox_options"]["checked_by_default"];
