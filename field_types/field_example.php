@@ -34,7 +34,7 @@ function init_simple_fields_field_example() {
 			
 			$output = "";
 			
-			simple_fields::debug("existing option vals for this field type", $existing_vals);
+#			simple_fields::debug("existing option vals for this field type", $existing_vals);
 			
 			// Example how to add a text field to the options page for this field type
 			$output .= sprintf('
