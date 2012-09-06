@@ -373,18 +373,17 @@ function simple_fields_merge_arrays($array1 = array(), $array2 = array()) {
 
 /**
  * Adds a new field group
- * @todo: this function could use a bit more documentation. i'm kinda lost trying to follow it :=) /Pär
- *
+  *
  * @param string $slug the slug of this field group. must be unique.
  * @param array $new_field_group settings/options for the new group
  * @param return array the new field group as an array
  */
 function simple_fields_register_field_group($slug = "", $new_field_group = array()) {
-	
+
 	global $sf;
 	
 	$field_groups = $sf->get_field_groups();
-
+	#sf_d($field_groups);
 	$highest_id = 0;
 
 	// First get the id of the field group we are adding. Existing or highest new.
@@ -393,8 +392,6 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 	foreach ($field_groups as $oneGroup) {	
 		if ($oneGroup["slug"] == $slug && !empty($slug)) {
 			// Field group already exists
-			// @todo: but if we don't have a unique name when we are creating a new connector
-			// and there are old connectors with no names either
 			$field_group_id = $oneGroup["id"];
 			// We found our group, no need to loop further
 			break;
@@ -440,12 +437,14 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 			"deleted" => false
 		);
 	} else {
+		// This is an existing field group so get the old values
 		$field_group_defaults = $field_groups[$field_group_id];
 	}
-	
-	// Merge the new values with the old values
+		
+	// Merge the new values of this field group with the old values
 	// Let the new values overwrite the hold ones
-	// @todo: Should not http://codex.wordpress.org/Function_Reference/wp_parse_args work for this?
+	// @done: Should not http://codex.wordpress.org/Function_Reference/wp_parse_args work for this?
+	// answer: wp_parse_args does not work with multi dimensional arrays
 	$field_groups[$field_group_id] = simple_fields_merge_arrays($field_group_defaults, $new_field_group);
 
 	// If the field group has an array of fields
@@ -455,7 +454,8 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 		$field_id = 0;
 
 		// Loop through all fields
-		foreach($new_field_group["fields"] as $oneField) {
+		// somewhwere here added fields from gui disapears
+		foreach($new_field_group["fields"] as $one_new_field) {
 			
 			// Set up default values for this field
 			$fields[$field_id] = array();
@@ -477,39 +477,52 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 			);
 			
 			// If a field with this index/id exists then merge that fields values with our default values
-			// @todo: should check slug here, it does some wierd index thingie instead
 			// so if you add one field in php, then one in the gui, and then extend the php with one more field = 
 			// field from gui is overwritten since it get's the id that the php version want
 			// use only slug instead and we should be fine
-			if (isset($field_groups[$field_group_id]['fields'][$field_id])) {
-				$field_defaults = simple_fields_merge_arrays($field_defaults, $field_groups[$field_group_id]['fields'][$field_id]);
+
+			#if (isset($field_groups[$field_group_id]['fields'][$field_id])) {
+			#	$field_defaults = simple_fields_merge_arrays($field_defaults, $field_groups[$field_group_id]['fields'][$field_id]);
+			#	sf_d($field_defaults);
+			#}
+
+			// Find id of possibly existing field using the slug
+			// If existing field is found then merge old values with new
+			foreach ($field_groups[$field_group_id]["fields"] as $one_existing_field) {
+
+				if ($one_existing_field["slug"] == $one_new_field["slug"]) {
+					// Found existing field with same slug
+					// Merge new field values with the old values, so $field_defaults will have the combines values
+					$field_defaults = simple_fields_merge_arrays($field_defaults, $one_existing_field);
+				}
+
 			}
-			
+
 			// Do wierd stuff with field default values
 			foreach($field_defaults as $oneDefaultFieldKey => $oneDefaultFieldValue) {
 				
 				if ($oneDefaultFieldKey == "id") {
 					$fields[$field_id]["id"] = $field_id;
 				} else {
-					if (!isset($oneField[$oneDefaultFieldKey])) {
+					if (!isset($one_new_field[$oneDefaultFieldKey])) {
 						$fields[$field_id][$oneDefaultFieldKey] = $oneDefaultFieldValue;
 					}
 					
 				}
 				
 				// If the default key is an array
-				if (isset($oneField[$oneDefaultFieldKey]) && is_array($oneField[$oneDefaultFieldKey]) && !empty($oneField[$oneDefaultFieldKey])) {
+				if (isset($one_new_field[$oneDefaultFieldKey]) && is_array($one_new_field[$oneDefaultFieldKey]) && !empty($one_new_field[$oneDefaultFieldKey])) {
 
 					// If this is an array with options for a field type
 					// For example "type_post_options" or "type_taxonomyterm_options"
 					$options_type = preg_replace("/type_([a-z]+)_options/i", '$1', $oneDefaultFieldKey);
 					if (!empty($options_type)) {
 					
-						foreach(array_keys($oneField[$oneDefaultFieldKey]) as $optionKey) {
+						foreach(array_keys($one_new_field[$oneDefaultFieldKey]) as $optionKey) {
 
 							if (is_numeric($optionKey)) {
 								$newOptionKey = $options_type . "_num_" . $optionKey;
-								$fields[$field_id][$oneDefaultFieldKey][$newOptionKey] = $oneField[$oneDefaultFieldKey][$optionKey];
+								$fields[$field_id][$oneDefaultFieldKey][$newOptionKey] = $one_new_field[$oneDefaultFieldKey][$optionKey];
 								unset($fields[$field_id][$oneDefaultFieldKey][$optionKey]);
 								$optionKey = $newOptionKey;
 							}
@@ -522,22 +535,29 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 						} // foreach
 						
 					}
-				}
-				
+				} // foreach
+
 				if (!isset($fields[$field_id][$oneDefaultFieldKey])) {
 					$fields[$field_id][$oneDefaultFieldKey] = $oneDefaultFieldValue;
 				}
 			}
 			
 			$field_id++;
+
 		}
-		
-		$field_groups[$field_group_id]["fields"] = $fields;
-		
+
+
+		//$field_groups[$field_group_id]["fields"] = $fields;
+		// Merge together new fields with old ones
+		// If no merge then fields added in gui are lost
+		// @todo: field order is lost, here i think
+		$field_groups[$field_group_id]["fields"] = simple_fields_merge_arrays($fields, $field_groups[$field_group_id]["fields"]);
+
 	}
 
+	#sf_d($field_groups);
 	update_option("simple_fields_groups", $field_groups);
-	
+
 	return $field_groups[$field_group_id];
 	
 }
