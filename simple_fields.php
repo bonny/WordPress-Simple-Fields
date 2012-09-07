@@ -1941,7 +1941,7 @@ class simple_fields {
 			if ("edit-field-group-save" == $action) {
 			
 				if ($_POST) {
-				
+#sf_d($_POST);
 					$field_group_id                               = (int) $_POST["field_group_id"];
 					$field_groups[$field_group_id]["name"]        = stripslashes($_POST["field_group_name"]);
 					$field_groups[$field_group_id]["description"] = stripslashes($_POST["field_group_description"]);

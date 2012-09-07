@@ -551,11 +551,43 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 		// Merge together new fields with old ones
 		// If no merge then fields added in gui are lost
 		// @todo: field order is lost, here i think
-		$field_groups[$field_group_id]["fields"] = simple_fields_merge_arrays($fields, $field_groups[$field_group_id]["fields"]);
+		// $org_field_group = $field_groups[$field_group_id]["fields"];
+		#sf_d($fields);
+		#sf_d($field_groups[$field_group_id]["fields"]);
+		// ordningen är ok innan denna merge
 
-	}
+		// array_merge_recursive = appendar eftersom key är int. vi fixar genom att göra om int till string. nasty.
+/*$existing_fields_copy = array();
+foreach ($field_groups[$field_group_id]["fields"] as $key => $val) {
+	$existing_fields_copy["_$key"] = $val;
+}*/
 
-	#sf_d($field_groups);
+#sf_d($fields_copy);
+#sf_d($existing_fields_copy);
+
+	
+		$merged_fields = simple_fields_merge_arrays($fields, $field_groups[$field_group_id]["fields"]);
+
+		// Mergin is done, but we want to get our old order back now...
+		// $field_groups[$field_group_id]["fields"] <- order is correct here
+		$keys_org_order = array_keys($field_groups[$field_group_id]["fields"]);
+		$keys_possibly_wrong_but_new_order = array_keys($merged_fields);
+		$keys_all_in_new_and_org_combined = $keys_org_order + $keys_possibly_wrong_but_new_order; // <- this is the order we want it in
+		$merged_fields_correct_order = array();
+		foreach ($keys_all_in_new_and_org_combined as $order_key) {
+			$merged_fields_correct_order[$order_key] = $merged_fields[$order_key];
+		}
+
+		// $field_groups[$field_group_id]["fields"] = simple_fields_merge_arrays($fields, $field_groups[$field_group_id]["fields"]);
+
+		// Finally use the new fields
+		$field_groups[$field_group_id]["fields"] = $merged_fields_correct_order;
+
+
+	} // if passed as arg field group has fields
+
+#sf_d($field_groups[$field_group_id]);
+#sf_d($fields);
 	update_option("simple_fields_groups", $field_groups);
 
 	return $field_groups[$field_group_id];
