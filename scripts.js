@@ -1,7 +1,7 @@
 
 jscolor.bindClass = "simple-fields-field-type-color";
 var simple_fields_datepicker_args = { "clickInput": true };
-var simple_fields_tinymce_iframes = new Array;
+var simple_fields_tinymce_iframes = [];
 
 // Global module for Simple Fields, using the reveal module pattern
 var simple_fields = (function() {
@@ -11,7 +11,7 @@ var simple_fields = (function() {
 	
 	return {
 		
-	}
+	};
 	
 })();
 
@@ -51,7 +51,7 @@ var simple_fields = (function() {
 					txtarea_el = dom.get(id);
 					qtname = 'qt_'+id;
 					qttb = 'qt_'+id+'_toolbar';
-					if ( typeof(QTags) != undefined && iframe_el.canvas != undefined ) {
+					if ( typeof(QTags) !== undefined && iframe_el.canvas !== undefined ) {
 						QTags.closeAllTags(iframe_el.id);
 					}
 					if (!tinyMCEPreInit.qtInit[id]) {
@@ -100,7 +100,7 @@ var simple_fields = (function() {
 					});
 				dom.hide(qttb);
 				dom.addClass(wrap_id, 'tmce-active');
-				dom.removeClass(wrap_id, 'html-active');	
+				dom.removeClass(wrap_id, 'html-active');
 				}
 			}
 		}
@@ -179,6 +179,8 @@ var simple_fields = (function() {
 		if (confirm(sfstrings.confirmDelete)) {
 			$(this).closest("li").find(".hidden_deleted").attr("value", 1);
 			$(this).closest("li").hide("slow");
+			// Remove required attribute on slug so we can post the form even if slug is empty
+			$(this).closest("li").find("input[required]").removeAttr("required");
 		} else {
 		}
 		return false;
