@@ -947,7 +947,39 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 			}
 		}
 	}
-
 	
-}
+} // simple field values
 
+
+/**
+ * Return the name of the post connector for the current post in the loop
+ *
+ * @return mixed False if no connector or connector not found. String name of connector if found.
+ */
+function simple_fields_connector() {
+	global $post, $sf;
+	$connector_id = $sf->get_selected_connector_for_post($post);
+
+	if ($connector_id == "__none__") {
+		// no connector selected
+		return FALSE;
+	} else {
+		// connector is selected, get slug of it
+		$post_connectors = $sf->get_post_connectors();
+		if (!isset($post_connectors[$connector_id])) {
+			return FALSE;
+		} 
+
+		return $post_connectors[$connector_id]["slug"];
+	}
+}
+/**
+ * Checks if the current post in the loop har the connector with slug $slug selected
+ *
+ * @param string $slug Slug of post connector to check
+ * @return bool
+ */
+function simple_fields_is_connector($slug) {
+	$connector_slug = simple_fields_connector();
+	return ($connector_slug === $slug);
+}

@@ -30,7 +30,7 @@ License: GPL2
  */ 
 class simple_fields {
 
-	const DEBUG_ENABLED = true; // set to true to enable some debug output
+	const DEBUG_ENABLED = false; // set to true to enable some debug output
 	
 	public 
 
@@ -41,8 +41,8 @@ class simple_fields {
 		$registered_field_types
 	
 	;
-		
-
+	
+	
 	/**
 	 * Init is where we setup actions and filers and loads stuff and a little bit of this and that
 	 *
@@ -2078,7 +2078,7 @@ class simple_fields {
 								 <br>
 								 <span class="description"><?php echo __("A unique identifier for this connector", 'simple-fields') ?></span>
 								 <?php
-								 sf_d($post_connector_in_edit);
+								 // sf_d($post_connector_in_edit);
 								 ?>
 							</td>
 						</tr>
