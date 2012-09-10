@@ -41,8 +41,8 @@ class simple_fields {
 		$registered_field_types
 	
 	;
-	
-	
+
+
 	/**
 	 * Init is where we setup actions and filers and loads stuff and a little bit of this and that
 	 *
@@ -2502,70 +2502,51 @@ class simple_fields {
 						?>
 					</ul>
 				</div>	
-				
-				<div class="simple-fields-enable-debug">
-					<h3>Options</h3>
-					<p>
+
+
+				<div class="simple-fields-debug">
+					<h3><?php echo __('Debug', 'simple-fields') ?></h3>
+					<?php
+					// Dropdown with debug options
+
+					// Debug type. 0 = no debug, 1 = debug for admins only, 2 = debug for all
+					$options = $this->get_options();
+					$debug_type = isset($options["debug_type"]) ? (int) $options["debug_type"] : "0";
+					// capability edit_themes
+					?>
+					<form action="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-options-save" method="post">
 						<?php
-						/*
-							Debug automatically
-							for all
-							for admins
-						*/
-						// Debug type. 0 = no debug, 1 = debug for admins only, 2 = debug for all
-						$options = $this->get_options();
-						$debug_type = isset($options["debug_type"]) ? (int) $options["debug_type"] : "0";
-						// capability edit_themes
+						printf('
+							<p>
+								<select name=debug_type>
+									<option value=0 %1$s>%4$s</option>
+									<option value=1 %2$s>%5$s</option>
+									<option value=2 %3$s>%6$s</option>
+								</select>
+							</p>
+							', 
+							$debug_type === 0 ? "selected" : "",
+							$debug_type === 1 ? "selected" : "",
+							$debug_type === 2 ? "selected" : "",
+							__("Don't enable debug output", "simple-fields"),
+							__("Enable debug output for administrators", "simple-fields"),
+							__("Enable debug output for all users", "simple-fields")
+						);
 						?>
-						<form action="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-options-save" method="post">
-							<table class='form-table'>
-								<tbody>
-									<tr>
-										<th>
-											<?php _e("Developer/debug information"); ?>
-										</th>
-										<td>
-											<?php
-											printf('
-												<p>
-													<select name=debug_type>
-														<option value=0 %1$s>%4$s</option>
-														<option value=1 %2$s>%5$s</option>
-														<option value=2 %3$s>%6$s</option>
-													</select>
-												</p>
-												', 
-												$debug_type === 0 ? "selected" : "",
-												$debug_type === 1 ? "selected" : "",
-												$debug_type === 2 ? "selected" : "",
-												__("Don't enable debug output", "simple-fields"),
-												__("Enable debug output for administrators", "simple-fields"),
-												__("Enable debug output for all users", "simple-fields")
-											);
-											?>
-											<p class=description>
-												<?php _e("Automatically append information about attached fields on posts (using filter 'the_content')."); ?>
-											</p>
-										</td>
-									</tr>
-									<tr>
-										<th></th>
-										<td>
-											<input class="button-primary" type=submit value="<?php _e("Save changes", "simple-fields") ?>">
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</form>
-					</div><!-- // enable debug -->
+						<p class=description>
+							<?php _e("Automatically append information about attached fields on posts (using filter 'the_content')."); ?>
+						</p>
 
+						<p>
+							<input class="button-primary" type=submit value="<?php _e("Save changes", "simple-fields") ?>">
+						</p>
+					</form> <!-- // enable debug -->
+				
+					<ul>
+						<li><a href='<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=simple-fields-view-debug-info'><?php echo __('View debug information', 'simple-fields') ?></a></li>
+					</ul>
 
-					<div class="simple-fields-debug">
-						<h3><?php echo __('Debug', 'simple-fields') ?></h3>
-						<ul>
-							<li><a href='<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=simple-fields-view-debug-info'><?php echo __('View debug information', 'simple-fields') ?></a></li>
-						</ul>
-					</div>
+				</div>
 				
 				<?php
 	
