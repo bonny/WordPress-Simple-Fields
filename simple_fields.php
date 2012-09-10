@@ -2534,7 +2534,7 @@ class simple_fields {
 						);
 						?>
 						<p class=description>
-							<?php _e("Automatically append information about attached fields on posts (using filter 'the_content')."); ?>
+							<?php _e("Automatically append information about attached fields on posts (using filter 'the_content').", "simple-fields"); ?>
 						</p>
 
 						<p>
