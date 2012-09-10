@@ -9,14 +9,17 @@ ul.simple-fields-edit-field-groups-added-fields li {
 	padding: 1em 2em;
 	margin: 0;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(whiteSmoke), to(white));
+	background-image: -webkit-linear-gradient(top, whiteSmoke, white);
+	background-image:    -moz-linear-gradient(top, whiteSmoke, white);
+	background-image:     -ms-linear-gradient(top, whiteSmoke, white);
+	background-image:      -o-linear-gradient(top, whiteSmoke, white);
 	border-top: 2px solid #eee;
 	margin-bottom: 2em;
 }
 ul.simple-fields-edit-field-groups-added-fields li li {
 	background-image: none;
 }
-ul.simple-fields-edit-field-groups-added-fields li:nth-child(odd) {
-}
+
 
 #field_group_name,
 #post_connector_name
@@ -179,6 +182,10 @@ ul#simple-fields-post-connector-added-fields {
 ul#simple-fields-post-connector-added-fields li {
 	margin-bottom: 2em;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(whiteSmoke), to(white));
+	background-image: -webkit-linear-gradient(top, whiteSmoke, white);
+	background-image:    -moz-linear-gradient(top, whiteSmoke, white);
+	background-image:     -ms-linear-gradient(top, whiteSmoke, white);
+	background-image:      -o-linear-gradient(top, whiteSmoke, white);
 	border-top: 2px solid #eee;
 }
 .simple-fields-post-connector-addded-fields-options {
@@ -228,12 +235,15 @@ ul.simple-fields-metabox-field-group-fields li {
 	position: relative;
 }
 ul.simple-fields-metabox-field-group-fields-repeatable li {
-	border-top: 1px solid #ddd;
 	margin-top: 1em;
 	padding-top: .5em;
 	padding-bottom: .5em;
 	padding-left: 11px;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(whiteSmoke), to(white));
+	background-image: -webkit-linear-gradient(top, whiteSmoke, white);
+	background-image:    -moz-linear-gradient(top, whiteSmoke, white);
+	background-image:     -ms-linear-gradient(top, whiteSmoke, white);
+	background-image:      -o-linear-gradient(top, whiteSmoke, white);
 	border-top: 2px solid #eee;
 	padding: .5em 1.5em;
 	margin: 0 0 0 0;
