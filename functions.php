@@ -854,10 +854,35 @@ function simple_fields_value($field_slug = NULL, $post_id = NULL, $options = NUL
 
 /**
  * Gets all values as array
- * @param string $field_slug
+ * @param string $field_slug or comman separated list of several slugs
  * @param int $post_id ID of post or null to use current post in loop
  * @param array $options Array or query string of options to send to field type
- * @return mixed string or array, depending on the field type
+ * @return mixed string or array, depending on the field type and if first arg contains comma or not
+ * 
+ * Example output if field_slug contains comma = get serveral fields from a repeatable field group
+ *  Array
+ * (
+ *     [0] => Array
+ *         (
+ *             [image] => 1156
+ *             [text] => Text 1
+ *             [link] => /hej/
+ *         )
+ * 
+ *     [1] => Array
+ *         (
+ *             [image] => 1159
+ *             [text] => Hej svejs i ditt fejs
+ *             [link] => /hopp/
+ *         )
+ *
+ *  Example output if field_slug with no comma:
+ *  Array
+ * (
+ *     [0] => Text 1
+ *     [1] => Hej svejs i ditt fejs
+ *     [2] => Lorem ipsum dolor sit amet
+ * )
  */
 function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NULL) {
 	
@@ -869,6 +894,24 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 		$post_id = get_the_ID();
 	}
 	
+	// if field_slug contains commas then get all fields. awe-some!
+	if (strpos($field_slug, ",") !== FALSE) {
+		$arr_comma_slugs_values = array();
+		$arr_field_slugs = explode(",", $field_slug);
+		if ($arr_field_slugs) {
+			foreach ($arr_field_slugs as $one_of_the_comma_separated_slug) {
+				$one_slug_values = simple_fields_values($one_of_the_comma_separated_slug, $post_id, $options);
+				$loopnum = 0;
+				if (!isset($arr_comma_slugs_values[$loopnum])) $arr_comma_slugs_values[$loopnum] = array();
+				foreach ($one_slug_values as $one_slug_sub_value) {
+					$arr_comma_slugs_values[$loopnum][$one_of_the_comma_separated_slug] = $one_slug_sub_value;
+					$loopnum++;
+				}
+			}
+		}
+		return $arr_comma_slugs_values;
+	}
+		
 	global $sf;
 	
 	// Post connector for this post, with lots of info
