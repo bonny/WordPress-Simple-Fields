@@ -85,11 +85,13 @@ class simple_fields {
 		add_action( 'wp_ajax_simple_fields_metabox_fieldgroup_add', array($this, 'metabox_fieldgroup_add') );
 		add_action( 'wp_ajax_simple_fields_field_type_post_dialog_load', array($this, 'field_type_post_dialog_load') );
 		add_action( 'wp_ajax_simple_fields_field_group_add_field', array($this, 'field_group_add_field') );
-				
+
+		// Boot up
 		do_action("simple_fields_init", $this);
 		
 	}
 	
+		
 	/**
 	 * When all plugins have loaded = simple fields has also loaded = safe to add custom field types
 	 */
