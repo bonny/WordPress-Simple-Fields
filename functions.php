@@ -183,15 +183,36 @@ function simple_fields_get_post_group_values($post_id, $field_group_name_or_id, 
 function simple_fields_get_all_fields_and_values_for_post($post_id) {
 	
 	global $sf;
-	
+
+	$defaults = array(
+		"include_deleted" => TRUE
+	);
+	$args = wp_parse_args($args, $defaults);
+
 	$post                     = get_post($post_id);
 	$connector_to_use         = $sf->get_selected_connector_for_post($post);
 	$existing_post_connectors = $sf->get_post_connectors();
 	$field_groups             = $sf->get_field_groups();
 	$selected_post_connector  = isset($existing_post_connectors[$connector_to_use]) ? $existing_post_connectors[$connector_to_use] : NULL;
+	
 	if($selected_post_connector == null) {
 		return false;
 	}
+
+	// Remove deleted field groups
+	if (!$args["include_deleted"]) {
+		$arr_field_groups_to_keep = array();
+		foreach ($selected_post_connector["field_groups"] as $one_field_group_id => $one_field_group) {
+	
+			if ($one_field_group["deleted"]) continue;
+	
+			$arr_field_groups_to_keep[$one_field_group_id] = $one_field_group;
+	
+		}
+		$selected_post_connector["field_groups"] = $arr_field_groups_to_keep;
+	}
+	
+	// Do stuff
 	foreach ($selected_post_connector["field_groups"] as $one_field_group) { // one_field_group = name, deleted, context, priority, id
 	
 		// now get all fields for that fieldgroup and join them together
@@ -915,7 +936,7 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 	global $sf;
 	
 	// Post connector for this post, with lots of info
-	$post_connector_info = simple_fields_get_all_fields_and_values_for_post($post_id);
+	$post_connector_info = simple_fields_get_all_fields_and_values_for_post($post_id, "include_deleted=0");
 
 	if ($post_connector_info === FALSE) {
 		return FALSE;
