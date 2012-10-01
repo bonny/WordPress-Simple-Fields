@@ -311,7 +311,7 @@ class simple_fields {
 					$fieldgroups_fixed[$one_field_group_id][$posted_id] = array();
 					// loopa igenom "added"-värdena och fixa så att allt finns
 					foreach ($one_field_group_fields["added"] as $added_id => $added_val) {
-						$fieldgroups_fixed[$one_field_group_id][$posted_id][$added_id] = $fieldgroups[$one_field_group_id][$posted_id][$added_id];
+						$fieldgroups_fixed[$one_field_group_id][$posted_id][$added_id] = @$fieldgroups[$one_field_group_id][$posted_id][$added_id];
 					}
 				}
 			
