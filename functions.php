@@ -1038,7 +1038,7 @@ function simple_fields_connector() {
 	}
 }
 /**
- * Checks if the current post in the loop har the connector with slug $slug selected
+ * Checks if the current post in the loop has the connector with slug $slug selected
  *
  * @param string $slug Slug of post connector to check
  * @return bool
