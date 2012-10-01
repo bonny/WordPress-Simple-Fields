@@ -3,10 +3,10 @@ Contributors: eskapism, MarsApril, samface, angrycreative, earth people
 Donate link: http://eskapism.se/sida/donate/
 Tags: admin, fields, custom fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom
 Requires at least: 3.3.1
-Tested up to: 3.3.1
-Stable tag: 0.x
+Tested up to: 3.4.2
+Stable tag: 1.0
 
-Add different kind of input fields to your edit post page. Field can be of type textarea, TinyMCE, checkbox, radio buttons, drop downs or files.
+Add more advanced custom fields types to your edit post page. Field can be of several types, including textarea, checkbox, radio buttons, files and color picker.
 
 == Description ==
 
@@ -31,20 +31,19 @@ http://eskapism.se/blogg/2010/05/simple-fields-wp-custom-fields-on-steroids/
 Also check out this short tutorial:
 http://eskapism.se/code-playground/simple-fields/tutorial/
 
-#### Beta? You bet!
+#### Upgrading? Then backup your database
 
-Please note that this plugin still is in a very early version. Please try it out but be aware of bugs. 
-Also, please remember to backup your database, just to be sure if anything goes wrong.
-For bugreports, feature request and so on, please contact me at par.thernstrom@gmail.com or through twitter
-http://twitter.com/eskapism/.
+Please remember to backup your database when you upgrade this plugin. Everything should work fine, but just to be sure and safe: backup the database!
 
 #### Help and Support
-If you have questions/bug reports/feature requests for Simple Fields please use the WordPress [Support Forum](http://wordpress.org/tags/simple-fields?forum_id=10).
+
+If you have questions/bug reports/feature requests for Simple Fields please use the WordPress [Support Forum](http://wordpress.org/tags/simple-fields?forum_id=10) or 
+[the new GitHub project page for Simple Fields](github.com/bonny/WordPress-Simple-Fields/).
 There are also [tutorials available for Simple Fields](http://eskapism.se/code-playground/simple-fields/).
 
 #### Donation and more plugins
 * If you like this plugin don't forget to [donate to support further development](http://eskapism.se/sida/donate/).
-* Check out some [more plugins](http://wordpress.org/extend/plugins/profile/eskapism) by the same author.
+* Also check out some [more CMS-focused plugins](http://wordpress.org/extend/plugins/profile/eskapism) by the same author.
 
 
 == Installation ==
@@ -165,16 +164,15 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
-#### 0.x
-- This is a pretty big update, so please backup your databases before installation!
-- Added: Support for adding Custom Field Types/Field Type extensions.
+#### Version 1.0
+- Note: This is a pretty big update, so please backup your databases before installation!
+- Added: Support for adding Custom Field Types/Field Type extensions. Makes Simple Fields Endless Extendable! :)
 - Added: New functions for registering field groups and fields in php, see example usage.
-- Added: new better/easier functions for getting the saved values for a post: simple_fields_value() and simple_fields_values()
-- Added: field slugs and field group slugs. Now you can use the slug instead of the id to get the values.
-- Added: added CSS classes to field groups in admin area, so developers can style things there.
-- Added: actions and filter so developers can modify parts of Simple Fields behavior.
+- Added: New better/easier functions for getting the saved values for a post: simple_fields_value() and simple_fields_values()
+- Added: Field slugs and field group slugs. Now you can use the slug instead of the id to get the values.
+- Added: Added CSS classes to field groups in admin area, so developers can style things there.
+- Added: Actions and filter so developers can modify parts of Simple Fields behavior.
 - Added: German translation by Johann Heyne (http://johannheyne.de). Thanks a lot!
-- Added: Various fixes here and there.
 - Fixed: Simple Fields is now mostly a class.
 - Fixed: Various bugfixes.
 
