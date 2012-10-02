@@ -164,7 +164,7 @@ class simple_fields {
 		wp_enqueue_script("jscolor", SIMPLE_FIELDS_URL . "jscolor/jscolor.js"); // color picker for type color
 		wp_enqueue_script("simple-fields-date", SIMPLE_FIELDS_URL . "datepicker/date.js"); // date picker for type date
 		wp_enqueue_script("jquery-datepicker", SIMPLE_FIELDS_URL . "datepicker/jquery.datePicker.js"); // date picker for type date
-		wp_enqueue_style('jquery-datepicker', SIMPLE_FIELDS_URL.'datepicker/datePicker.css', false, SIMPLE_FIELDS_URLVERSION);
+		wp_enqueue_style('jquery-datepicker', SIMPLE_FIELDS_URL.'datepicker/datePicker.css', false, SIMPLE_FIELDS_VERSION);
 
 		wp_enqueue_style('simple-fields-styles', SIMPLE_FIELDS_URL.'styles.css', false, SIMPLE_FIELDS_VERSION);
 		wp_register_script('simple-fields-scripts', SIMPLE_FIELDS_URL.'scripts.js', false, SIMPLE_FIELDS_VERSION);
