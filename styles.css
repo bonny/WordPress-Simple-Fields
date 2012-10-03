@@ -5,15 +5,21 @@ ul.simple-fields-edit-field-groups-added-fields {
 	position: relative;
 }
 ul.simple-fields-edit-field-groups-added-fields li {
-	margin-bottom: 2em;
-	padding-bottom: 2em;
-	border-bottom: 1px solid #DFDFDF;
-	background-color: #F9F9F9;
 	position: relative;
+	padding: 1em 2em;
+	margin: 0;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(whiteSmoke), to(white));
+	background-image: -webkit-linear-gradient(top, whiteSmoke, white);
+	background-image:    -moz-linear-gradient(top, whiteSmoke, white);
+	background-image:     -ms-linear-gradient(top, whiteSmoke, white);
+	background-image:      -o-linear-gradient(top, whiteSmoke, white);
+	border-top: 2px solid #eee;
+	margin-bottom: 2em;
 }
-ul.simple-fields-edit-field-groups-added-fields li:nth-child(odd) {
-	/* background-color: #fff; */
+ul.simple-fields-edit-field-groups-added-fields li li {
+	background-image: none;
 }
+
 
 #field_group_name,
 #post_connector_name
@@ -30,6 +36,14 @@ ul.simple-fields-edit-field-groups-added-fields li:nth-child(odd) {
 	margin-bottom: .75em;
 }
 
+.simple-fields-field-group-one-field-row fieldset {
+	border: 1px solid silver;
+	padding: 0em 1em;
+}
+.simple-fields-field-group-one-field-row legend {
+	font-weight: bold;
+}
+
 .simple-fields-field-group-one-field-row label,
 .simple-fields-field-type-options label
  {
@@ -37,7 +51,15 @@ ul.simple-fields-edit-field-groups-added-fields li:nth-child(odd) {
 }
 
 .simple-fields-field-group-one-field-row-description {
-/* 	display: none; */
+}
+
+.simple-fields-field-group-one-field-row p input[type=text],
+.simple-fields-field-group-one-field-row p textarea
+{
+	width: 100%;
+}
+.simple-fields-field-group-one-field-row p textarea {
+	height: 8em;
 }
 
 div.delete a {
@@ -53,8 +75,8 @@ li.simple-fields-field-group-one-field {
 li.simple-fields-field-group-one-field div.delete {
 	display: none;
 	position: absolute;
-	right: 0;
-	bottom: 1em;
+	right: .5em;
+	top: .5em;
 }
 .simple-fields-field-group-delete,
 .simple-fields-post-connector-delete
@@ -74,22 +96,19 @@ simple-fields-post-connector-delete a:hover
 }
 
 .simple-fields-edit-post-connectors,
-.simple-fields-edit-field-groups {
-	xfloat: left;	
+.simple-fields-post-type-defaults,
+.simple-fields-debug
+ {
+	 margin-top: 2em;
 }
 .simple-fields-edit-post-connectors {
-	xborder-right: 1px solid #DFDFDF;
-	xpadding-right: 3em;
 }
 .simple-fields-edit-field-groups {
-	xborder-left: 1px solid #DFDFDF;
-	xpadding-left: 3em;
-	xmargin-left: -1px;
 }
 
 .simple-fields-edit-field-groups ul,
 .simple-fields-edit-post-connectors ul,
-.easy-fields-post-type-defaults ul
+.simple-fields-post-type-defaults ul
  {
 	list-style-type: disc;
 	margin-left: 20px;
@@ -104,7 +123,6 @@ ul#simple-fields-post-connector-added-fields li
 	margin: 0;
 	line-height: 2.5em;
 	position: relative;
-	background-color: #f9f9f9;
 }
 .simple-fields-field-type-options-radiobutton-checked-by-default {
 	margin-left: 27em;
@@ -141,7 +159,6 @@ ul#simple-fields-post-connector-added-fields li
 	color: #BC0B0B;
 	cursor: pointer;
 	position: absolute;
-	/* bottom: 0; */
 	top: 0;
 	left: 35em;
 }
@@ -163,9 +180,13 @@ ul#simple-fields-post-connector-added-fields {
 	position: relative;
 }
 ul#simple-fields-post-connector-added-fields li {
-	border-bottom: 1px solid #DFDFDF;
-	padding-bottom: 1em;
-	margin-bottom: 1em;
+	margin-bottom: 2em;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(whiteSmoke), to(white));
+	background-image: -webkit-linear-gradient(top, whiteSmoke, white);
+	background-image:    -moz-linear-gradient(top, whiteSmoke, white);
+	background-image:     -ms-linear-gradient(top, whiteSmoke, white);
+	background-image:      -o-linear-gradient(top, whiteSmoke, white);
+	border-top: 2px solid #eee;
 }
 .simple-fields-post-connector-addded-fields-options {
 	margin-left: 16px;
@@ -177,10 +198,10 @@ ul#simple-fields-post-connector-added-fields li {
 	margin-right: 1em;
 }
 
-.easy-fields-post-type-defaults,
+.simple-fields-post-type-defaults,
 .simple-fields-edit-post-connectors
  {
-	margin-top: 2.5em;
+	
 }
 
 #simple-fields-post-edit-side-field-settings-select-connector-please-save {
@@ -214,11 +235,18 @@ ul.simple-fields-metabox-field-group-fields li {
 	position: relative;
 }
 ul.simple-fields-metabox-field-group-fields-repeatable li {
-	border-top: 1px solid #ddd;
 	margin-top: 1em;
 	padding-top: .5em;
 	padding-bottom: .5em;
 	padding-left: 11px;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(whiteSmoke), to(white));
+	background-image: -webkit-linear-gradient(top, whiteSmoke, white);
+	background-image:    -moz-linear-gradient(top, whiteSmoke, white);
+	background-image:     -ms-linear-gradient(top, whiteSmoke, white);
+	background-image:      -o-linear-gradient(top, whiteSmoke, white);
+	border-top: 2px solid #eee;
+	padding: .5em 1.5em;
+	margin: 0 0 0 0;
 }
 ul.simple-fields-metabox-field-group-fields-repeatable li.hover {
 	background-color: #fffcf1;
@@ -251,11 +279,7 @@ ul.simple-fields-metabox-field-group-fields-repeatable .simple-fields-metabox-fi
  {
 	width: 6em;
 }
-/*
-.simple-fields-metabox-field-group .dp-choose-date {
-	display: none;
-}
-*/
+
 .simple-fields-metabox-field-textarea-tinymce-wrapper {
 	width: 100%;
 }
@@ -294,8 +318,8 @@ ul.simple-fields-metabox-field-group-fields-repeatable .simple-fields-metabox-fi
 
 .simple-fields-metabox-field-group-delete {
 	position: absolute;
-	left: -6px;
-	top: 38px;
+	top: 10px;
+	right: 10px;
 }
 .simple-fields-metabox-field-group-delete a {
 	background: transparent url(bin_closed.png) no-repeat 0 50%;
@@ -374,6 +398,9 @@ ul.simple-fields-file-browser-list h3 {
 }
 
 .simple-fields-bonny-plugins-inner-sidebar {
+	display: none;
+}
+/*.simple-fields-bonny-plugins-inner-sidebar {
 	float: right;
 	width: 210px;
 	padding-right: 10px;
@@ -384,6 +411,7 @@ ul.simple-fields-file-browser-list h3 {
 	margin-right: -250px;
 	float: left;
 }
+*/
 
 .simple-fields-meta-box-field-group-field-type-post-dialog {
 	margin: 10px;
@@ -393,9 +421,6 @@ ul.simple-fields-file-browser-list h3 {
 }
 
 .simple-fields-meta-box-field-group-field-type-post-dialog-post-types {
-/*	border-bottom: 1px solid #DFDFDF;
-	padding-bottom: 10px;
-	margin-bottom: 10px; */
 	margin-bottom: 10px;
 }
 .simple-fields-meta-box-field-group-field-type-post-dialog-post-types li {
@@ -439,3 +464,9 @@ ul.simple-fields-file-browser-list h3 {
 .simple-fields-metabox-field-taxonomymeta-terms label {
 	font-weight: normal;
 }
+
+.sf_box_debug {
+	padding: .5em;
+	background-color: lightyellow;
+}
+

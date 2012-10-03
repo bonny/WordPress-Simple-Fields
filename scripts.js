@@ -1,7 +1,19 @@
 
 jscolor.bindClass = "simple-fields-field-type-color";
 var simple_fields_datepicker_args = { "clickInput": true };
-var simple_fields_tinymce_iframes = new Array;
+var simple_fields_tinymce_iframes = [];
+
+// Global module for Simple Fields, using the reveal module pattern
+var simple_fields = (function() {
+	
+	var
+		i_am_simple_fields = true;
+	
+	return {
+		
+	};
+	
+})();
 
 (function($) {
 
@@ -39,7 +51,7 @@ var simple_fields_tinymce_iframes = new Array;
 					txtarea_el = dom.get(id);
 					qtname = 'qt_'+id;
 					qttb = 'qt_'+id+'_toolbar';
-					if ( typeof(QTags) != undefined && iframe_el.canvas != undefined ) {
+					if ( typeof(QTags) !== undefined && iframe_el.canvas !== undefined ) {
 						QTags.closeAllTags(iframe_el.id);
 					}
 					if (!tinyMCEPreInit.qtInit[id]) {
@@ -88,7 +100,7 @@ var simple_fields_tinymce_iframes = new Array;
 					});
 				dom.hide(qttb);
 				dom.addClass(wrap_id, 'tmce-active');
-				dom.removeClass(wrap_id, 'html-active');	
+				dom.removeClass(wrap_id, 'html-active');
 				}
 			}
 		}
@@ -167,6 +179,8 @@ var simple_fields_tinymce_iframes = new Array;
 		if (confirm(sfstrings.confirmDelete)) {
 			$(this).closest("li").find(".hidden_deleted").attr("value", 1);
 			$(this).closest("li").hide("slow");
+			// Remove required attribute on slug so we can post the form even if slug is empty
+			$(this).closest("li").find("input[required]").removeAttr("required");
 		} else {
 		}
 		return false;
@@ -257,18 +271,24 @@ var simple_fields_tinymce_iframes = new Array;
 		};
 	
 		$.post(ajaxurl, data, function(response) {
-			// alert('Got this from the server: ' + response);
+
 			$ul = $wrapper.find("ul.simple-fields-metabox-field-group-fields");
 			$response = $(response);
 			$response.hide();
 			$ul.prepend($response);
 			$response.slideDown("slow", function() {
+				
 				simple_fields_metabox_tinymce_attach();
 				$response.effect("highlight", 1000);
 				// add jscolor to possibly new fields
 				jscolor.init();
 				// add datepicker too
 				$('input.simple-fields-field-type-date', $ul).datePicker(simple_fields_datepicker_args);
+				
+				// Fire event so plugins can listen to the add-button
+				//simple_fields.trigger("field_group_added");
+				//simple_fields.dispatchEvent();
+				$(document.body).trigger("field_group_added", $response);
 			});
 			$t.html("<a href='#'>+ "+sfstrings.add+"</a>");
 
@@ -360,6 +380,7 @@ var simple_fields_tinymce_iframes = new Array;
 	// field type post
 	// popup a dialog where the user can choose  the post to attach
 	$("a.simple-fields-metabox-field-post-select").live("click", function(e) {
+
 		e.preventDefault();
 		
 		var a = $(this);
@@ -374,12 +395,7 @@ var simple_fields_tinymce_iframes = new Array;
 			dialogClass: 'wp-dialog',
 			zIndex: 300000,
 			open: function(event, ui) {
-				//console.log("event", event);
-				//console.log("ui", ui);
-				//console.log("originLink", $(this).data("originLink"));
 				var originLink = $($(this).data("originLink"));
-				//console.log(enabled_post_types);
-				//var select_type = $("div.simple-fields-meta-box-field-group-field-type-post-dialog-select-type");
 				arr_enabled_post_types = enabled_post_types.split(",");
 				$(this).text("Loading...").load(ajaxurl, {
 					"action": "simple_fields_field_type_post_dialog_load",
@@ -389,15 +405,23 @@ var simple_fields_tinymce_iframes = new Array;
 		});
 
 	});
+	
+	/**
+	 * Post type dialog: click on cancel link
+	 * Close the dialog
+	 */
 	$(".simple-fields-postdialog-link-cancel").live("click", function(e) {
 		e.preventDefault();
 		$("div.simple-fields-meta-box-field-group-field-type-post-dialog").dialog("close");
 	});
 	
-	// in dialog: click on post type
+	/**
+	 * in dialog: click on post type = show posts of that type
+	 */
 	$(".simple-fields-meta-box-field-group-field-type-post-dialog-post-types a").live("click", function(e) {
 
 		e.preventDefault();
+
 		var a = $(this);
 		var dialog = $("div.simple-fields-meta-box-field-group-field-type-post-dialog");
 		var originLink = dialog.data("originLink");
@@ -413,7 +437,9 @@ var simple_fields_tinymce_iframes = new Array;
 
 	});
 	
-	// in dialog: click on post = update input in field group
+	/** 
+	 * in dialog: click on a post = update input in field group and then close dialog
+	 */
 	$(".simple-fields-meta-box-field-group-field-type-post-dialog-post-posts a").live("click", function(e) {
 		
 		e.preventDefault();
@@ -430,12 +456,13 @@ var simple_fields_tinymce_iframes = new Array;
 		div.find(".simple-fields-metabox-field-post-clear").show();
 		div.find(".simple-fields-field-type-post-postName").show();
 
-		
 		dialog.dialog("close");
 		
 	});
 	
-	// clear post id and name
+	/** 
+	 * Field type post: link clear = clear post id and name
+	 */
 	$(".simple-fields-metabox-field-post-clear").live("click", function(e) {
 		e.preventDefault();
 		var a = $(this);
@@ -632,9 +659,6 @@ function simple_fields_thickbox(link) {
 	var t = link.title || link.name || null;
 	var a = link.href || link.alt;
 	var g = link.rel || false;
-	// alert(t); // title
-	// alert(a); // http://localhost/wp-admin/media-upload.php?type=image&post_id=1060&TB_iframe=true
-	// alert(g); // false
 	tb_show(t,a,g);
 	link.blur();
 	return false;
