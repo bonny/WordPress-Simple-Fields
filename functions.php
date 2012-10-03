@@ -57,7 +57,7 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 					$is_found = true;
 				}
 
-				$saved_values = $one_field["saved_values"];
+				$saved_values = isset($one_field["saved_values"]) ? $one_field["saved_values"] : null;
 
 				if ($one_field["type"] == "radiobuttons" || $one_field["type"] == "dropdown") {
 					if ($one_field["type"] == "radiobuttons") {
@@ -180,7 +180,7 @@ function simple_fields_get_post_group_values($post_id, $field_group_name_or_id, 
  *
  * return @array a really fat one!
  */
-function simple_fields_get_all_fields_and_values_for_post($post_id) {
+function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") {
 
 	global $sf;
 
