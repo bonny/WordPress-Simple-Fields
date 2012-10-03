@@ -57,7 +57,7 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 					$is_found = true;
 				}
 	
-				$saved_values = $one_field["saved_values"];
+				$saved_values = isset($one_field["saved_values"]) ? $one_field["saved_values"] : null;
 	
 				if ($one_field["type"] == "radiobuttons" || $one_field["type"] == "dropdown") {
 					if ($one_field["type"] == "radiobuttons") {
@@ -226,6 +226,11 @@ function simple_fields_get_all_fields_and_values_for_post($post_id) {
 		while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
 			$num_added_field_groups++;
 		}
+		
+		// Field groups should only be allowed to be 0 if the group is repeatable
+		if ($num_added_field_groups == 0 && !$one_field_group['repeatable']) {
+		    $num_added_field_groups++;
+		}
 
 		// now fetch the stored values, one field at a time
 		for ($num_in_set = 0; $num_in_set < $num_added_field_groups; $num_in_set++) {
@@ -342,28 +347,35 @@ function simple_fields_get_meta_query($group_id, $field_id, $value, $compare = "
 // Extends args for WP_Query() with simple fields meta query args
 // and returns query result object
 function simple_fields_query_posts($query_args = array()) {
-	foreach($query_args as $key => $val) {
+        $query_keys = array('sf_group',
+                'sf_field',
+                'sf_value',
+                'sf_compare',
+                'sf_type',
+                'sf_order',
+                'sf_num_in_set');
+        foreach($query_keys as $key) {
 		switch($key) {
 			case "sf_group":
 			case "sf_field":
 			case "sf_value":
-				if(empty($val))
+				if(empty($query_args[$key]))
 					return false;
 				break;
 			case "sf_compare":
-				if(empty($val))
+				if(empty($query_args[$key]))
 					$query_args[$key] = "=";
 				break;
 			case "sf_type":
-				if(empty($val))
+				if(empty($query_args[$key]))
 					$query_args[$key] = "CHAR";
 				break;
 			case "sf_order":
-				if($val != "ASC" && $val != "DESC")
+				if($query_args[$key] != "ASC" && $query_args[$key] != "DESC")
 					$query_args[$key] = "";
 				break;
 			case "sf_num_in_set":
-				if(!is_numeric($val) || $val < 1)
+				if(!is_numeric($query_args[$key]) || $query_args[$key] < 1)
 					$query_args[$key] = 1;
 				break;
 		}
@@ -664,6 +676,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 	}
 	
 	$post_connectors[$connector_id] = simple_fields_merge_arrays($post_connector_defaults, $new_post_connector);
+	$post_connectors[$connector_id]['post_types'] = array_unique($post_connectors[$connector_id]['post_types']);
 	
 	if (isset($new_post_connector["field_groups"]) && is_array($new_post_connector["field_groups"]) && !empty($new_post_connector["field_groups"])) {
 		$field_group_connectors = array();
