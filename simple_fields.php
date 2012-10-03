@@ -941,20 +941,52 @@ class simple_fields {
 	
 		// calculate number of active field groups
 		// @todo: check this a bit more, does not seem to be any deleted groups. i thought i saved the deletes ones to, but with deleted flag set
-		foreach ($connectors as & $one_connector) {
+		foreach (array_keys($connectors) as $i) {
+                    
+                    // Sanity check the connector id
+                    if (empty($connectors[$i]["id"]) && empty($connectors[$i]["deleted"])) {
+                        
+                        // Found field group without id, let's try to repair it
+                        $highest_id = 0;
+                        foreach($connectors as $one_connector) {
+                            if ($one_connector["id"] > $highest_id)
+                                $highest_id = $one_connector["id"];
+                            if ($one_connector["id"] === $i)
+                                $id_already_exists = true;
+                        }
+                        
+                        if ($i > 0 && !$id_already_exists) {
+                            // If the array key is larger than 0 and
+                            // not used as id by any other connector,
+                            // then it's the perfect id
+                            $connectors[$i]["id"] = $i;
+                        } else {
+                            // The array key is either less than or equal to 0,
+                            // or another connector is using it as id. In any case,
+                            // let's treat it as a new connector and give it a new id.
+                            $new_id = $highest_id + 1;
+                            $connectors[$i]["id"] = $new_id;
+                            
+                            // Now make sure the array key matches the new id
+                            $connectors[$new_id] = $connectors[$i];
+                            unset($connectors[$i]);
+                            $i = $new_id;
+                        }
+                        
+                    }
 		
 			// compatibility fix key vs slug
-			if (isset($one_connector["slug"]) && $one_connector["slug"]) {
-				$one_connector["key"] = $one_connector["slug"];
-			} else if (isset($one_connector["key"]) && $one_connector["key"]) {
-				$one_connector["slug"] = $one_connector["key"];
+			if (isset($connectors[$i]["slug"]) && $connectors[$i]["slug"]) {
+				$connectors[$i]["key"] = $connectors[$i]["slug"];
+			} else if (isset($connectors[$i]["key"]) && $connectors[$i]["key"]) {
+				$connectors[$i]["slug"] = $connectors[$i]["key"];
 			}
 		
 			$num_fields_in_group = 0;
-			foreach ($one_connector["field_groups"] as $one_group) {
+			foreach ($connectors[$i]["field_groups"] as $one_group) {
 				if (!$one_group["deleted"]) $num_fields_in_group++;
 			}
-			$connectors[$one_connector["id"]]["field_groups_count"] = $num_fields_in_group;
+			$connectors[$connectors[$i]["id"]]["field_groups_count"] = $num_fields_in_group;
 		}
 	
 		return $connectors;
@@ -972,20 +1004,52 @@ class simple_fields {
 		
 		// Calculate the number of active fields
 		// And some other things
-		foreach ($field_groups as & $one_group) {
+		foreach (array_keys($field_groups) as $i) {
+                    
+                    // Sanity check the field group id
+                    if (empty($field_groups[$i]["id"]) && empty($field_groups[$i]["deleted"])) {
+                        
+                        // Found field group without id, let's try to repair it
+                        $highest_id = 0;
+                        foreach($field_groups as $one_field_group) {
+                            if ($one_field_group["id"] > $highest_id)
+                                $highest_id = $one_field_group["id"];
+                            if ($one_field_group["id"] === $i)
+                                $id_already_exists = true;
+                        }
+                        
+                        if ($i > 0 && !$id_already_exists) {
+                            // If the array key is larger than 0 and
+                            // not used as id by any other field group,
+                            // then it's the perfect id
+                            $field_groups[$i]["id"] = $i;
+                        } else {
+                            // The array key is either less than or equal to 0,
+                            // or another field group is using it as id. In any case,
+                            // let's treat it as a new field group and give it a new id.
+                            $new_id = $highest_id + 1;
+                            $field_groups[$i]["id"] = $new_id;
+                            
+                            // Now make sure the array key matches the new id
+                            $field_groups[$new_id] = $field_groups[$i];
+                            unset($field_groups[$i]);
+                            $i = $new_id;
+                        }
+                        
+                    }
 
 			// Make sure we have both key and slug set to same. key = old name for slug
-			if (isset($one_group["slug"]) && $one_group["slug"]) {
-				$one_group["key"] = $one_group["slug"];
-			} else if (isset($one_group["key"]) && $one_group["key"]) {
-				$one_group["slug"] = $one_group["key"];
+			if (isset($field_groups[$i]["slug"]) && $field_groups[$i]["slug"]) {
+				$field_groups[$i]["key"] = $field_groups[$i]["slug"];
+			} else if (isset($field_groups[$i]["key"]) && $field_groups[$i]["key"]) {
+				$field_groups[$i]["slug"] = $field_groups[$i]["key"];
 			}
 
 			$num_active_fields = 0;
-			foreach ($one_group["fields"] as $one_field) {
+			foreach ($field_groups[$i]["fields"] as $one_field) {
 				if (!$one_field["deleted"]) $num_active_fields++;
 			}
-			$one_group["fields_count"] = $num_active_fields;
+			$field_groups[$i]["fields_count"] = $num_active_fields;
 		}
 		
 		return $field_groups;
@@ -1887,7 +1951,7 @@ class simple_fields {
 											<option <?php echo ($selected_post_type_default==="__inherit__") ? " selected='selected' " : "" ?> value="__inherit__"><?php _e('Inherit from parent post', 'simple-fields') ?></option>
 											<?php
 											foreach ($arr_post_connectors as $one_post_connector) {
-												echo "<option " . (($selected_post_type_default===$one_post_connector["id"]) ? " selected='selected' " : "") . "value='{$one_post_connector["id"]}'>" . $one_post_connector["name"] . "</option>";
+												echo "<option " . ((intval($selected_post_type_default)==intval($one_post_connector["id"])) ? " selected='selected' " : "") . "value='{$one_post_connector["id"]}'>" . $one_post_connector["name"] . "</option>";
 											}
 											?>
 										</select>
