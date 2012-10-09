@@ -2780,5 +2780,6 @@ class simple_fields {
 
 
 // Boot it up!
+global $sf;
 $sf = new simple_fields();
 $sf->init();
