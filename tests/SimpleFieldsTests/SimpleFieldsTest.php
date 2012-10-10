@@ -17,6 +17,13 @@ class MyPluginTest extends WP_UnitTestCase {
         #$this->assertEquals( "<p>Hello WordPress Unit Tests</p>", $this->my_plugin->append_content(''), '->append_content() appends text' );
     }
 
+    // test defaults, should all be empty since we cleared the db...
+    function testDefaults() {
+	    $this->assertEquals(array(), $this->sf->get_post_connectors());
+	    $this->assertEquals(array(), $this->sf->get_field_groups());
+	    $this->assertEquals(array(), $this->sf->get_field_groups());
+    }
+
     // Test output of debug function
     function test_debug() {
 

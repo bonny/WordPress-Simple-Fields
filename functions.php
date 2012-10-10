@@ -774,7 +774,7 @@ function simple_fields_register_post_type_default($connector_id_or_special_type 
 
 	}
 
-	$post_type_defaults = (array) get_option("simple_fields_post_type_defaults");
+	$post_type_defaults = $sf->get_post_type_defaults();
 
 	$post_type_defaults[$post_type] = $connector_id_or_special_type;
 	if (isset($post_type_defaults[0])) {

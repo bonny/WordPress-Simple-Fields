@@ -243,7 +243,7 @@ class simple_fields {
 	 * @return mixed int connector id or string __none__ or __inherit__
 	 */
 	function get_default_connector_for_post_type($post_type) {
-		$post_type_defaults = (array) get_option("simple_fields_post_type_defaults");
+		$post_type_defaults = $this->get_post_type_defaults();
 		$selected_post_type_default = (isset($post_type_defaults[$post_type]) ? $post_type_defaults[$post_type] : "__none__");
 		return $selected_post_type_default;
 	}
@@ -992,6 +992,10 @@ class simple_fields {
 		}
 	
 		return $connectors;
+	}
+
+	function get_post_type_defaults() {
+		return (array) get_option("simple_fields_post_type_defaults");
 	}
 	
 	/**
@@ -2403,7 +2407,7 @@ class simple_fields {
 				echo "<hr>";
 				echo "<h3>simple_fields_post_type_defaults</h3>";
 				echo '<p>Called with: get_option("simple_fields_post_type_defaults")';
-				sf_d( get_option("simple_fields_post_type_defaults") );
+				sf_d( $this->get_post_type_defaults() );
 				
 			}
 	
