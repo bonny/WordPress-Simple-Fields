@@ -983,8 +983,10 @@ class simple_fields {
 			}
 		
 			$num_fields_in_group = 0;
-			foreach ($connectors[$i]["field_groups"] as $one_group) {
-                                if (isset($one_group["deleted"]) && !$one_group["deleted"]) $num_fields_in_group++;
+			if (isset($connectors[$i]["field_groups"]) && is_array($connectors[$i]["field_groups"])) {
+				foreach ($connectors[$i]["field_groups"] as $one_group) {
+					if (isset($one_group["deleted"]) && !$one_group["deleted"]) $num_fields_in_group++;
+				}
 			}
 			$connectors[$connectors[$i]["id"]]["field_groups_count"] = $num_fields_in_group;
 		}
@@ -2054,7 +2056,7 @@ class simple_fields {
 					$connector_id = (int) $_POST["post_connector_id"];
 					$post_connectors[$connector_id]["name"] = (string) stripslashes($_POST["post_connector_name"]);
 					$post_connectors[$connector_id]["slug"] = (string) ($_POST["post_connector_slug"]);
-					$post_connectors[$connector_id]["field_groups"] = (array) $_POST["added_fields"];
+					$post_connectors[$connector_id]["field_groups"] = (array) @$_POST["added_fields"];
 					$post_connectors[$connector_id]["post_types"] = (array) @$_POST["post_types"];
 					$post_connectors[$connector_id]["hide_editor"] = (bool) @$_POST["hide_editor"];
 	

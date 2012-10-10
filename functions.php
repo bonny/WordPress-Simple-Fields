@@ -228,7 +228,7 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 		}
 		
 		// Field groups should only be allowed to be 0 if the group is repeatable
-		if ($num_added_field_groups == 0 && @!$one_field_group['repeatable']) {
+		if ($num_added_field_groups == 0 && (isset($one_field_group['repeatable']) && !$one_field_group['repeatable']) ) {
 		    $num_added_field_groups++;
 		}
 
