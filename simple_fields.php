@@ -984,7 +984,7 @@ class simple_fields {
 		
 			$num_fields_in_group = 0;
 			foreach ($connectors[$i]["field_groups"] as $one_group) {
-				if (!$one_group["deleted"]) $num_fields_in_group++;
+                                if (isset($one_group["deleted"]) && !$one_group["deleted"]) $num_fields_in_group++;
 			}
 			$connectors[$connectors[$i]["id"]]["field_groups_count"] = $num_fields_in_group;
 		}
