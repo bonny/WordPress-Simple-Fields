@@ -17,6 +17,7 @@ class MyPluginTest extends WP_UnitTestCase {
         #$this->assertEquals( "<p>Hello WordPress Unit Tests</p>", $this->my_plugin->append_content(''), '->append_content() appends text' );
     }
 
+    // Test output of debug function
     function test_debug() {
 
         $this->expectOutputString("<pre class='sf_box_debug'>this is simple fields debug function</pre>");
