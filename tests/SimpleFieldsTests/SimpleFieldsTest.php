@@ -35,7 +35,7 @@ class MyPluginTest extends WP_UnitTestCase {
 	// insert and test manually added fields
 	function testManuallyAddedFields()
 	{
-		echo "xxx";
+
 		$post_id = 11;
 
 		// test single/first values
@@ -808,6 +808,9 @@ class MyPluginTest extends WP_UnitTestCase {
 		
 		$this->assertEquals( $expected_return, $arr_return );
 
+		// gosh this was boring. need to add this for all field types.
+		
+		
 		/*			
 			simple_fields_register_field_group($slug = "", $new_field_group = array())
 			simple_fields_register_post_connector($unique_name = "", $new_post_connector = array())
@@ -817,6 +820,7 @@ class MyPluginTest extends WP_UnitTestCase {
 
 
 		// test manually added fields again to make sure nothing broke
+		// does this work btw?
 		$this->testManuallyAddedFields();
 
 
