@@ -861,36 +861,27 @@ class MyPluginTest extends WP_UnitTestCase {
 		
 		$this->assertEquals( array_keys($expected_return), array_keys($arr_return) );
 		
+		// @todo: add test of values here also
 		foreach ($arr_return["fields"] as $arr_one_field) {
 			$this->assertEquals( array_keys($expected_return["fields"][0]), array_keys($arr_one_field) );
 		}
-		
-		foreach ($arr_return as $one)
-		
-		#$this->assertEquals( $expected_return, $arr_return );
-		
-		
+	
 		/*			
-			simple_fields_register_field_group($slug = "", $new_field_group = array())
 			simple_fields_register_post_connector($unique_name = "", $new_post_connector = array())
 			simple_fields_register_post_type_default($connector_id_or_special_type = "", $post_type = "post")
 
 		*/
 
-
 		// test manually added fields again to make sure nothing broke
 		// does this work btw?
 		$this->testManuallyAddedFields();
 
-
 		/*
 
-			what to write tests for:
+			left to write tests for:
 
 			simple_fields_query_posts
 			function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $new_post_connector = null, $new_value) {
-			
-			
 			get_field_group($group_id)
 			get_field_in_group($field_group, $field_id)
 			Extension API
