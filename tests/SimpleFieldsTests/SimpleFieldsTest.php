@@ -807,7 +807,7 @@ class MyPluginTest extends WP_UnitTestCase {
 		);
 		
 		$this->assertEquals( $expected_return, $arr_return );
-
+		
 
 		// generate arr with all field types
 		$arr_field_types = array();

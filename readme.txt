@@ -4,7 +4,7 @@ Donate link: http://eskapism.se/sida/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom
 Requires at least: 3.3.1
 Tested up to: 3.4.2
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 
 Add more advanced custom fields types to your edit post page. Field can be of several types, including textarea, checkbox, radio buttons, files and color picker.
 
@@ -163,6 +163,12 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 
 == Changelog ==
+
+#### Version 1.0.2
+- Changed: Don't load example field types
+- Fixed: jQuery is needed for debug output but was not enqueued
+- Small bugfixes
+- Added unit tests. Hopefully this makes it easier for me to spot bugs in the future. Btw: these are the first unit tests I've ever written, so please feel free to comment on the way I've done it! :)
 
 #### Version 1.0.1
 - Fixed: some warning and notice-errors, for example when a post connector did not have any field groups connected

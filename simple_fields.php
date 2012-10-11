@@ -51,14 +51,15 @@ class simple_fields {
 
 		define( "SIMPLE_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
 		define( "SIMPLE_FIELDS_NAME", "Simple Fields");
-		define( "SIMPLE_FIELDS_VERSION", "1.0.1");
+		define( "SIMPLE_FIELDS_VERSION", "1.0.2");
 
 		load_plugin_textdomain( 'simple-fields', null, basename(dirname(__FILE__)).'/languages/');
 		
 		require( dirname(__FILE__) . "/functions.php" );
 		require( dirname(__FILE__) . "/class_simple_fields_field.php" );
-		require( dirname(__FILE__) . "/field_types/field_example.php" );
-		require( dirname(__FILE__) . "/field_types/field_minimalistic_example.php" );
+		
+		// require( dirname(__FILE__) . "/field_types/field_example.php" );
+		// require( dirname(__FILE__) . "/field_types/field_minimalistic_example.php" );
 
 		$this->plugin_foldername_and_filename = basename(dirname(__FILE__)) . "/" . basename(__FILE__);
 		$this->registered_field_types = array();
