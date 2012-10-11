@@ -142,7 +142,21 @@ class MyPluginTest extends WP_UnitTestCase {
 		// sätt connectors manuellt på några poster
 		// testa därefter om det är rätt stuff
 		
-		$this->sf->get_selected_connector_for_post($post);
+		$post_with_fields = 11;
+		$saved_connector_to_use = get_post_meta($post_with_fields, "_simple_fields_selected_connector", true);
+		$this->assertEquals(1, $saved_connector_to_use);
+		var_dump( $this->sf->get_selected_connector_for_post($post_with_fields) );
+
+		$post_with_no_connector = 24;
+		$saved_connector_to_use = get_post_meta($post_with_no_connector, "_simple_fields_selected_connector", true);
+		$this->assertEquals("__none__", $saved_connector_to_use);
+		var_dump( $this->sf->get_selected_connector_for_post($post_with_no_connector) );
+
+		$post_with_inherit_connector = 26;
+		$saved_connector_to_use = get_post_meta($post_with_inherit_connector, "_simple_fields_selected_connector", true);
+		$this->assertEquals("__inherit__", $saved_connector_to_use);
+		var_dump( $this->sf->get_selected_connector_for_post($post_with_inherit_connector) );
+		
 	}
 
 
