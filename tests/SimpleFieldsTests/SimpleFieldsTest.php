@@ -168,10 +168,11 @@ class MyPluginTest extends WP_UnitTestCase {
 		$this->assertEquals("__none__", $saved_connector_to_use);
 		$this->assertEquals("__none__", $this->sf->get_selected_connector_for_post($page_with_no_connector));
 
+		// page is a child of a page with fields, so it will use the connector of the parent
 		$page_with_inherit_connector = 34;
 		$saved_connector_to_use = get_post_meta($page_with_inherit_connector, "_simple_fields_selected_connector", true);
 		$this->assertEquals("__inherit__", $saved_connector_to_use);
-		$this->assertEquals("__inherit__", $this->sf->get_selected_connector_for_post($page_with_inherit_connector));
+		$this->assertEquals(1, $this->sf->get_selected_connector_for_post($page_with_inherit_connector));
 		
 	}
 
