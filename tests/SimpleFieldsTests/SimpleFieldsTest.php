@@ -197,7 +197,7 @@ class MyPluginTest extends WP_UnitTestCase {
 		);
 		$this->assertEquals($arr, $this->sf->get_connector_by_id(1));
 
-		var_export(get_post_connector_attached_types());
+		var_export( $this->sf->get_post_connector_attached_types() );
 
 		
 	}
