@@ -176,10 +176,31 @@ class MyPluginTest extends WP_UnitTestCase {
 		$this->assertEquals("__inherit__", $saved_connector_to_use);
 		$this->assertEquals(1, $this->sf->get_selected_connector_for_post($page_with_inherit_connector));
 		$this->assertEquals("post_connector_manually", simple_fields_connector($page_with_inherit_connector));
-		
-		var_export($this->sf->get_connector_by_id(1));
-#		print_r( $this->sf->get_connector_by_id(1) );
 
+		// formated output from var_export using http://beta.phpformatter.com/
+		$arr = array(
+		    'id' => 1,
+		    'key' => 'post_connector_manually',
+		    'slug' => 'post_connector_manually',
+		    'name' => 'Manually added post connector',
+		    'field_groups' => array(
+		        1 => array(
+		            'id' => '1',
+		            'name' => 'Manually added field group',
+		            'deleted' => '0',
+		            'context' => 'normal',
+		            'priority' => 'high'
+		        )
+		    ),
+		    'post_types' => array(
+		        0 => 'post',
+		        1 => 'page'
+		    ),
+		    'deleted' => false,
+		    'hide_editor' => false,
+		    'field_groups_count' => 1
+		);
+		$this->assertEquals($arr, $this->sf->get_connector_by_id(1));
 		
 		
 	}
