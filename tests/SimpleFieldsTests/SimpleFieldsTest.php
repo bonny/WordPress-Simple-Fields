@@ -41,7 +41,7 @@ class MyPluginTest extends WP_UnitTestCase {
 
 		$this->assertEquals("Text entered in the text field", simple_fields_value("field_text", $post_id));
 		$this->assertEquals("Text entered in the textarea", simple_fields_value("field_textarea", $post_id));
-		$this->assertEquals("<p>Text entered in the TinyMCE-editor.</p>", simple_fields_value("field_textarea_html", $post_id));
+		$this->assertEquals("<p>Text entered in the TinyMCE-editor.</p>\n", simple_fields_value("field_textarea_html", $post_id));
 		$this->assertEquals("1", simple_fields_value("field_checkbox", $post_id));
 		$this->assertEquals("radiobutton_num_4", simple_fields_value("field_radiobuttons", $post_id));
 		$this->assertEquals("dropdown_num_3", simple_fields_value("field_dropdown", $post_id));
