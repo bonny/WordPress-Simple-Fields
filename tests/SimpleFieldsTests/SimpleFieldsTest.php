@@ -242,7 +242,7 @@ class MyPluginTest extends WP_UnitTestCase {
 
 		$this->sf->save_options(array(
 			"phpunittest_save_option" => "new saved value",
-			"xphpunittest_save_another_option" => "another value",
+			"phpunittest_save_another_option" => "another value",
 		));
 
 		$options = $this->sf->get_options();
