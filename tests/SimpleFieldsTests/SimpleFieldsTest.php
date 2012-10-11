@@ -177,7 +177,9 @@ class MyPluginTest extends WP_UnitTestCase {
 		$this->assertEquals(1, $this->sf->get_selected_connector_for_post($page_with_inherit_connector));
 		$this->assertEquals("post_connector_manually", simple_fields_connector($page_with_inherit_connector));
 		
+		var_export($this->sf->get_connector_by_id(1));
 		print_r( $this->sf->get_connector_by_id(1) );
+
 		
 		
 	}
