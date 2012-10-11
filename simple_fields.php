@@ -248,7 +248,6 @@ class simple_fields {
 		return $selected_post_type_default;
 	}
 
-
 	/**
 	 * Output HTML for dialog in bottom
 	 */
@@ -1192,7 +1191,9 @@ class simple_fields {
 
 	/**
 	 * get selected post connector for a post
-	 * @param object $post
+	 * a post has a post connector, or no connector
+	 * this function will return the inherited connector if post is set to inherit connector
+	 * @param object $post or int post id
 	 * @return id or string __none__
 	 */
 	function get_selected_connector_for_post($post) {
@@ -1204,6 +1205,9 @@ class simple_fields {
 		#d($post);
 		
 		global $sf;
+		
+		// make sure $post is a post object
+		if (is_numeric($post)) $post = get_post($post);
 		
 		$post_type = $post->post_type;
 		$connector_to_use = null;
