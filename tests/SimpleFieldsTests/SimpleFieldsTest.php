@@ -69,9 +69,27 @@ class MyPluginTest extends WP_UnitTestCase {
 <ul>
 	<li>Item 1</li>
 	<li>Item 2</li>
-</ul>"
+</ul>
+
+"
 		);
 		$this->assertEquals($val, simple_fields_values("field_textarea", $post_id));
+
+		$val = array(
+			0 => "<p>Text entered in the TinyMCE-editor.</p>
+",
+			1 => '<p>Tiny editors are great!</p>
+<p>You can style the content and insert images and stuff. Groovy! Funky!</p>
+<h2>A list</h2>
+<ul>
+<li>List item 1</li>
+<li>List item 2</li>
+</ul>
+<h2>And images can be inserted</h2>
+<p><a href="http://unit-test.simple-fields.com/wordpress/wp-content/uploads/2012/10/product-cat-2.jpeg"><img class="alignnone  wp-image-14" title="product-cat-2" src="http://unit-test.simple-fields.com/wordpress/wp-content/uploads/2012/10/product-cat-2.jpeg" alt="" width="368" height="277" /></a></p>
+
+');
+		$this->assertEquals($val, simple_fields_values("field_textarea_html", $post_id));
 
 
 	}
