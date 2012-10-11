@@ -756,9 +756,40 @@ class MyPluginTest extends WP_UnitTestCase {
 		$this->assertEquals( array_keys($vals), array_keys($all_vals));
 	}
 
-	public function testNextThing() {
+	public function testRegisterFunctions() {
+
+		$arr_return = simple_fields_register_field_group(
+			"my_new_field_group",
+			'name' => 'Test field group',
+			'description' => "Test field description",
+			'repeatable' => 1,
+			'fields' => array(
+				array(
+					'name' => 'A new text field',
+					'description' => 'Enter some text in my new text field',
+					'type' => 'text',
+					'slug' => "my_new_textfield"
+				)
+			)
+		);
+		
+		echo var_export($arr_return);
+
+		/*			
+			simple_fields_register_field_group($slug = "", $new_field_group = array())
+			simple_fields_register_post_connector($unique_name = "", $new_post_connector = array())
+			simple_fields_register_post_type_default($connector_id_or_special_type = "", $post_type = "post")
+
+		*/
+
+
+
+
+
 		/*
+
 			what to write tests for:
+
 			simple_fields_query_posts
 			function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $new_post_connector = null, $new_value) {
 			
@@ -767,9 +798,6 @@ class MyPluginTest extends WP_UnitTestCase {
 			get_field_in_group($field_group, $field_id)
 			Extension API
 			
-			simple_fields_register_field_group($slug = "", $new_field_group = array())
-			simple_fields_register_post_connector($unique_name = "", $new_post_connector = array())
-			simple_fields_register_post_type_default($connector_id_or_special_type = "", $post_type = "post")
 		*/
 	}
 
