@@ -167,6 +167,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 #### Version 1.0.2
 - Changed: Don't load example field types
 - Fixed: jQuery is needed for debug output but was not enqueued
+- Added: French translation. Thank you very much, translator!
 - Small bugfixes
 - Added unit tests. Hopefully this makes it easier for me to spot bugs in the future. Btw: these are the first unit tests I've ever written, so please feel free to comment on the way I've done it! :)
 
