@@ -456,6 +456,9 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 		// If no name is given the field group, use the slug as name
 		$new_field_group["name"] = $slug;
 	}
+	
+	// make sure slug is valid
+	$slug = sanitize_key($slug);
 
 	if (!isset($field_groups[$field_group_id])) {
 		// Set up default values if this is a new field group
@@ -659,6 +662,8 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 	} else if (!isset($new_post_connector["name"]) || empty($new_post_connector["name"])) {
 		$new_post_connector["name"] = $unique_name;
 	}
+
+	$slug = sanitize_key($slug);
 
 	$post_connector_defaults = array(
 		"id" => $connector_id,
