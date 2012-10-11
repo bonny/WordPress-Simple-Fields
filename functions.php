@@ -409,7 +409,7 @@ function simple_fields_merge_arrays($array1 = array(), $array2 = array()) {
   *
  * @param string $slug the slug of this field group. must be unique.
  * @param array $new_field_group settings/options for the new group
- * @param return array the new field group as an array
+ * @return array the new field group as an array
  */
 function simple_fields_register_field_group($slug = "", $new_field_group = array()) {
 

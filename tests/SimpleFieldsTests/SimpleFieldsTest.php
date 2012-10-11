@@ -808,6 +808,60 @@ class MyPluginTest extends WP_UnitTestCase {
 		
 		$this->assertEquals( $expected_return, $arr_return );
 
+
+		// generate arr with all field types
+		$arr_field_types = array();
+		$field_types = explode(",", "text,textarea,file,checkbox,color,date,post");
+		foreach ($field_types as $field_type) {
+			$arr_field_types[] = array(
+					'name' => "A new field of type $field_type",
+					'description' => "Description for field of type $field_type",
+					'type' => $field_type,
+					'slug' => "slug_fieldtype_$field_type"
+				);
+		}
+		
+
+		
+		$arr_return = simple_fields_register_field_group(
+			"my_new_field_group_all_fields",
+			array(
+				'name' => 'Test field group with all fields',
+				'description' => "Test field description",
+				'repeatable' => 1,
+				'fields' => $arr_field_types
+			)
+		);
+print_r($arr_return);
+var_export($arr_return);
+		$expected_return = array(
+		    'id' => 2,
+		    'key' => 'my_new_field_group',
+		    'slug' => 'my_new_field_group',
+		    'name' => 'Test field group',
+		    'description' => 'Test field description',
+		    'repeatable' => 1,
+		    'fields' => array(
+		        0 => array(
+		            'name' => 'A new text field',
+		            'slug' => 'my_new_textfield',
+		            'description' => 'Enter some text in my new text field',
+		            'type' => 'text',
+		            'type_post_options' => array(
+		                'enabled_post_types' => array(),
+		                'additional_arguments' => ''
+		            ),
+		            'type_taxonomyterm_options' => array(
+		                'additional_arguments' => ''
+		            ),
+		            'id' => 0,
+		            'deleted' => 0
+		        )
+		    ),
+		    'deleted' => false
+		);
+		
+		#$this->assertEquals( $expected_return, $arr_return );
 		// gosh this was boring. need to add this for all field types.
 		
 		
