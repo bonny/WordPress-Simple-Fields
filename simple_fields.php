@@ -2713,6 +2713,11 @@ class simple_fields {
 		
 			// 1 = debug for admins only, 2 = debug for all
 			if ( ($options["debug_type"] === 1 && current_user_can("edit_themes")) ||  $options["debug_type"] === 2) {
+				
+				// enqueu jquery because that is used to show/hide the debug box
+				wp_enqueue_script("jquery");
+				
+				// add filter
 				add_filter("the_content", array($this, "simple_fields_value_get_functions_test"));
 			}	
 	
