@@ -39,6 +39,7 @@ class MyPluginTest extends WP_UnitTestCase {
 
 		$post_id = 11;
 
+		// test single/first values
 		$this->assertEquals("Text entered in the text field", simple_fields_value("field_text", $post_id));
 		$this->assertEquals("Text entered in the textarea", simple_fields_value("field_textarea", $post_id));
 		$this->assertEquals("<p>Text entered in the TinyMCE-editor.</p>\n", simple_fields_value("field_textarea_html", $post_id));
@@ -52,6 +53,26 @@ class MyPluginTest extends WP_UnitTestCase {
 		$this->assertEquals("FF3C26", simple_fields_value("field_color", $post_id));
 		$this->assertEquals("12/10/2012", simple_fields_value("field_date", $post_id));
 		$this->assertEquals(1, simple_fields_value("field_user", $post_id));
+
+		// test repeatable/all values
+		$val = array(
+			0 => "Text entered in the text field",
+			1 => "text in textfield 2<span>yes it is</span>"
+		);
+		$this->assertEquals($val, simple_fields_values("field_text", $post_id));
+
+		$val = array(
+			0 => "Text entered in the textarea",
+			1 => "Textera with more funky text in it.
+
+<h2>Headline</h2>
+<ul>
+	<li>Item 1</li>
+	<li>Item 2</li>
+</ul>"
+		);
+		$this->assertEquals($val, simple_fields_values("field_textarea", $post_id));
+
 
 	}
 
