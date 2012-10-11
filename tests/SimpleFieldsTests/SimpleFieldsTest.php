@@ -231,6 +231,28 @@ class MyPluginTest extends WP_UnitTestCase {
 			
 	}
 
+	public function testSaveGetOptions() {
+		
+		$this->sf->save_options(array(
+			"phpunittest_save_option" => "new saved value"
+		));
+		
+		$options = $this->sf->get_options();
+		$this->assertArrayHasKey("phpunittest_save_option", $options);
+
+		$this->sf->save_options(array(
+			"phpunittest_save_option" => "new saved value",
+			"phpunittest_save_another_option" => "another value",
+		));
+
+		$options = $this->sf->get_options();
+		$this->assertArrayHasKey("phpunittest_save_option", $options);
+		$this->assertArrayHasKey("phpunittest_save_another_option", $options);
+
+		$this->assertEquals($options["phpunittest_save_another_option"], "another value");	
+
+	}
+
 	public function testNextThing() {
 		/*
 			what to write tests for:
@@ -240,7 +262,6 @@ class MyPluginTest extends WP_UnitTestCase {
 			
 			get_field_group($group_id)
 			get_field_in_group($field_group, $field_id)
-			get_post_connectors_for_post_type($post_type)
 			Extension API
 			save_options
 			get_options
