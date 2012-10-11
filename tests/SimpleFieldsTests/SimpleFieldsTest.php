@@ -252,6 +252,12 @@ class MyPluginTest extends WP_UnitTestCase {
 		$this->assertEquals($options["phpunittest_save_another_option"], "another value");	
 
 	}
+	
+	public function testGetAllForPost() {
+		$post_id = 11;
+		$all_vals = simple_fields_get_all_fields_and_values_for_post($post_id);
+		var_export($all_vals);
+	}
 
 	public function testNextThing() {
 		/*
@@ -263,9 +269,7 @@ class MyPluginTest extends WP_UnitTestCase {
 			get_field_group($group_id)
 			get_field_in_group($field_group, $field_id)
 			Extension API
-			save_options
-			get_options
-			simple_fields_get_all_fields_and_values_for_post
+			
 			simple_fields_register_field_group($slug = "", $new_field_group = array())
 			simple_fields_register_post_connector($unique_name = "", $new_post_connector = array())
 			simple_fields_register_post_type_default($connector_id_or_special_type = "", $post_type = "post")
