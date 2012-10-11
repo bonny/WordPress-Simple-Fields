@@ -1042,13 +1042,21 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 
 
 /**
- * Return the name of the post connector for the current post in the loop
- *
- * @return mixed False if no connector or connector not found. String name of connector if found.
+ * Return the slug of the post connector for the current post in the loop
+ * @param $post_id optional post or post id
+ * @return mixed False if no connector or connector not found. String slug of connector if found.
  */
-function simple_fields_connector() {
+function simple_fields_connector($post_id = NULL) {
+
 	global $post, $sf;
-	$connector_id = $sf->get_selected_connector_for_post($post);
+	
+	if (is_numeric($post_id)) {
+		$post_this = get_post($post_id);
+	} else {
+		$post_this = $post;
+	}
+
+	$connector_id = $sf->get_selected_connector_for_post($post_this);
 
 	if ($connector_id == "__none__") {
 		// no connector selected
@@ -1074,3 +1082,9 @@ function simple_fields_is_connector($slug) {
 	$connector_slug = simple_fields_connector();
 	return ($connector_slug === $slug);
 }
+
+/*
+@todo: add simple_fields_fieldgroup_values() as smart alias to 
+simple_fields_get_post_group_values($post_id, $field_group_name_or_id, $use_name = true, $return_format = 1) {
+use slug and fewer args
+*/
