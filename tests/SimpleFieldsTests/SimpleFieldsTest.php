@@ -29,7 +29,12 @@ class MyPluginTest extends WP_UnitTestCase {
     
     // insert and test manually added fields
     function testManuallyAddedFields() {
+
 	    _insert_manually_added_fields();
+	    
+	    $post_id = 11;
+	    
+	    $this->assertEquals("Text entered in the text field ", simple_fields_value("field_text", $post_id));
 	    
     }
     
