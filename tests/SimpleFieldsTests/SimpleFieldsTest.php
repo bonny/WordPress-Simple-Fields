@@ -136,6 +136,14 @@ class MyPluginTest extends WP_UnitTestCase {
 
 	}
 
+	public function testPostConnectors() {
+		
+		// testa connectors
+		// sätt connectors manuellt på några poster
+		// testa därefter om det är rätt stuff
+		
+		$this->sf->get_selected_connector_for_post($post);
+	}
 
 
 	/**
