@@ -816,7 +816,8 @@ class MyPluginTest extends WP_UnitTestCase {
 		*/
 
 
-
+		// test manually added fields again to make sure nothing broke
+		$this->testManuallyAddedFields();
 
 
 		/*
