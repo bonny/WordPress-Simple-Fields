@@ -830,20 +830,20 @@ class MyPluginTest extends WP_UnitTestCase {
 				'fields' => $arr_field_types
 			)
 		);
-#print_r($arr_return);
-var_export($arr_return);
+
+		// something like this anyway. we can check keys by it anyway
 		$expected_return = array(
-		    'id' => 2,
-		    'key' => 'my_new_field_group',
-		    'slug' => 'my_new_field_group',
-		    'name' => 'Test field group',
+		    'id' => 3,
+		    'key' => 'my_new_field_group_all_fields',
+		    'slug' => 'my_new_field_group_all_fields',
+		    'name' => 'Test field group with all fields',
 		    'description' => 'Test field description',
 		    'repeatable' => 1,
 		    'fields' => array(
 		        0 => array(
-		            'name' => 'A new text field',
-		            'slug' => 'my_new_textfield',
-		            'description' => 'Enter some text in my new text field',
+		            'name' => 'A new field of type text',
+		            'slug' => 'slug_fieldtype_text',
+		            'description' => 'Description for field of type text',
 		            'type' => 'text',
 		            'type_post_options' => array(
 		                'enabled_post_types' => array(),
@@ -854,13 +854,20 @@ var_export($arr_return);
 		            ),
 		            'id' => 0,
 		            'deleted' => 0
-		        )
+		        ),
 		    ),
 		    'deleted' => false
 		);
 		
+		$this->assertEquals( array_keys($expected_return), array_keys($arr_return) );
+		
+		foreach ($arr_return["fields"] as $arr_one_field) {
+			$this->assertEquals(  array_keys($expected_return["fields"]), array_keys($arr_one_field) );
+		}
+		
+		foreach ($arr_return as $one)
+		
 		#$this->assertEquals( $expected_return, $arr_return );
-		// gosh this was boring. need to add this for all field types.
 		
 		
 		/*			
