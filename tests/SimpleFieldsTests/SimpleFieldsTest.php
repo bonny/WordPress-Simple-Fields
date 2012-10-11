@@ -71,8 +71,23 @@ class MyPluginTest extends WP_UnitTestCase {
 	<li>Item 2</li>
 </ul>
 
+
 ");
-print_r( simple_fields_values("field_textarea", $post_id) );
+/*
+Array
+(
+    [0] =&gt; Text entered in the textarea
+    [1] =&gt; Textera with more funky text in it.
+
+&lt;h2&gt;Headline&lt;/h2&gt;
+&lt;ul&gt;
+	&lt;li&gt;Item 1&lt;/li&gt;
+	&lt;li&gt;Item 2&lt;/li&gt;
+&lt;/ul&gt;
+
+
+)
+*/
 		$this->assertEquals($val, simple_fields_values("field_textarea", $post_id));
 
 		$val = array(
