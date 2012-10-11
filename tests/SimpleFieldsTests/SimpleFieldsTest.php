@@ -63,49 +63,76 @@ class MyPluginTest extends WP_UnitTestCase {
 
 		$val = array(
 			0 => "Text entered in the textarea",
-			1 => "Textera with more funky text in it.
+			1 => "Textera with more funky text in it.\r\n\r\n<h2>Headline</h2>\r\n<ul>\r\n	<li>Item 1</li>\r\n	<li>Item 2</li>\r\n</ul>\r\n");
 
-<h2>Headline</h2>
-<ul>
-	<li>Item 1</li>
-	<li>Item 2</li>
-</ul>
-
-
-");
-/*
-Array
-(
-    [0] =&gt; Text entered in the textarea
-    [1] =&gt; Textera with more funky text in it.
-
-&lt;h2&gt;Headline&lt;/h2&gt;
-&lt;ul&gt;
-	&lt;li&gt;Item 1&lt;/li&gt;
-	&lt;li&gt;Item 2&lt;/li&gt;
-&lt;/ul&gt;
-
-
-)
-*/
-		$this->assertEquals($val, simple_fields_values("field_textarea", $post_id));
+		$get_vals = simple_fields_values("field_textarea", $post_id);
+		$this->assertEquals($val, $get_vals);
 
 		$val = array(
-			0 => "<p>Text entered in the TinyMCE-editor.</p>
-",
-			1 => '<p>Tiny editors are great!</p>
-<p>You can style the content and insert images and stuff. Groovy! Funky!</p>
-<h2>A list</h2>
-<ul>
-<li>List item 1</li>
-<li>List item 2</li>
-</ul>
-<h2>And images can be inserted</h2>
-<p><a href="http://unit-test.simple-fields.com/wordpress/wp-content/uploads/2012/10/product-cat-2.jpeg"><img class="alignnone  wp-image-14" title="product-cat-2" src="http://unit-test.simple-fields.com/wordpress/wp-content/uploads/2012/10/product-cat-2.jpeg" alt="" width="368" height="277" /></a></p>
+			0 => "<p>Text entered in the TinyMCE-editor.</p>\n",
+			1 => "<p>Tiny editors are great!</p>\n<p>You can style the content and insert images and stuff. Groovy! Funky!</p>\n<h2>A list</h2>\n<ul>\n<li>List item 1</li>\n<li>List item 2</li>\n</ul>\n<h2>And images can be inserted</h2>\n<p><a href=\"http://unit-test.simple-fields.com/wordpress/wp-content/uploads/2012/10/product-cat-2.jpeg\"><img class=\"alignnone  wp-image-14\" title=\"product-cat-2\" src=\"http://unit-test.simple-fields.com/wordpress/wp-content/uploads/2012/10/product-cat-2.jpeg\" alt=\"\" width=\"368\" height=\"277\" /></a></p>\n");
+		$get_vals = simple_fields_values("field_textarea_html", $post_id);
+		$this->assertEquals($val[1], $get_vals[1]);
+		
+		$val = array(
+			0 => 1,
+			1 => ""
+		);
+		$this->assertEquals($val, simple_fields_values("field_checkbox", $post_id));
 
-');
-		$this->assertEquals($val, simple_fields_values("field_textarea_html", $post_id));
+		$val = array(
+			0 => "radiobutton_num_4",
+			1 => "radiobutton_num_2"
+		);
+		$this->assertEquals($val, simple_fields_values("field_radiobuttons", $post_id));
 
+		$val = array(
+			0 => "dropdown_num_3",
+			1 => "dropdown_num_2"
+		);
+		$this->assertEquals($val, simple_fields_values("field_dropdown", $post_id));
+
+		$val = array(
+			0 => 14,
+			1 => 17
+		);
+		$this->assertEquals($val, simple_fields_values("field_file", $post_id));
+
+		$val = array(
+			0 => 11,
+			1 => 5
+		);
+		$this->assertEquals($val, simple_fields_values("field_post", $post_id));
+
+		$val = array(
+			0 => "post_tag",
+			1 => "category"
+		);
+		$this->assertEquals($val, simple_fields_values("field_taxonomy", $post_id));
+
+		$val = array(
+			0 => array(0 => 1),
+			1 => ""
+		);
+		$this->assertEquals($val, simple_fields_values("field_taxonomy_term", $post_id));
+
+		$val = array(
+			0 => "FF3C26",
+			1 => "8B33FF"
+		);
+		$this->assertEquals($val, simple_fields_values("field_color", $post_id));
+
+		$val = array(
+			0 => "12/10/2012",
+			1 => "15/10/2012"
+		);
+		$this->assertEquals($val, simple_fields_values("field_date", $post_id));
+
+		$val = array(
+			0 => "1",
+			1 => "1"
+		);
+		$this->assertEquals($val, simple_fields_values("field_user", $post_id));
 
 	}
 
