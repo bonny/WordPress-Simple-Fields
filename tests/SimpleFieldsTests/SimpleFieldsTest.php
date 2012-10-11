@@ -774,8 +774,35 @@ class MyPluginTest extends WP_UnitTestCase {
 				)
 			)
 		);
+
+		$expected_return = array(
+		    'id' => 2,
+		    'key' => 'my_new_field_group',
+		    'slug' => 'my_new_field_group',
+		    'name' => 'Test field group',
+		    'description' => 'Test field description',
+		    'repeatable' => 1,
+		    'fields' => array(
+		        0 => array(
+		            'name' => 'A new text field',
+		            'slug' => 'my_new_textfield',
+		            'description' => 'Enter some text in my new text field',
+		            'type' => 'text',
+		            'type_post_options' => array(
+		                'enabled_post_types' => array(),
+		                'additional_arguments' => ''
+		            ),
+		            'type_taxonomyterm_options' => array(
+		                'additional_arguments' => ''
+		            ),
+		            'id' => 0,
+		            'deleted' => 0
+		        )
+		    ),
+		    'xdeleted' => false
+		);
 		
-		echo var_export($arr_return);
+		$this->assertEquals( $expected_return, $arr_return );
 
 		/*			
 			simple_fields_register_field_group($slug = "", $new_field_group = array())
