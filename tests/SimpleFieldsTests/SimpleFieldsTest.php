@@ -861,8 +861,10 @@ class MyPluginTest extends WP_UnitTestCase {
 		
 		$this->assertEquals( array_keys($expected_return), array_keys($arr_return) );
 		
+print_r($expected_return["fields"]);
 		foreach ($arr_return["fields"] as $arr_one_field) {
-			$this->assertEquals(  array_keys($expected_return["fields"]), array_keys($arr_one_field) );
+print_r($arr_one_field);
+			$this->assertEquals( array_keys($expected_return["fields"]), array_keys($arr_one_field) );
 		}
 		
 		foreach ($arr_return as $one)
