@@ -202,6 +202,8 @@ class MyPluginTest extends WP_UnitTestCase {
 		    1 => 'page'
 		);
 		$this->assertEquals( $arr, $this->sf->get_post_connector_attached_types() );
+		
+		var_export( $this->sf->get_post_connectors() );
 				
 	}
 
@@ -210,8 +212,8 @@ class MyPluginTest extends WP_UnitTestCase {
 			what to write tests for:
 			simple_fields_query_posts
 			function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $new_post_connector = null, $new_value) {
-			get_post_connector_attached_types
-			get_post_connectors
+			
+			
 			get_field_group($group_id)
 			get_field_in_group($field_group, $field_id)
 			get_post_connectors_for_post_type($post_type)
