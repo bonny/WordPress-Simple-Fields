@@ -145,17 +145,33 @@ class MyPluginTest extends WP_UnitTestCase {
 		$post_with_fields = 11;
 		$saved_connector_to_use = get_post_meta($post_with_fields, "_simple_fields_selected_connector", true);
 		$this->assertEquals(1, $saved_connector_to_use);
-		var_dump( $this->sf->get_selected_connector_for_post($post_with_fields) );
+		$this->assertEquals(1, $this->sf->get_selected_connector_for_post($post_with_fields));
 
 		$post_with_no_connector = 24;
 		$saved_connector_to_use = get_post_meta($post_with_no_connector, "_simple_fields_selected_connector", true);
 		$this->assertEquals("__none__", $saved_connector_to_use);
-		var_dump( $this->sf->get_selected_connector_for_post($post_with_no_connector) );
+		$this->assertEquals("__none__", $this->sf->get_selected_connector_for_post($post_with_no_connector));
 
 		$post_with_inherit_connector = 26;
 		$saved_connector_to_use = get_post_meta($post_with_inherit_connector, "_simple_fields_selected_connector", true);
 		$this->assertEquals("__inherit__", $saved_connector_to_use);
-		var_dump( $this->sf->get_selected_connector_for_post($post_with_inherit_connector) );
+		$this->assertEquals("__inherit__", $this->sf->get_selected_connector_for_post($post_with_inherit_connector));
+
+		// pages
+		$page_with_fields = 32;
+		$saved_connector_to_use = get_post_meta($page_with_fields, "_simple_fields_selected_connector", true);
+		$this->assertEquals(1, $saved_connector_to_use);
+		$this->assertEquals(1, $this->sf->get_selected_connector_for_post($page_with_fields));
+
+		$page_with_no_connector = 36;
+		$saved_connector_to_use = get_post_meta($page_with_no_connector, "_simple_fields_selected_connector", true);
+		$this->assertEquals("__none__", $saved_connector_to_use);
+		$this->assertEquals("__none__", $this->sf->get_selected_connector_for_post($page_with_no_connector));
+
+		$page_with_inherit_connector = 34;
+		$saved_connector_to_use = get_post_meta($page_with_inherit_connector, "_simple_fields_selected_connector", true);
+		$this->assertEquals("__inherit__", $saved_connector_to_use);
+		$this->assertEquals("__inherit__", $this->sf->get_selected_connector_for_post($page_with_inherit_connector));
 		
 	}
 

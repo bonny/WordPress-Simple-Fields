@@ -1193,6 +1193,9 @@ class simple_fields {
 	 * get selected post connector for a post
 	 * a post has a post connector, or no connector
 	 * this function will return the inherited connector if post is set to inherit connector
+	 * unless it's the top most post since then nere are no more to inherit
+	 * should not return be __none__ then?
+	 *
 	 * @param object $post or int post id
 	 * @return id or string __none__
 	 */
