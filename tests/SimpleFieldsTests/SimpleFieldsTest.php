@@ -9,6 +9,7 @@ class MyPluginTest extends WP_UnitTestCase {
 		parent::setUp();
 		global $sf;
 		$this->sf = $sf;
+		
 	}
 
 	// test defaults, should all be empty since we cleared the db...
@@ -26,11 +27,14 @@ class MyPluginTest extends WP_UnitTestCase {
 		sf_d("this is simple fields debug function");
 	}
 
+	function testInsertManuallyAddedFields() {
+		_insert_manually_added_fields();
+	}
+	
+
 	// insert and test manually added fields
 	function testManuallyAddedFields()
 	{
-
-		_insert_manually_added_fields();
 
 		$post_id = 11;
 
