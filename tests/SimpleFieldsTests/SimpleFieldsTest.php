@@ -11,11 +11,6 @@ class MyPluginTest extends WP_UnitTestCase {
 		$this->sf = $sf;
 	}
 
-	public function testAppendContent()
-	{
-		#$this->assertEquals( "<p>Hello WordPress Unit Tests</p>", $this->my_plugin->append_content(''), '->append_content() appends text' );
-	}
-
 	// test defaults, should all be empty since we cleared the db...
 	function testDefaults()
 	{
@@ -25,7 +20,7 @@ class MyPluginTest extends WP_UnitTestCase {
 	}
 
 	// Test output of debug function
-	function test_debug()
+	function testDebug()
 	{
 		$this->expectOutputString("<pre class='sf_box_debug'>this is simple fields debug function</pre>");
 		sf_d("this is simple fields debug function");
@@ -201,7 +196,9 @@ class MyPluginTest extends WP_UnitTestCase {
 		    'field_groups_count' => 1
 		);
 		$this->assertEquals($arr, $this->sf->get_connector_by_id(1));
-		
+
+		var_export(get_post_connector_attached_types());
+
 		
 	}
 
@@ -210,7 +207,6 @@ class MyPluginTest extends WP_UnitTestCase {
 			what to write tests for:
 			simple_fields_query_posts
 			function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $new_post_connector = null, $new_value) {
-			get_connector_by_id($connector_id) {
 			get_post_connector_attached_types
 			get_post_connectors
 			get_field_group($group_id)
