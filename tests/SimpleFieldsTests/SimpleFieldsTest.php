@@ -162,20 +162,20 @@ class MyPluginTest extends WP_UnitTestCase {
 		$saved_connector_to_use = get_post_meta($page_with_fields, "_simple_fields_selected_connector", true);
 		$this->assertEquals(1, $saved_connector_to_use);
 		$this->assertEquals(1, $this->sf->get_selected_connector_for_post($page_with_fields));
-		sf_d( simple_fields_connector($page_with_fields) );
+		$this->assertEquals("post_connector_manually", simple_fields_connector($page_with_fields));
 
 		$page_with_no_connector = 36;
 		$saved_connector_to_use = get_post_meta($page_with_no_connector, "_simple_fields_selected_connector", true);
 		$this->assertEquals("__none__", $saved_connector_to_use);
 		$this->assertEquals("__none__", $this->sf->get_selected_connector_for_post($page_with_no_connector));
-		sf_d( simple_fields_connector($page_with_no_connector) );
+		$this->assertEmpty(simple_fields_connector($page_with_no_connector));
 
 		// page is a child of a page with fields, so it will use the connector of the parent
 		$page_with_inherit_connector = 34;
 		$saved_connector_to_use = get_post_meta($page_with_inherit_connector, "_simple_fields_selected_connector", true);
 		$this->assertEquals("__inherit__", $saved_connector_to_use);
 		$this->assertEquals(1, $this->sf->get_selected_connector_for_post($page_with_inherit_connector));
-		sf_d( simple_fields_connector($page_with_inherit_connector) );
+		$this->assertEquals("post_connector_manually", simple_fields_connector($page_with_inherit_connector));
 		
 	}
 
