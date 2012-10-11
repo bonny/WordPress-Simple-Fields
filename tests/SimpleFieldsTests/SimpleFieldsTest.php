@@ -35,7 +35,7 @@ class MyPluginTest extends WP_UnitTestCase {
 	// insert and test manually added fields
 	function testManuallyAddedFields()
 	{
-
+		echo "xxx";
 		$post_id = 11;
 
 		// test single/first values
