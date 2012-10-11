@@ -71,8 +71,8 @@ class MyPluginTest extends WP_UnitTestCase {
 	<li>Item 2</li>
 </ul>
 
-"
-		);
+");
+echo simple_fields_values("field_textarea", $post_id);
 		$this->assertEquals($val, simple_fields_values("field_textarea", $post_id));
 
 		$val = array(
