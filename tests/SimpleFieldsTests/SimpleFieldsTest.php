@@ -760,15 +760,17 @@ class MyPluginTest extends WP_UnitTestCase {
 
 		$arr_return = simple_fields_register_field_group(
 			"my_new_field_group",
-			'name' => 'Test field group',
-			'description' => "Test field description",
-			'repeatable' => 1,
-			'fields' => array(
-				array(
-					'name' => 'A new text field',
-					'description' => 'Enter some text in my new text field',
-					'type' => 'text',
-					'slug' => "my_new_textfield"
+			array(
+				'name' => 'Test field group',
+				'description' => "Test field description",
+				'repeatable' => 1,
+				'fields' => array(
+					array(
+						'name' => 'A new text field',
+						'description' => 'Enter some text in my new text field',
+						'type' => 'text',
+						'slug' => "my_new_textfield"
+					)
 				)
 			)
 		);
