@@ -892,6 +892,7 @@ class MyPluginTest extends WP_UnitTestCase {
 	/**
 	 * A contrived example using some WordPress functionality
 	 */
+	 /*
 	public function testPostTitle()
 	{
 
@@ -907,4 +908,5 @@ class MyPluginTest extends WP_UnitTestCase {
 		#$this->assertEquals('Hello world!', $post->post_title );
 		#$this->assertEquals('Hello world!', $post->post_title );
 	}
+	*/
 }
