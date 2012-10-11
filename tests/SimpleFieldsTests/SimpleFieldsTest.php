@@ -249,14 +249,511 @@ class MyPluginTest extends WP_UnitTestCase {
 		$this->assertArrayHasKey("phpunittest_save_option", $options);
 		$this->assertArrayHasKey("phpunittest_save_another_option", $options);
 
-		$this->assertEquals($options["phpunittest_save_another_option"], "another value");	
+		$this->assertEquals($options["phpunittest_save_another_option"], "another value");
 
 	}
 	
 	public function testGetAllForPost() {
+
 		$post_id = 11;
 		$all_vals = simple_fields_get_all_fields_and_values_for_post($post_id);
-		var_export($all_vals);
+
+		// this test feels a bit to much, should check sub keys-stuff instead of all
+		$vals = array(
+		    'id' => 1,
+		    'key' => 'post_connector_manually',
+		    'slug' => 'post_connector_manually',
+		    'name' => 'Manually added post connector',
+		    'field_groups' => array(
+		        1 => array(
+		            'id' => 1,
+		            'name' => 'Manually added field group',
+		            'deleted' => false,
+		            'context' => 'normal',
+		            'priority' => 'high',
+		            'key' => 'field_group_manually',
+		            'slug' => 'field_group_manually',
+		            'description' => 'A group that is added manually from within the GUI',
+		            'repeatable' => true,
+		            'fields' => array(
+		                1 => array(
+		                    'name' => 'Text field',
+		                    'description' => 'A text field',
+		                    'slug' => 'field_text',
+		                    'type' => 'text',
+		                    'options' => array(
+		                        'fieldExample' => array(
+		                            'myTextOption' => 'No value entered yet',
+		                            'mapsTextarea' => 'Enter some cool text here please!',
+		                            'funkyDropdown' => ''
+		                        ),
+		                        'minimalexample' => array(
+		                            'textDefaultName' => ''
+		                        )
+		                    ),
+		                    'type_post_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'type_taxonomyterm_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'id' => '1',
+		                    'deleted' => '0',
+		                    'saved_values' => array(
+		                        0 => 'Text entered in the text field',
+		                        1 => 'text in textfield 2<span>yes it is</span>'
+		                    ),
+		                    'meta_keys' => array(
+		                        0 => '_simple_fields_fieldGroupID_1_fieldID_1_numInSet_0',
+		                        1 => '_simple_fields_fieldGroupID_1_fieldID_1_numInSet_1'
+		                    )
+		                ),
+		                2 => array(
+		                    'name' => 'Field textarea',
+		                    'description' => 'A texteara field',
+		                    'slug' => 'field_textarea',
+		                    'type' => 'textarea',
+		                    'options' => array(
+		                        'fieldExample' => array(
+		                            'myTextOption' => 'No value entered yet',
+		                            'mapsTextarea' => 'Enter some cool text here please!',
+		                            'funkyDropdown' => ''
+		                        ),
+		                        'minimalexample' => array(
+		                            'textDefaultName' => ''
+		                        )
+		                    ),
+		                    'type_post_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'type_taxonomyterm_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'id' => '2',
+		                    'deleted' => '0',
+		                    'saved_values' => array(
+		                        0 => 'Text entered in the textarea',
+		                        1 => 'Textera with more funky text in it.  <h2>Headline</h2> <ul> <li>Item 1</li> <li>Item 2</li> </ul> '
+		                    ),
+		                    'meta_keys' => array(
+		                        0 => '_simple_fields_fieldGroupID_1_fieldID_2_numInSet_0',
+		                        1 => '_simple_fields_fieldGroupID_1_fieldID_2_numInSet_1'
+		                    )
+		                ),
+		                3 => array(
+		                    'name' => 'Field textarea HTML',
+		                    'description' => 'A textarea field with HTML-editor enabled',
+		                    'slug' => 'field_textarea_html',
+		                    'type' => 'textarea',
+		                    'options' => array(
+		                        'fieldExample' => array(
+		                            'myTextOption' => 'No value entered yet',
+		                            'mapsTextarea' => 'Enter some cool text here please!',
+		                            'funkyDropdown' => ''
+		                        ),
+		                        'minimalexample' => array(
+		                            'textDefaultName' => ''
+		                        )
+		                    ),
+		                    'type_textarea_options' => array(
+		                        'use_html_editor' => '1'
+		                    ),
+		                    'type_post_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'type_taxonomyterm_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'id' => '3',
+		                    'deleted' => '0',
+		                    'saved_values' => array(
+		                        0 => '<p>Text entered in the TinyMCE-editor.</p> ',
+		                        1 => '<p>Tiny editors are great!</p> <p>You can style the content and insert images and stuff. Groovy! Funky!</p> <h2>A list</h2> <ul> <li>List item 1</li> <li>List item 2</li> </ul> <h2>And images can be inserted</h2> <p><a href="http://unit-test.simple-fields.com/wordpress/wp-content/uploads/2012/10/product-cat-2.jpeg"><img class="alignnone wp-image-14" title="product-cat-2" src="http://unit-test.simple-fields.com/wordpress/wp-content/uploads/2012/10/product-cat-2.jpeg" alt="" width="368" height="277" /></a></p> '
+		                    ),
+		                    'meta_keys' => array(
+		                        0 => '_simple_fields_fieldGroupID_1_fieldID_3_numInSet_0',
+		                        1 => '_simple_fields_fieldGroupID_1_fieldID_3_numInSet_1'
+		                    )
+		                ),
+		                4 => array(
+		                    'name' => 'FIeld checkbox',
+		                    'description' => 'A checkbox field',
+		                    'slug' => 'field_checkbox',
+		                    'type' => 'checkbox',
+		                    'options' => array(
+		                        'fieldExample' => array(
+		                            'myTextOption' => 'No value entered yet',
+		                            'mapsTextarea' => 'Enter some cool text here please!',
+		                            'funkyDropdown' => ''
+		                        ),
+		                        'minimalexample' => array(
+		                            'textDefaultName' => ''
+		                        )
+		                    ),
+		                    'type_post_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'type_taxonomyterm_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'id' => '4',
+		                    'deleted' => '0',
+		                    'saved_values' => array(
+		                        0 => '1',
+		                        1 => ''
+		                    ),
+		                    'meta_keys' => array(
+		                        0 => '_simple_fields_fieldGroupID_1_fieldID_4_numInSet_0',
+		                        1 => '_simple_fields_fieldGroupID_1_fieldID_4_numInSet_1'
+		                    )
+		                ),
+		                5 => array(
+		                    'name' => 'Field radioibuttons',
+		                    'description' => 'A radiobuttons field',
+		                    'slug' => 'field_radiobuttons',
+		                    'type' => 'radiobuttons',
+		                    'options' => array(
+		                        'fieldExample' => array(
+		                            'myTextOption' => 'No value entered yet',
+		                            'mapsTextarea' => 'Enter some cool text here please!',
+		                            'funkyDropdown' => ''
+		                        ),
+		                        'minimalexample' => array(
+		                            'textDefaultName' => ''
+		                        )
+		                    ),
+		                    'type_post_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'type_taxonomyterm_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'type_radiobuttons_options' => array(
+		                        'radiobutton_num_2' => array(
+		                            'value' => 'Radiobutton 1',
+		                            'deleted' => '0'
+		                        ),
+		                        'radiobutton_num_3' => array(
+		                            'value' => 'Radiobutton 2',
+		                            'deleted' => '0'
+		                        ),
+		                        'checked_by_default_num' => 'radiobutton_num_3',
+		                        'radiobutton_num_4' => array(
+		                            'value' => 'Radiobutton 3',
+		                            'deleted' => '0'
+		                        )
+		                    ),
+		                    'id' => '5',
+		                    'deleted' => '0',
+		                    'saved_values' => array(
+		                        0 => 'radiobutton_num_4',
+		                        1 => 'radiobutton_num_2'
+		                    ),
+		                    'meta_keys' => array(
+		                        0 => '_simple_fields_fieldGroupID_1_fieldID_5_numInSet_0',
+		                        1 => '_simple_fields_fieldGroupID_1_fieldID_5_numInSet_1'
+		                    )
+		                ),
+		                6 => array(
+		                    'name' => 'Field dropdown',
+		                    'description' => 'A dropdown field',
+		                    'slug' => 'field_dropdown',
+		                    'type' => 'dropdown',
+		                    'options' => array(
+		                        'fieldExample' => array(
+		                            'myTextOption' => 'No value entered yet',
+		                            'mapsTextarea' => 'Enter some cool text here please!',
+		                            'funkyDropdown' => ''
+		                        ),
+		                        'minimalexample' => array(
+		                            'textDefaultName' => ''
+		                        )
+		                    ),
+		                    'type_post_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'type_taxonomyterm_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'type_dropdown_options' => array(
+		                        'dropdown_num_2' => array(
+		                            'value' => 'Dropdown 1',
+		                            'deleted' => '0'
+		                        ),
+		                        'dropdown_num_3' => array(
+		                            'value' => 'Dropdown 2',
+		                            'deleted' => '0'
+		                        ),
+		                        'dropdown_num_4' => array(
+		                            'value' => 'Dropdown 3',
+		                            'deleted' => '0'
+		                        )
+		                    ),
+		                    'id' => '6',
+		                    'deleted' => '0',
+		                    'saved_values' => array(
+		                        0 => 'dropdown_num_3',
+		                        1 => 'dropdown_num_2'
+		                    ),
+		                    'meta_keys' => array(
+		                        0 => '_simple_fields_fieldGroupID_1_fieldID_6_numInSet_0',
+		                        1 => '_simple_fields_fieldGroupID_1_fieldID_6_numInSet_1'
+		                    )
+		                ),
+		                7 => array(
+		                    'name' => 'Field file',
+		                    'description' => 'A file field',
+		                    'slug' => 'field_file',
+		                    'type' => 'file',
+		                    'options' => array(
+		                        'fieldExample' => array(
+		                            'myTextOption' => 'No value entered yet',
+		                            'mapsTextarea' => 'Enter some cool text here please!',
+		                            'funkyDropdown' => ''
+		                        ),
+		                        'minimalexample' => array(
+		                            'textDefaultName' => ''
+		                        )
+		                    ),
+		                    'type_post_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'type_taxonomyterm_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'id' => '7',
+		                    'deleted' => '0',
+		                    'saved_values' => array(
+		                        0 => '14',
+		                        1 => '17'
+		                    ),
+		                    'meta_keys' => array(
+		                        0 => '_simple_fields_fieldGroupID_1_fieldID_7_numInSet_0',
+		                        1 => '_simple_fields_fieldGroupID_1_fieldID_7_numInSet_1'
+		                    )
+		                ),
+		                8 => array(
+		                    'name' => 'Field post',
+		                    'description' => 'A post field',
+		                    'slug' => 'field_post',
+		                    'type' => 'post',
+		                    'options' => array(
+		                        'fieldExample' => array(
+		                            'myTextOption' => 'No value entered yet',
+		                            'mapsTextarea' => 'Enter some cool text here please!',
+		                            'funkyDropdown' => ''
+		                        ),
+		                        'minimalexample' => array(
+		                            'textDefaultName' => ''
+		                        )
+		                    ),
+		                    'type_post_options' => array(
+		                        'enabled_post_types' => array(
+		                            0 => 'post',
+		                            1 => 'page'
+		                        ),
+		                        'additional_arguments' => ''
+		                    ),
+		                    'type_taxonomyterm_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'id' => '8',
+		                    'deleted' => '0',
+		                    'saved_values' => array(
+		                        0 => '11',
+		                        1 => '5'
+		                    ),
+		                    'meta_keys' => array(
+		                        0 => '_simple_fields_fieldGroupID_1_fieldID_8_numInSet_0',
+		                        1 => '_simple_fields_fieldGroupID_1_fieldID_8_numInSet_1'
+		                    )
+		                ),
+		                9 => array(
+		                    'name' => 'Field taxonomy',
+		                    'description' => 'A taxonomy field',
+		                    'slug' => 'field_taxonomy',
+		                    'type' => 'taxonomy',
+		                    'options' => array(
+		                        'fieldExample' => array(
+		                            'myTextOption' => 'No value entered yet',
+		                            'mapsTextarea' => 'Enter some cool text here please!',
+		                            'funkyDropdown' => ''
+		                        ),
+		                        'minimalexample' => array(
+		                            'textDefaultName' => ''
+		                        )
+		                    ),
+		                    'type_post_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'type_taxonomy_options' => array(
+		                        'enabled_taxonomies' => array(
+		                            0 => 'category',
+		                            1 => 'post_tag'
+		                        )
+		                    ),
+		                    'type_taxonomyterm_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'id' => '9',
+		                    'deleted' => '0',
+		                    'saved_values' => array(
+		                        0 => 'post_tag',
+		                        1 => 'category'
+		                    ),
+		                    'meta_keys' => array(
+		                        0 => '_simple_fields_fieldGroupID_1_fieldID_9_numInSet_0',
+		                        1 => '_simple_fields_fieldGroupID_1_fieldID_9_numInSet_1'
+		                    )
+		                ),
+		                10 => array(
+		                    'name' => 'Field Taxonomy Term',
+		                    'description' => 'A taxonomy term field',
+		                    'slug' => 'field_taxonomy_term',
+		                    'type' => 'taxonomyterm',
+		                    'options' => array(
+		                        'fieldExample' => array(
+		                            'myTextOption' => 'No value entered yet',
+		                            'mapsTextarea' => 'Enter some cool text here please!',
+		                            'funkyDropdown' => ''
+		                        ),
+		                        'minimalexample' => array(
+		                            'textDefaultName' => ''
+		                        )
+		                    ),
+		                    'type_post_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'type_taxonomyterm_options' => array(
+		                        'enabled_taxonomy' => 'category',
+		                        'additional_arguments' => ''
+		                    ),
+		                    'id' => '10',
+		                    'deleted' => '0',
+		                    'saved_values' => array(
+		                        0 => array(
+		                            0 => '1'
+		                        ),
+		                        1 => ''
+		                    ),
+		                    'meta_keys' => array(
+		                        0 => '_simple_fields_fieldGroupID_1_fieldID_10_numInSet_0',
+		                        1 => '_simple_fields_fieldGroupID_1_fieldID_10_numInSet_1'
+		                    )
+		                ),
+		                11 => array(
+		                    'name' => 'Field Color',
+		                    'description' => 'A color field',
+		                    'slug' => 'field_color',
+		                    'type' => 'color',
+		                    'options' => array(
+		                        'fieldExample' => array(
+		                            'myTextOption' => 'No value entered yet',
+		                            'mapsTextarea' => 'Enter some cool text here please!',
+		                            'funkyDropdown' => ''
+		                        ),
+		                        'minimalexample' => array(
+		                            'textDefaultName' => ''
+		                        )
+		                    ),
+		                    'type_post_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'type_taxonomyterm_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'id' => '11',
+		                    'deleted' => '0',
+		                    'saved_values' => array(
+		                        0 => 'FF3C26',
+		                        1 => '8B33FF'
+		                    ),
+		                    'meta_keys' => array(
+		                        0 => '_simple_fields_fieldGroupID_1_fieldID_11_numInSet_0',
+		                        1 => '_simple_fields_fieldGroupID_1_fieldID_11_numInSet_1'
+		                    )
+		                ),
+		                12 => array(
+		                    'name' => 'Field Date',
+		                    'description' => 'A date field',
+		                    'slug' => 'field_date',
+		                    'type' => 'date',
+		                    'options' => array(
+		                        'fieldExample' => array(
+		                            'myTextOption' => 'No value entered yet',
+		                            'mapsTextarea' => 'Enter some cool text here please!',
+		                            'funkyDropdown' => ''
+		                        ),
+		                        'minimalexample' => array(
+		                            'textDefaultName' => ''
+		                        )
+		                    ),
+		                    'type_post_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'type_taxonomyterm_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'id' => '12',
+		                    'deleted' => '0',
+		                    'saved_values' => array(
+		                        0 => '12/10/2012',
+		                        1 => '15/10/2012'
+		                    ),
+		                    'meta_keys' => array(
+		                        0 => '_simple_fields_fieldGroupID_1_fieldID_12_numInSet_0',
+		                        1 => '_simple_fields_fieldGroupID_1_fieldID_12_numInSet_1'
+		                    )
+		                ),
+		                13 => array(
+		                    'name' => 'Field user',
+		                    'description' => 'A user field',
+		                    'slug' => 'field_user',
+		                    'type' => 'user',
+		                    'options' => array(
+		                        'fieldExample' => array(
+		                            'myTextOption' => 'No value entered yet',
+		                            'mapsTextarea' => 'Enter some cool text here please!',
+		                            'funkyDropdown' => ''
+		                        ),
+		                        'minimalexample' => array(
+		                            'textDefaultName' => ''
+		                        )
+		                    ),
+		                    'type_post_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'type_taxonomyterm_options' => array(
+		                        'additional_arguments' => ''
+		                    ),
+		                    'id' => '13',
+		                    'deleted' => '0',
+		                    'saved_values' => array(
+		                        0 => '1',
+		                        1 => '1'
+		                    ),
+		                    'meta_keys' => array(
+		                        0 => '_simple_fields_fieldGroupID_1_fieldID_13_numInSet_0',
+		                        1 => '_simple_fields_fieldGroupID_1_fieldID_13_numInSet_1'
+		                    )
+		                )
+		            ),
+		            'fields_count' => 13
+		        )
+		    ),
+		    'post_types' => array(
+		        0 => 'post',
+		        1 => 'page'
+		    ),
+		    'deleted' => false,
+		    'hide_editor' => false,
+		    'field_groups_count' => 1
+		);
+
+		$this->assertEquals($vals, $all_vals);
+		
+		// perhaps spot differences in keys is a good thing?
+		$this->assertEquals( array_keys($vals), array_keys($all_vals));
 	}
 
 	public function testNextThing() {
