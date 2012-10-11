@@ -799,7 +799,7 @@ class MyPluginTest extends WP_UnitTestCase {
 		            'deleted' => 0
 		        )
 		    ),
-		    'xdeleted' => false
+		    'deleted' => false
 		);
 		
 		$this->assertEquals( $expected_return, $arr_return );
