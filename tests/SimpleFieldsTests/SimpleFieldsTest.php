@@ -811,7 +811,7 @@ class MyPluginTest extends WP_UnitTestCase {
 
 		// generate arr with all field types
 		$arr_field_types = array();
-		$field_types = explode(",", "text,textarea,file,checkbox,color,date,post");
+		$field_types = explode(",", "text,textarea,checkbox,radiobutton,dropdown,file,post,taxonomy,taxonomyterm,color,date,user");
 		foreach ($field_types as $field_type) {
 			$arr_field_types[] = array(
 					'name' => "A new field of type $field_type",
@@ -820,8 +820,6 @@ class MyPluginTest extends WP_UnitTestCase {
 					'slug' => "slug_fieldtype_$field_type"
 				);
 		}
-		
-
 		
 		$arr_return = simple_fields_register_field_group(
 			"my_new_field_group_all_fields",
@@ -832,7 +830,7 @@ class MyPluginTest extends WP_UnitTestCase {
 				'fields' => $arr_field_types
 			)
 		);
-print_r($arr_return);
+#print_r($arr_return);
 var_export($arr_return);
 		$expected_return = array(
 		    'id' => 2,
