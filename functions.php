@@ -1042,7 +1042,7 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 
 
 /**
- * Return the slug of the post connector for the current post in the loop
+ * Return the slug of the post connector for the current post in the loop or for the post specified in $post_id
  * @param $post_id optional post or post id
  * @return mixed False if no connector or connector not found. String slug of connector if found.
  */

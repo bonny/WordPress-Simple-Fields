@@ -1189,6 +1189,7 @@ class simple_fields {
 		<?php
 	} // function 
 
+
 	/**
 	 * get selected post connector for a post
 	 * a post has a post connector, or no connector
@@ -2712,7 +2713,9 @@ class simple_fields {
 		update_option("simple_fields_options", $new_options);
 	}
 	
-	// Some debug functions
+	/**
+	 * If debug option is enabled then output debug-box by hooking onto the_content
+	 */
 	function maybe_add_debug_info() {
 		global $sf;
 		$options = $sf->get_options();
@@ -2725,14 +2728,14 @@ class simple_fields {
 				wp_enqueue_script("jquery");
 				
 				// add filter
-				add_filter("the_content", array($this, "simple_fields_value_get_functions_test"));
+				add_filter("the_content", array($this, "simple_fields_content_debug_output"));
 			}	
 	
 		}
 	}
 	
 	// Outputs the names of the post connectors attached to the post you view + outputs the values
-	function simple_fields_value_get_functions_test($the_content) {
+	function simple_fields_content_debug_output($the_content) {
 		
 		$output = "";
 		$output_all = "";
