@@ -4,11 +4,8 @@
  */
 class MyPluginTest extends WP_UnitTestCase {
 
-    // public $plugin_slug = 'my-plugin';
-
     public function setUp() {
         parent::setUp();
-        //$this->my_plugin = $GLOBALS['my_plugin'];
         global $sf;
         $this->sf = $sf;
     }
@@ -26,11 +23,17 @@ class MyPluginTest extends WP_UnitTestCase {
 
     // Test output of debug function
     function test_debug() {
-
         $this->expectOutputString("<pre class='sf_box_debug'>this is simple fields debug function</pre>");
         sf_d("this is simple fields debug function");
-
     }
+    
+    // insert and test manually added fields
+    function testManuallyAddedFields() {
+	    _insert_manually_added_fields();
+	    
+    }
+    
+    
 
     /**
      * A contrived example using some WordPress functionality
@@ -39,7 +42,7 @@ class MyPluginTest extends WP_UnitTestCase {
         
         // This will simulate running WordPress' main query.
         // See wordpress-tests/lib/testcase.php
-        $this->go_to('http://unit-test.simple-fields.com/wordpress/?p=1');
+        # $this->go_to('http://unit-test.simple-fields.com/wordpress/?p=1');
 
         // Now that the main query has run, we can do tests that are more functional in nature
         #global $wp_query;
