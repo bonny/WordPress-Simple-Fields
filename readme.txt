@@ -1,6 +1,6 @@
 === Simple Fields ===
 Contributors: eskapism, MarsApril, samface, angrycreative, earth people
-Donate link: http://eskapism.se/sida/donate/
+Donate link: http://simple-fields.com/about/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom
 Requires at least: 3.3.1
 Tested up to: 3.4.2
@@ -39,7 +39,7 @@ Please remember to backup your database when you upgrade this plugin. Everything
 
 If you have questions/bug reports/feature requests for Simple Fields please use the WordPress [Support Forum](http://wordpress.org/tags/simple-fields?forum_id=10) or 
 [the new GitHub project page for Simple Fields](github.com/bonny/WordPress-Simple-Fields/).
-There are also [tutorials available for Simple Fields](http://eskapism.se/code-playground/simple-fields/).
+There are also [tutorials available for Simple Fields](http://simple-fields.com/documentation/).
 
 #### Donation and more plugins
 * If you like this plugin don't forget to [donate to support further development](http://simple-fields.com/about/donate/).
@@ -53,7 +53,7 @@ As always, make a backup of your database first!
 1. Upload the folder "simple-fields" to "/wp-content/plugins/"
 1. Activate the plugin through the "Plugins" menu in WordPress
 1. Start poking around with Simple Fields under Settings > Simple Fields
-1. Get help at http://eskapism.se/code-playground/simple-fields/ and ask your questions at http://wordpress.org/support/plugin/simple-fields
+1. Get help at http://simple-fields.com/documentation/ and ask your questions at http://wordpress.org/support/plugin/simple-fields
 1. That's it; you know have a super cool and powerful CMS based on WordPress!
 
 
