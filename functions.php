@@ -942,6 +942,8 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 		$arr_field_slugs = explode(",", $field_slug);
 		if ($arr_field_slugs) {
 			foreach ($arr_field_slugs as $one_of_the_comma_separated_slug) {
+			
+				$one_of_the_comma_separated_slug = trim($one_of_the_comma_separated_slug);
 
 				$one_slug_values = simple_fields_values($one_of_the_comma_separated_slug, $post_id, $options);
 
@@ -983,15 +985,42 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 			if ($one_field_group_field["deleted"]) continue;
 
 			if ($field_slug === $one_field_group_field["slug"]) {
+			
+				// Detect options for the field with this slug
+				// options are in format:
+				// extended_output=1&file[extended_output]=1&file[anotherOptions]=yepp indeed
+				// where the first arg is for all fields, and the one with square-brackets are for specific slugs
+				$parsed_options = wp_parse_args($options);
+				
+				$parsed_options_for_this_field = array();
 
+				// check for options savailable for all fields
+				// all keys for values that are not arrays. these are args that are meant for all slugs
+				foreach ($parsed_options as $key => $val) {
+					if (!is_array($val)) {
+						$parsed_options_for_this_field = array_merge($parsed_options_for_this_field, array($key => $val));
+					}
+				}
+
+				// check for options for just this specific slug
+				// if our field slug is available as a key and that key is an array = value is for this field slug
+				if ( isset($parsed_options[$one_field_group_field["slug"]]) && is_array($parsed_options[$one_field_group_field["slug"]]) ) {
+					$parsed_options_for_this_field = array_merge($parsed_options_for_this_field, $parsed_options[$one_field_group_field["slug"]]);
+				}
+				
+				// that's it, we have the options that should be available for this field slug
+				// echo "<br>field: " . $one_field_group_field["slug"];
+				// sf_d($parsed_options_for_this_field);
+					
 				// Slug is found. Get and return values.
 				// If no value is set. Should we return string, null, or false? NULL as in "no value exists"?
 				$saved_values = isset($one_field_group_field["saved_values"]) ? $one_field_group_field["saved_values"] : NULL;
 
 				// If no values just return
 				// But return an array, since that's what we except it to return
-				if (!sizeof($saved_values)) return array();
-
+				// if (!sizeof($saved_values)) return array(); // no, don't return here. let the action further down run.
+				if (!sizeof($saved_values)) $saved_values = array();
+				
 				/*
 					For old/core/legacy fields it's like this:
 					Array
@@ -1022,11 +1051,23 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 
 					// Use the custom field object to output this value, since we can't guess how the data is supposed to be used
 					$custom_field_type = $sf->registered_field_types[$one_field_group_field["type"]];
-					$saved_values = $custom_field_type->return_values($saved_values, $options);
+					$saved_values = $custom_field_type->return_values($saved_values, $parsed_options_for_this_field);
 
 				} else {
 
 					// legacy/core field type, uses plain $saved_values
+					// ...but since 1.0.3 you can use extened return
+					// $parsed_options_for_this_field
+
+					// Check if field should return extended return values
+					if ( isset($parsed_options_for_this_field["extended_return"]) && (bool) $parsed_options_for_this_field["extended_return"] ) {
+						// check if current field type supports this
+						if ( in_array($one_field_group_field["type"], array("file", "radiobuttons", "dropdown", "post", "user")) ) {
+							
+							$saved_values = $sf->get_extended_return_values_for_field_type($one_field_group_field["type"], $saved_values);
+							
+						}
+					}
 
 				}
 

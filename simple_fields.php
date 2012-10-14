@@ -2861,6 +2861,19 @@ class simple_fields {
 		return $the_content . $output_all;
 	}
 
+	/**
+	 * Retrieve and return extended return values for a field type
+	 */
+	function get_extended_return_values_for_field_type($field_type, $return_values) {
+		/*			
+		radiobuttons
+		file
+		dropdown
+		post
+		user
+		*/
+		return $return_values;
+	}
 	
 } // end class
 
