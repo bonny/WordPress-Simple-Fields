@@ -2746,25 +2746,38 @@ class simple_fields {
 		if ($post_connector_with_values) {
 			foreach ($post_connector_with_values["field_groups"] as $one_field_group) {
 				if ($one_field_group["deleted"]) continue;
+				
+				$output_all .= "<div style='font-weight:bold;margin:1em 0 0 0;'>";
+				$str_is_repeatable = $one_field_group["repeatable"] ? __(" (Repeatable)", "simple-fields") : "";
+				$output_all .= sprintf(
+					__('Fieldgroup %1$s %2$s', "simple-fields"),
+					$one_field_group["name"],
+					$str_is_repeatable
+				);
+				$output_all .= "</div>";
+				
 				foreach ($one_field_group["fields"] as $one_field) {
 					if ($one_field["deleted"]) continue;
 					$field_count++;
 					$content = "";
-					$content .= "<ul style='background:#eee;padding:.5em;'>";
-					$content .= "<li><b>" . $one_field["name"] . "</b><ul>";
+					$content .= "<ul style='background:#eee;padding:.5em;margin:0;display:block;'>";
+					$content .= "<li>Field <b>" . $one_field["name"] . "</b><ul>";
 					$content .= "<li>Type <b>" . $one_field["type"] . "</b>";
 					if (isset($one_field["slug"])) {
 						$content .=  "<li>Slug <b>" . $one_field["slug"] . "</b>";
 						
-						$content .= "<li>Use <code><b>simple_fields_values('".$one_field["slug"]."')</b></code> to get:";
-						ob_start();
-						sf_d( simple_fields_values($one_field["slug"]) );
-						$content .= ob_get_clean();
-		
-						$content .= "<li>Use <code><b>simple_fields_value('".$one_field["slug"]."')</b></code> to get:";
-						ob_start();
-						sf_d( simple_fields_value($one_field["slug"]) );
-						$content .= ob_get_clean();
+						if ($one_field_group["repeatable"]) {
+							$content .= "<li>Use <code><b>simple_fields_values('".$one_field["slug"]."')</b></code> to get:";
+							ob_start();
+							sf_d( simple_fields_values($one_field["slug"]) );
+							$content .= ob_get_clean();
+						} else {		
+							$content .= "<li>Use <code><b>simple_fields_value('".$one_field["slug"]."')</b></code> to get:";
+							ob_start();
+							sf_d( simple_fields_value($one_field["slug"]) );
+							$content .= ob_get_clean();
+						}
+						
 					} else {
 						$content .= "<li>No slug for this field found (probably old field that has not been edited and saved).";
 					}
@@ -2775,20 +2788,28 @@ class simple_fields {
 		}
 		
 		if ($output_all) {
+			$str_show_fields = __("Show fields.", "simple-fields");
+			$str_hide_fields = __("Hide fields.", "simple-fields");
 			?>
 			<script>
 			window.simple_fields_post_debug_show_hide = window.simple_fields_post_debug_show_hide || function(t) {
 				var $t = jQuery(t);
 				var $div_wrap = $t.closest("div.simple-fields-post-debug-wrap");
-				$div_wrap.find("div.simple-fields-post-debug-content").toggle("fast");
+				var debug_content = $div_wrap.find("div.simple-fields-post-debug-content");
+				debug_content.toggle("fast", function() {
+					if (debug_content.is(":visible")) {
+						$t.text("<?php echo $str_hide_fields ?>");
+					} else {
+						$t.text("<?php echo $str_show_fields ?>");
+					}
+				});
 				return false;
 			}
 			</script>
 			<?php
-			
 			$output_all = '
-				<div class="simple-fields-post-debug-wrap">
-					This post has ' . $field_count . ' Simple Fields-fields attached. <a href="#" onclick="return simple_fields_post_debug_show_hide(this);">Show fields.</a>
+				<div class="simple-fields-post-debug-wrap" style="display:block;margin:0;padding:0;">
+					<p style="margin:0;padding:0;display:block;">This post has ' . $field_count . ' Simple Fields-fields attached. <a href="#" onclick="return simple_fields_post_debug_show_hide(this);">'.$str_show_fields.'</a></p>
 					<div class="simple-fields-post-debug-content" style="display:none;">'.$output_all.'</div>
 				</div>
 				';
