@@ -60,6 +60,9 @@ class simple_fields {
 		
 		// require( dirname(__FILE__) . "/field_types/field_example.php" );
 		// require( dirname(__FILE__) . "/field_types/field_minimalistic_example.php" );
+		
+		// Load field types
+		require( dirname(__FILE__) . "/field_types/field_divider.php" );
 
 		$this->plugin_foldername_and_filename = basename(dirname(__FILE__)) . "/" . basename(__FILE__);
 		$this->registered_field_types = array();
