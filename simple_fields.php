@@ -573,7 +573,28 @@ class simple_fields {
 						
 						$textarea_class = "";
 						$textarea_class_wrapper = "";
-	
+						
+						// default num rows to same as WordPress uses / 2 beacuse it's always been smaller
+						$textarea_rows = ((int) get_option('default_post_edit_rows', 10)) / 2;
+						
+						// if user has set custom height
+						// since 1.0.3
+						if (isset($textarea_options["size_height"])) {
+							// size is small, medium, large
+							switch ($textarea_options["size_height"]) {
+								case "small":
+									$textarea_rows = 3;
+									break;
+								case "medium":
+									$textarea_rows = 10;
+									break;
+								case "large":
+									$textarea_rows = 30;
+									break;
+							}
+						}
+						echo $textarea_rows;
+						
 						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
 						echo $description;
 	
@@ -593,7 +614,7 @@ class simple_fields {
 							echo "</div>";
 						} else {
 							echo "<div class='simple-fields-metabox-field-textarea-wrapper'>";
-							echo "<textarea class='simple-fields-metabox-field-textarea' name='$field_name' id='$field_unique_id' cols='50' rows='5'>$textarea_value_esc</textarea>";
+							echo "<textarea class='simple-fields-metabox-field-textarea' name='$field_name' id='$field_unique_id' cols='50' rows='$textarea_rows'>$textarea_value_esc</textarea>";
 							echo "</div>";
 						}
 		
@@ -1536,10 +1557,13 @@ class simple_fields {
 		// If this is a new field then set default type to text so user does not save field with no field type set
 		if ($field_type === NULL) $field_type = "text";
 		
-		$field_type_textarea_option_use_html_editor = (int) @$fields[$fieldID]["type_textarea_options"]["use_html_editor"];
+		$field_type_textarea_option_use_html_editor	= (int) 	@$fields[$fieldID]["type_textarea_options"]["use_html_editor"];
+		$field_type_textarea_option_size_height		= (string) 	@$fields[$fieldID]["type_textarea_options"]["size_height"];
+		
 		$field_type_checkbox_option_checked_by_default = (int) @$fields[$fieldID]["type_checkbox_options"]["checked_by_default"];
 		$field_type_radiobuttons_options = (array) @$fields[$fieldID]["type_radiobuttons_options"];
 		$field_type_dropdown_options = (array) @$fields[$fieldID]["type_dropdown_options"];
+		
 	
 		$field_type_post_options = (array) @$fields[$fieldID]["type_post_options"];
 		$field_type_post_options["enabled_post_types"] = (array) @$field_type_post_options["enabled_post_types"];
@@ -1671,7 +1695,16 @@ class simple_fields {
 			$registred_field_types_output_options
 
 			<div class='simple-fields-field-group-one-field-row " . (($field_type=="textarea") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-textarea'>
-				<input type='checkbox' name='field[{$fieldID}][type_textarea_options][use_html_editor]' " . (($field_type_textarea_option_use_html_editor) ? " checked='checked'" : "") . " value='1' /> ".__('Use HTML-editor', 'simple-fields')."
+				<div class='simple-fields-field-group-one-field-row'>
+					<input type='checkbox' name='field[{$fieldID}][type_textarea_options][use_html_editor]' " . (($field_type_textarea_option_use_html_editor) ? " checked='checked'" : "") . " value='1' /> ".__('Use HTML-editor', 'simple-fields')."
+				</div>
+				<div class='simple-fields-field-group-one-field-row'>
+					<label>Height</label>
+					<input " . ((empty($field_type_textarea_option_size_height) || $field_type_textarea_option_size_height == "default") ? " checked=checked " : "")  . " type='radio' name='field[{$fieldID}][type_textarea_options][size_height]' value='default'> " . _x('Default', 'Textarea default height', 'simple-fields') . " &nbsp;
+					<input " . ($field_type_textarea_option_size_height == "small" ? " checked=checked " : "")  . " type='radio' name='field[{$fieldID}][type_textarea_options][size_height]' value='small'> " . _x('Small', 'Textarea default height', 'simple-fields') . " &nbsp;
+					<input " . ($field_type_textarea_option_size_height == "medium" ? " checked=checked " : "")  . " type='radio' name='field[{$fieldID}][type_textarea_options][size_height]' value='medium'> " . _x('Medium', 'Textarea default height', 'simple-fields') . " &nbsp;
+					<input " . ($field_type_textarea_option_size_height == "large" ? " checked=checked " : "")  . " type='radio' name='field[{$fieldID}][type_textarea_options][size_height]' value='large'> " . _x('Large', 'Textarea default height', 'simple-fields') . " &nbsp;
+				</div>
 			</div>
 			";
 			
