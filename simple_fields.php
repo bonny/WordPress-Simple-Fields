@@ -573,6 +573,7 @@ class simple_fields {
 						
 						$textarea_class = "";
 						$textarea_class_wrapper = "";
+						$textarea_html_extra_classes = "";
 						
 						// default num rows to same as WordPress uses / 2 beacuse it's always been smaller
 						$textarea_rows = ((int) get_option('default_post_edit_rows', 10)) / 2;
@@ -581,19 +582,19 @@ class simple_fields {
 						// since 1.0.3
 						if (isset($textarea_options["size_height"])) {
 							// size is small, medium, large
+							$textarea_html_extra_classes .= " simple-fields-metabox-field-textarea-tinymce-size-{$textarea_options['size_height']} ";
 							switch ($textarea_options["size_height"]) {
 								case "small":
 									$textarea_rows = 3;
 									break;
 								case "medium":
-									$textarea_rows = 10;
+									$textarea_rows = 15;
 									break;
 								case "large":
 									$textarea_rows = 30;
 									break;
 							}
 						}
-						echo $textarea_rows;
 						
 						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
 						echo $description;
@@ -608,7 +609,13 @@ class simple_fields {
 									$post_ID = intval($_REQUEST['post']);
 								}
 							}
-							$args = array("textarea_name" => $field_name, "editor_class" => "simple-fields-metabox-field-textarea-tinymce");
+							$args = array(
+								"textarea_name"	=> $field_name, 
+								"editor_class" 	=> "simple-fields-metabox-field-textarea-tinymce $textarea_html_extra_classes",
+								// "teeny" 		=> TRUE // possibly add in future. does not actually gain/loose much using it, right?,
+								"textarea_rows"	=> $textarea_rows,
+								"media_buttons"	=> TRUE
+							);
 							echo "<div class='simple-fields-metabox-field-textarea-tinymce-wrapper'>";
 							wp_editor( $saved_value, $field_unique_id, $args );
 							echo "</div>";
