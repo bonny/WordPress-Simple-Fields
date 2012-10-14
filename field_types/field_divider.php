@@ -29,10 +29,10 @@ function init_simple_fields_field_divider() {
 				.simple-fields-fieldgroups-field-type-divider-line {
 					margin: 2em 0;
 				    border: 0;
-				    border-top: 1px solid #ddd;
-				    border-bottom: 1px solid #fff;
+				    border-top: 1px solid #DFDFDF;
+				    border-bottom: 1px solid #FFF;
 				    height: 0;
-				    background: #333;
+				    background: #DFDFDF;
 				}
 				
 				.simple-fields-fieldgroups-field-type-divider-white_space {
