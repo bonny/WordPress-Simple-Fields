@@ -2864,7 +2864,7 @@ class simple_fields {
 	/**
 	 * Retrieve and return extended return values for a field type
 	 */
-	function get_extended_return_values_for_field_type($field_type, $return_values) {
+	function get_extended_return_values_for_field($field, $field_value) {
 		/*			
 		radiobuttons
 		file
@@ -2872,7 +2872,181 @@ class simple_fields {
 		post
 		user
 		*/
-		return $return_values;
+
+		$return_field_value = array();
+
+		if ("file" === $field["type"]) {
+
+			// field is of type file
+			// lets get more info about that file then, so we have most useful stuff in an array – hooray!
+			
+			if (isset($field_value) && is_numeric($field_value)) {
+				$file_id                             = (int) $field_value;
+				$return_field_value["id"]            = $file_id;
+				$return_field_value["is_attachment"] = is_attachment( $file_id );
+				$return_field_value["is_image"]      = wp_attachment_is_image( $file_id );
+				$return_field_value["url"]           = wp_get_attachment_url( $file_id );
+				$return_field_value["mime"]          = get_post_mime_type( $file_id );
+
+				// generate html for all registered image sizes
+				$arr_sizes = array_merge(array("full"), get_intermediate_image_sizes());
+				$return_field_value["link"]      = array();
+				$return_field_value["image"]     = array();
+				$return_field_value["image_src"] = array();
+				foreach ($arr_sizes as $size_key) {
+					$return_field_value["link"][$size_key]      = wp_get_attachment_link( $file_id, $size_key );
+					$return_field_value["image"][$size_key]     = wp_get_attachment_image( $file_id, $size_key );
+					$return_field_value["image_src"][$size_key] = wp_get_attachment_image_src( $file_id, $size_key );
+				}
+			
+				$return_field_value["metadata"] = wp_get_attachment_metadata( $file_id );
+				$return_field_value["post"] = get_post( $file_id );
+				
+			}
+
+		} else if ("radiobuttons" === $field["type"]) {
+			
+			// if radiobutton: get all values and mark which one is the selected
+
+			$type_radiobuttons_options = $field["type_radiobuttons_options"];
+
+			$return_field_value["selected_value"] 		= FALSE;
+			$return_field_value["selected_radiobutton"]	= array();
+			$return_field_value["radiobuttons"] 		= array();
+
+			foreach ($type_radiobuttons_options as $button_key => $button_value) {
+			
+				if ($button_key == "checked_by_default_num") continue;
+				
+				if ($button_value["deleted"]) continue;
+				
+				$return_field_value["radiobuttons"][] = array(
+					"value"       => $button_value["value"],
+					"key"         => $button_key,
+					"is_selected" => ($field_value === $button_key)
+				);
+				if ($field_value === $button_key) {
+					$return_field_value["selected_radiobutton"] = array(
+						"value"       => $button_value["value"],
+						"key"         => $button_key,
+						"is_selected" => TRUE
+					);
+					$return_field_value["selected_value"] = $button_value["value"];
+				}
+			}
+						
+		} else if ("dropdown" === $field["type"]) {
+			
+			$type_dropdown_options = $field["type_dropdown_options"];
+
+			$return_field_value["selected_value"]	= FALSE;
+			$return_field_value["selected_option"]	= array();
+			$return_field_value["options"] 			= array();
+
+			foreach ($type_dropdown_options as $dropdown_key => $dropdown_value) {
+
+				if ($dropdown_value["deleted"]) continue;
+				
+				$return_field_value["options"][] = array(
+					"value"       => $dropdown_value["value"],
+					"key"         => $dropdown_key,
+					"is_selected" => ($field_value === $dropdown_key)
+				);
+				if ($field_value === $dropdown_key) {
+					$return_field_value["selected_option"] = array(
+						"value"       => $dropdown_value["value"],
+						"key"         => $dropdown_key,
+						"is_selected" => TRUE
+					);
+					$return_field_value["selected_value"] = $dropdown_value["value"];
+				}
+			}
+			
+		} else if ("post" === $field["type"]) {
+
+			if (isset($field_value) && is_numeric($field_value)) {
+				$post_id = (int) $field_value;
+				$return_field_value["id"] 			= $post_id;
+				$return_field_value["title"] 		= get_the_title( $post_id );
+				$return_field_value["permalink"] 	= get_permalink( $post_id );
+				$return_field_value["post"] 		= get_post( $post_id );
+			}
+			
+		
+		} else if ("user" === $field["type"]) {
+
+			if (isset($field_value) && is_numeric($field_value)) {
+				
+				$user_id = (int) $field_value;
+				$return_field_value["id"]	= $user_id;
+				
+				// user is a WP_User object,
+				// see this url for more info on what data you can get:
+				// http://codex.wordpress.org/Function_Reference/get_userdata
+				$user                                = get_user_by( "id", $user_id );				
+				$return_field_value["first_name"]    = $user->first_name;
+				$return_field_value["last_name"]     = $user->last_name;
+				$return_field_value["user_login"]    = $user->user_login;
+				$return_field_value["user_email"]    = $user->user_email;
+				$return_field_value["user_nicename"] = $user->user_nicename;
+				$return_field_value["display_name"]  = $user->display_name;
+				$return_field_value["user"]          = $user;
+				
+			}
+
+		} else if ("taxonomy" === $field["type"]) {
+
+			$taxonomy = get_taxonomy($field_value);
+			$return_field_value["name"]          	= "";
+			$return_field_value["singular_name"] 	= "";
+			$return_field_value["plural_name"] 		= "";
+			$return_field_value["taxonomy"]      	= "";
+			if ($taxonomy) {
+				$return_field_value["name"]          = $taxonomy->name;
+				$return_field_value["singular_name"] = $taxonomy->labels->singular_name;
+				$return_field_value["plural_name"]   = $taxonomy->labels->name;
+				$return_field_value["taxonomy"]      = $taxonomy;
+			}
+
+		} else if ("taxonomyterm" === $field["type"]) {
+			
+			$type_taxonomyterm_options = $field["type_taxonomyterm_options"];
+
+			// multiple tags can be selected
+			$arr_terms = array();
+			if (isset($field_value) && is_array($field_value)) {
+				foreach ($field_value as $one_term_id) {
+					
+					$term = get_term_by("id", $one_term_id, $type_taxonomyterm_options["enabled_taxonomy"]);
+					$arr_terms[] = array(
+						"name" => $term->name,
+						"slug" => $term->slug,
+						"id"   => $term->term_id,
+						"term" => $term
+					);
+					
+				}
+			}
+			
+			$return_field_value["terms"] = $arr_terms;
+		
+		} else if ("date" === $field["type"]) {
+
+			// format = default in jquery = mm/dd/yy (year 4 digits)
+			// sf_d($field_value); // 14/10/2012
+			$return_field_value["saved_value"] = $field_value;
+			if (isset($field_value)) {
+				$field_value = trim($field_value);
+				if (preg_match('!^\d{2}\/\d{2}\/\d{4}$!', $field_value)) {
+					$date = strtotime( str_replace('/', "-", $field_value) );
+					$return_field_value["timestamp"] = $date;
+					$return_field_value["date_format"] = date(get_option('date_format'), $date);
+				}
+			}
+			
+		}
+			
+		return $return_field_value;
 	}
 	
 } // end class

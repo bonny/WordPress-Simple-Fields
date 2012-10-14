@@ -1062,9 +1062,11 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 					// Check if field should return extended return values
 					if ( isset($parsed_options_for_this_field["extended_return"]) && (bool) $parsed_options_for_this_field["extended_return"] ) {
 						// check if current field type supports this
-						if ( in_array($one_field_group_field["type"], array("file", "radiobuttons", "dropdown", "post", "user")) ) {
+						if ( in_array($one_field_group_field["type"], array("file", "radiobuttons", "dropdown", "post", "user", "taxonomy", "taxonomyterm", "date")) ) {
 							
-							$saved_values = $sf->get_extended_return_values_for_field_type($one_field_group_field["type"], $saved_values);
+							foreach ($saved_values as $one_saved_value_key => $one_saved_value) {
+								$saved_values[$one_saved_value_key] = $sf->get_extended_return_values_for_field($one_field_group_field, $one_saved_value);
+							}
 							
 						}
 					}
