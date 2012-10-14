@@ -665,7 +665,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 		$new_post_connector["name"] = $unique_name;
 	}
 
-	$slug = sanitize_key($slug);
+	$unique_name = sanitize_key($unique_name);
 
 	$post_connector_defaults = array(
 		"id" => $connector_id,
