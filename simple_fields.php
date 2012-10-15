@@ -529,11 +529,15 @@ class simple_fields {
 						$image_html = "";
 						$image_name = "";
 						if ($attachment_id) {
-							$image_thumbnail = wp_get_attachment_image_src( $attachment_id, 'thumbnail', true );
-							$image_thumbnail = $image_thumbnail[0];
-							$image_html = "<img src='$image_thumbnail' alt='' />";
 							$image_post = get_post($attachment_id);
-							$image_name = esc_html($image_post->post_title);
+							if ($image_post === NULL) {
+								// hm.. image that no longer exists? trashed?
+							} else {
+								$image_thumbnail = wp_get_attachment_image_src( $attachment_id, 'thumbnail', true );
+								$image_thumbnail = $image_thumbnail[0];
+								$image_html = "<img src='$image_thumbnail' alt='' />";
+								$image_name = esc_html($image_post->post_title);
+							}
 						}
 						$class = "";
 						if ($description) {
@@ -1567,25 +1571,37 @@ class simple_fields {
 		// If this is a new field then set default type to text so user does not save field with no field type set
 		if ($field_type === NULL) $field_type = "text";
 		
+		$field_type_file_option_enable_extended_return_values = (int) @$fields[$fieldID]["type_file_options"]["enable_extended_return_values"];
+
+		$field_type_user_option_enable_extended_return_values = (int) @$fields[$fieldID]["type_user_options"]["enable_extended_return_values"];
+
 		$field_type_textarea_option_use_html_editor	= (int) 	@$fields[$fieldID]["type_textarea_options"]["use_html_editor"];
 		$field_type_textarea_option_size_height		= (string) 	@$fields[$fieldID]["type_textarea_options"]["size_height"];
 		
 		$field_type_checkbox_option_checked_by_default = (int) @$fields[$fieldID]["type_checkbox_options"]["checked_by_default"];
-		$field_type_radiobuttons_options = (array) @$fields[$fieldID]["type_radiobuttons_options"];
-		$field_type_dropdown_options = (array) @$fields[$fieldID]["type_dropdown_options"];
+		$field_type_checkbox_option_enable_extended_return_values = (int) @$fields[$fieldID]["type_checkbox_options"]["enable_extended_return_values"];
 		
-	
+		$field_type_radiobuttons_options = (array) @$fields[$fieldID]["type_radiobuttons_options"];
+		$field_type_radiobuttons_option_enable_extended_return_values = (int) @$fields[$fieldID]["type_radiobuttons_options"]["enable_extended_return_values"];
+		
+		$field_type_dropdown_options = (array) @$fields[$fieldID]["type_dropdown_options"];
+		$field_type_dropdown_option_enable_extended_return_values = (int) @$fields[$fieldID]["type_dropdown_options"]["enable_extended_return_values"];
+		
 		$field_type_post_options = (array) @$fields[$fieldID]["type_post_options"];
 		$field_type_post_options["enabled_post_types"] = (array) @$field_type_post_options["enabled_post_types"];
-	
+		$field_type_post_option_enable_extended_return_values = (int) @$fields[$fieldID]["type_post_options"]["enable_extended_return_values"];
+
 		$field_type_taxonomy_options = (array) @$fields[$fieldID]["type_taxonomy_options"];
 		$field_type_taxonomy_options["enabled_taxonomies"] = (array) @$field_type_taxonomy_options["enabled_taxonomies"];
+		$field_type_taxonomy_option_enable_extended_return_values = (int) @$fields[$fieldID]["type_taxonomy_options"]["enable_extended_return_values"];
 	
 		$field_type_date_options = (array) @$fields[$fieldID]["type_date_options"];
 		$field_type_date_option_use_time = @$field_type_date_options["use_time"];
+		$field_type_date_option_enable_extended_return_values = (int) @$fields[$fieldID]["type_date_options"]["enable_extended_return_values"];
 	
 		$field_type_taxonomyterm_options = (array) @$fields[$fieldID]["type_taxonomyterm_options"];
 		$field_type_taxonomyterm_options["enabled_taxonomy"] = (string) @$field_type_taxonomyterm_options["enabled_taxonomy"];
+		$field_type_taxonomyterm_option_enable_extended_return_values = (int) @$fields[$fieldID]["type_date_options"]["enable_taxonomyterm_return_values"];
 	
 		// Options saved for this field
 		// Options is an array with key = field_type and value = array with options key => saved value
@@ -1704,6 +1720,7 @@ class simple_fields {
 	
 			$registred_field_types_output_options
 
+			<!-- options for field type  textarea -->
 			<div class='simple-fields-field-group-one-field-row " . (($field_type=="textarea") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-textarea'>
 				<div class='simple-fields-field-group-one-field-row'>
 					<div class='simple-fields-field-group-one-field-row-col-first'>
@@ -1727,16 +1744,46 @@ class simple_fields {
 
 			</div>
 			";
-			
-			// date
+
+			// User
+			$out .= "<div class='simple-fields-field-group-one-field-row " . (($field_type=="user") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-user'>";
+			$out .= "	<div class='simple-fields-field-group-one-field-row-col-first'></div>";
+			$out .= "	<div class='simple-fields-field-group-one-field-row-col-second'>";
+			$out .= "		<p><input type='checkbox' name='field[{$fieldID}][type_user_options][enable_extended_return_values]' " . (($field_type_user_option_enable_extended_return_values) ? " checked='checked'" : "") . " value='1' /> ";
+			$out .= 		__('Enable Extended Return Values', 'simple-fields') . "</p>";
+			$out .= "		<p class='description'>" . __('Return an array with the name, email and full WP_User-object of the selected user, instead of just the user ID.', 'simple-fields') . "</p>";
+			$out .= "	</div>";
+			$out .= "</div>";
+
+			// File
+			$out .= "<div class='simple-fields-field-group-one-field-row " . (($field_type=="file") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-file'>";
+			$out .= "	<div class='simple-fields-field-group-one-field-row-col-first'></div>";
+			$out .= "	<div class='simple-fields-field-group-one-field-row-col-second'>";
+			$out .= "		<p><input type='checkbox' name='field[{$fieldID}][type_file_options][enable_extended_return_values]' " . (($field_type_file_option_enable_extended_return_values) ? " checked='checked'" : "") . " value='1' /> ";
+			$out .= 		__('Enable Extended Return Values', 'simple-fields') . "</p>";
+			$out .= "		<p class='description'>" . __('Return an array with attachment title, path, etc., instead of just a post ID.', 'simple-fields') . "</p>";
+			$out .= "	</div>";
+			$out .= "</div>";
+
+			// Date
 			$out .= "<div class='" . (($field_type=="date") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-date'>";
+				
 				$out .= "<div class='simple-fields-field-group-one-field-row'>";
-					$out .= "<div class='simple-fields-field-group-one-field-row-col-first'>";
-					$out .= "</div>";
+					$out .= "<div class='simple-fields-field-group-one-field-row-col-first'></div>";
 					$out .= "<div class='simple-fields-field-group-one-field-row-col-second'>";
-					$out .= "<input type='checkbox' name='field[{$fieldID}][type_date_options][use_time]' " . (($field_type_date_option_use_time) ? " checked='checked'" : "") . " value='1' /> ".__('Also show time', 'simple-fields');
+					$out .= "	<p><input type='checkbox' name='field[{$fieldID}][type_date_options][use_time]' " . (($field_type_date_option_use_time) ? " checked='checked'" : "") . " value='1' /> ".__('Also show time', 'simple-fields') . "</p>";
 					$out .= "</div>";
 				$out .= "</div>";
+	
+				$out .= "<div class='simple-fields-field-group-one-field-row'>";
+					$out .= "<div class='simple-fields-field-group-one-field-row-col-first'></div>";
+					$out .= "<div class='simple-fields-field-group-one-field-row-col-second'>";
+					$out .= "	<p><input type='checkbox' name='field[{$fieldID}][type_date_options][enable_extended_return_values]' " . (($field_type_date_option_enable_extended_return_values) ? " checked='checked'" : "") . " value='1' /> ";
+					$out .= 	__('Enable Extended Return Values', 'simple-fields') . "</p>";
+					$out .= "	<p class='description'>" . __('Return an array with the selected date as a unix timestamp and as the date format set in WordPress settings.', 'simple-fields') . "</p>";
+					$out .= "</div>";
+				$out .= "	</div>";
+
 			$out .= "</div>";
 		
 	
@@ -1780,6 +1827,16 @@ class simple_fields {
 			$out .= sprintf("<br><span class='description'>Here you can <a href='http://codex.wordpress.org/How_to_Pass_Tag_Parameters#Tags_with_query-string-style_parameters'>pass your own parameters</a> to <a href='http://codex.wordpress.org/Class_Reference/WP_Query'>WP_Query</a>.</span>");
 			$out .= "</div>"; // second
 			$out .= "</div>";
+
+			$out .= "<div class='simple-fields-field-group-one-field-row'>";
+				$out .= "<div class='simple-fields-field-group-one-field-row-col-first'></div>";
+				$out .= "<div class='simple-fields-field-group-one-field-row-col-second'>";
+				$out .= "	<p><input type='checkbox' name='field[{$fieldID}][type_post_options][enable_extended_return_values]' " . (($field_type_post_option_enable_extended_return_values) ? " checked='checked'" : "") . " value='1' /> ";
+				$out .= 	__('Enable Extended Return Values', 'simple-fields') . "</p>";
+				$out .= "	<p class='description'>" . __('Return an array with the title, permalink, and complete post object of the selected post, instead of just the ID.', 'simple-fields') . "</p>";
+				$out .= "</div>";
+			$out .= "	</div>";
+
 			$out .= "</div>"; // whole divs that shows/hides
 	
 	
@@ -1810,6 +1867,16 @@ class simple_fields {
 			}
 			$out .= "</div>"; // second
 			$out .= "</div>"; // row
+
+			$out .= "<div class='simple-fields-field-group-one-field-row'>";
+				$out .= "<div class='simple-fields-field-group-one-field-row-col-first'></div>";
+				$out .= "<div class='simple-fields-field-group-one-field-row-col-second'>";
+				$out .= "	<p><input type='checkbox' name='field[{$fieldID}][type_taxonomy_options][enable_extended_return_values]' " . (($field_type_taxonomy_option_enable_extended_return_values) ? " checked='checked'" : "") . " value='1' /> ";
+				$out .= 	__('Enable Extended Return Values', 'simple-fields') . "</p>";
+				$out .= "	<p class='description'>" . __('Return an array with name and complete taxonomy object of the selected taxonomy, instead of just the ID.', 'simple-fields') . "</p>";
+				$out .= "</div>";
+			$out .= "	</div>";
+
 			$out .= "</div>";
 			
 	
@@ -1851,6 +1918,14 @@ class simple_fields {
 			$out .= "</div>"; // second
 			$out .= "</div>";
 			
+			$out .= "<div class='simple-fields-field-group-one-field-row'>";
+				$out .= "<div class='simple-fields-field-group-one-field-row-col-first'></div>";
+				$out .= "<div class='simple-fields-field-group-one-field-row-col-second'>";
+				$out .= "	<p><input type='checkbox' name='field[{$fieldID}][type_taxonomyterm_options][enable_extended_return_values]' " . (($field_type_taxonomyterm_option_enable_extended_return_values) ? " checked='checked'" : "") . " value='1' /> ";
+				$out .= 	__('Enable Extended Return Values', 'simple-fields') . "</p>";
+				$out .= "	<p class='description'>" . __('Return a multi dimensional array with all the taxonomy terms objects, instead of just the IDs of the terms.', 'simple-fields') . "</p>";
+				$out .= "</div>";
+			$out .= "	</div>";
 			
 			$out .= "</div>";
 	
@@ -1858,44 +1933,55 @@ class simple_fields {
 			$radio_buttons_added = "";
 			$radio_buttons_highest_id = 0;
 			if ($field_type_radiobuttons_options) {
-			foreach ($field_type_radiobuttons_options as $key => $val) {
-				if (strpos($key, "radiobutton_num_") !== false && $val["deleted"] != true) {
-					// found one button in format radiobutton_num_0
-					$radiobutton_num = str_replace("radiobutton_num_", "", $key);
-					if ($radiobutton_num > $radio_buttons_highest_id) {
-						$radio_buttons_highest_id = $radiobutton_num;
+				foreach ($field_type_radiobuttons_options as $key => $val) {
+					if (strpos($key, "radiobutton_num_") !== false && $val["deleted"] != true) {
+						// found one button in format radiobutton_num_0
+						$radiobutton_num = str_replace("radiobutton_num_", "", $key);
+						if ($radiobutton_num > $radio_buttons_highest_id) {
+							$radio_buttons_highest_id = $radiobutton_num;
+						}
+						$radiobutton_val = esc_html($val["value"]);
+						$checked = ($key == @$field_type_radiobuttons_options["checked_by_default_num"]) ? " checked='checked' " : "";
+						$radio_buttons_added .= "
+							<li>
+								<div class='simple-fields-field-type-options-radiobutton-handle'></div>
+								<input class='regular-text' value='$radiobutton_val' name='field[$fieldID][type_radiobuttons_options][radiobutton_num_{$radiobutton_num}][value]' type='text' />
+								<input class='simple-fields-field-type-options-radiobutton-checked-by-default-values' type='radio' name='field[$fieldID][type_radiobuttons_options][checked_by_default_num]' value='radiobutton_num_{$radiobutton_num}' {$checked} />
+								<input class='simple-fields-field-type-options-radiobutton-deleted' name='field[$fieldID][type_radiobuttons_options][radiobutton_num_{$radiobutton_num}][deleted]' type='hidden' value='0' />
+								<a href='#' class='simple-fields-field-type-options-radiobutton-delete'>Delete</a>
+							</li>";
 					}
-					$radiobutton_val = esc_html($val["value"]);
-					$checked = ($key == @$field_type_radiobuttons_options["checked_by_default_num"]) ? " checked='checked' " : "";
-					$radio_buttons_added .= "
-						<li>
-							<div class='simple-fields-field-type-options-radiobutton-handle'></div>
-							<input class='regular-text' value='$radiobutton_val' name='field[$fieldID][type_radiobuttons_options][radiobutton_num_{$radiobutton_num}][value]' type='text' />
-							<input class='simple-fields-field-type-options-radiobutton-checked-by-default-values' type='radio' name='field[$fieldID][type_radiobuttons_options][checked_by_default_num]' value='radiobutton_num_{$radiobutton_num}' {$checked} />
-							<input class='simple-fields-field-type-options-radiobutton-deleted' name='field[$fieldID][type_radiobuttons_options][radiobutton_num_{$radiobutton_num}][deleted]' type='hidden' value='0' />
-							<a href='#' class='simple-fields-field-type-options-radiobutton-delete'>Delete</a>
-						</li>";
 				}
 			}
-		}
 			$radio_buttons_highest_id++;
+			$out .= "<div class='" . (($field_type=="radiobuttons") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-radiobuttons'>";
+
+			$out .= "<div class='simple-fields-field-group-one-field-row'>";
+				$out .= "<div class='simple-fields-field-group-one-field-row-col-first'></div>";
+				$out .= "<div class='simple-fields-field-group-one-field-row-col-second'>";
+				$out .= "	<p><input type='checkbox' name='field[{$fieldID}][type_radiobuttons_options][enable_extended_return_values]' " . (($field_type_radiobuttons_option_enable_extended_return_values) ? " checked='checked'" : "") . " value='1' /> ";
+				$out .= 	__('Enable Extended Return Values', 'simple-fields') . "</p>";
+				$out .= "	<p class='description'>" . __('Return an array with the value of the selected radiobutton + the values of the non-selected radiobuttons.', 'simple-fields') . "</p>";
+				$out .= "</div>";
+			$out .= "	</div>";
+
 			$out .= "
-				<div class='" . (($field_type=="radiobuttons") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-radiobuttons'>
+				<div class='simple-fields-field-group-one-field-row simple-fields-field-group-one-field-row-radiobuttons-values'>
 
-				<div class='simple-fields-field-group-one-field-row-col-first'>
-					<div>" . __("Values", "simple-fields") . "</div>
+					<div class='simple-fields-field-group-one-field-row-col-first'>
+						<div>" . __("Values", "simple-fields") . "</div>
+					</div>
+					<div class='simple-fields-field-group-one-field-row-col-second'>
+						<div class='simple-fields-field-type-options-radiobutton-checked-by-default'>".__('Default', 'simple-fields')."</div>
+						<ul class='simple-fields-field-type-options-radiobutton-values-added'>
+							$radio_buttons_added
+						</ul>
+						<div><a class='simple-fields-field-type-options-radiobutton-values-add' href='#'>+ ".__('Add radio button', 'simple-fields')."</a></div>
+						<input type='hidden' name='' class='simple-fields-field-group-one-field-radiobuttons-highest-id' value='{$radio_buttons_highest_id}' />
+					</div><!-- // second -->
+				
 				</div>
-				<div class='simple-fields-field-group-one-field-row-col-second'>
-					<div class='simple-fields-field-type-options-radiobutton-checked-by-default'>".__('Default', 'simple-fields')."</div>
-					<ul class='simple-fields-field-type-options-radiobutton-values-added'>
-						$radio_buttons_added
-					</ul>
-					<div><a class='simple-fields-field-type-options-radiobutton-values-add' href='#'>+ ".__('Add radio button', 'simple-fields')."</a></div>
-					<input type='hidden' name='' class='simple-fields-field-group-one-field-radiobuttons-highest-id' value='{$radio_buttons_highest_id}' />
-				</div><!-- // second -->
-					
-				</div>
-
+			</div><!-- show/hide div -->
 			";
 			// end radiobuttons
 	
@@ -1911,27 +1997,37 @@ class simple_fields {
 			$dropdown_values_added = "";
 			$dropdown_values_highest_id = 0;
 			if ($field_type_dropdown_options) {
-			foreach ($field_type_dropdown_options as $key => $val) {
-				if (strpos($key, "dropdown_num_") !== false && $val["deleted"] != true) {
-					// found one button in format radiobutton_num_0
-					$dropdown_num = str_replace("dropdown_num_", "", $key);
-					if ($dropdown_num > $dropdown_values_highest_id) {
-						$dropdown_values_highest_id = $dropdown_num;
+				foreach ($field_type_dropdown_options as $key => $val) {
+					if (strpos($key, "dropdown_num_") !== false && $val["deleted"] != true) {
+						// found one button in format radiobutton_num_0
+						$dropdown_num = str_replace("dropdown_num_", "", $key);
+						if ($dropdown_num > $dropdown_values_highest_id) {
+							$dropdown_values_highest_id = $dropdown_num;
+						}
+						$dropdown_val = esc_html($val["value"]);
+						$dropdown_values_added .= "
+							<li>
+								<div class='simple-fields-field-type-options-dropdown-handle'></div>
+								<input class='regular-text' value='$dropdown_val' name='field[$fieldID][type_dropdown_options][dropdown_num_{$dropdown_num}][value]' type='text' />
+								<input class='simple-fields-field-type-options-dropdown-deleted' name='field[$fieldID][type_dropdown_options][dropdown_num_{$dropdown_num}][deleted]' type='hidden' value='0' />
+								<a href='#' class='simple-fields-field-type-options-dropdown-delete'>".__('Delete', 'simple-fields')."</a>
+							</li>";
 					}
-					$dropdown_val = esc_html($val["value"]);
-					$dropdown_values_added .= "
-						<li>
-							<div class='simple-fields-field-type-options-dropdown-handle'></div>
-							<input class='regular-text' value='$dropdown_val' name='field[$fieldID][type_dropdown_options][dropdown_num_{$dropdown_num}][value]' type='text' />
-							<input class='simple-fields-field-type-options-dropdown-deleted' name='field[$fieldID][type_dropdown_options][dropdown_num_{$dropdown_num}][deleted]' type='hidden' value='0' />
-							<a href='#' class='simple-fields-field-type-options-dropdown-delete'>".__('Delete', 'simple-fields')."</a>
-						</li>";
 				}
 			}
-		}
 			$dropdown_values_highest_id++;
+			$out .= "<div class='" . (($field_type=="dropdown") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-dropdown'>";
+
+			$out .= "<div class='simple-fields-field-group-one-field-row'>";
+				$out .= "<div class='simple-fields-field-group-one-field-row-col-first'></div>";
+				$out .= "<div class='simple-fields-field-group-one-field-row-col-second'>";
+				$out .= "	<p><input type='checkbox' name='field[{$fieldID}][type_dropdown_options][enable_extended_return_values]' " . (($field_type_dropdown_option_enable_extended_return_values) ? " checked='checked'" : "") . " value='1' /> ";
+				$out .= 	__('Enable Extended Return Values', 'simple-fields') . "</p>";
+				$out .= "	<p class='description'>" . __('Return an array with the value of the selected item in the dropdown + the values of the non-selected items.', 'simple-fields') . "</p>";
+				$out .= "</div>";
+			$out .= "	</div>";
+
 			$out .= "
-				<div class='" . (($field_type=="dropdown") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-dropdown'>
 					<div class='simple-fields-field-group-one-field-row-col-first'>
 						<p>".__('Values', 'simple-fields')."</p>
 					</div>

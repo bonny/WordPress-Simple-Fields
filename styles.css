@@ -1,7 +1,7 @@
 ul.simple-fields-edit-field-groups-added-fields {
-	border-top: 1px solid #DFDFDF;
-	padding-top: 2em;
-	margin-top: 1em;
+	/*border-top: 1px solid #DFDFDF;*/
+	/*padding-top: 2em;*/
+	margin-top: 0;
 	position: relative;
 }
 ul.simple-fields-edit-field-groups-added-fields li {
@@ -35,7 +35,11 @@ ul.simple-fields-edit-field-groups-added-fields li li {
 
 .simple-fields-field-group-one-field-row {
 	margin-bottom: .75em;
-	overflow: auto;
+	/*overflow: auto;*/
+}
+
+.simple-fields-field-group-one-field-row-radiobuttons-values {
+	margin-top: 2em;
 }
 
 .simple-fields-field-group-one-field-row-col-first,
