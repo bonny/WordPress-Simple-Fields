@@ -158,14 +158,16 @@ var simple_fields = (function() {
 		});
 	}
 
-
+	/**
+	 * Edit field types/fields: on field type dropdown change
+	 */
 	$("select.simple-fields-field-type").live("change", function() {
 		// look for simple-fields-field-type-options-<type> and show if
 		var $t = $(this);
 		var selectedFieldType = $t.val();
 		var $li = $t.closest("li");
-		$li.find(".simple-fields-field-type-options").hide("slow");
-		$li.find(".simple-fields-field-type-options-" + selectedFieldType).show("slow");
+		$li.find(".simple-fields-field-type-options").hide();
+		$li.find(".simple-fields-field-type-options-" + selectedFieldType).fadeIn("slow");
 	});
 	
 	$("li.simple-fields-field-group-one-field").live("mouseenter", function() {

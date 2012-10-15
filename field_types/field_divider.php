@@ -44,23 +44,30 @@ function init_simple_fields_field_divider() {
 		
 		function options_output($existing_vals) {
 			return sprintf('
+			<div class="simple-fields-field-group-one-field-row-col-first">
 				<p>
 					<label>%1$s</label>
-					<span class="description">Select the look of the divider</span>
 				</p>
+			</div>
+			<div class="simple-fields-field-group-one-field-row-col-second">
 				<p>
 					<select name="%2$s">
 						<option %6$s value="line">%4$s</option>
 						<option %5$s value="white_space">%3$s</option>
 					</select>
 				</p>
+				<!-- <p>					
+					<span class="description">%7$s</span>
+				</p>-->
+			</div>
 				',
 				_x("Appearance", "Divider field type", "simple-fields"),
 				$this->get_options_name("appearance"), 
 				_x("White space", "Divider field type", "simple-fields"),
 				_x("Line", "Divider field type", "simple-fields"), // 4
 				isset($existing_vals["appearance"]) && $existing_vals["appearance"] == "white_space" ? " selected " : "",
-				isset($existing_vals["appearance"]) && $existing_vals["appearance"] == "line" ? " selected " : ""
+				isset($existing_vals["appearance"]) && $existing_vals["appearance"] == "line" ? " selected " : "",
+				_x("Select the look of the divider", "Divider field type", "simple-fields")
 			);
 		}
 		

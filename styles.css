@@ -30,11 +30,45 @@ ul.simple-fields-edit-field-groups-added-fields li li {
 
 .simple-fields-field-group-one-field-name {
 	font-size: 1.25em;
+	width: 20em !important;
 }
 
 .simple-fields-field-group-one-field-row {
 	margin-bottom: .75em;
+	overflow: auto;
 }
+
+.simple-fields-field-group-one-field-row-col-first,
+.simple-fields-field-group-one-field-row-col-second {
+	display: inline-block;
+	-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
+	min-height: 1px;
+	vertical-align: top;
+}
+
+.simple-fields-field-group-one-field-row-col-first p,
+.simple-fields-field-group-one-field-row-col-second p {
+	margin: 0;
+}
+
+
+.simple-fields-field-group-one-field-row-col-first {
+	/* background-color: rgba(255, 0, 0, .1); */
+	padding-right: 4em;
+}
+.simple-fields-field-group-one-field-row-col-second {
+	/* background-color: rgba(0, 255, 0, .1); */
+	width: 80%;
+}
+
+.simple-fields-field-group-one-field-row-col-first,
+.simple-fields-field-group-one-field-row label {
+	width: 15%;
+}
+#simple-fields-field-group-existing-fields .description {
+	margin-left: 12.5em;
+}
+
 
 .simple-fields-field-group-one-field-row fieldset {
 	border: 1px solid silver;
@@ -49,6 +83,20 @@ ul.simple-fields-edit-field-groups-added-fields li li {
  {
 	display: block;
 }
+.simple-fields-field-group-one-field-row label {
+	display: inline-block;
+}
+
+.simple-fields-field-group-one-field-row-col-first label {
+	width: auto;
+}
+
+.simple-fields-field-type-options label {
+	display: block;
+}
+#simple-fields-field-group-existing-fields .simple-fields-field-type-options .description {
+	margin-left: auto;
+}
 
 .simple-fields-field-group-one-field-row-description {
 }
@@ -56,7 +104,7 @@ ul.simple-fields-edit-field-groups-added-fields li li {
 .simple-fields-field-group-one-field-row p input[type=text],
 .simple-fields-field-group-one-field-row p textarea
 {
-	width: 100%;
+	/*width: 100%;*/
 }
 .simple-fields-field-group-one-field-row p textarea {
 	height: 8em;

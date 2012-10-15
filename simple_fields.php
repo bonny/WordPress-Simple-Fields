@@ -1631,10 +1631,10 @@ class simple_fields {
 			$field_options_output = $one_field_type->options_output($field_type_options);
 			if ($field_options_output) {
 				$field_options_output = "
-					<fieldset> 
-						<legend>Options</legend>
+					<!-- <fieldset> 
+						<legend>Options</legend> -->
 						$field_options_output
-					</fieldset>
+					<!-- </fieldset> -->
 				";
 				
 			}
@@ -1706,109 +1706,151 @@ class simple_fields {
 
 			<div class='simple-fields-field-group-one-field-row " . (($field_type=="textarea") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-textarea'>
 				<div class='simple-fields-field-group-one-field-row'>
-					<input type='checkbox' name='field[{$fieldID}][type_textarea_options][use_html_editor]' " . (($field_type_textarea_option_use_html_editor) ? " checked='checked'" : "") . " value='1' /> ".__('Use HTML-editor', 'simple-fields')."
+					<div class='simple-fields-field-group-one-field-row-col-first'>
+						<label>Height</label>
+					</div>
+					<div class='simple-fields-field-group-one-field-row-col-second'>
+						<input " . ((empty($field_type_textarea_option_size_height) || $field_type_textarea_option_size_height == "default") ? " checked=checked " : "")  . " type='radio' name='field[{$fieldID}][type_textarea_options][size_height]' value='default'> " . _x('Default', 'Textarea default height', 'simple-fields') . " &nbsp;
+						<input " . ($field_type_textarea_option_size_height == "small" ? " checked=checked " : "")  . " type='radio' name='field[{$fieldID}][type_textarea_options][size_height]' value='small'> " . _x('Small', 'Textarea default height', 'simple-fields') . " &nbsp;
+						<input " . ($field_type_textarea_option_size_height == "medium" ? " checked=checked " : "")  . " type='radio' name='field[{$fieldID}][type_textarea_options][size_height]' value='medium'> " . _x('Medium', 'Textarea default height', 'simple-fields') . " &nbsp;
+						<input " . ($field_type_textarea_option_size_height == "large" ? " checked=checked " : "")  . " type='radio' name='field[{$fieldID}][type_textarea_options][size_height]' value='large'> " . _x('Large', 'Textarea default height', 'simple-fields') . " &nbsp;
+					</div>
 				</div>
+
 				<div class='simple-fields-field-group-one-field-row'>
-					<label>Height</label>
-					<input " . ((empty($field_type_textarea_option_size_height) || $field_type_textarea_option_size_height == "default") ? " checked=checked " : "")  . " type='radio' name='field[{$fieldID}][type_textarea_options][size_height]' value='default'> " . _x('Default', 'Textarea default height', 'simple-fields') . " &nbsp;
-					<input " . ($field_type_textarea_option_size_height == "small" ? " checked=checked " : "")  . " type='radio' name='field[{$fieldID}][type_textarea_options][size_height]' value='small'> " . _x('Small', 'Textarea default height', 'simple-fields') . " &nbsp;
-					<input " . ($field_type_textarea_option_size_height == "medium" ? " checked=checked " : "")  . " type='radio' name='field[{$fieldID}][type_textarea_options][size_height]' value='medium'> " . _x('Medium', 'Textarea default height', 'simple-fields') . " &nbsp;
-					<input " . ($field_type_textarea_option_size_height == "large" ? " checked=checked " : "")  . " type='radio' name='field[{$fieldID}][type_textarea_options][size_height]' value='large'> " . _x('Large', 'Textarea default height', 'simple-fields') . " &nbsp;
+					<div class='simple-fields-field-group-one-field-row-col-first'>
+					</div>
+					<div class='simple-fields-field-group-one-field-row-col-second'>
+						<input type='checkbox' name='field[{$fieldID}][type_textarea_options][use_html_editor]' " . (($field_type_textarea_option_use_html_editor) ? " checked='checked'" : "") . " value='1' /> ".__('Use HTML-editor', 'simple-fields')."
+					</div>
 				</div>
+
 			</div>
 			";
 			
 			// date
 			$out .= "<div class='" . (($field_type=="date") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-date'>";
-			$out .= "<input type='checkbox' name='field[{$fieldID}][type_date_options][use_time]' " . (($field_type_date_option_use_time) ? " checked='checked'" : "") . " value='1' /> ".__('Also show time', 'simple-fields');
+				$out .= "<div class='simple-fields-field-group-one-field-row'>";
+					$out .= "<div class='simple-fields-field-group-one-field-row-col-first'>";
+					$out .= "</div>";
+					$out .= "<div class='simple-fields-field-group-one-field-row-col-second'>";
+					$out .= "<input type='checkbox' name='field[{$fieldID}][type_date_options][use_time]' " . (($field_type_date_option_use_time) ? " checked='checked'" : "") . " value='1' /> ".__('Also show time', 'simple-fields');
+					$out .= "</div>";
+				$out .= "</div>";
 			$out .= "</div>";
 		
 	
 			// connect post - select post types
 			$out .= "<div class='" . (($field_type=="post") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-post'>";
 			$out .= "<div class='simple-fields-field-group-one-field-row'>";
+			$out .= "<div class='simple-fields-field-group-one-field-row-col-first'>";
 			$out .= sprintf("<label>%s</label>", __('Post types to select from', 'simple-fields'));
+			$out .= "</div>";
 			//$out .= sprintf("<select name='%s'>", "field[$fieldID][type_post_options][post_type]");
 			//$out .= sprintf("<option %s value='%s'>%s</option>", (empty($field_type_post_options["post_type"]) ? " selected='selected' " : "") ,"", "Any");
 	
 			// list all post types in checkboxes
+			$out .= "<div class='simple-fields-field-group-one-field-row-col-second'>";
 			$post_types = get_post_types(NULL, "objects");
 			$loopnum = 0;
 			foreach ($post_types as $one_post_type) {
-			// skip some built in types
-			if (in_array($one_post_type->name, array("attachment", "revision", "nav_menu_item"))) {
-				continue;
+				// skip some built in types
+				if (in_array($one_post_type->name, array("attachment", "revision", "nav_menu_item"))) {
+					continue;
+				}
+				$input_name = "field[{$fieldID}][type_post_options][enabled_post_types][]";
+				$out .= sprintf("%s<input name='%s' type='checkbox' %s value='%s'> %s</input>", 
+									($loopnum>0 ? "<br>" : ""), 
+									$input_name,
+									((in_array($one_post_type->name, $field_type_post_options["enabled_post_types"])) ? " checked='checked' " : ""), 
+									$one_post_type->name, 
+									$one_post_type->labels->name . " ($one_post_type->name)"
+								);
+				$loopnum++;
 			}
-			$input_name = "field[{$fieldID}][type_post_options][enabled_post_types][]";
-			$out .= sprintf("%s<input name='%s' type='checkbox' %s value='%s'> %s</input>", 
-								($loopnum>0 ? "<br>" : ""), 
-								$input_name,
-								((in_array($one_post_type->name, $field_type_post_options["enabled_post_types"])) ? " checked='checked' " : ""), 
-								$one_post_type->name, 
-								$one_post_type->labels->name . " ($one_post_type->name)"
-							);
-			$loopnum++;
-		}
+			$out .= "</div>";
 			$out .= "</div>";
 	
 			$out .= "<div class='simple-fields-field-group-one-field-row'>";
+			$out .= "<div class='simple-fields-field-group-one-field-row-col-first'>";
 			$out .= "<label>Additional arguments</label>";
-			$out .= sprintf("<input type='text' name='%s' value='%s' />", "field[$fieldID][type_post_options][additional_arguments]", @$field_type_post_options["additional_arguments"]);
+			$out .= "</div>";
+			$out .= "<div class='simple-fields-field-group-one-field-row-col-second'>";
+			$out .= sprintf("<input class='regular-text' type='text' name='%s' value='%s' />", "field[$fieldID][type_post_options][additional_arguments]", @$field_type_post_options["additional_arguments"]);
 			$out .= sprintf("<br><span class='description'>Here you can <a href='http://codex.wordpress.org/How_to_Pass_Tag_Parameters#Tags_with_query-string-style_parameters'>pass your own parameters</a> to <a href='http://codex.wordpress.org/Class_Reference/WP_Query'>WP_Query</a>.</span>");
+			$out .= "</div>"; // second
 			$out .= "</div>";
 			$out .= "</div>"; // whole divs that shows/hides
 	
 	
 			// connect taxonomy - select taxonomies
 			$out .= "<div class='" . (($field_type=="taxonomy") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-taxonomy'>";
+			$out .= "<div class='simple-fields-field-group-one-field-row'>";
+			$out .= "<div class='simple-fields-field-group-one-field-row-col-first'>";
 			$out .= sprintf("<label>%s</label>", __('Taxonomies to show in dropdown', 'simple-fields'));
+			$out .= "</div>"; // col first
+			
+			$out .= "<div class='simple-fields-field-group-one-field-row-col-second'>";
 			$taxonomies = get_taxonomies(NULL, "objects");
 			$loopnum = 0;
 			foreach ($taxonomies as $one_tax) {
-			// skip some built in types
-			if (in_array($one_tax->name, array("attachment", "revision", "nav_menu_item"))) {
-			    continue;
+				// skip some built in types
+				if (in_array($one_tax->name, array("attachment", "revision", "nav_menu_item"))) {
+				    continue;
+				}
+				$input_name = "field[{$fieldID}][type_taxonomy_options][enabled_taxonomies][]";
+				$out .= sprintf("%s<input name='%s' type='checkbox' %s value='%s'> %s", 
+									($loopnum>0 ? "<br>" : ""), 
+									$input_name, 
+									((in_array($one_tax->name, $field_type_taxonomy_options["enabled_taxonomies"])) ? " checked='checked' " : ""), 
+									$one_tax->name, 
+									$one_tax->labels->name . " ($one_tax->name)"
+								);
+				$loopnum++;
 			}
-			$input_name = "field[{$fieldID}][type_taxonomy_options][enabled_taxonomies][]";
-			$out .= sprintf("%s<input name='%s' type='checkbox' %s value='%s'> %s", 
-								($loopnum>0 ? "<br>" : ""), 
-								$input_name, 
-								((in_array($one_tax->name, $field_type_taxonomy_options["enabled_taxonomies"])) ? " checked='checked' " : ""), 
-								$one_tax->name, 
-								$one_tax->labels->name . " ($one_tax->name)"
-							);
-			$loopnum++;
-		}
+			$out .= "</div>"; // second
+			$out .= "</div>"; // row
 			$out .= "</div>";
+			
 	
 			// taxonomyterm - select taxonomies, like above
 			$out .= "<div class='" . (($field_type=="taxonomyterm") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-taxonomyterm'>";
 			$out .= "<div class='simple-fields-field-group-one-field-row'>";
+			$out .= "<div class='simple-fields-field-group-one-field-row-col-first'>";
 			$out .= sprintf("<label>%s</label>", __('Taxonomy to select terms from', 'simple-fields'));
+			$out .= "</div>";
+			
+			$out .= "<div class='simple-fields-field-group-one-field-row-col-second'>";
 			$taxonomies = get_taxonomies(NULL, "objects");
 			$loopnum = 0;
 			foreach ($taxonomies as $one_tax) {
-			// skip some built in types
-			if (in_array($one_tax->name, array("attachment", "revision", "nav_menu_item"))) {
-			    continue;
+				// skip some built in types
+				if (in_array($one_tax->name, array("attachment", "revision", "nav_menu_item"))) {
+				    continue;
+				}
+				$input_name = "field[{$fieldID}][type_taxonomyterm_options][enabled_taxonomy]";
+				$out .= sprintf("%s<input name='%s' type='radio' %s value='%s'> %s", 
+									($loopnum>0 ? "<br>" : ""), 
+									$input_name, 
+									($one_tax->name == $field_type_taxonomyterm_options["enabled_taxonomy"]) ? " checked='checked' " : "", 
+									$one_tax->name, 
+									$one_tax->labels->name . " ($one_tax->name)"
+								);
+				$loopnum++;
 			}
-			$input_name = "field[{$fieldID}][type_taxonomyterm_options][enabled_taxonomy]";
-			$out .= sprintf("%s<input name='%s' type='radio' %s value='%s'> %s", 
-								($loopnum>0 ? "<br>" : ""), 
-								$input_name, 
-								($one_tax->name == $field_type_taxonomyterm_options["enabled_taxonomy"]) ? " checked='checked' " : "", 
-								$one_tax->name, 
-								$one_tax->labels->name . " ($one_tax->name)"
-							);
-			$loopnum++;
-		}
+			$out .= "</div>"; // second
 			$out .= "</div>";
 			
 			$out .= "<div class='simple-fields-field-group-one-field-row'>";
-			$out .= "<label>Additional arguments</label>";
-			$out .= sprintf("<input type='text' name='%s' value='%s' />", "field[$fieldID][type_taxonomyterm_options][additional_arguments]", @$field_type_taxonomyterm_options["additional_arguments"]);
-			$out .= sprintf("<br><span class='description'>Here you can <a href='http://codex.wordpress.org/How_to_Pass_Tag_Parameters#Tags_with_query-string-style_parameters'>pass your own parameters</a> to <a href='http://codex.wordpress.org/Function_Reference/get_terms#Parameters'>get_terms()</a>.</span>");
+			$out .= "<div class='simple-fields-field-group-one-field-row-col-first'>";
+			$out .= "<label>".__("Additional arguments", "simple-fields")."</label>";
 			$out .= "</div>";
+			$out .= "<div class='simple-fields-field-group-one-field-row-col-second'>";
+			$out .= sprintf("<input class='regular-text' type='text' name='%s' value='%s' />", "field[$fieldID][type_taxonomyterm_options][additional_arguments]", @$field_type_taxonomyterm_options["additional_arguments"]);
+			$out .= sprintf("<br><span class='description'>Here you can <a href='http://codex.wordpress.org/How_to_Pass_Tag_Parameters#Tags_with_query-string-style_parameters'>pass your own parameters</a> to <a href='http://codex.wordpress.org/Function_Reference/get_terms#Parameters'>get_terms()</a>.</span>");
+			$out .= "</div>"; // second
+			$out .= "</div>";
+			
 			
 			$out .= "</div>";
 	
@@ -1839,14 +1881,21 @@ class simple_fields {
 			$radio_buttons_highest_id++;
 			$out .= "
 				<div class='" . (($field_type=="radiobuttons") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-radiobuttons'>
-					<div>Added radio buttons</div>
+
+				<div class='simple-fields-field-group-one-field-row-col-first'>
+					<div>" . __("Values", "simple-fields") . "</div>
+				</div>
+				<div class='simple-fields-field-group-one-field-row-col-second'>
 					<div class='simple-fields-field-type-options-radiobutton-checked-by-default'>".__('Default', 'simple-fields')."</div>
 					<ul class='simple-fields-field-type-options-radiobutton-values-added'>
 						$radio_buttons_added
 					</ul>
 					<div><a class='simple-fields-field-type-options-radiobutton-values-add' href='#'>+ ".__('Add radio button', 'simple-fields')."</a></div>
 					<input type='hidden' name='' class='simple-fields-field-group-one-field-radiobuttons-highest-id' value='{$radio_buttons_highest_id}' />
+				</div><!-- // second -->
+					
 				</div>
+
 			";
 			// end radiobuttons
 	
@@ -1883,12 +1932,16 @@ class simple_fields {
 			$dropdown_values_highest_id++;
 			$out .= "
 				<div class='" . (($field_type=="dropdown") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-dropdown'>
-					<div>".__('Added dropdown values', 'simple-fields')."</div>
-					<ul class='simple-fields-field-type-options-dropdown-values-added'>
-						$dropdown_values_added
-					</ul>
-					<div><a class='simple-fields-field-type-options-dropdown-values-add' href='#'>+ ".__('Add dropdown value', 'simple-fields')."</a></div>
-					<input type='hidden' name='' class='simple-fields-field-group-one-field-dropdown-highest-id' value='{$dropdown_values_highest_id}' />
+					<div class='simple-fields-field-group-one-field-row-col-first'>
+						<p>".__('Values', 'simple-fields')."</p>
+					</div>
+					<div class='simple-fields-field-group-one-field-row-col-second'>
+						<ul class='simple-fields-field-type-options-dropdown-values-added'>
+							$dropdown_values_added
+						</ul>
+						<div><a class='simple-fields-field-type-options-dropdown-values-add' href='#'>+ ".__('Add dropdown value', 'simple-fields')."</a></div>
+						<input type='hidden' name='' class='simple-fields-field-group-one-field-dropdown-highest-id' value='{$dropdown_values_highest_id}' />
+					</div>
 				</div>
 			";
 			// end dropdown
