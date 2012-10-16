@@ -204,7 +204,6 @@ class MyPluginTest extends WP_UnitTestCase {
 		$attachment_id = 14;
 		$vals_expected = array(
 			'id' => 14,
-			'is_attachment' => false,
 			'is_image' => true,
 			'url' => 'http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg',
 			'mime' => 'image/jpeg',
