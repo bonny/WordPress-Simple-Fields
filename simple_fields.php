@@ -2938,6 +2938,7 @@ class simple_fields {
 		if ($post_connector_with_values) {
 
 			foreach ($post_connector_with_values["field_groups"] as $one_field_group) {
+
 				if ($one_field_group["deleted"]) continue;
 				
 				$output_all .= "<div style='font-weight:bold;margin:1em 0 0 0;'>";
@@ -2949,6 +2950,7 @@ class simple_fields {
 				);
 				$output_all .= "</div>";
 				
+				$str_all_group_fields = "";
 				foreach ($one_field_group["fields"] as $one_field) {
 
 					if ($one_field["deleted"]) continue;
@@ -2956,31 +2958,54 @@ class simple_fields {
 					$field_count++;
 					$content = "";
 					$content .= "<ul style='background:#eee;padding:.5em;margin:0;display:block;'>";
-					$content .= "<li>Field <b>" . $one_field["name"] . "</b><ul>";
-					$content .= "<li>Type <b>" . $one_field["type"] . "</b>";
+					$content .= "<li>Field <b>" . $one_field["name"] . "</b>";
+					$content .= ", type <b>" . $one_field["type"] . "</b>";
 
 					if (isset($one_field["slug"])) {
-						$content .=  "<li>Slug <b>" . $one_field["slug"] . "</b>";
+						
+						$content .=  ", slug <b>" . $one_field["slug"] . "</b>";
+						$str_all_group_fields .= $one_field["slug"] . ",";
 						
 						if ($one_field_group["repeatable"]) {
-							$content .= "<li>Use <code><b>simple_fields_values('".$one_field["slug"]."')</b></code> to get:";
+							$content .= "<br>Use <code><b>simple_fields_values('".$one_field["slug"]."')</b></code> to get:";
 							ob_start();
 							sf_d( simple_fields_values($one_field["slug"]) );
 							$content .= ob_get_clean();
 						} else {		
-							$content .= "<li>Use <code><b>simple_fields_value('".$one_field["slug"]."')</b></code> to get:";
+							$content .= "<br>Use <code><b>simple_fields_value('".$one_field["slug"]."')</b></code> to get:";
 							ob_start();
 							sf_d( simple_fields_value($one_field["slug"]) );
 							$content .= ob_get_clean();
 						}
 						
 					} else {
-						$content .= "<li>No slug for this field found (probably old field that has not been edited and saved).";
+						$content .= "<br>No slug for this field found (probably old field that has not been edited and saved).";
 					}
-					$content .= "</ul></ul>";
+					$content .= "</ul>";
 					$output_all .= $content;
 				}
-			}
+
+				// Show example how to get all fields in one shot
+				// But only show if field has more than one field, otherwise it's kinda not useful
+				if ( sizeof($one_field_group["fields"]) > 0 ) {
+					$str_all_group_fields = preg_replace('!,$!', '', $str_all_group_fields);
+					$output_all .= "<ul style='background:#eee;padding:.5em;margin:0;display:block;'>";
+					if ($one_field_group["repeatable"]) {
+						$content = "<li>Get all fields at once: use <code><b>simple_fields_values('".$str_all_group_fields."')</b></code> to get:";
+						ob_start();
+						sf_d( simple_fields_values($str_all_group_fields) );
+						$content .= ob_get_clean();
+					} else {
+						$content = "<li>Get all fields at once: use <code><b>simple_fields_value('".$str_all_group_fields."')</b></code> to get:";
+						ob_start();
+						sf_d( simple_fields_value($str_all_group_fields) );
+						$content .= ob_get_clean();
+					}
+					$output_all .= $content;
+					$output_all .= "</ul>";
+				}
+			
+			} // for each field group
 		}
 		
 		if ($output_all) {

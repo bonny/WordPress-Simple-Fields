@@ -58,7 +58,7 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 				}
 	
 				$saved_values = isset($one_field["saved_values"]) ? $one_field["saved_values"] : null;
-	
+
 				if ($one_field["type"] == "radiobuttons" || $one_field["type"] == "dropdown") {
 					if ($one_field["type"] == "radiobuttons") {
 						$get_value_key = "type_radiobuttons_options";
@@ -234,12 +234,19 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 		}
 
 		// now fetch the stored values, one field at a time
+		// echo "<br>num_added_field_groups: $num_added_field_groups";
+		// for repeatable field groups num_added_field_groups is the number of added field groups
 		for ($num_in_set = 0; $num_in_set < $num_added_field_groups; $num_in_set++) {
 
 			// fetch value for each field
 			foreach ($selected_post_connector["field_groups"][$one_field_group["id"]]["fields"] as $one_field_id => $one_field_value) {
 
+#echo "<br>num in set: $num_in_set";
+#sf_d($one_field_value);
+
 				$custom_field_key = "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_{$one_field_id}_numInSet_{$num_in_set}";
+#echo "<br>custom field key: $custom_field_key";
+
 				$saved_value = get_post_meta($post_id, $custom_field_key, true); // empty string if does not exist
 
 				if ($one_field_value["type"] == "textarea") {
@@ -262,11 +269,19 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 				$selected_post_connector["field_groups"][$one_field_group["id"]]["fields"][$one_field_id]["saved_values"][$num_in_set] = $saved_value;
 				$selected_post_connector["field_groups"][$one_field_group["id"]]["fields"][$one_field_id]["meta_keys"][$num_in_set] = $custom_field_key;
 
+#if (strpos($custom_field_key, "_simple_fields_fieldGroupID_23_fieldID_2_numInSet_") !== FALSE) { // name/string
+#if (strpos($custom_field_key, "_simple_fields_fieldGroupID_23_fieldID_2_numInSet_") !== FALSE) { // file/id
+	#sf_d($custom_field_key);
+	#echo "<br>saved value for $custom_field_key: ";var_dump($saved_value);
+	#sf_d($selected_post_connector["field_groups"][$one_field_group["id"]]["fields"][$one_field_id]);
+#}
+
+
 			}
 		}
 
 	}
-
+	#sf_d($selected_post_connector);
 	return $selected_post_connector;
 }
 
@@ -982,6 +997,10 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 
 		// Loop the fields in this field group
 		foreach ($one_field_group["fields"] as $one_field_group_field) { 
+
+//_simple_fields_fieldGroupID_23_fieldID_2_numInSet_
+#file
+#sf_d($one_field_group_field);
 
 			// Skip deleted fields
 			if ($one_field_group_field["deleted"]) continue;
