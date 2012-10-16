@@ -135,6 +135,204 @@ class MyPluginTest extends WP_UnitTestCase {
 
 	}
 
+	function testManuallyAddedFieldsExtendedReturn()
+	{
+	
+		$post_id = 11;
+	
+		// test single/first values
+		$vals = simple_fields_value("field_radiobuttons", $post_id, "extended_return=1");
+		$vals_expected = array(
+			"selected_value" => "Radiobutton 3",
+			"selected_radiobutton" => array(
+				"value" => "Radiobutton 3",
+				"key" => "radiobutton_num_4",
+				"is_selected" => 1
+			),
+			"radiobuttons" => array(
+				array(
+					"value" => "Radiobutton 1",
+					"key" 	=> "radiobutton_num_2",
+					"is_selected" => ""
+				),
+				array(
+					"value"	=> "Radiobutton 2",
+					"key" 	=> "radiobutton_num_3",
+					"is_selected" => ""
+				),
+				array(
+					"value" => "Radiobutton 3",
+					"key" => "radiobutton_num_4",
+					"is_selected" => 1
+				)
+			)
+		);
+		$this->assertEquals($vals_expected, $vals);
+		
+		$vals = simple_fields_value("field_dropdown", $post_id, "extended_return=1");
+		$vals_expected = array(
+							'selected_value' => 'Dropdown 2',
+							'selected_option' => array(
+								'value' => 'Dropdown 2',
+								'key' => 'dropdown_num_3',
+								'is_selected' => true
+							),
+							'options' => array(
+								0 => array(
+									'value' => 'Dropdown 1',
+									'key' => 'dropdown_num_2',
+									'is_selected' => false
+								),
+								1 => array(
+									'value' => 'Dropdown 2',
+									'key' => 'dropdown_num_3',
+									'is_selected' => true
+								),
+								2 => array(
+									'value' => 'Dropdown 3',
+									'key' => 'dropdown_num_4',
+									'is_selected' => false
+								)
+							)
+						);
+
+		$this->assertEquals($vals_expected, $vals);
+
+		// check just keys for now, should check more of course
+		$vals = simple_fields_value("field_file", $post_id, "extended_return=1");
+		#echo var_export($vals);
+		$attachment_id = 14;
+		$vals_expected = array(
+			'id' => 14,
+			'is_attachment' => false,
+			'is_image' => true,
+			'url' => 'http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg',
+			'mime' => 'image/jpeg',
+			'link' => array(
+				'full' => '<a href=\'http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg\' title=\'product-cat-2\'><img width="1024" height="768" src="http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg" class="attachment-full" alt="product-cat-2" title="product-cat-2" /></a>',
+				'thumbnail' => '<a href=\'http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg\' title=\'product-cat-2\'><img width="150" height="112" src="http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg" class="attachment-thumbnail" alt="product-cat-2" title="product-cat-2" /></a>',
+				'medium' => '<a href=\'http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg\' title=\'product-cat-2\'><img width="300" height="225" src="http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg" class="attachment-medium" alt="product-cat-2" title="product-cat-2" /></a>',
+				'large' => '<a href=\'http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg\' title=\'product-cat-2\'><img width="584" height="438" src="http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg" class="attachment-large" alt="product-cat-2" title="product-cat-2" /></a>',
+				'post-thumbnail' => '<a href=\'http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg\' title=\'product-cat-2\'><img width="384" height="288" src="http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg" class="attachment-post-thumbnail" alt="product-cat-2" title="product-cat-2" /></a>',
+				'large-feature' => '<a href=\'http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg\' title=\'product-cat-2\'><img width="384" height="288" src="http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg" class="attachment-large-feature" alt="product-cat-2" title="product-cat-2" /></a>',
+				'small-feature' => '<a href=\'http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg\' title=\'product-cat-2\'><img width="400" height="300" src="http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg" class="attachment-small-feature" alt="product-cat-2" title="product-cat-2" /></a>'
+			),
+			'image' => array(
+				'full' => '<img width="1024" height="768" src="http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg" class="attachment-full" alt="product-cat-2" title="product-cat-2" />',
+				'thumbnail' => '<img width="150" height="112" src="http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg" class="attachment-thumbnail" alt="product-cat-2" title="product-cat-2" />',
+				'medium' => '<img width="300" height="225" src="http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg" class="attachment-medium" alt="product-cat-2" title="product-cat-2" />',
+				'large' => '<img width="584" height="438" src="http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg" class="attachment-large" alt="product-cat-2" title="product-cat-2" />',
+				'post-thumbnail' => '<img width="384" height="288" src="http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg" class="attachment-post-thumbnail" alt="product-cat-2" title="product-cat-2" />',
+				'large-feature' => '<img width="384" height="288" src="http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg" class="attachment-large-feature" alt="product-cat-2" title="product-cat-2" />',
+				'small-feature' => '<img width="400" height="300" src="http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg" class="attachment-small-feature" alt="product-cat-2" title="product-cat-2" />'
+			),
+			'image_src' => array(
+				'full' => array(
+					0 => 'http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg',
+					1 => 1024,
+					2 => 768,
+					3 => false
+				),
+				'thumbnail' => array(
+					0 => 'http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg',
+					1 => 150,
+					2 => 112,
+					3 => false
+				),
+				'medium' => array(
+					0 => 'http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg',
+					1 => 300,
+					2 => 225,
+					3 => false
+				),
+				'large' => array(
+					0 => 'http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg',
+					1 => 584,
+					2 => 438,
+					3 => false
+				),
+				'post-thumbnail' => array(
+					0 => 'http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg',
+					1 => 384,
+					2 => 288,
+					3 => false
+				),
+				'large-feature' => array(
+					0 => 'http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg',
+					1 => 384,
+					2 => 288,
+					3 => false
+				),
+				'small-feature' => array(
+					0 => 'http://unit-test.simple-fields.com/wp/wp-content/uploads/2012/10/product-cat-2.jpeg',
+					1 => 400,
+					2 => 300,
+					3 => false
+				)
+			),
+			'metadata' => array(
+				'width' => '1024',
+				'height' => '768',
+				'hwstring_small' => 'height=\'96\' width=\'128\'',
+				'file' => '2012/10/product-cat-2.jpeg',
+				'image_meta' => array(
+					'aperture' => '0',
+					'credit' => '',
+					'camera' => '',
+					'caption' => '',
+					'created_timestamp' => '0',
+					'copyright' => '',
+					'focal_length' => '0',
+					'iso' => '0',
+					'shutter_speed' => '0',
+					'title' => ''
+				)
+			),
+			'post' => get_post($attachment_id)
+		);
+		$this->assertEquals($vals_expected, $vals);
+		
+		$vals = simple_fields_value("field_post", $post_id, "extended_return=1");
+		$vals_expected = array(
+			'id' => 11,
+			'title' => 'Post with fields',
+			'permalink' => 'http://unit-test.simple-fields.com/?p=11',
+			'post' => get_post($post_id)
+		);
+		$this->assertEquals($vals_expected, $vals);
+		
+		$vals = simple_fields_value("field_taxonomy", $post_id, "extended_return=1");
+		$vals_expected = array(
+			'name' => 'post_tag',
+			'singular_name' => 'Tag',
+			'plural_name' => 'Tags',
+			"taxonomy" => get_taxonomy("post_tag")
+		);
+		$this->assertEquals($vals_expected, $vals);
+		
+		$vals = simple_fields_value("field_taxonomy_term", $post_id, "extended_return=1");
+		$vals_expected = array(
+			"terms" => array(
+				0 => array(
+					"name" => "Uncategorized",
+					"slug" => "uncategorized",
+					"id" => 1,
+					"term" => get_term_by("id", 1, "category")
+				)
+			)
+		);
+		$this->assertEquals($vals_expected, $vals);
+
+		$vals = simple_fields_value("field_date", $post_id, "extended_return=1");
+		$vals_expected = array ( 'saved_value' => '12/10/2012', 'timestamp' => 1350000000, 'date_format' => 'October 12, 2012');
+		$this->assertEquals($vals_expected, $vals);
+		
+		$vals = simple_fields_value("field_user", $post_id, "extended_return=1");
+		$vals_expected = array ( 'id' => 1, 'first_name' => '', 'last_name' => '', 'user_login' => 'admin', 'user_email' => 'admin@simple-fields.com', 'user_nicename' => 'admin', 'display_name' => 'admin', 'user' => get_user_by("id", 1));
+		$this->assertEquals($vals_expected, $vals);
+				
+	}
+
 	public function testPostConnectors() {
 		
 		// testa connectors
