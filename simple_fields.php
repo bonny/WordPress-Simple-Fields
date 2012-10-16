@@ -3062,7 +3062,6 @@ class simple_fields {
 			if (isset($field_value) && is_numeric($field_value)) {
 				$file_id                             = (int) $field_value;
 				$return_field_value["id"]            = $file_id;
-				$return_field_value["is_attachment"] = is_attachment( $file_id );
 				$return_field_value["is_image"]      = wp_attachment_is_image( $file_id );
 				$return_field_value["url"]           = wp_get_attachment_url( $file_id );
 				$return_field_value["mime"]          = get_post_mime_type( $file_id );
