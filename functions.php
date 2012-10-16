@@ -201,6 +201,7 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 
 	// Remove deleted field groups
 	if (!$args["include_deleted"]) {
+
 		$arr_field_groups_to_keep = array();
 		foreach ($selected_post_connector["field_groups"] as $one_field_group_id => $one_field_group) {
 
@@ -265,6 +266,7 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 		}
 
 	}
+
 	return $selected_post_connector;
 }
 

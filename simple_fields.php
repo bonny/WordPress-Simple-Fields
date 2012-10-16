@@ -2934,8 +2934,9 @@ class simple_fields {
 		$output_all = "";
 		$field_count = 0;
 		
-		$post_connector_with_values = simple_fields_get_all_fields_and_values_for_post(get_the_ID());
+		$post_connector_with_values = simple_fields_get_all_fields_and_values_for_post(get_the_ID(), "include_deleted=0");
 		if ($post_connector_with_values) {
+
 			foreach ($post_connector_with_values["field_groups"] as $one_field_group) {
 				if ($one_field_group["deleted"]) continue;
 				
@@ -2949,12 +2950,15 @@ class simple_fields {
 				$output_all .= "</div>";
 				
 				foreach ($one_field_group["fields"] as $one_field) {
+
 					if ($one_field["deleted"]) continue;
+
 					$field_count++;
 					$content = "";
 					$content .= "<ul style='background:#eee;padding:.5em;margin:0;display:block;'>";
 					$content .= "<li>Field <b>" . $one_field["name"] . "</b><ul>";
 					$content .= "<li>Type <b>" . $one_field["type"] . "</b>";
+
 					if (isset($one_field["slug"])) {
 						$content .=  "<li>Slug <b>" . $one_field["slug"] . "</b>";
 						
