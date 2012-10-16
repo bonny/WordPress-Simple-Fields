@@ -3035,7 +3035,9 @@ class simple_fields {
 				</div>
 				';
 		}
-		
+		// if a field has the slug caption the output will be [caption] and then it will crash with some shortcodes, so we try to fix that here
+		$output_all = str_replace("[", "&#91;", $output_all);
+		$output_all = str_replace("]", "&#93;", $output_all);
 		return $the_content . $output_all;
 	}
 
