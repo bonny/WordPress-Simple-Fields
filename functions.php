@@ -1011,10 +1011,19 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 				// options are in format:
 				// extended_output=1&file[extended_output]=1&file[anotherOptions]=yepp indeed
 				// where the first arg is for all fields, and the one with square-brackets are for specific slugs
-				$parsed_options = wp_parse_args($options);
-				
+				$parsed_options = wp_parse_args($options);				
 				$parsed_options_for_this_field = array();
 
+				// First check for settings saved for the field (in gui or through register_field_group)
+				$field_options_key = "type_".$one_field_group_field["type"]."_options";
+				if (isset($one_field_group_field[$field_options_key])) {
+					// settings exist for this field
+					if (isset($one_field_group_field[$field_options_key]["enable_extended_return_values"]) && $one_field_group_field[$field_options_key]["enable_extended_return_values"]) {
+						$parsed_options_for_this_field["extended_return"] = 1;
+					}
+
+				}
+				
 				// check for options savailable for all fields
 				// all keys for values that are not arrays. these are args that are meant for all slugs
 				foreach ($parsed_options as $key => $val) {
@@ -1028,7 +1037,7 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 				if ( isset($parsed_options[$one_field_group_field["slug"]]) && is_array($parsed_options[$one_field_group_field["slug"]]) ) {
 					$parsed_options_for_this_field = array_merge($parsed_options_for_this_field, $parsed_options[$one_field_group_field["slug"]]);
 				}
-				
+
 				// that's it, we have the options that should be available for this field slug
 				// echo "<br>field: " . $one_field_group_field["slug"];
 				// sf_d($parsed_options_for_this_field);
