@@ -2987,7 +2987,7 @@ class simple_fields {
 
 				// Show example how to get all fields in one shot
 				// But only show if field has more than one field, otherwise it's kinda not useful
-				if ( sizeof($one_field_group["fields"]) > 0 ) {
+				if ( sizeof($one_field_group["fields"]) > 1 ) {
 					$str_all_group_fields = preg_replace('!,$!', '', $str_all_group_fields);
 					$output_all .= "<ul style='background:#eee;padding:.5em;margin:0;display:block;'>";
 					if ($one_field_group["repeatable"]) {
