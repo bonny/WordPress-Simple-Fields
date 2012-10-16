@@ -3017,13 +3017,12 @@ class simple_fields {
 				var $t = jQuery(t);
 				var $div_wrap = $t.closest("div.simple-fields-post-debug-wrap");
 				var debug_content = $div_wrap.find("div.simple-fields-post-debug-content");
-				debug_content.toggle("fast", function() {
-					if (debug_content.is(":visible")) {
-						$t.text("<?php echo $str_hide_fields ?>");
-					} else {
-						$t.text("<?php echo $str_show_fields ?>");
-					}
-				});
+				debug_content.toggle();
+				if (debug_content.is(":visible")) {
+					$t.text("<?php echo $str_hide_fields ?>");
+				} else {
+					$t.text("<?php echo $str_show_fields ?>");
+				}
 				return false;
 			}
 			</script>
