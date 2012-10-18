@@ -170,10 +170,11 @@ Very useful when working with for example files:
 instead of just the ID of the file you get the id, the full path to the file, the dimensions if it's a image, and more. 
 This feature is available for these field types: 
 file, radiobutton, dropdown, post, user, taxonomy, taxonomy term and date. 
-Please see the [documentation for Extenend Return Values](http://simple-fields.com/documentation/api/extended-return-values/) for more information and examples.
+Please see the [documentation for Extended Return Values](http://simple-fields.com/documentation/api/extended-return-values/) for more information and examples.
 - Added: option to set the height for textarea fields (inlcuding HTML/TinyMCE-editor-mode)
 - Added: new field type: divider. Useful if you have a field group with many fields. By adding the divider field to a field group it simply created a shite space or a space with a line. It's written using the new Extension API btw, so feel free to check out the source if you want to create something similar yourself.
 - Changed: The debug output also includes example on how to get all field in a field group at once.
+- Changed: The edit field group admin page now is a bit more compact. Makes easier to get an overview of all the added fields.
 
 #### Version 1.0.2
 - Changed: Don't load example field types
