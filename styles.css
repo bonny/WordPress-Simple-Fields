@@ -381,6 +381,7 @@ ul.simple-fields-metabox-field-group-fields-repeatable li.active {
 	float: left;
 	width: 15%;
 	padding-right: 1em;
+	min-height: 1px;
 	/*border: 1px solid red;
 	background-color: lightyellow;*/
 }

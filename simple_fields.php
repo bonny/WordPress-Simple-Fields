@@ -474,9 +474,14 @@ class simple_fields {
 						} else {
 							$str_checked = "";
 						}
+
+						echo "<div class='simple-fields-metabox-field-first'>";
+						echo "</div>";
+						echo "<div class='simple-fields-metabox-field-second'>";
 						echo "<input $str_checked id='$field_unique_id' type='checkbox' name='$field_name' value='1' />";
 						echo "<label class='simple-fields-for-checkbox' for='$field_unique_id'> " . $field["name"] . "</label>";
 						echo $description;
+						echo "</div>";
 		
 					} elseif ("radiobuttons" == $field["type"]) {
 		
