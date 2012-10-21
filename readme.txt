@@ -167,7 +167,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 #### Version 1.0.x
 - Added: Add button added to bottom of the added field groups. Will be visible when more than 1 field group is added.
 - Changed: moved to a two column mode/appearance. Makes the fields take upp less space, without making it more clutter free.
-- 
+- Changed: minor CSS fixes here and there
 
 #### Version 1.0.3
 - Added: Added options for returning values as "Extended Return Values". 

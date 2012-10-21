@@ -991,8 +991,20 @@ class simple_fields {
 	 
 	    $field_groups = $this->get_field_groups();
 	    $current_field_group = $field_groups[$post_connector_field_id];
+
+		// check for prev. saved fieldgroups
+		// _simple_fields_fieldGroupID_1_fieldID_added_numInSet_0
+		// try until returns empty
+		$num_added_field_groups = 0;
+		$num_added_field_groups_css = "";
+
+		while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$post_connector_field_id}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
+			$num_added_field_groups++;
+			$num_added_field_groups_css = "simple-fields-meta-box-field-group-wrapper-has-fields-added";
+		}
+
 	 
-	    echo "<div class='simple-fields-meta-box-field-group-wrapper'>";
+	    echo "<div class='simple-fields-meta-box-field-group-wrapper $num_added_field_groups_css'>";
 	    echo "<input type='hidden' name='simple-fields-meta-box-field-group-id' value='$post_connector_field_id' />";
 	 
 	    // show description
@@ -1011,14 +1023,6 @@ class simple_fields {
 	        ";
 	        echo "<ul class='simple-fields-metabox-field-group-fields simple-fields-metabox-field-group-fields-repeatable'>";
 	 
-	        // check for prev. saved fieldgroups
-	        // _simple_fields_fieldGroupID_1_fieldID_added_numInSet_0
-	        // try until returns empty
-	        $num_added_field_groups = 0;
-	 
-	        while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$post_connector_field_id}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
-	            $num_added_field_groups++;
-	        }
 	        //var_dump( get_post_meta($post_id, "_simple_fields_fieldGroupID_{$post_connector_field_id}_fieldID_added_numInSet_0", true) );
 	        //echo "num_added_field_groups: $num_added_field_groups";
 	        // now add them. ooooh my, this is fancy stuff.

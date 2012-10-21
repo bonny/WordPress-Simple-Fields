@@ -307,7 +307,8 @@ var simple_fields = (function() {
 			});
 
 			$t.html("<a href='#'>+ "+sfstrings.add+"</a>");
-			wrapper.find(".simple-fields-metabox-field-add-bottom").show();
+			//wrapper.find(".simple-fields-metabox-field-add-bottom").show();
+			wrapper.addClass("simple-fields-meta-box-field-group-wrapper-has-fields-added");
 
 		});
 		
@@ -354,7 +355,10 @@ var simple_fields = (function() {
 				
 				// If removed last fieldgroup, hide the add link
 				if (ul.find(">li").length === 0) {
-					wrapper.find("div.simple-fields-metabox-field-add-bottom").hide("slow");
+					//wrapper.find("div.simple-fields-metabox-field-add-bottom").hide("slow");
+					wrapper.removeClass("simple-fields-meta-box-field-group-wrapper-has-fields-added");
+				} else {
+					wrapper.addClass("simple-fields-meta-box-field-group-wrapper-has-fields-added");
 				}
 
 			});

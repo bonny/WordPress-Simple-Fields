@@ -272,6 +272,9 @@ ul#simple-fields-post-connector-added-fields li {
 .simple-fields-metabox-field-add-bottom {
 	display: none;
 }
+.simple-fields-meta-box-field-group-wrapper-has-fields-added .simple-fields-metabox-field-add-bottom {
+	display: block;
+}
 
 .simple-fields-metabox-field label {
 	/*font-weight: bold;
@@ -379,7 +382,7 @@ ul.simple-fields-metabox-field-group-fields-repeatable li.active {
 	-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
 	/*display: inline-block;*/
 	float: left;
-	width: 15%;
+	width: 17%;
 	padding-right: 1em;
 	min-height: 1px;
 	/*border: 1px solid red;
@@ -388,7 +391,7 @@ ul.simple-fields-metabox-field-group-fields-repeatable li.active {
 .simple-fields-metabox-field-second {
 	-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
 	float: left;
-	width: 85%;
+	width: 83%;
 	position: relative;
 }
 
