@@ -567,9 +567,15 @@ ul.simple-fields-file-browser-list h3 {
 	overflow: auto;
 	margin-top: 5px;
 }
-.simple-fields-metabox-field-taxonomymeta-terms li {
+
+ul.simple-fields-metabox-field-group-fields-repeatable .simple-fields-metabox-field-taxonomymeta-terms li {
 	line-height: 1;
+	background-image: none;
+	border: none;
+	margin-left: 0;
+	padding-left: 0;
 }
+
 .simple-fields-metabox-field-taxonomymeta-terms ul.children {
 	margin-left: 18px;
 	margin-top: 5px;
