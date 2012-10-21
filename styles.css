@@ -269,6 +269,10 @@ ul#simple-fields-post-connector-added-fields li {
 	margin-right: 11px;
 }
 
+.simple-fields-metabox-field-add-bottom {
+	display: none;
+}
+
 .simple-fields-metabox-field label {
 	/*font-weight: bold;
 	display: block;*/

@@ -287,6 +287,10 @@ var simple_fields = (function() {
 			} else {
 				$ul.prepend($response);
 			}
+
+			var wrapper = $ul.closest(".simple-fields-meta-box-field-group-wrapper");
+			// var lis = $ul.find(">li");
+
 			$response.slideDown("slow", function() {
 				
 				simple_fields_metabox_tinymce_attach();
@@ -301,7 +305,9 @@ var simple_fields = (function() {
 				//simple_fields.dispatchEvent();
 				$(document.body).trigger("field_group_added", $response);
 			});
+
 			$t.html("<a href='#'>+ "+sfstrings.add+"</a>");
+			wrapper.find(".simple-fields-metabox-field-add-bottom").show();
 
 		});
 		
@@ -340,7 +346,19 @@ var simple_fields = (function() {
 	$(".simple-fields-metabox-field-group-delete").live("click", function() {
 		if (confirm(sfstrings.confirmRemoveGroup)) {
 			var li = $(this).closest("li");
-			li.hide("slow", function() { li.remove(); });
+			li.hide("slow", function() {
+
+				var wrapper = li.closest("div.simple-fields-meta-box-field-group-wrapper");
+				var ul = li.closest("ul.simple-fields-metabox-field-group-fields");
+				li.remove();
+				
+				// If removed last fieldgroup, hide the add link
+				if (ul.find(">li").length === 0) {
+					wrapper.find("div.simple-fields-metabox-field-add-bottom").hide("slow");
+				}
+
+			});
+
 		}
 		return false;
 	});
