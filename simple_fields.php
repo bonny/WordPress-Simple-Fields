@@ -997,7 +997,8 @@ class simple_fields {
 	    //echo "<pre>";print_r($current_field_group);echo "</pre>";
 	 
 	    if ($current_field_group["repeatable"]) {
-	 
+
+			// add link at top	 
 	        echo "
 	            <div class='simple-fields-metabox-field-add'>
 	                <a href='#'>+ ".__('Add', 'simple-fields')."</a>
@@ -1022,6 +1023,14 @@ class simple_fields {
 	        }
 	 
 	        echo "</ul>";
+
+			// add link at bottom
+			echo "
+	            <div class='simple-fields-metabox-field-add simple-fields-metabox-field-add-bottom'>
+	                <a href='#'>+ ".__('Add', 'simple-fields')."</a>
+	            </div>
+	        ";
+
 	 
 	    } else {
 	         

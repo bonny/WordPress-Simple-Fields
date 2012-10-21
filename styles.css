@@ -286,6 +286,7 @@ ul#simple-fields-post-connector-added-fields li {
 ul.simple-fields-metabox-field-group-fields li {
 	position: relative;
 }
+
 ul.simple-fields-metabox-field-group-fields-repeatable li {
 	margin-top: 1em;
 	padding-top: .5em;
@@ -310,10 +311,17 @@ ul.simple-fields-metabox-field-group-fields-repeatable li.active {
 .simple-fields-metabox-field-group-handle {
 	display: none;
 }
-ul.simple-fields-metabox-field-group-fields-repeatable .simple-fields-metabox-field-group-handle {
+.simple-fields-metabox-field-group-fields-repeatable .simple-fields-metabox-field-group-handle {
 	display: block;
 	margin-left: -16px;
+	margin-top: 10px;
+	opacity: 0;
 }
+
+.simple-fields-metabox-field-group:hover .simple-fields-metabox-field-group-handle {
+	opacity: 1;
+}
+
 .simple-fields-metabox-field-group input.text {
 	border: 1px solid #dfdfdf;
 	-moz-border-radius: 4px;
@@ -378,6 +386,25 @@ ul.simple-fields-metabox-field-group-fields-repeatable .simple-fields-metabox-fi
 	width: 85%;
 	position: relative;
 }
+
+/* when field group is in sidebar then put labels at top */
+#side-sortables .simple-fields-metabox-field-first {
+	float: none;
+	width: auto;
+}
+#side-sortables .simple-fields-metabox-field-second {
+	width: 90%;
+}
+#side-sortables ul.simple-fields-metabox-field-group-fields-repeatable li {
+	padding: .25em .5em;
+}
+#side-sortables .simple-fields-metabox-field, .simple-fields-metabox-field-add {
+	margin-right: 0;
+}
+#side-sortables .simple-fields-metabox-field-with-description {
+	height: 83px;
+}
+
 
 
 .simple_fields_editor_switch {
