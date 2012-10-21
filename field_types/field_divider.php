@@ -19,6 +19,9 @@ function init_simple_fields_field_divider() {
 			add_action('admin_head', array($this, 'action_admin_head'));
 		}
 		
+		/**
+		 *  Output CSS in admin head
+		 */
 		function action_admin_head() {
 			?>
 			<style>
@@ -27,7 +30,7 @@ function init_simple_fields_field_divider() {
 				}
 
 				.simple-fields-fieldgroups-field-type-divider-line {
-					margin: 2em 0;
+					margin: 1em 0;
 				    border: 0;
 				    border-top: 1px solid #DFDFDF;
 				    border-bottom: 1px solid #FFF;
@@ -36,7 +39,7 @@ function init_simple_fields_field_divider() {
 				}
 				
 				.simple-fields-fieldgroups-field-type-divider-white_space {
-				 	height: 2em;
+				 	height: 1em;
 				}
 			</style>
 			<?php

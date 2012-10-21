@@ -264,14 +264,14 @@ ul#simple-fields-post-connector-added-fields li {
 .simple-fields-metabox-field,
 .simple-fields-metabox-field-add
  {
-	margin-top: .5em;
-	margin-bottom: .5em;
+	margin-top: 1em;
+	margin-bottom: 1em;
 	margin-right: 11px;
 }
 
 .simple-fields-metabox-field label {
-	font-weight: bold;
-	display: block;
+	/*font-weight: bold;
+	display: block;*/
 }
 .simple-fields-metabox-field .simple-fields-for-radiobutton,
 .simple-fields-metabox-field .simple-fields-for-checkbox {
@@ -355,6 +355,31 @@ ul.simple-fields-metabox-field-group-fields-repeatable .simple-fields-metabox-fi
 	top: 0;
 }
 
+
+/* try to tighten the output */
+.simple-fields-metabox-field {
+	overflow: auto;
+}
+.simple-fields-metabox-field,
+.simple-fields-metabox-field * {
+}
+.simple-fields-metabox-field-first {
+	-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
+	/*display: inline-block;*/
+	float: left;
+	width: 15%;
+	padding-right: 1em;
+	/*border: 1px solid red;
+	background-color: lightyellow;*/
+}
+.simple-fields-metabox-field-second {
+	-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
+	float: left;
+	width: 85%;
+	position: relative;
+}
+
+
 .simple_fields_editor_switch {
 	display: inline;
 	padding: 5px;
@@ -413,10 +438,15 @@ ul.simple-fields-file-browser-list h3 {
 }
 
 .simple-fields-metabox-field-file {
-	height: 64px;
+	height: 50px;
 }
 .simple-fields-metabox-field-with-description {
-	height: 85px;
+	height: 70px;
+}
+.simple-fields-metabox-field-with-description .simple-fields-metabox-field-description {
+	position: absolute;
+	left: 0;
+	top: 50px;
 }
 
 .simple-fields-metabox-field-file-col1 {
@@ -501,7 +531,7 @@ ul.simple-fields-file-browser-list h3 {
 }
 
 .simple-fields-metabox-field-taxonomymeta-terms {
-	height: 100px;
+	max-height: 100px;
 	overflow: auto;
 	margin-top: 5px;
 }
