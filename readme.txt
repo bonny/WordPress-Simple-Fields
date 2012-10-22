@@ -164,6 +164,9 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
+#### Version 1.0.x
+- Added field group slug to field group wrapper on edit post screen, so you can style different field groups differently.
+
 #### Version 1.0.4
 - Added: Add button added to bottom of the added field groups. Will be visible when more than 1 field group is added.
 - Changed: moved to a two column mode/appearance. Makes the fields take upp less space, and making it more clutter free.

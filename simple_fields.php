@@ -416,6 +416,9 @@ class simple_fields {
 		$current_field_group = $field_groups[$field_group_id];
 		$repeatable = (bool) $current_field_group["repeatable"];
 		$field_group_css = "simple-fields-fieldgroup-$field_group_id";
+		/* if (isset($current_field_group["slug"]) && !empty($current_field_group["slug"])) {
+			$field_group_css .= " simple-fields-fieldgroup-" . $current_field_group["slug"];
+		}*/
 
 		?>
 		<li class="simple-fields-metabox-field-group <?php echo $field_group_css ?>">
@@ -440,6 +443,9 @@ class simple_fields {
 				$field_name = "simple_fields_fieldgroups[$field_group_id][$field_id][$num_in_set]";
 				$field_class = "simple-fields-fieldgroups-field-{$field_group_id}-{$field_id} ";
 				$field_class .= "simple-fields-fieldgroups-field-type-" . $field["type"];
+				if (isset($field["slug"]) && !empty($field["slug"])) {
+					$field_class .= " simple-fields-fieldgroups-field-slug-" . $field["slug"];
+				}
 	
 				$custom_field_key = "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_{$field_id}_numInSet_{$num_in_set}";
 				$saved_value = get_post_meta($post_id, $custom_field_key, true); // empty string if does not exist
@@ -561,7 +567,7 @@ class simple_fields {
 						}
 						$class = "";
 						if ($description) {
-							$class = "simple-fields-metabox-field-with-description";
+							$class = "simple-fields-metabox-field-file-with-description";
 						}
 						echo "<div class='simple-fields-metabox-field-file $class'>";
 
@@ -996,15 +1002,20 @@ class simple_fields {
 		// _simple_fields_fieldGroupID_1_fieldID_added_numInSet_0
 		// try until returns empty
 		$num_added_field_groups = 0;
-		$num_added_field_groups_css = "";
 
 		while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$post_connector_field_id}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
 			$num_added_field_groups++;
-			$num_added_field_groups_css = "simple-fields-meta-box-field-group-wrapper-has-fields-added";
 		}
+		
+		$num_added_field_groups_css = "";
+		if ($num_added_field_groups > 0) $num_added_field_groups_css = "simple-fields-meta-box-field-group-wrapper-has-fields-added";
 
+		$field_group_slug_css = "";
+		if (isset($current_field_group["slug"]) && !empty($current_field_group["slug"])) {
+			$field_group_slug_css = "simple-fields-meta-box-field-group-wrapper-slug-" . $current_field_group["slug"];
+		}
 	 
-	    echo "<div class='simple-fields-meta-box-field-group-wrapper $num_added_field_groups_css'>";
+	    echo "<div class='simple-fields-meta-box-field-group-wrapper $num_added_field_groups_css $field_group_slug_css'>";
 	    echo "<input type='hidden' name='simple-fields-meta-box-field-group-id' value='$post_connector_field_id' />";
 	 
 	    // show description
@@ -1021,16 +1032,17 @@ class simple_fields {
 	                <a href='#'>+ ".__('Add', 'simple-fields')."</a>
 	            </div>
 	        ";
+
+	        // Start of list with adeed field groups
 	        echo "<ul class='simple-fields-metabox-field-group-fields simple-fields-metabox-field-group-fields-repeatable'>";
 	 
-	        //var_dump( get_post_meta($post_id, "_simple_fields_fieldGroupID_{$post_connector_field_id}_fieldID_added_numInSet_0", true) );
-	        //echo "num_added_field_groups: $num_added_field_groups";
 	        // now add them. ooooh my, this is fancy stuff.
 	        $use_defaults = null;
 	        for ($num_in_set=0; $num_in_set<$num_added_field_groups; $num_in_set++) {
 	            $this->meta_box_output_one_field_group($post_connector_field_id, $num_in_set, $post_id, $use_defaults);  
 	        }
 	 
+	 		// end list with added field groups
 	        echo "</ul>";
 
 			// add link at bottom

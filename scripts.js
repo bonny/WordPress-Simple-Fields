@@ -301,8 +301,6 @@ var simple_fields = (function() {
 				$('input.simple-fields-field-type-date', $ul).datePicker(simple_fields_datepicker_args);
 				
 				// Fire event so plugins can listen to the add-button
-				//simple_fields.trigger("field_group_added");
-				//simple_fields.dispatchEvent();
 				$(document.body).trigger("field_group_added", $response);
 			});
 

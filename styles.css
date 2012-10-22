@@ -409,7 +409,7 @@ ul.simple-fields-metabox-field-group-fields-repeatable li.active {
 #side-sortables .simple-fields-metabox-field, .simple-fields-metabox-field-add {
 	margin-right: 0;
 }
-#side-sortables .simple-fields-metabox-field-with-description {
+#side-sortables .simple-fields-metabox-field-file-with-description {
 	height: 83px;
 }
 
@@ -475,10 +475,10 @@ ul.simple-fields-file-browser-list h3 {
 .simple-fields-metabox-field-file {
 	height: 50px;
 }
-.simple-fields-metabox-field-with-description {
+.simple-fields-metabox-field-file-with-description {
 	height: 70px;
 }
-.simple-fields-metabox-field-with-description .simple-fields-metabox-field-description {
+.simple-fields-metabox-field-file-with-description .simple-fields-metabox-field-description {
 	position: absolute;
 	left: 0;
 	top: 50px;
