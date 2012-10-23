@@ -3329,6 +3329,43 @@ class simple_fields {
 			
 		return $return_field_value;
 	}
+
+	/**
+	 * Gets a field group using it's id. Deleted field groups are not included
+	 * @since 1.0.5
+	 * @param string slug of field group (or id, actually)
+	 * @return mixed array with field group info if field groups exists, false if does not exist
+	 */
+	function get_field_group_by_slug($field_group_slug) {
+		
+	 	$field_groups = $this->get_field_groups();
+	 	
+		if (!is_numeric($field_group_slug)) {
+
+			// not number so look for field group with this variable as slug
+			foreach ($field_groups as $one_field_group) {
+				if ($one_field_group["deleted"]) continue;
+				if ($one_field_group["slug"] == $field_group_slug) {
+					return $one_field_group;
+				}
+			}
+
+			return FALSE;
+
+		} else {
+
+			// look for group using id
+		 	if (isset($field_groups[$field_group_slug]) && is_array($field_groups[$field_group_slug]) && !$field_groups[$field_group_slug]["deleted"]) {
+			 	return $field_groups[$field_group_slug];
+		 	} else {
+			 	return FALSE;
+		 	}
+		 	
+		}
+	}
+
+
+
 	
 } // end class
 
