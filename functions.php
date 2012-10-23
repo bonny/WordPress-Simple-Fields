@@ -182,7 +182,6 @@ function simple_fields_get_post_group_values($post_id, $field_group_name_or_id, 
  */
 function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") {
 
-
 	$defaults = array(
 		"include_deleted" => TRUE
 	);
@@ -272,22 +271,14 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 	
 					$selected_post_connector["field_groups"][$one_field_group["id"]]["fields"][$one_field_id]["saved_values"][$num_in_set] = $saved_value;
 					$selected_post_connector["field_groups"][$one_field_group["id"]]["fields"][$one_field_id]["meta_keys"][$num_in_set] = $custom_field_key;
-	
-	#if (strpos($custom_field_key, "_simple_fields_fieldGroupID_23_fieldID_2_numInSet_") !== FALSE) { // name/string
-	#if (strpos($custom_field_key, "_simple_fields_fieldGroupID_23_fieldID_2_numInSet_") !== FALSE) { // file/id
-		#sf_d($custom_field_key);
-		#echo "<br>saved value for $custom_field_key: ";var_dump($saved_value);
-		#sf_d($selected_post_connector["field_groups"][$one_field_group["id"]]["fields"][$one_field_id]);
-	#}
-	
-	
+
 				}
 			}
 	
 		}
 		wp_cache_set( $cache_key, $selected_post_connector );
 	}
-	#sf_d($selected_post_connector);
+
 	return $selected_post_connector;
 }
 
@@ -441,7 +432,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 	$field_groups = $sf->get_field_groups();
 	#sf_d($field_groups);
 	$highest_id = 0;
-
+	
 	// First get the id of the field group we are adding. Existing or highest new.
 	// Loop through all existing field groups to see if the field group we are adding already exists
 	// Exists = an existing field group has the same slug as the group we are adding
@@ -647,14 +638,19 @@ foreach ($field_groups[$field_group_id]["fields"] as $key => $val) {
 
 	} // if passed as arg field group has fields
 
-#sf_d($field_groups[$field_group_id]);
-#sf_d($fields);
+	#sf_d($field_groups[$field_group_id]);
+	#sf_d($fields);
+
+	wp_cache_delete( "simple_fields_groups" );
 	update_option("simple_fields_groups", $field_groups);
 
 	return $field_groups[$field_group_id];
 
 }
 
+/**
+ * @todo: documentation
+ */
 function simple_fields_register_post_connector($unique_name = "", $new_post_connector = array()) {
 
 	global $sf;
@@ -757,6 +753,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 
 	}
 
+	wp_cache_delete("simple_fields_post_connectors");
 	update_option("simple_fields_post_connectors", $post_connectors);
 
 	return $post_connectors[$connector_id];
@@ -811,6 +808,7 @@ function simple_fields_register_post_type_default($connector_id_or_special_type 
 		unset($post_type_defaults[0]);
 	}
 
+	wp_cache_delete("simple_fields_post_type_defaults");
 	update_option("simple_fields_post_type_defaults", $post_type_defaults);
 
 }
