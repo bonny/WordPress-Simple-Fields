@@ -167,7 +167,9 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 #### Version 1.0.x
 - Added: Added field group slug to field group wrapper + field wrapper on edit post screen, so you can style different field groups differently.
 - Added: new method: get_field_group(): returns an array with info about a field group by using id or slug
-- Added: new function: simple_fields_fieldgroup(). Works like simple_fields_value(s) but for a complete fieldgroup
+- Added: new function: simple_fields_fieldgroup(). Works like simple_fields_value(s) but for a complete fieldgroup. 
+Pretty good "shortcut" when you want to get all the field values in a field group.
+- Fixed: Added wp_cache to some very commonly used functions. Quick tests with Xdebug shows a noticable faster performance.
 
 #### Version 1.0.4
 - Added: Add button added to bottom of the added field groups. Will be visible when more than 1 field group is added.
