@@ -1074,66 +1074,84 @@ class simple_fields {
 	 * @return array
 	 */
 	function get_post_connectors() {
-		$connectors = get_option("simple_fields_post_connectors");
-		if ($connectors === FALSE) $connectors = array();
+
+		// use wp_cache
+		$connectors = wp_cache_get( 'simple_fields_post_connectors' );
+		if (FALSE === $connectors) {
+
+			$connectors = get_option("simple_fields_post_connectors");
 	
-		// calculate number of active field groups
-		// @todo: check this a bit more, does not seem to be any deleted groups. i thought i saved the deletes ones to, but with deleted flag set
-		foreach (array_keys($connectors) as $i) {
-                    
-                    // Sanity check the connector id
-                    if (empty($connectors[$i]["id"]) && empty($connectors[$i]["deleted"])) {
-                        
-                        // Found field group without id, let's try to repair it
-                        $highest_id = 0;
-                        foreach($connectors as $one_connector) {
-                            if ($one_connector["id"] > $highest_id)
-                                $highest_id = $one_connector["id"];
-                            if ($one_connector["id"] === $i)
-                                $id_already_exists = true;
-                        }
-                        
-                        if ($i > 0 && !$id_already_exists) {
-                            // If the array key is larger than 0 and
-                            // not used as id by any other connector,
-                            // then it's the perfect id
-                            $connectors[$i]["id"] = $i;
-                        } else {
-                            // The array key is either less than or equal to 0,
-                            // or another connector is using it as id. In any case,
-                            // let's treat it as a new connector and give it a new id.
-                            $new_id = $highest_id + 1;
-                            $connectors[$i]["id"] = $new_id;
-                            
-                            // Now make sure the array key matches the new id
-                            $connectors[$new_id] = $connectors[$i];
-                            unset($connectors[$i]);
-                            $i = $new_id;
-                        }
-                        
-                    }
+			if ($connectors === FALSE) $connectors = array();
 		
-			// compatibility fix key vs slug
-			if (isset($connectors[$i]["slug"]) && $connectors[$i]["slug"]) {
-				$connectors[$i]["key"] = $connectors[$i]["slug"];
-			} else if (isset($connectors[$i]["key"]) && $connectors[$i]["key"]) {
-				$connectors[$i]["slug"] = $connectors[$i]["key"];
-			}
-		
-			$num_fields_in_group = 0;
-			if (isset($connectors[$i]["field_groups"]) && is_array($connectors[$i]["field_groups"])) {
-				foreach ($connectors[$i]["field_groups"] as $one_group) {
-					if (isset($one_group["deleted"]) && !$one_group["deleted"]) $num_fields_in_group++;
+			// calculate number of active field groups
+			// @todo: check this a bit more, does not seem to be any deleted groups. i thought i saved the deletes ones to, but with deleted flag set
+			foreach (array_keys($connectors) as $i) {
+	                    
+	                    // Sanity check the connector id
+	                    if (empty($connectors[$i]["id"]) && empty($connectors[$i]["deleted"])) {
+	                        
+	                        // Found field group without id, let's try to repair it
+	                        $highest_id = 0;
+	                        foreach($connectors as $one_connector) {
+	                            if ($one_connector["id"] > $highest_id)
+	                                $highest_id = $one_connector["id"];
+	                            if ($one_connector["id"] === $i)
+	                                $id_already_exists = true;
+	                        }
+	                        
+	                        if ($i > 0 && !$id_already_exists) {
+	                            // If the array key is larger than 0 and
+	                            // not used as id by any other connector,
+	                            // then it's the perfect id
+	                            $connectors[$i]["id"] = $i;
+	                        } else {
+	                            // The array key is either less than or equal to 0,
+	                            // or another connector is using it as id. In any case,
+	                            // let's treat it as a new connector and give it a new id.
+	                            $new_id = $highest_id + 1;
+	                            $connectors[$i]["id"] = $new_id;
+	                            
+	                            // Now make sure the array key matches the new id
+	                            $connectors[$new_id] = $connectors[$i];
+	                            unset($connectors[$i]);
+	                            $i = $new_id;
+	                        }
+	                        
+	                    }
+			
+				// compatibility fix key vs slug
+				if (isset($connectors[$i]["slug"]) && $connectors[$i]["slug"]) {
+					$connectors[$i]["key"] = $connectors[$i]["slug"];
+				} else if (isset($connectors[$i]["key"]) && $connectors[$i]["key"]) {
+					$connectors[$i]["slug"] = $connectors[$i]["key"];
 				}
+			
+				$num_fields_in_group = 0;
+				if (isset($connectors[$i]["field_groups"]) && is_array($connectors[$i]["field_groups"])) {
+					foreach ($connectors[$i]["field_groups"] as $one_group) {
+						if (isset($one_group["deleted"]) && !$one_group["deleted"]) $num_fields_in_group++;
+					}
+				}
+				$connectors[$connectors[$i]["id"]]["field_groups_count"] = $num_fields_in_group;
 			}
-			$connectors[$connectors[$i]["id"]]["field_groups_count"] = $num_fields_in_group;
+			
+			wp_cache_set( 'simple_fields_post_connectors', $connectors );
+			
 		}
 	
 		return $connectors;
 	}
 
 	function get_post_type_defaults() {
-		return (array) get_option("simple_fields_post_type_defaults");
+
+		$post_type_defaults = wp_cache_get( 'simple_fields_post_type_defaults' );
+		if (FALSE === $post_type_defaults) {
+			$post_type_defaults = (array) get_option("simple_fields_post_type_defaults");
+			wp_cache_set( 'simple_fields_post_type_defaults', $post_type_defaults );		
+		}
+
+		return $post_type_defaults;
+
 	}
 	
 	/**
@@ -1142,60 +1160,67 @@ class simple_fields {
 	 * @return array
 	 */
 	function get_field_groups() {
-
-		$field_groups = get_option("simple_fields_groups");
-		if ($field_groups === FALSE) $field_groups = array();
 		
-		// Calculate the number of active fields
-		// And some other things
-		foreach (array_keys($field_groups) as $i) {
+		$field_groups = wp_cache_get( 'simple_fields_groups' );
+		if (FALSE === $field_groups) {
+			
+			$field_groups = get_option("simple_fields_groups");
+			if ($field_groups === FALSE) $field_groups = array();
+			
+			// Calculate the number of active fields
+			// And some other things
+			foreach (array_keys($field_groups) as $i) {
+	                    
+                // Sanity check the field group id
+                if (empty($field_groups[$i]["id"]) && empty($field_groups[$i]["deleted"])) {
                     
-                    // Sanity check the field group id
-                    if (empty($field_groups[$i]["id"]) && empty($field_groups[$i]["deleted"])) {
-                        
-                        // Found field group without id, let's try to repair it
-                        $highest_id = 0;
-                        foreach($field_groups as $one_field_group) {
-                            if ($one_field_group["id"] > $highest_id)
-                                $highest_id = $one_field_group["id"];
-                            if ($one_field_group["id"] === $i)
-                                $id_already_exists = true;
-                        }
-                        
-                        if ($i > 0 && !$id_already_exists) {
-                            // If the array key is larger than 0 and
-                            // not used as id by any other field group,
-                            // then it's the perfect id
-                            $field_groups[$i]["id"] = $i;
-                        } else {
-                            // The array key is either less than or equal to 0,
-                            // or another field group is using it as id. In any case,
-                            // let's treat it as a new field group and give it a new id.
-                            $new_id = $highest_id + 1;
-                            $field_groups[$i]["id"] = $new_id;
-                            
-                            // Now make sure the array key matches the new id
-                            $field_groups[$new_id] = $field_groups[$i];
-                            unset($field_groups[$i]);
-                            $i = $new_id;
-                        }
-                        
+                    // Found field group without id, let's try to repair it
+                    $highest_id = 0;
+                    foreach($field_groups as $one_field_group) {
+                        if ($one_field_group["id"] > $highest_id)
+                            $highest_id = $one_field_group["id"];
+                        if ($one_field_group["id"] === $i)
+                            $id_already_exists = true;
                     }
-
-			// Make sure we have both key and slug set to same. key = old name for slug
-			if (isset($field_groups[$i]["slug"]) && $field_groups[$i]["slug"]) {
-				$field_groups[$i]["key"] = $field_groups[$i]["slug"];
-			} else if (isset($field_groups[$i]["key"]) && $field_groups[$i]["key"]) {
-				$field_groups[$i]["slug"] = $field_groups[$i]["key"];
+                    
+                    if ($i > 0 && !$id_already_exists) {
+                        // If the array key is larger than 0 and
+                        // not used as id by any other field group,
+                        // then it's the perfect id
+                        $field_groups[$i]["id"] = $i;
+                    } else {
+                        // The array key is either less than or equal to 0,
+                        // or another field group is using it as id. In any case,
+                        // let's treat it as a new field group and give it a new id.
+                        $new_id = $highest_id + 1;
+                        $field_groups[$i]["id"] = $new_id;
+                        
+                        // Now make sure the array key matches the new id
+                        $field_groups[$new_id] = $field_groups[$i];
+                        unset($field_groups[$i]);
+                        $i = $new_id;
+                    }
+                    
+                }
+	
+				// Make sure we have both key and slug set to same. key = old name for slug
+				if (isset($field_groups[$i]["slug"]) && $field_groups[$i]["slug"]) {
+					$field_groups[$i]["key"] = $field_groups[$i]["slug"];
+				} else if (isset($field_groups[$i]["key"]) && $field_groups[$i]["key"]) {
+					$field_groups[$i]["slug"] = $field_groups[$i]["key"];
+				}
+	
+				$num_active_fields = 0;
+				foreach ($field_groups[$i]["fields"] as $one_field) {
+					if (!$one_field["deleted"]) $num_active_fields++;
+				}
+				$field_groups[$i]["fields_count"] = $num_active_fields;
 			}
-
-			$num_active_fields = 0;
-			foreach ($field_groups[$i]["fields"] as $one_field) {
-				if (!$one_field["deleted"]) $num_active_fields++;
-			}
-			$field_groups[$i]["fields_count"] = $num_active_fields;
+			
+			wp_cache_set( 'simple_fields_groups', $field_groups );
+			
 		}
-		
+				
 		return $field_groups;
 		
 	}
@@ -3338,30 +3363,43 @@ class simple_fields {
 	 */
 	function get_field_group_by_slug($field_group_slug) {
 		
-	 	$field_groups = $this->get_field_groups();
-	 	
-		if (!is_numeric($field_group_slug)) {
-
-			// not number so look for field group with this variable as slug
-			foreach ($field_groups as $one_field_group) {
-				if ($one_field_group["deleted"]) continue;
-				if ($one_field_group["slug"] == $field_group_slug) {
-					return $one_field_group;
-				}
-			}
-
-			return FALSE;
-
-		} else {
-
-			// look for group using id
-		 	if (isset($field_groups[$field_group_slug]) && is_array($field_groups[$field_group_slug]) && !$field_groups[$field_group_slug]["deleted"]) {
-			 	return $field_groups[$field_group_slug];
-		 	} else {
-			 	return FALSE;
-		 	}
+		$cache_key = "get_field_group_by_slug_" . $field_group_slug;
+		$return_val = wp_cache_get( $cache_key );		
+		if (FALSE === $return_val) {
+		
+		 	$field_groups = $this->get_field_groups();
 		 	
+			if (!is_numeric($field_group_slug)) {
+	
+				// not number so look for field group with this variable as slug
+				foreach ($field_groups as $one_field_group) {
+					if ($one_field_group["deleted"]) continue;
+					if ($one_field_group["slug"] == $field_group_slug) {
+						wp_cache_set( $cache_key, $one_field_group );
+						return $one_field_group;
+					}
+				}
+				
+				wp_cache_set( $cache_key, FALSE );
+				return FALSE;
+	
+			} else {
+	
+				// look for group using id
+			 	if (isset($field_groups[$field_group_slug]) && is_array($field_groups[$field_group_slug]) && !$field_groups[$field_group_slug]["deleted"]) {
+					wp_cache_set( $cache_key, $field_groups[$field_group_slug] );
+				 	return $field_groups[$field_group_slug];
+			 	} else {
+				 	wp_cache_set( $cache_key, FALSE );
+				 	return FALSE;
+			 	}
+			 	
+			}
+				
 		}
+
+		return $return_val;
+
 	}
 
 
