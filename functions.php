@@ -833,6 +833,11 @@ function simple_fields_register_post_type_default($connector_id_or_special_type 
  */
 function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $new_post_connector = null, $new_value) {
 
+	/*
+	echo "<br><br>Setting field with slug " . $field_slug . " for post " . $post_id;
+	echo "<br>value to set is: " . $new_value;
+	// */
+
 	global $sf;
 
 	// First check the post connector for this post
@@ -861,6 +866,12 @@ function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $n
 	$post_connector_info = simple_fields_get_all_fields_and_values_for_post($post_id);
 	foreach ($post_connector_info["field_groups"] as $one_field_group) {
 
+		// check number of added field groups
+		$num_added_field_groups = 0; 
+		while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
+			$num_added_field_groups++;
+		}
+
 		// Loop the fields in this field group
 		foreach ($one_field_group["fields"] as $one_field_group_field) { 
 
@@ -874,18 +885,12 @@ function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $n
 				$field_group_id = $one_field_group["id"];
 				$field_id = $one_field_group_field["id"];
 
-				// check number of added field groups
-				$num_added_field_groups = 0; 
-				while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
-					$num_added_field_groups++;
-				}
-
-				if (empty($new_numInSet)) {
+				if (!empty($new_numInSet)) {
 					$num_in_set = $new_numInSet;
 				} else {
 					$num_in_set = $num_added_field_groups;			        
 				}
-
+				
 				update_post_meta($post_id, "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_{$field_id}_numInSet_{$num_in_set}", $new_value);
 				update_post_meta($post_id, "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_added_numInSet_{$num_in_set}", 1);
 
