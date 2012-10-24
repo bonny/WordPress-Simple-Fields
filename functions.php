@@ -1178,23 +1178,35 @@ function simple_fields_is_connector($slug) {
  */
 function simple_fields_fieldgroup($field_group_id_or_slug, $post_id = NULL, $options = array()) {
 
-	global $sf;
-	$field_group = $sf->get_field_group_by_slug($field_group_id_or_slug);
-
-	$arr_fields = array();
-	foreach ($field_group["fields"] as $one_field) {
-		if ($one_field["deleted"]) continue;
-		$arr_fields[] = trim($one_field["slug"]);
+	if (!is_numeric($post_id)) {
+		global $post;
+		$post_id = $post->ID;
 	}
+
+	$cache_key = "simple_fields_fieldgroup_" . $field_group_id_or_slug . "_" . $post_id . json_encode($options);
+	$values = wp_cache_get( $cache_key );
+	if (FALSE === $values) {
 	
-	$str_field_slugs = join(",", $arr_fields);
-	if ($field_group["repeatable"]) {
-		$values = simple_fields_values($str_field_slugs, $post_id);
-	} else {
-		$values = simple_fields_value($str_field_slugs, $post_id);
+		global $sf;
+		$field_group = $sf->get_field_group_by_slug($field_group_id_or_slug);
+	
+		$arr_fields = array();
+		foreach ($field_group["fields"] as $one_field) {
+			if ($one_field["deleted"]) continue;
+			$arr_fields[] = trim($one_field["slug"]);
+		}
+		
+		$str_field_slugs = join(",", $arr_fields);
+		if ($field_group["repeatable"]) {
+			$values = simple_fields_values($str_field_slugs, $post_id);
+		} else {
+			$values = simple_fields_value($str_field_slugs, $post_id);
+		}
+		wp_cache_set( $cache_key, $values );
 	}
 	return $values;
 }
+
 
 /*
 @todo: add simple_fields_fieldgroup_values() as smart alias to 
