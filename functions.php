@@ -893,6 +893,7 @@ function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $n
 				
 				update_post_meta($post_id, "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_{$field_id}_numInSet_{$num_in_set}", $new_value);
 				update_post_meta($post_id, "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_added_numInSet_{$num_in_set}", 1);
+				update_post_meta($post_id, "_simple_fields_been_saved", 1);
 
 				// value updated. exit function.
 				return;
