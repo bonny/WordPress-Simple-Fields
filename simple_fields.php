@@ -1215,12 +1215,27 @@ class simple_fields {
 					if (!$one_field["deleted"]) $num_active_fields++;
 				}
 				$field_groups[$i]["fields_count"] = $num_active_fields;
+				
+				// Also add some info about the field group is belongs to
+				// This can be useful to have if you're only fetching a single field
+				// but need to do something with that fields field group 
+				// (like getting the id to calcualte that custom field meta key to use)
+				foreach ($field_groups[$i]["fields"] as &$one_field) {
+					$one_field["field_group"] = array(
+						"id"           => $field_groups[$i]["id"],
+						"name"         => $field_groups[$i]["name"],
+						"slug"         => $field_groups[$i]["id"],
+						"description"  => $field_groups[$i]["description"],
+						"repeatable"   => $field_groups[$i]["repeatable"],
+						"fields_count" => $field_groups[$i]["fields_count"]
+					);
+				}
 			}
-			
+
 			wp_cache_set( 'simple_fields_groups', $field_groups );
 			
 		}
-				
+
 		return $field_groups;
 		
 	}
@@ -3403,6 +3418,28 @@ class simple_fields {
 	}
 
 
+	/**
+	 * Returns a field from a fieldgroup using their slugs
+	 *
+	 * @since 1.0.5
+	 * @param string $field_slug
+	 * @param string $fieldgroup_slug
+	 * @return mixed Array with field info if field is found, false if not found
+	 */
+	function get_field_by_slug($field_slug = "", $fieldgroup_slug = "") {
+
+		$field_group = $this->get_field_group_by_slug($fieldgroup_slug);
+		if (!$field_group) return FALSE;
+		
+		foreach ($field_group["fields"] as $one_field) {
+			if ($field_slug === $one_field["slug"]) {
+				return $one_field;
+			}
+		}
+		
+		// No field with that slug found
+		return FALSE;
+	}
 
 	
 } // end class

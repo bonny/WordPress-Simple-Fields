@@ -170,6 +170,11 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 - Added: new function: simple_fields_fieldgroup(). Works like simple_fields_value(s) but for a complete fieldgroup. 
 Pretty good "shortcut" when you want to get all the field values in a field group.
 - Fixed: Added wp_cache to some very commonly used functions. Quick tests with Xdebug shows a noticable faster performance.
+- Changed: function sf_d also shows if a variable is a boolean.
+- Added: new method get_field_by_slug. Returns a field from a fieldgroup using their slugs.
+- Changed: method get_field_groups() adds a key with name field_group with some info about the field group that the field belongs to. 
+Useful since sometimes when you use for example get_field_by_slug() to get a single field, you want to know some basic info about the 
+field group it belongs to, like the id or slug.
 
 #### Version 1.0.4
 - Added: Add button added to bottom of the added field groups. Will be visible when more than 1 field group is added.
