@@ -1220,15 +1220,21 @@ class simple_fields {
 				// This can be useful to have if you're only fetching a single field
 				// but need to do something with that fields field group 
 				// (like getting the id to calcualte that custom field meta key to use)
-				foreach ($field_groups[$i]["fields"] as &$one_field) {
-					$one_field["field_group"] = array(
-						"id"           => $field_groups[$i]["id"],
-						"name"         => $field_groups[$i]["name"],
-						"slug"         => $field_groups[$i]["id"],
-						"description"  => $field_groups[$i]["description"],
-						"repeatable"   => $field_groups[$i]["repeatable"],
-						"fields_count" => $field_groups[$i]["fields_count"]
-					);
+				foreach ($field_groups[$i]["fields"] as $one_field_id => $one_field) {
+
+					if (!isset($field_groups[$i]["fields"][$one_field_id]["field_group"])) {
+
+						$field_groups[$i]["fields"][$one_field_id]["field_group"] = array(
+							"id"           => $field_groups[$i]["id"],
+							"name"         => $field_groups[$i]["name"],
+							"slug"         => $field_groups[$i]["id"],
+							"description"  => $field_groups[$i]["description"],
+							"repeatable"   => $field_groups[$i]["repeatable"],
+							"fields_count" => $field_groups[$i]["fields_count"]
+						);
+						
+					}
+					
 				}
 			}
 
