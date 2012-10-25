@@ -4,7 +4,7 @@ Donate link: http://simple-fields.com/about/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom
 Requires at least: 3.3.1
 Tested up to: 3.4.2
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 
 Add more advanced custom fields types to your edit post page. Field can be of several types, including textarea, checkbox, radio buttons, files and color picker.
 
@@ -164,17 +164,17 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
-#### Version 1.0.x
-- Added: Added field group slug to field group wrapper + field wrapper on edit post screen, so you can style different field groups differently.
+#### Version 1.0.5
+- Added: field group slug to field group wrapper css + field wrapper css on edit post screen, so you can style different field groups differently.
 - Added: new method: get_field_group(): returns an array with info about a field group by using id or slug
 - Added: new function: simple_fields_fieldgroup(). Works like simple_fields_value(s) but for a complete fieldgroup. 
 Pretty good "shortcut" when you want to get all the field values in a field group.
-- Fixed: Added wp_cache to some very commonly used functions. Quick tests with Xdebug shows a noticable faster performance.
-- Changed: function sf_d also shows if a variable is a boolean.
 - Added: new method get_field_by_slug. Returns a field from a fieldgroup using their slugs.
+- Fixed: Added wp_cache to some very commonly used functions. Quick tests with Xdebug shows a noticable faster performance.
 - Changed: method get_field_groups() adds a key with name field_group with some info about the field group that the field belongs to. 
 Useful since sometimes when you use for example get_field_by_slug() to get a single field, you want to know some basic info about the 
 field group it belongs to, like the id or slug.
+- Changed: function sf_d also shows if a variable is a boolean.
 
 #### Version 1.0.4
 - Added: Add button added to bottom of the added field groups. Will be visible when more than 1 field group is added.
