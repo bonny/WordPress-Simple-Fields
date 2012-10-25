@@ -11,12 +11,14 @@
  */
 if (!function_exists("sf_d")) {
 function sf_d($var) {
-
 	echo "<pre class='sf_box_debug'>";
 	if (is_array($var) || is_object($var)) {
 		echo htmlspecialchars( print_r($var, true), ENT_QUOTES, 'UTF-8' );
 	} else if( is_null($var) ) {
 		echo "Var is NULL";
+	} else if ( is_bool($var)) {
+		echo "Var is BOOLEAN ";
+		echo $var ? "TRUE" : "FALSE";
 	} else {
 		echo htmlspecialchars( $var, ENT_QUOTES, 'UTF-8' );
 	}
