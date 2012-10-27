@@ -79,6 +79,7 @@ class simple_fields {
 
 		// Actions and filters
 		add_action( 'admin_init', array($this, 'admin_init') );
+		add_action( 'admin_init', array($this, 'check_upgrade_stuff') );
 		add_action( 'admin_menu', array($this, "admin_menu") );
 		add_action( 'admin_head', array($this, 'admin_head') );
 		add_action( 'admin_head', array($this, 'admin_head_select_file') );
@@ -102,6 +103,26 @@ class simple_fields {
 
 		// Boot up
 		do_action("simple_fields_init", $this);
+		
+	}
+
+	// check some things regarding update
+	function check_upgrade_stuff() {
+
+		global $wpdb;
+
+		$db_version = get_option("simple_fields_db_version");
+
+		if ($db_version === FALSE) {
+
+			// 1 = the first version, nothing done during update
+			$db_version = 1;
+			update_option("simple_history_db_version", 1);
+		
+		}
+
+		// Do things depending on current version
+		// ...to come...
 		
 	}
 	
