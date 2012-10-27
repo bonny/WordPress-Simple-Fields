@@ -61,9 +61,9 @@ class simple_fields {
 		// setup cache
 		// based on stuff found here:
 		// http://core.trac.wordpress.org/ticket/4476
-		$ns_key = wp_cache_get( 'simple_fields_namespace_key' );
-		if ( $ns_key === false ) wp_cache_set( 'simple_fields_namespace_key', 1 );
-		$this->ns_key = wp_cache_get( 'simple_fields_namespace_key' );
+		$ns_key = wp_cache_get( 'simple_fields_namespace_key', 'simple_fields' );
+		if ( $ns_key === false ) wp_cache_set( 'simple_fields_namespace_key', 1, 'simple_fields' );
+		$this->ns_key = wp_cache_get( 'simple_fields_namespace_key', 'simple_fields' );
 		
 		require( dirname(__FILE__) . "/functions.php" );
 		require( dirname(__FILE__) . "/class_simple_fields_field.php" );
@@ -1086,7 +1086,7 @@ class simple_fields {
 	function get_post_connectors() {
 
 		// use wp_cache
-		$connectors = wp_cache_get( 'simple_fields_'.$this->ns_key.'_post_connectors' );
+		$connectors = wp_cache_get( 'simple_fields_'.$this->ns_key.'_post_connectors', 'simple_fields' );
 		if (FALSE === $connectors) {
 
 			$connectors = get_option("simple_fields_post_connectors");
@@ -1145,7 +1145,7 @@ class simple_fields {
 				$connectors[$connectors[$i]["id"]]["field_groups_count"] = $num_fields_in_group;
 			}
 			
-			wp_cache_set( 'simple_fields_'.$this->ns_key.'_post_connectors', $connectors );
+			wp_cache_set( 'simple_fields_'.$this->ns_key.'_post_connectors', $connectors, 'simple_fields' );
 			
 		}
 	
@@ -1154,10 +1154,10 @@ class simple_fields {
 
 	function get_post_type_defaults() {
 
-		$post_type_defaults = wp_cache_get( 'simple_fields_'.$this->ns_key.'_post_type_defaults' );
+		$post_type_defaults = wp_cache_get( 'simple_fields_'.$this->ns_key.'_post_type_defaults', 'simple_fields' );
 		if (FALSE === $post_type_defaults) {
 			$post_type_defaults = (array) get_option("simple_fields_post_type_defaults");
-			wp_cache_set( 'simple_fields_'.$this->ns_key.'_post_type_defaults', $post_type_defaults );		
+			wp_cache_set( 'simple_fields_'.$this->ns_key.'_post_type_defaults', $post_type_defaults, 'simple_fields' );
 		}
 
 		return $post_type_defaults;
@@ -1171,7 +1171,7 @@ class simple_fields {
 	 */
 	function get_field_groups() {
 		
-		$field_groups = wp_cache_get( 'simple_fields_'.$this->ns_key.'_groups' );
+		$field_groups = wp_cache_get( 'simple_fields_'.$this->ns_key.'_groups', 'simple_fields' );
 		if (FALSE === $field_groups) {
 			
 			$field_groups = get_option("simple_fields_groups");
@@ -1248,7 +1248,7 @@ class simple_fields {
 				}
 			}
 
-			wp_cache_set( 'simple_fields_'.$this->ns_key.'_groups', $field_groups );
+			wp_cache_set( 'simple_fields_'.$this->ns_key.'_groups', $field_groups, 'simple_fields' );
 			
 		}
 
@@ -3201,6 +3201,8 @@ class simple_fields {
 
 	/**
 	 * Retrieve and return extended return values for a field type
+	 * @param mixed $field array or string or int or whatever with field info
+	 * @param mixed $field_value
 	 */
 	function get_extended_return_values_for_field($field, $field_value) {
 		/*			
@@ -3395,7 +3397,7 @@ class simple_fields {
 	function get_field_group_by_slug($field_group_slug) {
 		
 		$cache_key = 'simple_fields_'.$this->ns_key.'_get_field_group_by_slug_' . $field_group_slug;
-		$return_val = wp_cache_get( $cache_key );		
+		$return_val = wp_cache_get( $cache_key, 'simple_fields' );
 		if (FALSE === $return_val) {
 		
 		 	$field_groups = $this->get_field_groups();
@@ -3406,22 +3408,22 @@ class simple_fields {
 				foreach ($field_groups as $one_field_group) {
 					if ($one_field_group["deleted"]) continue;
 					if ($one_field_group["slug"] == $field_group_slug) {
-						wp_cache_set( $cache_key, $one_field_group );
+						wp_cache_set( $cache_key, $one_field_group, 'simple_fields' );
 						return $one_field_group;
 					}
 				}
 				
-				wp_cache_set( $cache_key, FALSE );
+				wp_cache_set( $cache_key, FALSE, 'simple_fields' );
 				return FALSE;
 	
 			} else {
 	
 				// look for group using id
 			 	if (isset($field_groups[$field_group_slug]) && is_array($field_groups[$field_group_slug]) && !$field_groups[$field_group_slug]["deleted"]) {
-					wp_cache_set( $cache_key, $field_groups[$field_group_slug] );
+					wp_cache_set( $cache_key, $field_groups[$field_group_slug], 'simple_fields' );
 				 	return $field_groups[$field_group_slug];
 			 	} else {
-				 	wp_cache_set( $cache_key, FALSE );
+				 	wp_cache_set( $cache_key, FALSE, 'simple_fields' );
 				 	return FALSE;
 			 	}
 			 	
@@ -3458,7 +3460,7 @@ class simple_fields {
 	}
 
 	function clear_caches() {
-		$this->ns_key = wp_cache_incr( 'simple_fields_namespace_key' );
+		$this->ns_key = wp_cache_incr( 'simple_fields_namespace_key', 1, 'simple_fields' );
 	}
 	
 } // end class
