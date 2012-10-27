@@ -86,7 +86,7 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 						$parsed_options_for_this_field["extended_return"] = 1;
 					}
 
-					if ($parsed_options_for_this_field["extended_return"]) {
+					if (isset($parsed_options_for_this_field["extended_return"]) && $parsed_options_for_this_field["extended_return"]) {
 						// Yep, use extended return values
 						$num_values = count($saved_values);
 						while ($num_values--) {
