@@ -1951,7 +1951,7 @@ class simple_fields {
 				$out .= "<div class='simple-fields-field-group-one-field-row'>";
 					$out .= "<div class='simple-fields-field-group-one-field-row-col-first'></div>";
 					$out .= "<div class='simple-fields-field-group-one-field-row-col-second'>";
-					$out .= "	<p><input type='checkbox' name='field[{$fieldID}][type_date_options][use_time]' " . (($field_type_date_option_use_time) ? " checked='checked'" : "") . " value='1' /> ".__('Also show time', 'simple-fields') . "</p>";
+					$out .= "	<!-- <p><input type='checkbox' name='field[{$fieldID}][type_date_options][use_time]' " . (($field_type_date_option_use_time) ? " checked='checked'" : "") . " value='1' /> ".__('Also show time', 'simple-fields') . "</p> -->";
 					$out .= "</div>";
 				$out .= "</div>";
 	
@@ -3401,6 +3401,9 @@ class simple_fields {
 					$date = strtotime( str_replace('/', "-", $field_value) );
 					$return_field_value["timestamp"] = $date;
 					$return_field_value["date_format"] = date(get_option('date_format'), $date);
+					$return_field_value["date_format_i18n"] = date_i18n( get_option('date_format'), $date);
+					// $timezone_format = _x('Y-m-d G:i:s', 'timezone date format');
+					//echo get_option("gmt_offset"); // 14 if UTC+14
 				}
 			}
 			
