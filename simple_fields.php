@@ -3,7 +3,7 @@
 Plugin Name: Simple Fields
 Plugin URI: http://simple-fields.com
 Description: Add groups of textareas, input-fields, dropdowns, radiobuttons, checkboxes and files to your edit post screen.
-Version: 1.0.5
+Version: 1.0.6
 Author: Pär Thernström
 Author URI: http://eskapism.se/
 License: GPL2
@@ -54,7 +54,7 @@ class simple_fields {
 
 		define( "SIMPLE_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
 		define( "SIMPLE_FIELDS_NAME", "Simple Fields");
-		define( "SIMPLE_FIELDS_VERSION", "1.0.5");
+		define( "SIMPLE_FIELDS_VERSION", "1.0.6");
 
 		load_plugin_textdomain( 'simple-fields', null, basename(dirname(__FILE__)).'/languages/');
 		
@@ -73,6 +73,7 @@ class simple_fields {
 		
 		// Load field types
 		require( dirname(__FILE__) . "/field_types/field_divider.php" );
+		//require( dirname(__FILE__) . "/field_types/field_date_v2.php" );
 
 		$this->plugin_foldername_and_filename = basename(dirname(__FILE__)) . "/" . basename(__FILE__);
 		$this->registered_field_types = array();
@@ -188,6 +189,7 @@ class simple_fields {
 
 	function admin_init() {
 
+		// @todo: only enqueue scripts when we need them = on a page that uses simple fields
 		wp_enqueue_script("jquery");
 		wp_enqueue_script("jquery-ui-core");
 		wp_enqueue_script("jquery-ui-sortable");
