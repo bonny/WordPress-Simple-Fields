@@ -620,7 +620,7 @@ var simple_fields = (function() {
 		
 		// Media browser: make sure search and filter works by adding hidden inputs
 		// would have been best to do this in PHP, but I can't find any filter for it
-		if ( pagenow == "media-upload-popup" && window.location.search.match(/simple_fields_dummy=/) ) {
+		if ( window.pagenow && window.pagenow == "media-upload-popup" && window.location.search.match(/simple_fields_dummy=/) ) {
 
 			var frm_filter = $("form#filter");
 			
