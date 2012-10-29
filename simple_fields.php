@@ -3127,8 +3127,10 @@ class simple_fields {
 	    }
 
 	    if (!$is_inside_righ_function) {
-		    // Don't do the debug
+
+		    // Don't do the debug, since we're not in the_content
 		    return $the_content;
+
 	    }
 
 		
