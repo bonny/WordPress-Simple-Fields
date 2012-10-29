@@ -3098,7 +3098,7 @@ class simple_fields {
 		
 			// 1 = debug for admins only, 2 = debug for all
 			if ( ($options["debug_type"] === 1 && current_user_can("edit_themes")) ||  $options["debug_type"] === 2) {
-				
+
 				// enqueu jquery because that is used to show/hide the debug box
 				wp_enqueue_script("jquery");
 				
@@ -3111,6 +3111,26 @@ class simple_fields {
 	
 	// Outputs the names of the post connectors attached to the post you view + outputs the values
 	function simple_fields_content_debug_output($the_content) {
+
+		// we only want to appen the debug code when being used from get_the_content or the_content
+		// but for example get_the_excerpt is also using filter the_content which leads to problems
+		// so check that we are somewhere inside the right functions
+		$is_inside_righ_function = FALSE;
+	    $arr_trace = debug_backtrace();
+	    $arr_trace_count = count($arr_trace);
+
+	    for ($i = 0; $i < $arr_trace_count; $i++) {
+		    if ( isset($arr_trace[$i]["function"]) && in_array($arr_trace[$i]["function"], array("the_content", "get_the_content"))) {
+		    	$is_inside_righ_function = TRUE;
+		    	break;
+		    }
+	    }
+
+	    if (!$is_inside_righ_function) {
+		    // Don't do the debug
+		    return $the_content;
+	    }
+
 		
 		$output = "";
 		$output_all = "";
