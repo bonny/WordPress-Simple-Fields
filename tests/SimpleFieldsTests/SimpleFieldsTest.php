@@ -323,7 +323,12 @@ class MyPluginTest extends WP_UnitTestCase {
 		$this->assertEquals($vals_expected, $vals);
 
 		$vals = simple_fields_value("field_date", $post_id, "extended_return=1");
-		$vals_expected = array ( 'saved_value' => '12/10/2012', 'timestamp' => 1350000000, 'date_format' => 'October 12, 2012');
+		$vals_expected = array ( 
+			'saved_value' => '12/10/2012', 
+			'timestamp' => 1350000000, 
+			'date_format' => 'October 12, 2012',
+			'date_format_i18n' => 'October 12, 2012'
+		);
 		$this->assertEquals($vals_expected, $vals);
 		
 		$vals = simple_fields_value("field_user", $post_id, "extended_return=1");
