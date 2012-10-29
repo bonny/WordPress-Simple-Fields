@@ -165,9 +165,12 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 == Changelog ==
 
 #### Version 1.0.6
-- Fixed: file dialog javascript checkes that the pagenow variable exists before trying to use it. Hopefully fixes problems with Post Thumbnail Editor
+- Added: date_i8n-format for date field when using extended return values
+- Added: support for extended return values for function simple_fields_get_post_value()
+- Fxed: added group to cache functions + clears the cache when using the register-functions
+- Fixed: file dialog javascript now checks that the pagenow variable exists before trying to use it. Hopefully fixes problems with Post Thumbnail Editor
  and other plugins that also use the file dialog.
-- 
+- Changed: hide "show time" for date field, since we don't use it for anything
 
 #### Version 1.0.5
 - Added: field group slug to field group wrapper css + field wrapper css on edit post screen, so you can style different field groups differently.
