@@ -1236,8 +1236,3 @@ function simple_fields_fieldgroup($field_group_id_or_slug, $post_id = NULL, $opt
 	return $values;
 }
 
-/*
-@todo: add simple_fields_fieldgroup_values() as smart alias to 
-simple_fields_get_post_group_values($post_id, $field_group_name_or_id, $use_name = true, $return_format = 1) {
-use slug and fewer args
-*/

@@ -73,7 +73,7 @@ class simple_fields {
 		
 		// Load field types
 		require( dirname(__FILE__) . "/field_types/field_divider.php" );
-		//require( dirname(__FILE__) . "/field_types/field_date_v2.php" );
+		require( dirname(__FILE__) . "/field_types/field_date_v2.php" );
 
 		$this->plugin_foldername_and_filename = basename(dirname(__FILE__)) . "/" . basename(__FILE__);
 		$this->registered_field_types = array();
@@ -190,12 +190,13 @@ class simple_fields {
 	function admin_init() {
 
 		// @todo: only enqueue scripts when we need them = on a page that uses simple fields
-		wp_enqueue_script("jquery");
 		wp_enqueue_script("jquery-ui-core");
 		wp_enqueue_script("jquery-ui-sortable");
 		wp_enqueue_script("jquery-ui-dialog");
 		wp_enqueue_style('wp-jquery-ui-dialog');
 		wp_enqueue_script("jquery-effects-highlight");
+		wp_enqueue_script("jquery-ui-datepicker");
+		wp_enqueue_style("jquery-ui-datepicker");
 		wp_enqueue_script("thickbox");
 		wp_enqueue_style("thickbox");
 		wp_enqueue_script("jscolor", SIMPLE_FIELDS_URL . "jscolor/jscolor.js"); // color picker for type color
@@ -204,6 +205,8 @@ class simple_fields {
 		wp_enqueue_style('jquery-datepicker', SIMPLE_FIELDS_URL.'datepicker/datePicker.css', false, SIMPLE_FIELDS_VERSION);
 
 		wp_enqueue_style('simple-fields-styles', SIMPLE_FIELDS_URL.'styles.css', false, SIMPLE_FIELDS_VERSION);
+		wp_enqueue_style('simple-fields-styles-post', SIMPLE_FIELDS_URL.'styles-edit-post.css', false, SIMPLE_FIELDS_VERSION);
+
 		wp_register_script('simple-fields-scripts', SIMPLE_FIELDS_URL.'scripts.js', false, SIMPLE_FIELDS_VERSION);
 		wp_localize_script('simple-fields-scripts', 'sfstrings', array(
 			'txtDelete' => __('Delete', 'simple-fields'),
@@ -492,7 +495,7 @@ class simple_fields {
 				// Output will be similar to this
 				// <div class="simple-fields-metabox-field simple-fields-fieldgroups-field-1-1 simple-fields-fieldgroups-field-type-text" data-fieldgroup_id="1" data-field_id="1" data-num_in_set="0">
 				?>
-				<div class="simple-fields-metabox-field <?php echo $field_class ?>" 
+				<div class="simple-fields-metabox-field sf-cf <?php echo $field_class ?>" 
 					data-fieldgroup_id=<?php echo $field_group_id ?>
 					data-field_id="<?php echo $field_id ?>"
 					data-num_in_set=<?php echo $num_in_set ?>
@@ -914,12 +917,22 @@ class simple_fields {
 							// @todo: should be a method of the class? must know what field group it's connected to to be able to fetch the right one
 							$custom_field_type_options = isset($field["options"][$field["type"]]) ? $field["options"][$field["type"]] : array();
 
+
 							// Always output label and description, for consistency
+							echo "<div class='simple-fields-metabox-field-first'>";
 							echo "<label>" . $field["name"] . "</label>";
-							echo $description;
+							echo "</div>";
 							
+							echo "<div class='simple-fields-metabox-field-second'>";
+							echo "<div class='simple-fields-metabox-field-description'>$description</div>";
+
+							// if use_defaults is set then pass that arg to custom field types too
+							if ($use_defaults) $custom_field_type_options["use_defaults"] = $use_defaults;
+
 							// Get and output the edit-output from the field type
 							echo $custom_field_type->edit_output( (array) $saved_value, $custom_field_type_options);
+
+							echo "</div>";
 
 						}
 					
@@ -2278,7 +2291,8 @@ class simple_fields {
 			<h2><?php echo SIMPLE_FIELDS_NAME ?></h2>
 	
 			<div class="clear"></div>
-	
+			
+			<!-- 
 			<div class="simple-fields-bonny-plugins-inner-sidebar">
 				<h3>Keep this plugin alive</h3>
 				<p>
@@ -2292,6 +2306,7 @@ class simple_fields {
 				<p>You can <a href="https://github.com/bonny/WordPress-Simple-Fields">follow the development of this plugin at GitHub</a>.</p>
 										
 			</div>
+			-->
 	
 		<div class="simple-fields-settings-wrap">
 	
@@ -3092,6 +3107,7 @@ class simple_fields {
 	 * If debug option is enabled then output debug-box by hooking onto the_content
 	 */
 	function maybe_add_debug_info() {
+
 		global $sf;
 		$options = $sf->get_options();
 		if (isset($options["debug_type"]) && $options["debug_type"] !== 0) {
@@ -3107,9 +3123,12 @@ class simple_fields {
 			}	
 	
 		}
+
 	}
 	
-	// Outputs the names of the post connectors attached to the post you view + outputs the values
+	/** 
+	 * Outputs the names of the post connectors attached to the post you view + outputs the values
+	 */
 	function simple_fields_content_debug_output($the_content) {
 
 		// we only want to appen the debug code when being used from get_the_content or the_content
