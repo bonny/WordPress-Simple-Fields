@@ -294,7 +294,7 @@ var simple_fields = (function() {
 			$response.slideDown("slow", function() {
 				
 				simple_fields_metabox_tinymce_attach();
-				$response.effect("highlight", 1000);
+				//$response.effect("highlight", 1000);
 				// add jscolor to possibly new fields
 				jscolor.init();
 				// add datepicker too

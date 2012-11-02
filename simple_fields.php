@@ -393,9 +393,29 @@ class simple_fields {
 						$custom_field_value = $one_field_value;
 
 						if (array_key_exists($field_type, $this->registered_field_types)) {
-							// Custom field type							
-							// @todo: callback to filter this, from fields class or hook
 							
+							// Custom field type							
+							$custom_field_value = $this->registered_field_types[$field_type]->edit_save($custom_field_value);
+							/*
+							
+							Date field:
+							Array
+							(
+							    [date_unixtime] => 1351983600000
+							)
+							
+							Map field:
+							Array
+							(
+							    [lat] => 59.312089
+							    [lng] => 18.074117
+							    [name] => Monki Skrapan
+							    [formatted_address] => GÃ¶tgatan 78, Stockholm, Sverige
+							    [address_components] => [{\"long_name\":\"78\",\"short_name\":\"78\",\"types\":[\"street_number\"]},{\"long_name\":\"GÃ¶tgatan\",\"short_name\":\"GÃ¶tgatan\",\"types\":[\"route\"]},{\"long_name\":\"SÃ¶dermalm\",\"short_name\":\"SÃ¶dermalm\",\"types\":[\"sublocality\",\"political\"]},{\"long_name\":\"Stockholm\",\"short_name\":\"Stockholm\",\"types\":[\"locality\",\"political\"]},{\"long_name\":\"Stockholms lÃ¤n\",\"short_name\":\"Stockholms lÃ¤n\",\"types\":[\"administrative_area_level_2\",\"political\"]},{\"long_name\":\"SE\",\"short_name\":\"SE\",\"types\":[\"country\",\"political\"]},{\"long_name\":\"11830\",\"short_name\":\"11830\",\"types\":[\"postal_code\"]}]
+							)
+							*/
+							//echo "xxx save value for custom field type"; sf_d($custom_field_value);
+
 						} else {
 							// core/legacy field type
 							if ($do_wpautop) {
@@ -482,9 +502,13 @@ class simple_fields {
 				if (isset($field["slug"]) && !empty($field["slug"])) {
 					$field_class .= " simple-fields-fieldgroups-field-slug-" . $field["slug"];
 				}
-	
+				
+				// Fetch saved value for field from db/post meta
+				// Returned value is:
+				//  - string if core fields
+				//  - array if field type extension, unless the field extension overrides this
 				$custom_field_key = "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_{$field_id}_numInSet_{$num_in_set}";
-				$saved_value = get_post_meta($post_id, $custom_field_key, true); // empty string if does not exist
+				$saved_value = get_post_meta($post_id, $custom_field_key, true);
 				
 				$description = "";
 				if (!empty($field["description"])) {
@@ -917,7 +941,6 @@ class simple_fields {
 							// @todo: should be a method of the class? must know what field group it's connected to to be able to fetch the right one
 							$custom_field_type_options = isset($field["options"][$field["type"]]) ? $field["options"][$field["type"]] : array();
 
-
 							// Always output label and description, for consistency
 							echo "<div class='simple-fields-metabox-field-first'>";
 							echo "<label>" . $field["name"] . "</label>";
@@ -930,7 +953,14 @@ class simple_fields {
 							if ($use_defaults) $custom_field_type_options["use_defaults"] = $use_defaults;
 
 							// Get and output the edit-output from the field type
-							echo $custom_field_type->edit_output( (array) $saved_value, $custom_field_type_options);
+							// Return as array if field type has not specified other
+							// xxx
+							$custom_field_type_saved_value = $saved_value;
+							#echo "saved value"; sf_d($custom_field_type_saved_value);
+							// always return array, or just sometimes?
+							// if a field has saved a value as a single value it will be returned as the value at position [0]
+							$custom_field_type_saved_value = (array) $custom_field_type_saved_value;
+							echo $custom_field_type->edit_output($custom_field_type_saved_value, $custom_field_type_options);
 
 							echo "</div>";
 

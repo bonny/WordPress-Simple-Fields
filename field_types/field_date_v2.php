@@ -12,14 +12,11 @@ function init_simple_fields_field_date_v2() {
 		public $key = "date_v2", $name = "Datepicker 2";
 		
 		function __construct() {
+
 			parent::__construct();
 			
-			// add some styling in the admin head
-			add_action('admin_head', array($this, 'action_admin_head'));
-		    
-		    //add_action('wp_enqueue_scripts', array($this, 'action_enqueue_scripts'));
+			add_action('admin_head', array($this, 'action_admin_head'));    
 		    add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-		    //echo "yyy";
 
 		}
 
@@ -50,6 +47,8 @@ function init_simple_fields_field_date_v2() {
 			<?php
 		}
 		
+
+
 		/**
 		 * Output options for the date field
 		 * We use jquery ui date picker, so we should be able to customize it a bit
@@ -164,6 +163,12 @@ function init_simple_fields_field_date_v2() {
 		
 		function edit_output($saved_values, $options) {
 
+			if (isset($saved_values[0])) {
+				$saved_values["date_unixtime"] = $saved_values[0];
+			} else {
+				$saved_values["date_unixtime"] = "";
+			}
+
 			#sf_d($saved_values);
 			#sf_d($options);
 			//sf_d($options);
@@ -194,24 +199,25 @@ function init_simple_fields_field_date_v2() {
 			}
 
 			// if new field = use default date
-			$str_default_date = "";
-			$str_default_date_alt_field = "";
 			$str_saved_unixtime = "";
 			$str_set_date = "";
+			$str_unixtime_to_set = "";
 			if (isset($options["use_defaults"]) && $options["use_defaults"]) {
 				if ($options["default_date"] === "today") {
-					$str_default_date = ",defaultDate: 0";
-					$str_default_date_alt_field = time();
+					$str_unixtime_to_set = time() * 1000;
 				} elseif ($options["default_date"] === "no_date") {
-					//$str_default_date = ",defaultDate: null";
+					
 				}
 			} else {
 				$str_saved_unixtime = $saved_values["date_unixtime"];
+				$str_unixtime_to_set = $str_saved_unixtime;
+			}
+
+			if ($str_unixtime_to_set) {
 				$str_set_date = '
-					var date_saved = new Date('.$str_saved_unixtime.');
+					var date_saved = new Date('.$str_unixtime_to_set.');
 					$( "#%1$s" ).datepicker("setDate", date_saved);
 					$( "#ui-datepicker-div" ).css("display","none");
-
 				';
 			}
 
@@ -223,7 +229,8 @@ function init_simple_fields_field_date_v2() {
 			if (isset($options["date_format"])) $str_date_format = $options["date_format"];
 
 			// First day. 0 = sunday, 1 = monday
-			$str_first_day = 1;
+			// Use same as in wordpress
+			$str_first_day = get_option("start_of_week", 1);
 
 			$output = sprintf(
 				'
@@ -240,6 +247,8 @@ function init_simple_fields_field_date_v2() {
 								showWeek: true,
 								dateFormat: "%7$s",
 								firstDay: %8$s,
+								changeYear: true,
+								changeMonth: true,
 								xautoSizeType: true
 								%5$s
 							});
@@ -253,7 +262,7 @@ function init_simple_fields_field_date_v2() {
 				$this->get_options_name("gui_selected_date"),
 				$this->get_options_id("date_unixtime"),
 				$this->get_options_name("date_unixtime"),
-				$str_default_date, // 5
+				"", // 5
 				$str_saved_unixtime, // 6
 				$str_date_format,
 				$str_first_day
@@ -261,9 +270,30 @@ function init_simple_fields_field_date_v2() {
 
 			return $output;
 
-		}			
+		} // end options output
 
-	}
+		/**
+		 * Change so saved value is a single one, instead of array, so we can sort by the unixtime in wp_query etc.
+		 */
+		function edit_save($values) {
+			
+			//sf_d($values);
+			/*
+				Array
+				(
+				    [gui_selected_date] => November 5, 2012
+				    [date_unixtime] => 1352070000000
+				)
+			*/
+			if (is_array($values) && isset($values["date_unixtime"])) {
+				return $values["date_unixtime"];
+			} else {
+				return "";
+			}
+
+		}
+
+	} // end class
 
 	simple_fields::register_field_type("simple_fields_field_date_v2");
 

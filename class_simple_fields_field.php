@@ -45,6 +45,22 @@ class simple_fields_field {
 	function edit_output($saved_value, $options) {
 		return "<p>Please add method " . __METHOD__ . "().</p>";
 	}
+
+	/**
+	 * Called when saving fields, i.e. when clicking the Publish-button on a edit post screen
+	 * Was is returned from this method will be what is saved in the database,
+	 * so this is the place to change from array (the default) to for example a single string value
+	 * that is good for sorting.
+	 * 
+	 * Override this in the fields class to modify the value being saved.
+	 *
+	 * @param array $values The values that we receive from the post screen. 
+	 *						It's the same names as the ones that has been added with $this->get_options_name()
+	 * @return mixed, array or string of values to save in db
+	 */
+	function edit_save($values = NULL) {
+		return $values;
+	}
 	
 	/**
 	 * Sets the base for the generation of input ids in options screen
