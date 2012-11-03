@@ -208,18 +208,17 @@ function init_simple_fields_field_date_v2() {
 
 		}
 		
+		/**
+		 * Output datepicker and timepicker on post edit screen
+		 */
 		function edit_output($saved_values, $options) {
 
-			#echo "Saved values:";sf_d($saved_values);
 
 			if (isset($saved_values[0])) {
-				$saved_values["date_unixtime"] = $saved_values[0];
+				$saved_values["saved_date_time"] = $saved_values[0];
 			} else {
-				$saved_values["date_unixtime"] = "";
+				$saved_values["saved_date_time"] = "";
 			}
-
-			// Type to show
-			$show_as = $options["show_as"];
 
 			// When to show: always or on_click
 			$str_target_elm = "";
@@ -236,23 +235,25 @@ function init_simple_fields_field_date_v2() {
 			if (isset($options["use_defaults"]) && $options["use_defaults"]) {
 				if ($options["default_date"] === "today") {
 					$str_unixtime_to_set = time() * 1000;
+					$str_iso_to_set = date("Y-m-d H:i");
 				} elseif ($options["default_date"] === "no_date") {
 					
 				}
 			} else {
-				$str_saved_unixtime = $saved_values["date_unixtime"];
-				$str_unixtime_to_set = $str_saved_unixtime * 1000;
-			}
-
-			if ($str_unixtime_to_set) {
-				// If saved value exists then set date to this value on load
-				// The display: none-thingie is added beause the date picker get shown by setDate-method
-				// Unsure if bug or feature, but annoying anyway.
-				$str_set_date = '
-					var date_saved = new Date('.$str_unixtime_to_set.');
-					$( "#%1$s" ).datepicker("setDate", date_saved);
-					$( "#ui-datepicker-div" ).css("display","none");
-				';
+				$str_saved_unixtime = $saved_values["saved_date_time"];
+				// convert saved values to unixtime
+				echo "Saved value: $str_saved_unixtime";
+				if (preg_match('!^\d{2}:\d{2}$!', $str_saved_unixtime)) {
+					// if only time, then make it a full date to be able to create javascript date object
+					//$str_saved_unixtime = "2000-01-01 $str_saved_unixtime";
+					$str_iso_to_set = "1970-01-01 $str_saved_unixtime";
+				} else {
+					$str_iso_to_set = $saved_values["saved_date_time"];
+				}
+				$str_unixtime_to_set = strtotime($str_saved_unixtime);
+				//sf_d( date("Y-m-d H:i", $str_unixtime_to_set) );
+				//sf_d( $str_iso_to_set );
+				$str_unixtime_to_set = $str_unixtime_to_set * 1000;
 			}
 
 			// Set Date Format
@@ -261,27 +262,49 @@ function init_simple_fields_field_date_v2() {
 
 			// First day. 0 = sunday, 1 = monday
 			// Use same as in wordpress
-			$str_first_day = get_option("start_of_week", 1);
+			// $str_first_day = get_option("start_of_week", 1);
 
+			// Type to show
 			// name of method to use/call.
 			$method_name = "datepicker";
+			$altFieldTimeOnly = "false";
+			$show_as = $options["show_as"];
+			if ("datetime" === $show_as) {
+				$method_name = "datetimepicker";
+			} else if ("time" === $show_as) {
+				$method_name = "timepicker";
+				$altFieldTimeOnly = "true";
+			}
 
 			$locale = substr(get_locale(), 0, 2);
+
+			if ($str_unixtime_to_set) {
+				// If saved value exists then set date to this value on load
+				// The display: none-thingie is added beause the date picker get shown by setDate-method
+				// Unsure if bug or feature, but annoying anyway.
+				$str_set_date = '
+					var date_saved = new Date("'.$str_iso_to_set.'");
+					$( "#%1$s" ).'.$method_name.'("setDate", date_saved);
+					$( "#ui-datepicker-div" ).css("display","none");
+				';
+			}
 
 			$output = sprintf(
 				'
 					'.$str_target_elm.'
-					<input type="hidden" id="%3$s" name="%4$s" value="%6$s">
+					<input type="xhidden" id="%3$s" name="%4$s" value="%6$s">
 					<script>
 						jQuery(function($) {
 							
 							// Init picker
 							$( "#%1$s" ).%10$s({
 								altField: "#%3$s",
-								altFormat: "@",
+								altFormat: "yy-mm-dd",
+								altTimeFormat: "HH:mm",
+								altFieldTimeOnly: %12$s,
+								showButtonPanel: false,
 								showWeek: true,
 								dateFormat: "%7$s",
-								xfirstDay: %8$s,
 								changeYear: true,
 								changeMonth: true,
 								xshowOn: "both",
@@ -302,15 +325,16 @@ function init_simple_fields_field_date_v2() {
 				',
 				$this->get_options_id("gui_selected_date"),
 				$this->get_options_name("gui_selected_date"),
-				$this->get_options_id("date_unixtime"),
-				$this->get_options_name("date_unixtime"),
+				$this->get_options_id("saved_date_time"),
+				$this->get_options_name("saved_date_time"),
 				"", // 5
 				$str_saved_unixtime, // 6
 				$str_date_format,
-				$str_first_day,
+				"", // 8, was firstDay
 				$this->get_class_name("gui-date"), // 9
 				$method_name, // 10
-				$locale // 11
+				$locale, // 11
+				$altFieldTimeOnly // 12
 			);
 
 			return $output;
@@ -319,19 +343,53 @@ function init_simple_fields_field_date_v2() {
 
 		/**
 		 * Change so saved value is a single one, instead of array, so we can sort by the unixtime in wp_query etc.
+		 * Lets go with ISO_8601 instead of unix time. Standards rule, and we can save just time too. Hooray!
+		 * http://en.wikipedia.org/wiki/ISO_8601#General_principles 
+		 * They are sortable too = good.
+		 * http://stackoverflow.com/questions/9576860/sort-iso-iso-8601-dates-forward-or-backwards
+		 * http://en.wikipedia.org/wiki/Lexicographical_order
 		 */
 		function edit_save($values) {
 			
-			#sf_d($values);
 			/*
+				// echo "Saving these values for field:";sf_d($values);
 				Array
 				(
-				    [gui_selected_date] => November 5, 2012
-				    [date_unixtime] => 1352070000000
+					# datum
+					[saved_date_time] => 1970-01-01
+
+					# tid
+					[saved_date_time] => 01:00
+
+					# datum + tid
+					[saved_date_time] => 1970-01-01 01:00
 				)
 			*/
-			if ( is_array($values) && isset($values["date_unixtime"]) && !empty($values["date_unixtime"]) ) {
-				return ((float) $values["date_unixtime"]) / 1000;
+			if ( is_array($values) && isset($values["saved_date_time"]) && !empty($values["saved_date_time"]) ) {
+				
+
+				// Determine format
+				// Bah! Format is in ISO 8601
+				/*
+				$saved_date_time = $values["saved_date_time"];
+				if (preg_match('!^\d{4}-\d{2}-\d{2}$!', $saved_date_time)) {
+					// echo "date"; [saved_date_time] => 1970-01-01
+					// just date, so append with some time
+				} else if (preg_match('!^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$!', $saved_date_time)) {
+					// [saved_date_time] => 1970-01-01 01:00
+					// echo "date + time";
+
+				} else if (preg_match('!^\d{2}:\d{2}$!', $saved_date_time)) {
+					// [saved_date_time] => 01:00
+					// time, so prefix with 1970-01-01 (I've got to append with something!)
+					// echo "time";
+				}
+				*/
+
+				// echo "<br>end";
+
+				return $values["saved_date_time"];
+
 			} else {
 				return "";
 			}

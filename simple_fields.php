@@ -353,7 +353,7 @@ class simple_fields {
 	 * Saves simple fields data when post is being saved
 	 */
 	function save_postdata($post_id = null, $post = null) {
-	
+
 		// verify this came from the our screen and with proper authorization,
 		// because save_post can be triggered at other times
 		// so not checking nonce can lead to errors, for example losing post connector
@@ -402,12 +402,14 @@ class simple_fields {
 	
 			// Save info about the fact that this post have been saved. This info is used to determine if a post should get default values or not.
 			update_post_meta($post_id, "_simple_fields_been_saved", "1");
-	
+
 			// Loop through each fieldgroups
+#sf_d($fieldgroups);
 			foreach ($fieldgroups as $one_field_group_id => $one_field_group_fields) {
 				
 				// Loop through each field in each field group
 #simple_fields::debug("one_field_group_fields", $one_field_group_fields);
+#sf_d($one_field_group_fields);
 				foreach ($one_field_group_fields as $one_field_id => $one_field_values) {
 
 					// one_field_id = id på fältet vi sparar. t.ex. id:et på "måndag" eller "tisdag"
@@ -431,6 +433,7 @@ class simple_fields {
 					
 					// save entered value for each added group
 					$num_in_set = 0;
+
 					foreach ($one_field_values as $one_field_value) {
 					
 						$custom_field_key = "_simple_fields_fieldGroupID_{$one_field_group_id}_fieldID_{$one_field_id}_numInSet_{$num_in_set}";
@@ -438,7 +441,7 @@ class simple_fields {
 
 						if (array_key_exists($field_type, $this->registered_field_types)) {
 							
-							// Custom field type							
+							// Custom field type	
 							$custom_field_value = $this->registered_field_types[$field_type]->edit_save($custom_field_value);
 							/*
 							
