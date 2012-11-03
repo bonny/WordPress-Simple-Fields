@@ -991,10 +991,10 @@ class simple_fields {
 							// Always output label and description, for consistency
 							echo "<div class='simple-fields-metabox-field-first'>";
 							echo "<label>" . $field["name"] . "</label>";
+							echo $description;
 							echo "</div>";
 							
 							echo "<div class='simple-fields-metabox-field-second'>";
-							echo "<div class='simple-fields-metabox-field-description'>$description</div>";
 
 							// if use_defaults is set then pass that arg to custom field types too
 							if ($use_defaults) $custom_field_type_options["use_defaults"] = $use_defaults;

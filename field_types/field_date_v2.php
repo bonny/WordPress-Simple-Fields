@@ -175,7 +175,9 @@ function init_simple_fields_field_date_v2() {
 
 
 			// Date format
+			// No longer, since jquery datepicker uses locale for that (which is better/smarter, I think)
 			// http://docs.jquery.com/UI/Datepicker/formatDate
+			/*
 			$out .= sprintf('
 				<div class="simple-fields-field-group-one-field-row">
 					<div class="simple-fields-field-group-one-field-row-col-first">
@@ -203,6 +205,7 @@ function init_simple_fields_field_date_v2() {
 				date("m-d-Y"), // default 11/01/2012 	5 -	mm/dd/yy,
 				isset($existing_vals["date_format"]) && $existing_vals["date_format"] == "mm/dd/yy" ? " selected " : ""
 			);
+			*/
 
 			return $out;
 
@@ -222,10 +225,12 @@ function init_simple_fields_field_date_v2() {
 
 			// When to show: always or on_click
 			$str_target_elm = "";
+			$showButtonPanel = "false";
 			if ($options["show"] === "always") {
 				$str_target_elm = '<div id="%1$s"></div>';
 			} elseif ("on_click" === $options["show"]) {
 				$str_target_elm = '<input class="%9$s" type="text" id="%1$s" name="%2$s" value="">';
+				$showButtonPanel = "true";
 			}
 
 			// if new field = use default date
@@ -242,7 +247,7 @@ function init_simple_fields_field_date_v2() {
 			} else {
 				$str_saved_unixtime = $saved_values["saved_date_time"];
 				// convert saved values to unixtime
-				echo "Saved value: $str_saved_unixtime";
+				// echo "Saved value: $str_saved_unixtime";
 				if (preg_match('!^\d{2}:\d{2}$!', $str_saved_unixtime)) {
 					// if only time, then make it a full date to be able to create javascript date object
 					//$str_saved_unixtime = "2000-01-01 $str_saved_unixtime";
@@ -259,6 +264,7 @@ function init_simple_fields_field_date_v2() {
 			// Set Date Format
 			$str_date_format = "ISO_8601";
 			if (isset($options["date_format"])) $str_date_format = $options["date_format"];
+			// echo "date_format:";sf_d($str_date_format);
 
 			// First day. 0 = sunday, 1 = monday
 			// Use same as in wordpress
@@ -277,6 +283,7 @@ function init_simple_fields_field_date_v2() {
 			}
 
 			$locale = substr(get_locale(), 0, 2);
+			// $locale = "sv";
 
 			if ($str_unixtime_to_set) {
 				// If saved value exists then set date to this value on load
@@ -292,7 +299,7 @@ function init_simple_fields_field_date_v2() {
 			$output = sprintf(
 				'
 					'.$str_target_elm.'
-					<input type="xhidden" id="%3$s" name="%4$s" value="%6$s">
+					<input type="hidden" id="%3$s" name="%4$s" value="%6$s">
 					<script>
 						jQuery(function($) {
 							
@@ -302,9 +309,9 @@ function init_simple_fields_field_date_v2() {
 								altFormat: "yy-mm-dd",
 								altTimeFormat: "HH:mm",
 								altFieldTimeOnly: %12$s,
-								showButtonPanel: false,
+								showButtonPanel: %13$s,
 								showWeek: true,
-								dateFormat: "%7$s",
+								xdateFormat: "%7$s",
 								changeYear: true,
 								changeMonth: true,
 								xshowOn: "both",
@@ -334,7 +341,8 @@ function init_simple_fields_field_date_v2() {
 				$this->get_class_name("gui-date"), // 9
 				$method_name, // 10
 				$locale, // 11
-				$altFieldTimeOnly // 12
+				$altFieldTimeOnly, // 12
+				$showButtonPanel
 			);
 
 			return $output;
@@ -402,17 +410,48 @@ function init_simple_fields_field_date_v2() {
 		function return_values($values, $parsed_options_for_this_field) {
 
 			// @todo: what if no value?
-
 			foreach ($values as $key => $one_value) {
-				$arr_extended = array(
-					"date_unixtime" => $one_value,
-					"ISO_8601" => date("c", $one_value),
-					"RFC_2822" => date("r", $one_value),
-					"Y-m-d" => date("Y-m-d", $one_value),
-					"date_format" => date_i18n(get_option('date_format'), $one_value)
-					// http://codex.wordpress.org/Function_Reference/date_i18n
-					// echo date_i18n( $dateformatstring, $unixtimestamp, $gmt )
-				);
+				
+				$one_value_unix = strtotime($one_value);
+				
+				// Detect full date or just time
+				if (preg_match('!^\d{4}-\d{2}-\d{2}$!', $one_value)) {
+					// echo "date"; [saved_date_time] => 1970-01-01
+					$arr_extended = array(
+						"type" => "date",
+						"date_unixtime" => $one_value_unix,
+						"ISO_8601" => date("c", $one_value_unix),
+						"RFC_2822" => date("r", $one_value_unix),
+						"Y-m-d" => date("Y-m-d", $one_value_unix),
+						"date_format" => date_i18n(get_option('date_format'), $one_value_unix)
+					);
+
+				} else if (preg_match('!^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$!', $one_value)) {
+
+					// [saved_date_time] => 1970-01-01 01:00
+					$arr_extended = array(
+						"type" => "datetime",
+						"date_unixtime" => $one_value_unix,
+						"ISO_8601" => date("c", $one_value_unix),
+						"RFC_2822" => date("r", $one_value_unix),
+						"Y-m-d" => date("Y-m-d", $one_value_unix),
+						"Y-m-d H:i" => date("Y-m-d H:i", $one_value_unix),
+						"date_format" => date_i18n(get_option('date_format'), $one_value_unix),
+						"date_time_format" => date_i18n(get_option('date_format') . " " . get_option('time_format'), $one_value_unix)
+						// http://codex.wordpress.org/Function_Reference/date_i18n
+						// echo date_i18n( $dateformatstring, $unixtimestamp, $gmt )
+					);
+
+				} else if (preg_match('!^\d{2}:\d{2}$!', $one_value)) {
+					// [saved_date_time] => 01:00
+					$arr_extended = array(
+						"type" => "time",
+						"ISO_8601" => date("H:i", $one_value_unix),
+						"time_format" => date_i18n(get_option('time_format'), $one_value_unix)
+					);
+
+				}
+
 				$values[$key] = $arr_extended;
 			}
 
