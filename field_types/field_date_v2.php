@@ -43,6 +43,9 @@ function init_simple_fields_field_date_v2() {
 		function action_admin_head() {
 			?>
 			<style>
+				.simple-fields-fieldgroups-field-type-date_v2-gui-date {
+					width: 10em;
+				}
 			</style>
 			<?php
 		}
@@ -163,39 +166,20 @@ function init_simple_fields_field_date_v2() {
 		
 		function edit_output($saved_values, $options) {
 
+			#echo "Saved values:";sf_d($saved_values);
+
 			if (isset($saved_values[0])) {
 				$saved_values["date_unixtime"] = $saved_values[0];
 			} else {
 				$saved_values["date_unixtime"] = "";
 			}
 
-			#sf_d($saved_values);
-			#sf_d($options);
-			//sf_d($options);
-			/*
-			Array
-			(
-			    [show] => always
-			    [default_date] => no_date
-			    [date_format] => MM d, yy
-			)
-			$this->get_options_name("option1"),
-			$this->get_options_id("option1"),
-			*/
-
-			/*
-			Output:
-				input to show date / click to select date
-				icon for date (provided by datepicker?)
-				hidden field to store date in common format
-			*/
-
 			// When to show: always or on_click
 			$str_target_elm = "";
 			if ($options["show"] === "always") {
 				$str_target_elm = '<div id="%1$s"></div>';
 			} elseif ("on_click" === $options["show"]) {
-				$str_target_elm = '<input type="text" id="%1$s" name="%2$s" value="">';
+				$str_target_elm = '<input class="%9$s" type="text" id="%1$s" name="%2$s" value="">';
 			}
 
 			// if new field = use default date
@@ -214,15 +198,15 @@ function init_simple_fields_field_date_v2() {
 			}
 
 			if ($str_unixtime_to_set) {
+				// If saved value exists then set date to this value on load
+				// The display: none-thingie is added beause the date picker get shown by setDate-method
+				// Unsure if bug or feature, but annoying anyway.
 				$str_set_date = '
 					var date_saved = new Date('.$str_unixtime_to_set.');
 					$( "#%1$s" ).datepicker("setDate", date_saved);
 					$( "#ui-datepicker-div" ).css("display","none");
 				';
 			}
-
-			//$( "#%1$s" ).datepicker("show"); // picker is opened by default for some reason...
-			//$( "#%1$s" ).datepicker("hide"); // so we show and then immediately hide it
 
 			// Set Date Format
 			$str_date_format = "ISO_8601";
@@ -249,7 +233,8 @@ function init_simple_fields_field_date_v2() {
 								firstDay: %8$s,
 								changeYear: true,
 								changeMonth: true,
-								xautoSizeType: true
+								xshowOn: "both",
+								autoSizeType: true
 								%5$s
 							});
 							
@@ -265,7 +250,8 @@ function init_simple_fields_field_date_v2() {
 				"", // 5
 				$str_saved_unixtime, // 6
 				$str_date_format,
-				$str_first_day
+				$str_first_day,
+				$this->get_class_name("gui-date") // 9
 			);
 
 			return $output;
@@ -277,7 +263,7 @@ function init_simple_fields_field_date_v2() {
 		 */
 		function edit_save($values) {
 			
-			//sf_d($values);
+			#sf_d($values);
 			/*
 				Array
 				(
@@ -285,7 +271,7 @@ function init_simple_fields_field_date_v2() {
 				    [date_unixtime] => 1352070000000
 				)
 			*/
-			if (is_array($values) && isset($values["date_unixtime"])) {
+			if ( is_array($values) && isset($values["date_unixtime"]) && !empty($values["date_unixtime"]) ) {
 				return ((float) $values["date_unixtime"]) / 1000;
 			} else {
 				return "";

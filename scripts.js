@@ -1,5 +1,11 @@
 
-jscolor.bindClass = "simple-fields-field-type-color";
+
+
+
+if (typeof jscolor != "undefined") {
+	jscolor.bindClass = "simple-fields-field-type-color";
+}
+
 var simple_fields_datepicker_args = { "clickInput": true };
 var simple_fields_tinymce_iframes = [];
 
@@ -15,6 +21,7 @@ var simple_fields = (function() {
 	
 })();
 
+// Self invoking function for our JS stuff
 (function($) {
 
 	// add new field to the field group
@@ -468,7 +475,7 @@ var simple_fields = (function() {
 
 	});
 	
-	/** 
+	/**
 	 * in dialog: click on a post = update input in field group and then close dialog
 	 */
 	$(".simple-fields-meta-box-field-group-field-type-post-dialog-post-posts a").live("click", function(e) {
@@ -491,7 +498,7 @@ var simple_fields = (function() {
 		
 	});
 	
-	/** 
+	/**
 	 * Field type post: link clear = clear post id and name
 	 */
 	$(".simple-fields-metabox-field-post-clear").live("click", function(e) {
@@ -504,7 +511,7 @@ var simple_fields = (function() {
 	});
 	
 	/**
-	 * ondomready stuff
+	 * ondomready
 	 */
 	$(function() {
 
@@ -614,10 +621,7 @@ var simple_fields = (function() {
 			}
 		});
 
-		
-		// attach TinyMCE to textareas
-		simple_fields_metabox_tinymce_attach();
-		
+			
 		// Media browser: make sure search and filter works by adding hidden inputs
 		// would have been best to do this in PHP, but I can't find any filter for it
 		if ( window.pagenow && window.pagenow == "media-upload-popup" && window.location.search.match(/simple_fields_dummy=/) ) {
@@ -632,7 +636,7 @@ var simple_fields = (function() {
 			var params = {
 				"simple_fields_dummy": 1,
 				"simple_fields_action": "select_file"
-			}
+			};
 			
 			var match = window.location.search.match(/simple_fields_file_field_unique_id=([\w]+)/);
 			params.simple_fields_file_field_unique_id = match[1];
@@ -644,13 +648,18 @@ var simple_fields = (function() {
 
 		}
 		
-		// type date
-		$('input.simple-fields-field-type-date').datePicker();
+		if (sfstrings.page_type == "post") {
 	
+			// attach TinyMCE to textareas
+			simple_fields_metabox_tinymce_attach();
+
+			// type date
+			$('input.simple-fields-field-type-date').datePicker();
+
+		}
+
 		
-	
-		
-	});
+	}); // end domready
 
 
 }(jQuery));

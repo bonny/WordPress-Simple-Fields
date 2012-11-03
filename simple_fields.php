@@ -81,6 +81,7 @@ class simple_fields {
 		// Actions and filters
 		add_action( 'admin_init', array($this, 'admin_init') );
 		add_action( 'admin_init', array($this, 'check_upgrade_stuff') );
+		add_action( 'admin_enqueue_scripts', array($this, 'admin_enqueue_scripts') );
 		add_action( 'admin_menu', array($this, "admin_menu") );
 		add_action( 'admin_head', array($this, 'admin_head') );
 		add_action( 'admin_head', array($this, 'admin_head_select_file') );
@@ -187,28 +188,62 @@ class simple_fields {
 		}
 	}
 
-	function admin_init() {
+	/**
+	 * Enqueue styles and scripts, but on on pages that use simple fields
+	 * Should speed up the loading of other pages a bit
+	 */
+	function admin_enqueue_scripts($hook) {
 
-		// @todo: only enqueue scripts when we need them = on a page that uses simple fields
-		wp_enqueue_script("jquery-ui-core");
-		wp_enqueue_script("jquery-ui-sortable");
-		wp_enqueue_script("jquery-ui-dialog");
-		wp_enqueue_style('wp-jquery-ui-dialog');
-		wp_enqueue_script("jquery-effects-highlight");
-		wp_enqueue_script("jquery-ui-datepicker");
-		wp_enqueue_style("jquery-ui-datepicker");
-		wp_enqueue_script("thickbox");
-		wp_enqueue_style("thickbox");
-		wp_enqueue_script("jscolor", SIMPLE_FIELDS_URL . "jscolor/jscolor.js"); // color picker for type color
-		wp_enqueue_script("simple-fields-date", SIMPLE_FIELDS_URL . "datepicker/date.js"); // date picker for type date
-		wp_enqueue_script("jquery-datepicker", SIMPLE_FIELDS_URL . "datepicker/jquery.datePicker.js"); // date picker for type date
-		wp_enqueue_style('jquery-datepicker', SIMPLE_FIELDS_URL.'datepicker/datePicker.css', false, SIMPLE_FIELDS_VERSION);
+		// pages to load on = admin/settings page for SF + edit post
+		$is_on_simple_fields_page = FALSE;
+		$page_type = "";
 
-		wp_enqueue_style('simple-fields-styles', SIMPLE_FIELDS_URL.'styles.css', false, SIMPLE_FIELDS_VERSION);
-		wp_enqueue_style('simple-fields-styles-post', SIMPLE_FIELDS_URL.'styles-edit-post.css', false, SIMPLE_FIELDS_VERSION);
+		$current_screen = get_current_screen();
+		#sf_d($current_screen);	
+		#sf_d($hook);
+		if ($current_screen->base == "post" && in_array($current_screen->base, $this->get_post_connector_attached_types())) {
+			$is_on_simple_fields_page = TRUE;
+			$page_type = "post";
+		} elseif ($current_screen->base === "media-upload") {
+			$is_on_simple_fields_page = TRUE;
+			$page_type = "media-upload";
+		} elseif ($current_screen->id === "settings_page_simple-fields-options") {
+			$is_on_simple_fields_page = TRUE;
+			$page_type = "settings";
+		}
+		
+		if (!$is_on_simple_fields_page) return;
 
+		if ("settings" === $page_type) {
+
+			// Settings page
+			wp_enqueue_style('simple-fields-styles', SIMPLE_FIELDS_URL.'styles.css', false, SIMPLE_FIELDS_VERSION);
+
+
+		} else {
+
+			// Edit post etc.
+			wp_enqueue_script("jquery-ui-core");
+			wp_enqueue_script("jquery-ui-sortable");
+			wp_enqueue_script("jquery-ui-dialog");
+			wp_enqueue_style('wp-jquery-ui-dialog');
+			wp_enqueue_script("jquery-effects-highlight");
+			wp_enqueue_script("jquery-ui-datepicker");
+			wp_enqueue_script("thickbox");
+			wp_enqueue_style("thickbox");
+			wp_enqueue_script("jscolor", SIMPLE_FIELDS_URL . "jscolor/jscolor.js"); // color picker for type color
+			wp_enqueue_script("simple-fields-date", SIMPLE_FIELDS_URL . "datepicker/date.js"); // date picker for type date
+			wp_enqueue_script("jquery-datepicker", SIMPLE_FIELDS_URL . "datepicker/jquery.datePicker.js"); // date picker for type date
+			wp_enqueue_style('jquery-datepicker', SIMPLE_FIELDS_URL.'datepicker/datePicker.css', false, SIMPLE_FIELDS_VERSION);
+
+			wp_enqueue_style('simple-fields-styles-post', SIMPLE_FIELDS_URL.'styles-edit-post.css', false, SIMPLE_FIELDS_VERSION);
+	
+		}
+
+		// Common scripts
 		wp_register_script('simple-fields-scripts', SIMPLE_FIELDS_URL.'scripts.js', false, SIMPLE_FIELDS_VERSION);
 		wp_localize_script('simple-fields-scripts', 'sfstrings', array(
+			'page_type' => $page_type,
 			'txtDelete' => __('Delete', 'simple-fields'),
 			'confirmDelete' => __('Delete this field?', 'simple-fields'),
 			'confirmDeleteGroup' => __('Delete this group?', 'simple-fields'),
@@ -227,6 +262,13 @@ class simple_fields {
 			'high' => __('high'),
 		));
 		wp_enqueue_script('simple-fields-scripts');
+
+	}
+
+	/**
+	 * Stuff that is being runned only when in admin (i.e. not on front of site)
+	 */
+	function admin_init() {
 
 		define( "SIMPLE_FIELDS_FILE", menu_page_url("simple-fields-options", false) );
 
