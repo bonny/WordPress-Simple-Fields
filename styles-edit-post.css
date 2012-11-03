@@ -54,12 +54,24 @@ ul.simple-fields-metabox-field-group-fields-repeatable li {
 	border-top: 2px solid #eee;
 	padding: .5em 1.5em;
 	margin: 0 0 0 0;
+	opacity: .75;
 }
-ul.simple-fields-metabox-field-group-fields-repeatable li.hover {
+ul.simple-fields-metabox-field-group-fields-repeatable li:hover {
 	background-color: #fffcf1;
+	opacity: 1;
 }
-ul.simple-fields-metabox-field-group-fields-repeatable li.active {
+/*ul.simple-fields-metabox-field-group-fields-repeatable li.active {
 	background-color: #fff7db;
+}*/
+
+.simple-fields-metabox-field-group-handle
+ {
+	width: 16px;
+	height: 16px;
+	background: transparent url(icon-drag.gif) no-repeat 0 50%;
+	float: left;
+	cursor: move;
+	margin-top: 7px;
 }
 
 .simple-fields-metabox-field-group-handle {
@@ -74,6 +86,7 @@ ul.simple-fields-metabox-field-group-fields-repeatable li.active {
 
 .simple-fields-metabox-field-group:hover .simple-fields-metabox-field-group-handle {
 	opacity: 1;
+	display: block;
 }
 
 .simple-fields-metabox-field-group input.text {
@@ -122,7 +135,7 @@ ul.simple-fields-metabox-field-group-fields-repeatable li.active {
 	-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
 	/*display: inline-block;*/
 	float: left;
-	width: 17%;
+	width: 25%;
 	padding-right: 1em;
 	min-height: 1px;
 	/*border: 1px solid red;
@@ -131,7 +144,7 @@ ul.simple-fields-metabox-field-group-fields-repeatable li.active {
 .simple-fields-metabox-field-second {
 	-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
 	float: left;
-	width: 83%;
+	width: 65%;
 	position: relative;
 }
 

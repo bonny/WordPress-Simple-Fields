@@ -78,7 +78,8 @@ ul.simple-fields-edit-field-groups-added-fields {
 	width: 15%;
 }
 #simple-fields-field-group-existing-fields .description {
-	margin-left: 12.5em;
+	/*margin-left: 12.5em;*/
+	margin-left: 16%;
 }
 
 
@@ -180,8 +181,7 @@ ul#simple-fields-post-connector-added-fields li
 .simple-fields-field-type-options-radiobutton-handle,
 .simple-fields-field-type-options-dropdown-handle,
 .simple-fields-post-connector-addded-fields-handle,
-.simple-fields-field-group-one-field-handle,
-.simple-fields-metabox-field-group-handle
+.simple-fields-field-group-one-field-handle
  {
 	width: 16px;
 	height: 16px;

@@ -589,24 +589,24 @@ class simple_fields {
 						}
 
 						echo "<div class='simple-fields-metabox-field-first'>";
+						echo $description;
 						echo "</div>";
 						echo "<div class='simple-fields-metabox-field-second'>";
 						echo "<input $str_checked id='$field_unique_id' type='checkbox' name='$field_name' value='1' />";
 						echo "<label class='simple-fields-for-checkbox' for='$field_unique_id'> " . $field["name"] . "</label>";
-						echo $description;
 						echo "</div>";
 		
 					} elseif ("radiobuttons" == $field["type"]) {
 		
 						echo "<div class='simple-fields-metabox-field-first'>";
 						echo "<label>" . $field["name"] . "</label>";
+						echo $description;
 						echo "</div>";
 
 						echo "<div class='simple-fields-metabox-field-second'>";
 						$radio_options = $field["type_radiobuttons_options"];
 						$radio_checked_by_default_num = @$radio_options["checked_by_default_num"];
 	
-						echo $description;
 
 						$loopNum = 0;
 						foreach ($radio_options as $one_radio_option_key => $one_radio_option_val) {
@@ -637,6 +637,7 @@ class simple_fields {
 
 						echo "<div class='simple-fields-metabox-field-first'>";
 						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo $description;
 						echo "</div>";
 
 						echo "<div class='simple-fields-metabox-field-second'>";
@@ -652,7 +653,6 @@ class simple_fields {
 							echo "<option $selected value='$one_option_internal_name'>$dropdown_value_esc</option>";
 						}
 						echo "</select>";
-						echo $description;
 						echo "</div>";
 	
 					} elseif ("file" == $field["type"]) {
@@ -674,12 +674,14 @@ class simple_fields {
 						}
 						$class = "";
 						if ($description) {
-							$class = "simple-fields-metabox-field-file-with-description";
+							//$class = "simple-fields-metabox-field-file-with-description";
 						}
 						echo "<div class='simple-fields-metabox-field-file $class'>";
 
 							echo "<div class='simple-fields-metabox-field-first'>";
 							echo "<label>{$field["name"]}</label>";
+							echo $description;
+							//echo $description;
 							echo "</div>";
 
 							echo "<div class='simple-fields-metabox-field-second'>";
@@ -703,17 +705,17 @@ class simple_fields {
 								
 							echo "</div>";
 
-							echo $description;
 
 							echo "</div>"; // second
 
 						echo "</div>";
 	
 					} elseif ("image" == $field["type"]) {
-	
+						
+						// @todo: does this field type exist??
 						$text_value_esc = esc_html($saved_value);
 						echo "<label>".__('image', 'simple-fields')."</label>";
-						echo $description;
+						//echo $description;
 						echo "<input class='text' name='$field_name' id='$field_unique_id' value='$text_value_esc' />";
 						
 					} elseif ("textarea" == $field["type"]) {
@@ -748,6 +750,7 @@ class simple_fields {
 						
 						echo "<div class='simple-fields-metabox-field-first'>";
 						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo $description;
 						echo "</div>";
 
 						echo "<div class='simple-fields-metabox-field-second'>";
@@ -778,30 +781,33 @@ class simple_fields {
 							echo "</div>";
 						}
 						
-						echo $description;
 
 						echo "</div>";
 		
 					} elseif ("text" == $field["type"]) {
 		
 						$text_value_esc = esc_html($saved_value);
+						
 						echo "<div class='simple-fields-metabox-field-first'>";
 						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo $description;
 						echo "</div>";
+
 						echo "<div class='simple-fields-metabox-field-second'>";
 						echo "<input class='text' name='$field_name' id='$field_unique_id' value='$text_value_esc' />";
-						echo $description;
 						echo "</div>";
 		
 					} elseif ("color" == $field["type"]) {
 						
 						$text_value_esc = esc_html($saved_value);
+						
 						echo "<div class='simple-fields-metabox-field-first'>";
 						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo $description;
 						echo "</div>";
+						
 						echo "<div class='simple-fields-metabox-field-second'>";
 						echo "<input class='text simple-fields-field-type-color {pickerClosable:true}' name='$field_name' id='$field_unique_id' value='$text_value_esc' />";
-						echo $description;
 						echo "</div>";
 	
 					} elseif ("date" == $field["type"]) {
@@ -810,12 +816,14 @@ class simple_fields {
 						// echo date_i18n( $datef, strtotime( current_time('mysql') ) );
 						
 						$text_value_esc = esc_html($saved_value);
+						
 						echo "<div class='simple-fields-metabox-field-first'>";
 						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo $description;
 						echo "</div>";
+						
 						echo "<div class='simple-fields-metabox-field-second'>";
 						echo "<input class='text simple-fields-field-type-date' name='$field_name' id='$field_unique_id' value='$text_value_esc' />";
-						echo $description;
 						echo "</div>";
 	
 					} elseif ("taxonomy" == $field["type"]) {
@@ -829,6 +837,7 @@ class simple_fields {
 						// var_dump($saved_value);
 						echo "<div class='simple-fields-metabox-field-first'>";
 						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo $description;
 						echo "</div>";
 
 						echo "<div class='simple-fields-metabox-field-second'>";
@@ -844,7 +853,6 @@ class simple_fields {
 						}
 						echo "</select>";
 
-						echo $description;
 
 						echo "</div>";
 	
@@ -858,11 +866,11 @@ class simple_fields {
 						// @todo: kunna skicka in args här, t.ex. för orderby
 						echo "<div class='simple-fields-metabox-field-first'>";
 						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo $description;
 						echo "</div>";
 
 						echo "<div class='simple-fields-metabox-field-second'>";
 	
-						echo $description;
 
 						$arr_selected_cats = (array) $saved_value;
 						
@@ -899,8 +907,8 @@ class simple_fields {
 						echo "<div class='simple-fields-metabox-field-post'>";
 
 						echo "<div class='simple-fields-metabox-field-first'>";
-
 						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo $description;
 						echo "</div>";
 
 						echo "<div class='simple-fields-metabox-field-second'>";
@@ -922,7 +930,6 @@ class simple_fields {
 						// output additional arguments for this post field
 						echo "<input type='hidden' name='additional_arguments' id='additional_arguments' value='".$type_post_options['additional_arguments']."' />";
 						
-						echo $description;
 
 						echo "</div>";
 
@@ -936,6 +943,7 @@ class simple_fields {
 						// echo "<pre>"; print_r($type_post_options); echo "</pre>";
 						echo "<div class='simple-fields-metabox-field-first'>";
 						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo $description;
 						echo "</div>";
 
 						echo "<div class='simple-fields-metabox-field-second'>";
@@ -969,7 +977,6 @@ class simple_fields {
 						}
 						echo "</select>";
 
-						echo $description;
 						
 						echo "</div>";
 						#echo "</div>";
