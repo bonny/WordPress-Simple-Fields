@@ -210,7 +210,7 @@ function init_simple_fields_field_date_v2() {
 				}
 			} else {
 				$str_saved_unixtime = $saved_values["date_unixtime"];
-				$str_unixtime_to_set = $str_saved_unixtime;
+				$str_unixtime_to_set = $str_saved_unixtime * 1000;
 			}
 
 			if ($str_unixtime_to_set) {
@@ -286,10 +286,34 @@ function init_simple_fields_field_date_v2() {
 				)
 			*/
 			if (is_array($values) && isset($values["date_unixtime"])) {
-				return $values["date_unixtime"];
+				return ((float) $values["date_unixtime"]) / 1000;
 			} else {
 				return "";
 			}
+
+		}
+
+		/**
+		 * Add Extended Return Values and then return the values
+		 */
+		function return_values($values, $parsed_options_for_this_field) {
+
+			// @todo: what if no value?
+
+			foreach ($values as $key => $one_value) {
+				$arr_extended = array(
+					"date_unixtime" => $one_value,
+					"ISO_8601" => date("c", $one_value),
+					"RFC_2822" => date("r", $one_value),
+					"Y-m-d" => date("Y-m-d", $one_value),
+					"date_format" => date_i18n(get_option('date_format'), $one_value)
+					// http://codex.wordpress.org/Function_Reference/date_i18n
+					// echo date_i18n( $dateformatstring, $unixtimestamp, $gmt )
+				);
+				$values[$key] = $arr_extended;
+			}
+
+			return $values;
 
 		}
 

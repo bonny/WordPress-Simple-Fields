@@ -1112,7 +1112,8 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 				*/
 
 				// If the type is among the registered_field_types then use it
-				if (isset($sf->registered_field_types[$one_field_group_field["type"]]) && isset($saved_values[0]) && is_array($saved_values[0])) {
+				//if (isset($sf->registered_field_types[$one_field_group_field["type"]]) && isset($saved_values[0]) && is_array($saved_values[0])) {
+				if ( isset($sf->registered_field_types[$one_field_group_field["type"]]) && isset($saved_values[0]) ) {
 
 					// Use the custom field object to output this value, since we can't guess how the data is supposed to be used
 					$custom_field_type = $sf->registered_field_types[$one_field_group_field["type"]];
