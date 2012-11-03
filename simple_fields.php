@@ -263,6 +263,9 @@ class simple_fields {
 		));
 		wp_enqueue_script('simple-fields-scripts');
 
+		// Hook for plugins
+		do_action("simple_fields_enqueue_scripts", $this);
+
 	}
 
 	/**
@@ -1036,10 +1039,21 @@ class simple_fields {
 	 * - Add meta boxes with field groups
 	 */
 	function admin_head() {
-	
+
+		// Only run code if on a SF page
+		$current_screen = get_current_screen();
+		if ($current_screen->base == "post" && in_array($current_screen->base, $this->get_post_connector_attached_types())) {
+			$is_on_simple_fields_page = TRUE;
+			$page_type = "post";
+		}
+		if (!is_on_simple_fields_page) return;
+
 		// Add meta box to post
 		global $post, $sf;
 	
+		// Tell pluings etc that they can output stuff now
+		do_action("simple_fields_admin_head", $this);
+
 		if ($post) {
 	
 			$post_type = $post->post_type;

@@ -164,6 +164,9 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
+#### Version 1.0.x
+simple_fields_admin_head, simple_fields_enqueue_scripts
+
 #### Version 1.0.6
 - Added: date_i8n-format for date field when using extended return values
 - Added: support for extended return values for function simple_fields_get_post_value()
