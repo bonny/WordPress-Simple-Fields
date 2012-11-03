@@ -322,6 +322,7 @@ ul.simple-fields-file-browser-list {
 		border: none;
 		margin-left: 0;
 		padding-left: 0;
+		opacity: 1;
 	}
 
 	.simple-fields-metabox-field-taxonomymeta-terms ul.children {
