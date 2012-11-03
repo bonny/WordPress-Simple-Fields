@@ -275,11 +275,14 @@ function init_simple_fields_field_date_v2() {
 			$method_name = "datepicker";
 			$altFieldTimeOnly = "false";
 			$show_as = $options["show_as"];
+			$alt_format = "yy-mm-dd";
 			if ("datetime" === $show_as) {
 				$method_name = "datetimepicker";
 			} else if ("time" === $show_as) {
 				$method_name = "timepicker";
-				$altFieldTimeOnly = "true";
+				// $altFieldTimeOnly = "true";
+				$altFieldTimeOnly = "false";
+				$alt_format = " ";
 			}
 
 			$locale = substr(get_locale(), 0, 2);
@@ -306,12 +309,12 @@ function init_simple_fields_field_date_v2() {
 							// Init picker
 							$( "#%1$s" ).%10$s({
 								altField: "#%3$s",
-								altFormat: "yy-mm-dd",
+								altFormat: "%14$s",
 								altTimeFormat: "HH:mm",
-								altFieldTimeOnly: %12$s,
+								altFieldTimeOnly: %12$s, // was buggy when true, overwrite org field with full date instead of just time
 								showButtonPanel: %13$s,
 								showWeek: true,
-								xdateFormat: "%7$s",
+								dateFormat: "%7$s",
 								changeYear: true,
 								changeMonth: true,
 								xshowOn: "both",
@@ -342,7 +345,8 @@ function init_simple_fields_field_date_v2() {
 				$method_name, // 10
 				$locale, // 11
 				$altFieldTimeOnly, // 12
-				$showButtonPanel
+				$showButtonPanel, // 13
+				$alt_format // 14
 			);
 
 			return $output;
@@ -396,7 +400,7 @@ function init_simple_fields_field_date_v2() {
 
 				// echo "<br>end";
 
-				return $values["saved_date_time"];
+				return trim($values["saved_date_time"]);
 
 			} else {
 				return "";

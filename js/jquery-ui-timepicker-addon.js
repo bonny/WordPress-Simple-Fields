@@ -781,6 +781,7 @@
 			} else if (this.$altInput && this._defaults.altFieldTimeOnly === true) {
 				this.$altInput.val(this.formattedTime);
 				this.$input.val(this.formattedDate);
+				//this.$input.val(this.formattedDateTime);
 			} else if (this.$altInput) {
 				this.$input.val(formattedDateTime);
 				var altFormattedDateTime = '',
