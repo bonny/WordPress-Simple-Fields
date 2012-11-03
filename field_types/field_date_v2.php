@@ -9,14 +9,14 @@ function init_simple_fields_field_date_v2() {
 
 	class simple_fields_field_date_v2 extends simple_fields_field {
 	
-		public $key = "date_v2", $name = "Datepicker 2";
+		public $key = "date_v2", $name = "Date & Time Picker";
 		
 		function __construct() {
 
 			parent::__construct();
 			
-			add_action('admin_head', array($this, 'action_admin_head'));    
-		    add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
+			add_action('simple_fields_admin_head', array($this, 'action_admin_head'));    
+		    add_action('simple_fields_enqueue_scripts', array($this, 'enqueue_scripts'));
 
 		}
 
@@ -65,6 +65,41 @@ function init_simple_fields_field_date_v2() {
 		function options_output($existing_vals) {
 
 			$out = "";
+
+			// Type: date & time, only date, only time
+			$out .= sprintf('
+				<div class="simple-fields-field-group-one-field-row">
+					<div class="simple-fields-field-group-one-field-row-col-first">
+						<p>
+							<label>%1$s</label>
+						</p>
+					</div>
+					<div class="simple-fields-field-group-one-field-row-col-second">
+						<p>
+							<select name="%2$s">
+								<option value="date" %6$s>
+									%3$s
+								</option>
+								<option value="time" %7$s>
+									%4$s
+								</option>
+								<option value="datetime" %8$s>
+									%5$s
+								</option>
+							</select>
+						</p>
+					</div>
+				</div>
+				',
+				_x("Show picker as", "Date v2 field type", "simple-fields"),
+				$this->get_options_name("show_as"), 
+				_x("Only Date", "Date v2 field type", "simple-fields"),	// 3
+				_x("Only Time", "Date v2 field type", "simple-fields"), 	// 4
+				_x("Both Date & Time", "Date v2 field type", "simple-fields"), 	// 5
+				isset($existing_vals["show_as"]) && $existing_vals["show_as"] == "date" ? " selected " : "", 	// 6
+				isset($existing_vals["show_as"]) && $existing_vals["show_as"] == "time" ? " selected " : "", 	// 7
+				isset($existing_vals["show_as"]) && $existing_vals["show_as"] == "datetime" ? " selected " : "" 	// 8
+			);
 
 			// Show on click or always
 			$out .= sprintf('
