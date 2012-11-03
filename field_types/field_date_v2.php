@@ -34,6 +34,15 @@ function init_simple_fields_field_date_v2() {
 			$url = "https://ajax.aspnetcdn.com/ajax/jquery.ui/{$ui->ver}/themes/smoothness/jquery.ui.all.css";
 			wp_enqueue_style('jquery-ui-smoothness', $url, false, $ui->ver);
 
+			wp_enqueue_script("jquery-ui-datepicker");
+
+			// Language files
+			$url = "https://ajax.aspnetcdn.com/ajax/jquery.ui/{$ui->ver}/i18n/jquery-ui-i18n.min.js";
+			wp_enqueue_script('jquery-ui-18n', $url, false, $ui->ver);
+
+			// Timepicker
+			wp_enqueue_script("jquery-timepicker", SIMPLE_FIELDS_URL . "js/jquery-ui-timepicker-addon.js", array("jquery-ui-datepicker"));
+			wp_enqueue_style("jquery-timepicker", SIMPLE_FIELDS_URL . "js/jquery-ui-timepicker-addon.css", array("jquery-ui-smoothness"));
 
 		}
 		
@@ -209,6 +218,9 @@ function init_simple_fields_field_date_v2() {
 				$saved_values["date_unixtime"] = "";
 			}
 
+			// Type to show
+			$show_as = $options["show_as"];
+
 			// When to show: always or on_click
 			$str_target_elm = "";
 			if ($options["show"] === "always") {
@@ -251,30 +263,40 @@ function init_simple_fields_field_date_v2() {
 			// Use same as in wordpress
 			$str_first_day = get_option("start_of_week", 1);
 
+			// name of method to use/call.
+			$method_name = "datepicker";
+
+			$locale = substr(get_locale(), 0, 2);
+
 			$output = sprintf(
 				'
-				
 					'.$str_target_elm.'
-
 					<input type="hidden" id="%3$s" name="%4$s" value="%6$s">
-					
 					<script>
 						jQuery(function($) {
-							$( "#%1$s" ).datepicker({
+							
+							// Init picker
+							$( "#%1$s" ).%10$s({
 								altField: "#%3$s",
 								altFormat: "@",
 								showWeek: true,
 								dateFormat: "%7$s",
-								firstDay: %8$s,
+								xfirstDay: %8$s,
 								changeYear: true,
 								changeMonth: true,
 								xshowOn: "both",
 								autoSizeType: true
 								%5$s
 							});
-							
-							'.$str_set_date.'
 
+							// Set locale
+							if (typeof jQuery.datepicker.regional["%11$s"] == "object") {
+								$("#%1$s").datepicker("option", $.datepicker.regional["%11$s"]);
+							} else {
+								$("#%1$s").datepicker("option", $.datepicker.regional[""]);
+							}
+
+							'.$str_set_date.'
 						});
 					</script>
 				',
@@ -286,7 +308,9 @@ function init_simple_fields_field_date_v2() {
 				$str_saved_unixtime, // 6
 				$str_date_format,
 				$str_first_day,
-				$this->get_class_name("gui-date") // 9
+				$this->get_class_name("gui-date"), // 9
+				$method_name, // 10
+				$locale // 11
 			);
 
 			return $output;
