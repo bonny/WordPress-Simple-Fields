@@ -69,26 +69,21 @@ ul.simple-fields-metabox-field-group-fields-repeatable li:hover {
 	width: 16px;
 	height: 16px;
 	background: transparent url(icon-drag.gif) no-repeat 0 50%;
-	float: left;
+	/*float: left;*/
 	cursor: move;
 	margin-top: 7px;
-}
-
-.simple-fields-metabox-field-group-handle {
 	display: none;
+	position: absolute;
 }
-.simple-fields-metabox-field-group-fields-repeatable .simple-fields-metabox-field-group-handle {
+.simple-fields-metabox-field-group-fields-repeatable:hover .simple-fields-metabox-field-group-handle {
 	display: block;
 	margin-left: -16px;
 	margin-top: 10px;
-	opacity: 0;
 }
 
-.simple-fields-metabox-field-group:hover .simple-fields-metabox-field-group-handle {
-	opacity: 1;
-	display: block;
+/*.simple-fields-metabox-field-group:hover .simple-fields-metabox-field-group-handle {
 }
-
+*/
 .simple-fields-metabox-field-group input.text {
 	border: 1px solid #dfdfdf;
 	-moz-border-radius: 4px;
