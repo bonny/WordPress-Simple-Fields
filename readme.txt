@@ -4,7 +4,7 @@ Donate link: http://simple-fields.com/about/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom
 Requires at least: 3.3.1
 Tested up to: 3.4.2
-Stable tag: 1.0.6
+Stable tag: 1.1
 
 Add more advanced custom fields types to your edit post page. Field can be of several types, including textarea, checkbox, radio buttons, files and color picker.
 
@@ -164,8 +164,13 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
-#### Version 1.0.x
-simple_fields_admin_head, simple_fields_enqueue_scripts
+#### Version 1.1
+- Added: new field type "Date and Time Picker". It's a better version of the Date field. With this new field type you can choose to have a date picker, time picker, or a picker with both date and time. The saved values are stored in ISO 8601-format in the database, so they should be fine to sort posts by when using wp_query.
+- Addded: action "simple_fields_admin_head". Use it to add content to the head of admin pages that use simple fields, i.e. the edit post screen. This action is better than admin_head because it's only fired on pages that use simple fields, so all other admin pages will be faster since they don't have to parse any unnecessary.
+- Added: action "simple_fields_enqueue_scripts". Same as above, but used to enqueue scripts.
+- Fixed: don't output debug info when calling the_excerpt()
+- Changed: some GUI changes, like moving the description to below the labels on edit post screen. It became to inconsistent to have the description at different places for different field types.
+- Changed: only load styles and scripts on screens that use simple fields. Should speed up other parts of WordPress a little bit.
 
 #### Version 1.0.6
 - Added: date_i8n-format for date field when using extended return values
