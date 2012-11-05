@@ -424,7 +424,7 @@ function init_simple_fields_field_date_v2() {
 					$arr_extended = array(
 						"type" => "date",
 						"date_unixtime" => $one_value_unix,
-						"ISO_8601" => date("c", $one_value_unix),
+						"ISO_8601" => date("Y-m-d", $one_value_unix),
 						"RFC_2822" => date("r", $one_value_unix),
 						"Y-m-d" => date("Y-m-d", $one_value_unix),
 						"date_format" => date_i18n(get_option('date_format'), $one_value_unix)
@@ -436,7 +436,7 @@ function init_simple_fields_field_date_v2() {
 					$arr_extended = array(
 						"type" => "datetime",
 						"date_unixtime" => $one_value_unix,
-						"ISO_8601" => date("c", $one_value_unix),
+						"ISO_8601" => date("Y-m-d H:i", $one_value_unix),
 						"RFC_2822" => date("r", $one_value_unix),
 						"Y-m-d" => date("Y-m-d", $one_value_unix),
 						"Y-m-d H:i" => date("Y-m-d H:i", $one_value_unix),
