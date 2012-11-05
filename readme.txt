@@ -1,10 +1,10 @@
 === Simple Fields ===
 Contributors: eskapism, MarsApril, samface, angrycreative, earth people
 Donate link: http://simple-fields.com/about/donate/
-Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom
+Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, more fields, repeatable fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom, simple fields, cms, date picker, time picker
 Requires at least: 3.3.1
 Tested up to: 3.4.2
-Stable tag: 1.1
+Stable tag: 1.1.1
 
 Add more advanced custom fields types to your edit post page. Field can be of several types, including textarea, checkbox, radio buttons, files and color picker.
 
@@ -163,6 +163,13 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 
 == Changelog ==
+
+#### Version x
+- Added: method edit_save() for Field Extensions API. Let you modify the values before being saved in database. (Actually this was added in last version, but I forgot about it then..)
+- 
+
+#### Version 1.1.1
+- Fixed: styles and scripts where not outputed on all post types
 
 #### Version 1.1
 - Added: new field type "Date and Time Picker". It's a better version of the Date field. With this new field type you can choose to have a date picker, time picker, or a picker with both date and time. The saved values are stored in ISO 8601-format in the database, so they should be fine to sort posts by when using wp_query.

@@ -3,7 +3,7 @@
 Plugin Name: Simple Fields
 Plugin URI: http://simple-fields.com
 Description: Add groups of textareas, input-fields, dropdowns, radiobuttons, checkboxes and files to your edit post screen.
-Version: 1.1
+Version: 1.1.1
 Author: Pär Thernström
 Author URI: http://eskapism.se/
 License: GPL2
@@ -54,7 +54,7 @@ class simple_fields {
 
 		define( "SIMPLE_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
 		define( "SIMPLE_FIELDS_NAME", "Simple Fields");
-		define( "SIMPLE_FIELDS_VERSION", "1.1");
+		define( "SIMPLE_FIELDS_VERSION", "1.1.1");
 
 		load_plugin_textdomain( 'simple-fields', null, basename(dirname(__FILE__)).'/languages/');
 		
@@ -201,7 +201,7 @@ class simple_fields {
 		$current_screen = get_current_screen();
 		#sf_d($current_screen);	
 		#sf_d($hook);
-		if ($current_screen->base == "post" && in_array($current_screen->base, $this->get_post_connector_attached_types())) {
+		if ($current_screen->base == "post" && in_array($current_screen->post_type, $this->get_post_connector_attached_types())) {
 			$is_on_simple_fields_page = TRUE;
 			$page_type = "post";
 		} elseif ($current_screen->base === "media-upload") {
@@ -1051,7 +1051,7 @@ class simple_fields {
 
 		// Only run code if on a SF page
 		$current_screen = get_current_screen();
-		if ($current_screen->base == "post" && in_array($current_screen->base, $this->get_post_connector_attached_types())) {
+		if ($current_screen->base == "post" && in_array($current_screen->post_type, $this->get_post_connector_attached_types())) {
 			$is_on_simple_fields_page = TRUE;
 			$page_type = "post";
 		}
