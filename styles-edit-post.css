@@ -20,6 +20,7 @@
 	margin-right: 11px;
 }
 
+
 .simple-fields-metabox-field-add-bottom {
 	display: none;
 }
@@ -39,6 +40,11 @@
 }
 ul.simple-fields-metabox-field-group-fields li {
 	position: relative;
+}
+
+/* remove margin added by default to inside by WP */
+ul.simple-fields-metabox-field-group-fields {
+	margin: 0 -10px;
 }
 
 ul.simple-fields-metabox-field-group-fields-repeatable li {
