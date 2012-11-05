@@ -1,5 +1,5 @@
 === Simple Fields ===
-Contributors: eskapism, MarsApril, samface, angrycreative, earth people
+Contributors: eskapism, MarsApril, samface, angrycreative, Earth People
 Donate link: http://simple-fields.com/about/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, more fields, repeatable fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom, simple fields, cms, date picker, time picker
 Requires at least: 3.3.1
