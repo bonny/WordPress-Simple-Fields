@@ -4,7 +4,7 @@ Donate link: http://simple-fields.com/about/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, more fields, repeatable fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom, simple fields, cms, date picker, time picker
 Requires at least: 3.3.1
 Tested up to: 3.4.2
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 
 Add more advanced custom fields types to your edit post page. Field can be of several types, including textarea, checkbox, radio buttons, files and color picker.
 
@@ -164,9 +164,11 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
-#### Version x
+#### Version 1.1.2
+- Fixed script error (sortable not found) on settings page.
+- Fixed problem with return values, field divider gave an error...
+- Fixed wrong position of repeater drag handle (wrong position on repeating fields)
 - Added: method edit_save() for Field Extensions API. Let you modify the values before being saved in database. (Actually this was added in last version, but I forgot about it then..)
-- 
 
 #### Version 1.1.1
 - Fixed: styles and scripts where not outputed on all post types
