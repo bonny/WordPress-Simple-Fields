@@ -60,36 +60,31 @@ ul.simple-fields-metabox-field-group-fields-repeatable li {
 	border-top: 2px solid #eee;
 	padding: .5em 1.5em;
 	margin: 0 0 0 0;
-	opacity: .75;
+	opacity: .8;
 }
 ul.simple-fields-metabox-field-group-fields-repeatable li:hover {
 	background-color: #fffcf1;
 	opacity: 1;
 }
-/*ul.simple-fields-metabox-field-group-fields-repeatable li.active {
-	background-color: #fff7db;
-}*/
+
 
 .simple-fields-metabox-field-group-handle
  {
 	width: 16px;
 	height: 16px;
 	background: transparent url(icon-drag.gif) no-repeat 0 50%;
-	/*float: left;*/
 	cursor: move;
-	margin-top: 7px;
 	display: none;
 	position: absolute;
+	margin-left: -16px;
+	margin-top: 12px;
 }
 .simple-fields-metabox-field-group-fields-repeatable:hover .simple-fields-metabox-field-group-handle {
 	display: block;
-	margin-left: -16px;
-	margin-top: 10px;
 }
 
-/*.simple-fields-metabox-field-group:hover .simple-fields-metabox-field-group-handle {
-}
-*/
+
+
 .simple-fields-metabox-field-group input.text {
 	border: 1px solid #dfdfdf;
 	-moz-border-radius: 4px;
@@ -228,7 +223,6 @@ ul.simple-fields-file-browser-list {
 		margin-bottom: 0.25em;
 	}
 
-
 	.simple-fields-metabox-field-file {
 		height: 50px;
 	}
@@ -255,6 +249,17 @@ ul.simple-fields-file-browser-list {
 	.simple-fields-metabox-field-file-col2 {
 		margin-left: 56px;
 		margin-top: -46px;
+	}
+
+	.xxxsimple-fields-metabox-field-file-select,
+	.simple-fields-metabox-field-file-edit,
+	.simple-fields-metabox-field-file-clear {
+		visibility: hidden;
+	}
+	.simple-fields-metabox-field-group:hover .simple-fields-metabox-field-file-select,
+	.simple-fields-metabox-field-group:hover .simple-fields-metabox-field-file-edit,
+	.simple-fields-metabox-field-group:hover .simple-fields-metabox-field-file-clear {
+		visibility: visible;
 	}
 
 
