@@ -363,9 +363,9 @@ ul.simple-fields-file-browser-list {
 
 .simple-fields-metabox-field-group-fields-view-table .simple-fields-metabox-field {
 	float: left;
-	width: auto;
-	margin: 0 20px 0 0;
-	padding: 0;
+	padding: 0 20px 0 0;
+	margin: 0;
+	-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
 }
 
 .simple-fields-metabox-field-group-fields-view-table .simple-fields-metabox-field-first,
@@ -387,13 +387,57 @@ ul.simple-fields-file-browser-list {
 	float: none;
 }
 
-.simple-fields-metabox-field-group-fields-view-table li:first-of-type {
-	/*border: 1px solid red;*/
+.simple-fields-metabox-field-group-fields-view-table .simple-fields-metabox-field-group-handle {
+	margin-top: 0;
 }
+
+
+.simple-fields-metabox-field-group-fields-view-table li:first-of-type .simple-fields-metabox-field-group-handle {
+	margin-top: 34px;
+}
+.simple-fields-metabox-field-group-fields-view-table li:first-of-type .simple-fields-metabox-field-group-delete {
+	top: 44px;
+}
+
 .simple-fields-metabox-field-group-fields-view-table li:first-of-type .simple-fields-metabox-field-first {
 	display: block;
 	margin-bottom: 10px;
+	padding-bottom: 5px;
+	border-bottom: 2px solid #EEE;
 }
 .simple-fields-metabox-field-group-fields-view-table li:first-of-type .simple-fields-metabox-field-second {
 	margin-bottom: 25px;
+}
+
+/* different widths depending on num of added fields. and yes, this feel a bit stupud */
+/* we support up to 10 fields, even that is proably to many too look good*/
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-1 .simple-fields-metabox-field {
+	width: 100%;
+}
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-2 .simple-fields-metabox-field {
+	width: 30%;
+}
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-3 .simple-fields-metabox-field {
+	width: 33.33%;
+}
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-4 .simple-fields-metabox-field {
+	width: 25%;
+}
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-5 .simple-fields-metabox-field {
+	width: 20%;
+}
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-6 .simple-fields-metabox-field {
+	width: 16.66%;
+}
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-7 .simple-fields-metabox-field {
+	width: 14.28%;
+}
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-8 .simple-fields-metabox-field {
+	width: 12.5%;
+}
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-9 .simple-fields-metabox-field {
+	width: 11.11%;
+}
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-10 .simple-fields-metabox-field {
+	width: 10%;
 }

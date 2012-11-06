@@ -494,6 +494,7 @@ class simple_fields {
 		} else if (empty($fieldgroups)) {
 			// if fieldgroups are empty we still need to save it
 			// remove existing simple fields custom fields for this post
+			// @todo: this should also be using wordpress own functions
 			$wpdb->query("DELETE FROM $table WHERE post_id = $post_id AND meta_key LIKE '_simple_fields_fieldGroupID_%'");
 		} 
 		// echo "end save";
@@ -1190,10 +1191,10 @@ class simple_fields {
 
 	        // debug/test link
 	        ?>
-	        <a href="#" id="sfToggleView">Toggle view</a>
+	        <a href="#" id="sfToggleView<?php echo $current_field_group["id"] ?>">Toggle view</a>
 	        <script>
 	        	jQuery(function($) {
-	        		$("#sfToggleView").click(function(e) {
+	        		$("#sfToggleView<?php echo $current_field_group["id"] ?>").click(function(e) {
 	        			e.preventDefault();
 	        			$(this).closest(".simple-fields-meta-box-field-group-wrapper").find("ul:first").toggleClass("simple-fields-metabox-field-group-fields-view-table");
 	        		});
@@ -1203,7 +1204,12 @@ class simple_fields {
 
 	        // Start of list with added field groups
 	        $ul_add_css = "";
-	        $ul_add_css .= "simple-fields-metabox-field-group-fields-view-table";
+
+	        // add test class to test table layout
+	        $ul_add_css .= " simple-fields-metabox-field-group-fields-view-table";
+
+	        // add class with number of fields in field group
+	        $ul_add_css .= " simple-fields-metabox-field-group-fields-count-" . $current_field_group["fields_count"];
 	        echo "<ul class='sf-cf simple-fields-metabox-field-group-fields simple-fields-metabox-field-group-fields-repeatable $ul_add_css'>";
 	 
 	        // now add them. ooooh my, this is fancy stuff.

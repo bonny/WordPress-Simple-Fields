@@ -166,6 +166,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 #### Version 1.1.x
 - Changed all javascript live events to on events, because live is deprecated.
+- Removed several javscript actions that were called on edit post page. Hopefully makes the edit post screen a bit quicker when working with repeatable custom fields
 
 #### Version 1.1.3
 - Fixed date and time picker not working in Firefox (I spend way too much time in Chrome nowadays...)
