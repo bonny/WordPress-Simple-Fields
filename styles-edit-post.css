@@ -358,7 +358,8 @@ ul.simple-fields-file-browser-list {
 }
 
 .simple-fields-metabox-field-group-fields-view-table li {
-	/*border: 1px solid green;*/
+	border: 0 !important;
+	background-image: none !important;
 }
 
 .simple-fields-metabox-field-group-fields-view-table .simple-fields-metabox-field {
@@ -392,6 +393,10 @@ ul.simple-fields-file-browser-list {
 }
 
 
+.simple-fields-metabox-field-group-fields-view-table li:first-of-type {
+	border-top: 0;
+}
+
 .simple-fields-metabox-field-group-fields-view-table li:first-of-type .simple-fields-metabox-field-group-handle {
 	margin-top: 34px;
 }
@@ -403,7 +408,7 @@ ul.simple-fields-file-browser-list {
 	display: block;
 	margin-bottom: 10px;
 	padding-bottom: 5px;
-	border-bottom: 2px solid #EEE;
+	border-bottom: 1px solid #ccc;
 }
 .simple-fields-metabox-field-group-fields-view-table li:first-of-type .simple-fields-metabox-field-second {
 	margin-bottom: 25px;

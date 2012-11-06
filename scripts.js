@@ -279,13 +279,13 @@ var simple_fields = (function() {
 	// - post id
 	// - num in (new) set
 	var simple_fields_new_fields_count = 0;
-	$(document).on("click", "div.simple-fields-metabox-field-add", function(e) {
+	$(document).on("click", "div.simple-fields-metabox-field-add a:nth-child(1)", function(e) {
 
-		//var $t = $(this).closest("div.simple-fields-metabox-field-add");
-		var $t = $(this);
+		var $t = $(this).closest("div.simple-fields-metabox-field-add");
+		//var $t = $(this);
 		
 		$t.text(sfstrings.adding);
-		var $wrapper = $(this).parents(".simple-fields-meta-box-field-group-wrapper");
+		var $wrapper = $t.parents(".simple-fields-meta-box-field-group-wrapper");
 		var field_group_id = $wrapper.find("input[name=simple-fields-meta-box-field-group-id]").val();
 		var post_id = jQuery("#post_ID").val();
 

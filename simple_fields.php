@@ -1184,14 +1184,14 @@ class simple_fields {
 
 			// add link at top	 
 	        echo "
-	            <div class='simple-fields-metabox-field-add'>
-	                <a href='#'>+ ".__('Add', 'simple-fields')."</a>
-	            </div>
+				<div class='simple-fields-metabox-field-add'>
+					<a href='#'>+ ".__('Add', 'simple-fields')."</a>
+					|
+					<a href='#' id='sfToggleView{$current_field_group["id"]}'>Toggle view</a>
+				</div>
 	        ";
 
-	        // debug/test link
 	        ?>
-	        <a href="#" id="sfToggleView<?php echo $current_field_group["id"] ?>">Toggle view</a>
 	        <script>
 	        	jQuery(function($) {
 	        		$("#sfToggleView<?php echo $current_field_group["id"] ?>").click(function(e) {
