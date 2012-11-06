@@ -166,6 +166,9 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 #### Version 1.1.3
 - Fixed date and time picker not working in Firefox (I spend way too much time in Chrome nowadays...)
+- Changed date and time picker to use simplified ISO 8601 return format
+- Changed repeatable fields to be a bit more nice looking, IMHO anyway :)
+- Changed file field to show "edit" and "remove"-links only on mouse over. Yes, I really want less clutter in my plugin.
 
 #### Version 1.1.2
 - Fixed script error (sortable not found) on settings page.
