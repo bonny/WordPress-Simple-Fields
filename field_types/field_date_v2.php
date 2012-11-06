@@ -240,7 +240,7 @@ function init_simple_fields_field_date_v2() {
 			if (isset($options["use_defaults"]) && $options["use_defaults"]) {
 				if ($options["default_date"] === "today") {
 					$str_unixtime_to_set = time() * 1000;
-					$str_iso_to_set = date("Y-m-d H:i");
+					$str_iso_to_set = date("Y/m/d H:i");
 				} elseif ($options["default_date"] === "no_date") {
 					
 				}
@@ -251,9 +251,9 @@ function init_simple_fields_field_date_v2() {
 				if (preg_match('!^\d{2}:\d{2}$!', $str_saved_unixtime)) {
 					// if only time, then make it a full date to be able to create javascript date object
 					//$str_saved_unixtime = "2000-01-01 $str_saved_unixtime";
-					$str_iso_to_set = "1970-01-01 $str_saved_unixtime";
+					$str_iso_to_set = "1970/01/01 $str_saved_unixtime";
 				} else {
-					$str_iso_to_set = $saved_values["saved_date_time"];
+					$str_iso_to_set = date("Y/m/d H:i", strtotime($saved_values["saved_date_time"]) );
 				}
 				$str_unixtime_to_set = strtotime($str_saved_unixtime);
 				//sf_d( date("Y-m-d H:i", $str_unixtime_to_set) );
