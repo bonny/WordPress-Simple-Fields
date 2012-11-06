@@ -1057,7 +1057,7 @@ class simple_fields {
 			$is_on_simple_fields_page = TRUE;
 			$page_type = "post";
 		}
-		if (!is_on_simple_fields_page) return;
+		if (!$is_on_simple_fields_page) return;
 
 		// Add meta box to post
 		global $post, $sf;
