@@ -238,10 +238,10 @@ function init_simple_fields_field_date_v2() {
 			$str_set_date = "";
 			$str_unixtime_to_set = "";
 			if (isset($options["use_defaults"]) && $options["use_defaults"]) {
-				if ($options["default_date"] === "today") {
+				if (isset($options["default_date"]) && $options["default_date"] === "today") {
 					$str_unixtime_to_set = time() * 1000;
 					$str_iso_to_set = date("Y/m/d H:i");
-				} elseif ($options["default_date"] === "no_date") {
+				} elseif (isset($options["default_date"]) && $options["default_date"] === "no_date") {
 					
 				}
 			} else {
@@ -274,7 +274,7 @@ function init_simple_fields_field_date_v2() {
 			// name of method to use/call.
 			$method_name = "datepicker";
 			$altFieldTimeOnly = "false";
-			$show_as = $options["show_as"];
+			$show_as = isset($options["show_as"]) ? $options["show_as"] : "date";
 			$alt_format = "yy-mm-dd";
 			if ("datetime" === $show_as) {
 				$method_name = "datetimepicker";
