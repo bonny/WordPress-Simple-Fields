@@ -183,6 +183,11 @@ ul.simple-fields-metabox-field-group-fields-repeatable li:hover {
 	top: 10px;
 	right: 10px;
 }
+
+	.simple-fields-metabox-field-group:hover .simple-fields-metabox-field-group-delete {
+		display: block;
+	}
+
 	.simple-fields-metabox-field-group-delete a {
 		background: transparent url(bin_closed.png) no-repeat 0 50%;
 		display: block;
@@ -346,3 +351,49 @@ ul.simple-fields-file-browser-list {
 	}
 
 
+
+/* test style for thumbnail repeatable view */
+.simple-fields-metabox-field-group-fields-view-table {
+
+}
+
+.simple-fields-metabox-field-group-fields-view-table li {
+	/*border: 1px solid green;*/
+}
+
+.simple-fields-metabox-field-group-fields-view-table .simple-fields-metabox-field {
+	float: left;
+	width: auto;
+	margin: 0 20px 0 0;
+	padding: 0;
+}
+
+.simple-fields-metabox-field-group-fields-view-table .simple-fields-metabox-field-first,
+.simple-fields-metabox-field-group-fields-view-table .simple-fields-metabox-field-second {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.simple-fields-metabox-field-group-fields-view-table .simple-fields-metabox-field-first {
+	display: none;
+	float: none;
+}
+.simple-fields-metabox-field-group-fields-view-table .simple-fields-metabox-field-first label {
+	font-weight: bold;
+}
+
+.simple-fields-metabox-field-group-fields-view-table .simple-fields-metabox-field-second {
+	float: none;
+}
+
+.simple-fields-metabox-field-group-fields-view-table li:first-of-type {
+	/*border: 1px solid red;*/
+}
+.simple-fields-metabox-field-group-fields-view-table li:first-of-type .simple-fields-metabox-field-first {
+	display: block;
+	margin-bottom: 10px;
+}
+.simple-fields-metabox-field-group-fields-view-table li:first-of-type .simple-fields-metabox-field-second {
+	margin-bottom: 25px;
+}

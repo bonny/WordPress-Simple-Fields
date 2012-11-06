@@ -164,11 +164,17 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
+#### Version 1.1.x
+- Changed all javascript live events to on events, because live is deprecated.
+
 #### Version 1.1.3
 - Fixed date and time picker not working in Firefox (I spend way too much time in Chrome nowadays...)
 - Changed date and time picker to use simplified ISO 8601 return format
 - Changed repeatable fields to be a bit more nice looking, IMHO anyway :)
 - Changed file field to show "edit" and "remove"-links only on mouse over. Yes, I really want less clutter in my plugin.
+- Fixed some notice warnings
+- Fixed: use built in function to remove meta instead of direct sql calls. fixes some problem in wp 3.5b. And it feel a lot less dirty.
+- Misc other stuff
 
 #### Version 1.1.2
 - Fixed script error (sortable not found) on settings page.

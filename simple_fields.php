@@ -536,7 +536,7 @@ class simple_fields {
 		}*/
 
 		?>
-		<li class="simple-fields-metabox-field-group <?php echo $field_group_css ?>">
+		<li class="sf-cf simple-fields-metabox-field-group <?php echo $field_group_css ?>">
 			<?php // must use this "added"-thingie do be able to track added field group that has no added values (like unchecked checkboxes, that we can't detect ?>
 			<input type="hidden" name="simple_fields_fieldgroups[<?php echo $field_group_id ?>][added][<?php echo $num_in_set ?>]" value="1" />
 			<div class="simple-fields-metabox-field-group-handle"></div>
@@ -1188,8 +1188,23 @@ class simple_fields {
 	            </div>
 	        ";
 
-	        // Start of list with adeed field groups
-	        echo "<ul class='simple-fields-metabox-field-group-fields simple-fields-metabox-field-group-fields-repeatable'>";
+	        // debug/test link
+	        ?>
+	        <a href="#" id="sfToggleView">Toggle view</a>
+	        <script>
+	        	jQuery(function($) {
+	        		$("#sfToggleView").click(function(e) {
+	        			e.preventDefault();
+	        			$(this).closest(".simple-fields-meta-box-field-group-wrapper").find("ul:first").toggleClass("simple-fields-metabox-field-group-fields-view-table");
+	        		});
+	        	});
+	        </script>
+	        <?php
+
+	        // Start of list with added field groups
+	        $ul_add_css = "";
+	        $ul_add_css .= "simple-fields-metabox-field-group-fields-view-table";
+	        echo "<ul class='sf-cf simple-fields-metabox-field-group-fields simple-fields-metabox-field-group-fields-repeatable $ul_add_css'>";
 	 
 	        // now add them. ooooh my, this is fancy stuff.
 	        $use_defaults = null;
