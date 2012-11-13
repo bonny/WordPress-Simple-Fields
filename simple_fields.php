@@ -3523,7 +3523,7 @@ class simple_fields {
 			$type_dropdown_options = $field["type_dropdown_options"];
 
 			// dropdown can be multiple since 1.1.4
-			if ($type_dropdown_options["enable_multiple"]) {
+			if (isset($type_dropdown_options["enable_multiple"]) && $type_dropdown_options["enable_multiple"]) {
 				
 				// multiple = return array with same info as single values
 				$arr_dropdown_values = $field_value;
