@@ -28,7 +28,8 @@ function sf_d($var) {
 
 
 /**
- * get all values or just the from a field in a field group
+ * get values from a field in a field group
+ * deprecated, use simple_fields_value or simple_fields_values
  *
  * @param $post_id
  * @param $field_name_or_id name as string or field group id and field id as array. 
@@ -203,6 +204,8 @@ function simple_fields_get_post_group_values($post_id, $field_group_name_or_id, 
  * returns connector structure, field groups, fields, and values
  * well.. everything! it's really funky.
  *
+ * used from many places
+ *
  * return @array a really fat one!
  */
 function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") {
@@ -224,7 +227,7 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 		$field_groups             = $sf->get_field_groups();
 		$selected_post_connector  = isset($existing_post_connectors[$connector_to_use]) ? $existing_post_connectors[$connector_to_use] : NULL;
 	
-		if($selected_post_connector == null) {
+		if ($selected_post_connector == null) {
 			return false;
 		}
 	
@@ -270,15 +273,16 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 				// fetch value for each field
 				foreach ($selected_post_connector["field_groups"][$one_field_group["id"]]["fields"] as $one_field_id => $one_field_value) {
 	
-	#echo "<br>num in set: $num_in_set";
-	#sf_d($one_field_value);
+					#echo "<br>num in set: $num_in_set";
+					#sf_d($one_field_value);
 	
 					$custom_field_key = "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_{$one_field_id}_numInSet_{$num_in_set}";
-	#echo "<br>custom field key: $custom_field_key";
+					#echo "<br>custom field key: $custom_field_key";
 	
 					$saved_value = get_post_meta($post_id, $custom_field_key, true); // empty string if does not exist
 	
-					if ($one_field_value["type"] == "textarea") {
+					// Modify values for some field types
+					if ("textarea" === $one_field_value["type"]) {
 						$match_count = preg_match_all('/http:\/\/[a-z0-9A-Z\.]+[a-z0-9A-Z\.\/%&=\?\-_#]+/i', $saved_value, $match);
 						if ($match_count) {
 							$links=$match[0];
@@ -293,7 +297,19 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 								}
 							}
 						}
+					} else if ("dropdown" === $one_field_value["type"]) {
+						
+						// dropdown can be multiple since 1.1.4
+						if ($one_field_value["type_dropdown_options"]["enable_multiple"]) {
+
+							// value should always be array when using multiple
+							if (!is_array($saved_value)) $saved_value = array();
+
+						}
+
 					}
+
+					// 
 	
 					$selected_post_connector["field_groups"][$one_field_group["id"]]["fields"][$one_field_id]["saved_values"][$num_in_set] = $saved_value;
 					$selected_post_connector["field_groups"][$one_field_group["id"]]["fields"][$one_field_id]["meta_keys"][$num_in_set] = $custom_field_key;
@@ -1034,9 +1050,9 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 		// Loop the fields in this field group
 		foreach ($one_field_group["fields"] as $one_field_group_field) { 
 
-//_simple_fields_fieldGroupID_23_fieldID_2_numInSet_
-#file
-#sf_d($one_field_group_field);
+			//_simple_fields_fieldGroupID_23_fieldID_2_numInSet_
+			#file
+			#sf_d($one_field_group_field);
 
 			// Skip deleted fields
 			if ($one_field_group_field["deleted"]) continue;
@@ -1125,8 +1141,20 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 					// ...but since 1.0.3 you can use extened return
 					// $parsed_options_for_this_field
 
+					if ("dropdown" === $one_field_group_field["type"]) {
+						
+						// dropdown can be multiple since 1.1.4
+						if ($one_field_group_field["type_dropdown_options"]["enable_multiple"]) {
+							#sf_d("it's multiple!");
+							#sf_d($saved_values); // xxx
+							// value should always be array when using multiple
+
+						}
+					}
+
 					// Check if field should return extended return values
 					if ( isset($parsed_options_for_this_field["extended_return"]) && (bool) $parsed_options_for_this_field["extended_return"] ) {
+						
 						// check if current field type supports this
 						if ( in_array($one_field_group_field["type"], array("file", "radiobuttons", "dropdown", "post", "user", "taxonomy", "taxonomyterm", "date")) ) {
 							

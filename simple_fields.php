@@ -199,8 +199,6 @@ class simple_fields {
 		$page_type = "";
 
 		$current_screen = get_current_screen();
-		#sf_d($current_screen);	
-		#sf_d($hook);
 		if ($current_screen->base == "post" && in_array($current_screen->post_type, $this->get_post_connector_attached_types())) {
 			$is_on_simple_fields_page = TRUE;
 			$page_type = "post";
@@ -227,8 +225,14 @@ class simple_fields {
 			wp_enqueue_style("thickbox");
 			wp_enqueue_script("jscolor", SIMPLE_FIELDS_URL . "jscolor/jscolor.js"); // color picker for type color
 			wp_enqueue_script("simple-fields-date", SIMPLE_FIELDS_URL . "datepicker/date.js"); // date picker for type date
-			wp_enqueue_script("sf-jquery-datepicker", SIMPLE_FIELDS_URL . "datepicker/jquery.datePicker.js"); // date picker for type date
+			
+			// Date picker for type date
+			wp_enqueue_script("sf-jquery-datepicker", SIMPLE_FIELDS_URL . "datepicker/jquery.datePicker.js");
 			wp_enqueue_style('sf-jquery-datepicker', SIMPLE_FIELDS_URL.'datepicker/datePicker.css', false, SIMPLE_FIELDS_VERSION);
+
+			// Chosen for multi selects
+			// wp_enqueue_script("chosen.jquery", SIMPLE_FIELDS_URL . "js/chosen/chosen.jquery.min.js");
+			// wp_enqueue_style("chosen", SIMPLE_FIELDS_URL.'js/chosen/chosen.css', false, SIMPLE_FIELDS_VERSION);
 
 			wp_enqueue_style('simple-fields-styles-post', SIMPLE_FIELDS_URL.'styles-edit-post.css', false, SIMPLE_FIELDS_VERSION);
 	
@@ -658,11 +662,13 @@ class simple_fields {
 						$enable_multiple = (isset($field["type_dropdown_options"]["enable_multiple"]) && ($field["type_dropdown_options"]["enable_multiple"] == 1));
 						$str_multiple = "";
 						$field_name_dropdown = $field_name;
+						$field_size = 1;
 						if ($enable_multiple) {
 							$str_multiple = "multiple";
 							$field_name_dropdown = $field_name . "[]";
+							$field_size = 6;
 						}
-						echo "<select id='$field_unique_id' name='$field_name_dropdown' $str_multiple >";
+						echo "<select id='$field_unique_id' name='$field_name_dropdown' $str_multiple size='$field_size' >";
 						foreach ($field["type_dropdown_options"] as $one_option_internal_name => $one_option) {
 							
 							if ($one_option["deleted"]) { continue; }
@@ -2590,7 +2596,7 @@ class simple_fields {
 			if ("edit-field-group-save" == $action) {
 			
 				if ($_POST) {
-#sf_d($_POST);
+					#sf_d($_POST);
 					$field_group_id                               = (int) $_POST["field_group_id"];
 					$field_groups[$field_group_id]["name"]        = stripslashes($_POST["field_group_name"]);
 					$field_groups[$field_group_id]["description"] = stripslashes($_POST["field_group_description"]);
@@ -3446,16 +3452,10 @@ class simple_fields {
 	/**
 	 * Retrieve and return extended return values for a field type
 	 * @param mixed $field array or string or int or whatever with field info
-	 * @param mixed $field_value
+	 * @param mixed $field_value the saved value
 	 */
 	function get_extended_return_values_for_field($field, $field_value) {
-		/*			
-		radiobuttons
-		file
-		dropdown
-		post
-		user
-		*/
+	
 
 		$return_field_value = array();
 
@@ -3522,28 +3522,69 @@ class simple_fields {
 			
 			$type_dropdown_options = $field["type_dropdown_options"];
 
-			$return_field_value["selected_value"]	= FALSE;
-			$return_field_value["selected_option"]	= array();
-			$return_field_value["options"] 			= array();
-
-			foreach ($type_dropdown_options as $dropdown_key => $dropdown_value) {
-
-				if ($dropdown_value["deleted"]) continue;
+			// dropdown can be multiple since 1.1.4
+			if ($type_dropdown_options["enable_multiple"]) {
 				
-				$return_field_value["options"][] = array(
-					"value"       => $dropdown_value["value"],
-					"key"         => $dropdown_key,
-					"is_selected" => ($field_value === $dropdown_key)
-				);
-				if ($field_value === $dropdown_key) {
-					$return_field_value["selected_option"] = array(
+				// multiple = return array with same info as single values
+				$arr_dropdown_values = $field_value;
+
+				$return_field_value["selected_values"]	= array();
+				$return_field_value["selected_options"]	= array();
+				$return_field_value["options"] = array();
+
+				foreach ($type_dropdown_options as $dropdown_key => $dropdown_value) {
+
+					if ($dropdown_value["deleted"]) continue;
+					
+					$return_field_value["options"][] = array(
 						"value"       => $dropdown_value["value"],
 						"key"         => $dropdown_key,
-						"is_selected" => TRUE
+						"is_selected" => in_array($dropdown_key, $arr_dropdown_values)
 					);
-					$return_field_value["selected_value"] = $dropdown_value["value"];
+
+					if (in_array($dropdown_key, $arr_dropdown_values)) {
+						
+						$return_field_value["selected_options"][] = array(
+							"value"       => $dropdown_value["value"],
+							"key"         => $dropdown_key,
+							"is_selected" => TRUE
+						);
+						
+						$return_field_value["selected_values"][] = $dropdown_value["value"];
+					}
 				}
-			}
+
+			} else {
+
+				// Single value
+				$return_field_value["selected_value"]	= FALSE;
+				$return_field_value["selected_option"]	= array();
+				$return_field_value["options"] 			= array();
+
+				foreach ($type_dropdown_options as $dropdown_key => $dropdown_value) {
+
+					if ($dropdown_value["deleted"]) continue;
+					
+					$return_field_value["options"][] = array(
+						"value"       => $dropdown_value["value"],
+						"key"         => $dropdown_key,
+						"is_selected" => ($field_value === $dropdown_key)
+					);
+
+					if ($field_value === $dropdown_key) {
+					
+						$return_field_value["selected_option"] = array(
+							"value"       => $dropdown_value["value"],
+							"key"         => $dropdown_key,
+							"is_selected" => TRUE
+						);
+						
+						$return_field_value["selected_value"] = $dropdown_value["value"];
+					
+					}
+				}
+
+			} // if single
 			
 		} else if ("post" === $field["type"]) {
 

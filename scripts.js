@@ -514,6 +514,16 @@ var simple_fields = (function() {
 	 */
 	$(function() {
 
+		// If meta_box_field_group_wrapper exists on the page then it's a page with simple fields-fields
+		var meta_box_field_group_wrapper = $("div.simple-fields-meta-box-field-group-wrapper");
+		if (meta_box_field_group_wrapper.length) {
+			
+			// Add chosen to select dropdown
+			// ...or not, didn't get the widths to work
+			// $("div.simple-fields-fieldgroups-field-type-dropdown select").chosen({});
+
+		}
+
 		$("#simple-fields-field-group-existing-fields ul:first").sortable({
 			distance: 10,
 			axis: 'y',
