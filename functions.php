@@ -300,7 +300,7 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 					} else if ("dropdown" === $one_field_value["type"]) {
 						
 						// dropdown can be multiple since 1.1.4
-						if ($one_field_value["type_dropdown_options"]["enable_multiple"]) {
+						if (isset($one_field_value["type_dropdown_options"]["enable_multiple"]) && $one_field_value["type_dropdown_options"]["enable_multiple"]) {
 
 							// value should always be array when using multiple
 							if (!is_array($saved_value)) $saved_value = array();
@@ -1141,16 +1141,6 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 					// ...but since 1.0.3 you can use extened return
 					// $parsed_options_for_this_field
 
-					if ("dropdown" === $one_field_group_field["type"]) {
-						
-						// dropdown can be multiple since 1.1.4
-						if ($one_field_group_field["type_dropdown_options"]["enable_multiple"]) {
-							#sf_d("it's multiple!");
-							#sf_d($saved_values); // xxx
-							// value should always be array when using multiple
-
-						}
-					}
 
 					// Check if field should return extended return values
 					if ( isset($parsed_options_for_this_field["extended_return"]) && (bool) $parsed_options_for_this_field["extended_return"] ) {
