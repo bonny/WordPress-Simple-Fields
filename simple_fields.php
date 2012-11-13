@@ -654,15 +654,47 @@ class simple_fields {
 						echo "</div>";
 
 						echo "<div class='simple-fields-metabox-field-second'>";
-						echo "<select id='$field_unique_id' name='$field_name'>";
+
+						$enable_multiple = (isset($field["type_dropdown_options"]["enable_multiple"]) && ($field["type_dropdown_options"]["enable_multiple"] == 1));
+						$str_multiple = "";
+						$field_name_dropdown = $field_name;
+						if ($enable_multiple) {
+							$str_multiple = "multiple";
+							$field_name_dropdown = $field_name . "[]";
+						}
+						echo "<select id='$field_unique_id' name='$field_name_dropdown' $str_multiple >";
 						foreach ($field["type_dropdown_options"] as $one_option_internal_name => $one_option) {
-							// $one_option_internal_name = dropdown_num_3
+							
 							if ($one_option["deleted"]) { continue; }
+							if (strpos($one_option_internal_name, "dropdown_num_") === FALSE) continue;
+
 							$dropdown_value_esc = esc_html($one_option["value"]);
 							$selected = "";
-							if ($use_defaults == false && $saved_value == $one_option_internal_name) {
-								$selected = " selected='selected' ";
+
+							// Different ways of detecting selected dropdown value if multiple or single
+							if ($enable_multiple) {
+
+								$arr_saved_value_dropdown = (array) $saved_value;
+								/*
+								Array
+								(
+								    [0] => dropdown_num_2
+								    [1] => dropdown_num_3
+								)
+								*/
+								if (in_array($one_option_internal_name, $arr_saved_value_dropdown)) {
+									$selected = " selected ";
+								}
+
+								
+							} else {
+
+								if ($use_defaults == false && $saved_value == $one_option_internal_name) {
+									$selected = " selected ";
+								}
+
 							}
+
 							echo "<option $selected value='$one_option_internal_name'>$dropdown_value_esc</option>";
 						}
 						echo "</select>";
@@ -1911,6 +1943,7 @@ class simple_fields {
 		
 		$field_type_dropdown_options = (array) @$fields[$fieldID]["type_dropdown_options"];
 		$field_type_dropdown_option_enable_extended_return_values = (int) @$fields[$fieldID]["type_dropdown_options"]["enable_extended_return_values"];
+		$field_type_dropdown_option_enable_multiple = (int) @$fields[$fieldID]["type_dropdown_options"]["enable_multiple"];
 		
 		$field_type_post_options = (array) @$fields[$fieldID]["type_post_options"];
 		$field_type_post_options["enabled_post_types"] = (array) @$field_type_post_options["enabled_post_types"];
@@ -2346,9 +2379,26 @@ class simple_fields {
 			$out .= "<div class='simple-fields-field-group-one-field-row'>";
 				$out .= "<div class='simple-fields-field-group-one-field-row-col-first'></div>";
 				$out .= "<div class='simple-fields-field-group-one-field-row-col-second'>";
-				$out .= "	<p><input type='checkbox' name='field[{$fieldID}][type_dropdown_options][enable_extended_return_values]' " . (($field_type_dropdown_option_enable_extended_return_values) ? " checked='checked'" : "") . " value='1' /> ";
+
+				// Enable extended
+				$out .= "	<p>";
+				$out .= "		<input type='checkbox' name='field[{$fieldID}][type_dropdown_options][enable_extended_return_values]' " . (($field_type_dropdown_option_enable_extended_return_values) ? " checked='checked'" : "") . " value='1' /> ";
 				$out .= 	__('Enable Extended Return Values', 'simple-fields') . "</p>";
 				$out .= "	<p class='description'>" . __('Return an array with the value of the selected item in the dropdown + the values of the non-selected items.', 'simple-fields') . "</p>";
+
+				$out .= "</div>";
+			$out .= "	</div>";
+
+			// Enable multiple
+			$out .= "<div class='simple-fields-field-group-one-field-row'>";
+				$out .= "<div class='simple-fields-field-group-one-field-row-col-first'></div>";
+				$out .= "<div class='simple-fields-field-group-one-field-row-col-second'>";
+				$out .= "<input " . ($field_type_dropdown_option_enable_multiple === 0 ? " checked=checked " : "")  . " type='radio' name='field[{$fieldID}][type_dropdown_options][enable_multiple]' value='0'> ";
+				$out .= _x('Single', 'Field type dropdown', 'simple-fields') . " &nbsp;";
+
+				$out .= "<input " . ($field_type_dropdown_option_enable_multiple === 1 ? " checked=checked " : "")  . " type='radio' name='field[{$fieldID}][type_dropdown_options][enable_multiple]' value='1'> ";
+				$out .= _x('Multiple', 'Field type dropdown', 'simple-fields') . " &nbsp;";
+
 				$out .= "</div>";
 			$out .= "	</div>";
 
