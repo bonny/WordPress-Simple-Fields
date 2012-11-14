@@ -3,8 +3,8 @@ Contributors: eskapism, MarsApril, samface, angrycreative, Earth People
 Donate link: http://simple-fields.com/about/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, more fields, repeatable fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom, simple fields, cms, date picker, time picker, repeatable fields, multiple fields
 Requires at least: 3.3.1
-Tested up to: 3.4.2
-Stable tag: 1.1.3
+Tested up to: 3.5
+Stable tag: 1.1.4
 
 Add more advanced custom fields types to your edit post page. Field can be of several types, including textarea, checkbox, radio buttons, files and color picker.
 
@@ -164,10 +164,11 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
-#### Version 1.1.x
+#### Version 1.1.4
 - Added support for dropdowns with multiple selected values. Just check "multiple" in the settings for the dropdown field and voila!
 - Changed all jQuery javascript live events to on events, because live is deprecated.
 - Removed several javscript actions that were called on edit post page. Hopefully makes the edit post screen a bit quicker when working with repeatable custom fields
+- Probably some misc stuff I don't remember
 
 #### Version 1.1.3
 - Fixed date and time picker not working in Firefox (I spend way too much time in Chrome nowadays...)

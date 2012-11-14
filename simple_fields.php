@@ -3,7 +3,7 @@
 Plugin Name: Simple Fields
 Plugin URI: http://simple-fields.com
 Description: Add groups of textareas, input-fields, dropdowns, radiobuttons, checkboxes and files to your edit post screen.
-Version: 1.1.3
+Version: 1.1.4
 Author: Pär Thernström
 Author URI: http://eskapism.se/
 License: GPL2
@@ -54,7 +54,7 @@ class simple_fields {
 
 		define( "SIMPLE_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
 		define( "SIMPLE_FIELDS_NAME", "Simple Fields");
-		define( "SIMPLE_FIELDS_VERSION", "1.1.3");
+		define( "SIMPLE_FIELDS_VERSION", "1.1.4");
 
 		load_plugin_textdomain( 'simple-fields', null, basename(dirname(__FILE__)).'/languages/');
 		
@@ -1220,15 +1220,21 @@ class simple_fields {
 	 
 	    if ($current_field_group["repeatable"]) {
 
+			// Start of list with added field groups
+	        $ul_add_css = "";
+
 			// add link at top	 
 	        echo "
 				<div class='simple-fields-metabox-field-add'>
 					<a href='#'>+ ".__('Add', 'simple-fields')."</a>
+					<!-- 
 					|
 					<a href='#' id='sfToggleView{$current_field_group["id"]}'>Toggle view</a>
+					-->
 				</div>
 	        ";
 
+			/*
 	        ?>
 	        <script>
 	        	jQuery(function($) {
@@ -1239,12 +1245,10 @@ class simple_fields {
 	        	});
 	        </script>
 	        <?php
-
-	        // Start of list with added field groups
-	        $ul_add_css = "";
+	        */
 
 	        // add test class to test table layout
-	        $ul_add_css .= " simple-fields-metabox-field-group-fields-view-table";
+	        // $ul_add_css .= " simple-fields-metabox-field-group-fields-view-table";
 
 	        // add class with number of fields in field group
 	        $ul_add_css .= " simple-fields-metabox-field-group-fields-count-" . $current_field_group["fields_count"];
@@ -1807,7 +1811,6 @@ class simple_fields {
 	
 		return $arr_tabs;
 	}
-	
 
 	
 	/**
