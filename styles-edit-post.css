@@ -254,7 +254,7 @@ ul.simple-fields-file-browser-list {
 		margin-top: -46px;
 	}
 
-	.xxxsimple-fields-metabox-field-file-select,
+/*	.xxxsimple-fields-metabox-field-file-select,*/
 	.simple-fields-metabox-field-file-edit,
 	.simple-fields-metabox-field-file-clear {
 		visibility: hidden;
@@ -274,13 +274,12 @@ ul.simple-fields-file-browser-list {
 	color: #666;
 }
 
-.simple-fields-metabox-field-file-edit, .simple-fields-metabox-field-file-clear,
+.simple-fields-metabox-field-file-select, .simple-fields-metabox-field-file-edit, .simple-fields-metabox-field-file-clear,
 .simple-fields-metabox-field-post-clear {
-	border-left: 1px solid #555555;
+	border-left: 1px solid #ccc;
 	padding-left: 4px;
 	margin-left: 4px;
 }
-
 
 /*.simple-fields-bonny-plugins-inner-sidebar {
 	display: none;

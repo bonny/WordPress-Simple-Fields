@@ -3,7 +3,7 @@
 Plugin Name: Simple Fields
 Plugin URI: http://simple-fields.com
 Description: Add groups of textareas, input-fields, dropdowns, radiobuttons, checkboxes and files to your edit post screen.
-Version: 1.1.4
+Version: 1.1.5
 Author: Pär Thernström
 Author URI: http://eskapism.se/
 License: GPL2
@@ -54,7 +54,7 @@ class simple_fields {
 
 		define( "SIMPLE_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
 		define( "SIMPLE_FIELDS_NAME", "Simple Fields");
-		define( "SIMPLE_FIELDS_VERSION", "1.1.4");
+		define( "SIMPLE_FIELDS_VERSION", "1.1.5");
 
 		load_plugin_textdomain( 'simple-fields', null, basename(dirname(__FILE__)).'/languages/');
 		
@@ -712,6 +712,7 @@ class simple_fields {
 						$attachment_id = (int) $saved_value;
 						$image_html = "";
 						$image_name = "";
+						$view_file_url = "";
 						if ($attachment_id) {
 							$image_post = get_post($attachment_id);
 							if ($image_post === NULL) {
@@ -722,6 +723,7 @@ class simple_fields {
 								$image_html = "<img src='$image_thumbnail' alt='' />";
 								$image_name = esc_html($image_post->post_title);
 							}
+							$view_file_url = wp_get_attachment_url($attachment_id);
 						}
 						$class = "";
 						if ($description) {
@@ -732,7 +734,6 @@ class simple_fields {
 							echo "<div class='simple-fields-metabox-field-first'>";
 							echo "<label>{$field["name"]}</label>";
 							echo $description;
-							//echo $description;
 							echo "</div>";
 
 							echo "<div class='simple-fields-metabox-field-second'>";
@@ -744,9 +745,10 @@ class simple_fields {
 								echo "<input type='hidden' class='text simple-fields-metabox-field-file-fileID' name='$field_name' id='$field_unique_id' value='$attachment_id' />";							
 	
 								$field_unique_id_esc = rawurlencode($field_unique_id);
-								// $file_url = "media-upload.php?simple_fields_dummy=1&simple_fields_action=select_file&simple_fields_file_field_unique_id=$field_unique_id_esc&post_id=$post_id&TB_iframe=true";
 								$file_url = get_bloginfo('wpurl') . "/wp-admin/media-upload.php?simple_fields_dummy=1&simple_fields_action=select_file&simple_fields_file_field_unique_id=$field_unique_id_esc&post_id=$current_post_id&TB_iframe=true";
-								echo "<a class='thickbox simple-fields-metabox-field-file-select' href='$file_url'>".__('Select file', 'simple-fields')."</a>";
+								
+								echo "<a class='simple-fields-metabox-field-file-view' href='$view_file_url'>".__('View', 'simple-fields')."</a>";
+								echo "<a class='thickbox simple-fields-metabox-field-file-select' href='$file_url'>".__('Select', 'simple-fields')."</a>";
 								
 								$class = ($attachment_id) ? " " : " hidden ";
 								$href_edit = ($attachment_id) ? admin_url("media.php?attachment_id={$attachment_id}&action=edit") : "#";
