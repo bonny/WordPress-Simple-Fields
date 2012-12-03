@@ -1,0 +1,454 @@
+/**
+ * Styles used when editing post
+ * i.e. not when adding or editing fieldgroups, post connectors, and such
+ */
+
+.sf-cf:before, .sf-cf:after { content:""; display:table; }
+.sf-cf:after { clear:both; }
+.sf-cf { zoom:1; } /* For IE 6/7 (trigger hasLayout) */
+
+.sf_box_debug {
+	padding: .5em;
+	background-color: lightyellow;
+}
+
+.simple-fields-metabox-field,
+.simple-fields-metabox-field-add
+ {
+	margin-top: 1em;
+	margin-bottom: 1em;
+	margin-right: 11px;
+}
+
+
+.simple-fields-metabox-field-add-bottom {
+	display: none;
+}
+.simple-fields-meta-box-field-group-wrapper-has-fields-added .simple-fields-metabox-field-add-bottom {
+	display: block;
+}
+
+.simple-fields-metabox-field .simple-fields-for-radiobutton,
+.simple-fields-metabox-field .simple-fields-for-checkbox {
+	display: inline;
+	font-weight: normal;
+}
+.simple-fields-metabox-field-radiobutton {
+	display: block;
+	margin-top: .5em;
+	margin-bottom: .5em;
+}
+ul.simple-fields-metabox-field-group-fields li {
+	position: relative;
+}
+
+/* remove margin added by default to inside by WP */
+ul.simple-fields-metabox-field-group-fields {
+	margin: 0 -10px;
+}
+
+ul.simple-fields-metabox-field-group-fields-repeatable li {
+	margin-top: 1em;
+	padding-top: .5em;
+	padding-bottom: .5em;
+	padding-left: 11px;
+	/* transition: all .25s ease-out; -webkit-transition: all .25s ease-out; -moz-transition: all .25s ease-out; -o-transition: all .25s ease-out; -ms-transition: all .25s ease-out; */
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(whiteSmoke), to(#fcfcfc));
+	background-image: -webkit-linear-gradient(top, whiteSmoke, #fcfcfc);
+	background-image:    -moz-linear-gradient(top, whiteSmoke, #fcfcfc);
+	background-image:     -ms-linear-gradient(top, whiteSmoke, #fcfcfc);
+	background-image:      -o-linear-gradient(top, whiteSmoke, #fcfcfc);
+	border-top: 2px solid #eee;
+	padding: .5em 1.5em;
+	margin: 0 0 0 0;
+	opacity: .9;
+}
+ul.simple-fields-metabox-field-group-fields-repeatable li:hover {
+	background-color: #fffcf1;
+	opacity: 1;
+}
+
+
+.simple-fields-metabox-field-group-handle {
+	width: 16px;
+	height: 16px;
+	background: transparent url(icon-drag.gif) no-repeat 0 50%;
+	cursor: move;
+	display: none;
+	position: absolute;
+	margin-left: -16px;
+	margin-top: 12px;
+}
+.simple-fields-metabox-field-group-fields-repeatable:hover .simple-fields-metabox-field-group-handle {
+	display: block;
+}
+
+.simple-fields-metabox-field-group input.text {
+	border: 1px solid #dfdfdf;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+}
+.simple-fields-metabox-field-group input.text,
+.simple-fields-metabox-field-group textarea
+{
+	width: 95%;
+}
+
+.simple-fields-metabox-field-group input.simple-fields-field-type-color,
+.simple-fields-metabox-field-group input.simple-fields-field-type-date
+ {
+	width: 6em;
+}
+
+.simple-fields-metabox-field-textarea-tinymce-wrapper {
+	width: 100%;
+}
+.simple-fields-metabox-field-textarea-tinymce-wrapper .mce_fullscreen {
+	display: none !important;
+}
+
+.simple-fields-metabox-field-textarea-tinymce-wrapper .simple-fields-metabox-field-group textarea {
+
+}
+
+.simple-fields-metabox-field-textarea-tinymce-media {
+	padding: 5px;
+}
+.simple-fields-metabox-field-textarea-tinymce-media a {
+	padding: 0 0 5px 10px;
+}
+
+#post-body .simple-fields-metabox-field-textarea-tinymce-wrapper .wp_themeSkin .mceStatusbar a.mceResize {
+	margin: 0;
+	top: 0;
+}
+
+/* try to tighten the output */
+.simple-fields-metabox-field-first {
+	-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
+	/*display: inline-block;*/
+	float: left;
+	width: 25%;
+	padding-right: 1em;
+	min-height: 1px;
+	/*border: 1px solid red;
+	background-color: lightyellow;*/
+}
+.simple-fields-metabox-field-second {
+	-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
+	float: left;
+	width: 65%;
+	position: relative;
+}
+
+/* when field group is in sidebar then put labels at top */
+#side-sortables .simple-fields-metabox-field-first {
+	float: none;
+	width: auto;
+}
+#side-sortables .simple-fields-metabox-field-second {
+	width: 90%;
+}
+#side-sortables ul.simple-fields-metabox-field-group-fields-repeatable li {
+	padding: .25em .5em;
+}
+#side-sortables .simple-fields-metabox-field, .simple-fields-metabox-field-add {
+	margin-right: 0;
+}
+#side-sortables .simple-fields-metabox-field-file-with-description {
+	height: 83px;
+}
+
+
+
+.simple_fields_editor_switch {
+	display: inline;
+	padding: 5px;
+}
+	.simple_fields_editor_switch a {
+		padding: 0 0 0 2px;
+	}
+	.simple_fields_editor_switch a.selected {
+		color: black;
+		text-decoration: none;
+		font-weight: bold;
+	}
+
+/* link to remove field group */
+.simple-fields-metabox-field-group-delete {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+}
+
+	.simple-fields-metabox-field-group:hover .simple-fields-metabox-field-group-delete {
+		display: block;
+	}
+
+	.simple-fields-metabox-field-group-delete a {
+		background: transparent url(bin_closed.png) no-repeat 0 50%;
+		display: block;
+		opacity: .5;
+		width: 16px;
+		height: 16px;
+	}
+	.simple-fields-metabox-field-group-delete a:hover {
+		opacity: 1;
+	}
+
+/* file field */
+ul.simple-fields-file-browser-list {
+	margin: 1em;
+}
+	ul.simple-fields-file-browser-list li {
+		border-top: 1px solid #DFDFDF;
+		clear: both;
+		margin: 0;
+		padding-top: 1em;
+		padding-bottom: 1em;
+	}
+	ul.simple-fields-file-browser-list .thumbnail {
+		float: left;
+	}
+	ul.simple-fields-file-browser-list .simple-fields-file-browser-list-file-info {
+		float: left;
+		margin-left: 1em;
+	}
+	ul.simple-fields-file-browser-list .thumbnail img {
+		width: 46px;
+	}
+	ul.simple-fields-file-browser-list li p {
+		margin: 0;
+	}
+	ul.simple-fields-file-browser-list h3 {
+		margin-top: 0;
+		margin-bottom: 0.25em;
+	}
+
+	.simple-fields-metabox-field-file {
+		height: 50px;
+	}
+	.simple-fields-metabox-field-file-with-description {
+		height: 70px;
+	}
+	.simple-fields-metabox-field-file-with-description .simple-fields-metabox-field-description {
+		position: absolute;
+		left: 0;
+		top: 50px;
+	}
+
+	.simple-fields-metabox-field-file-col1 {
+		width: 46px;
+		height: 46px;
+		background-color: #eee;
+		border: 1px solid #ddd;
+		overflow: hidden;
+	}
+	.simple-fields-metabox-field-file-col1 img {
+		width: 46px;
+		display: block;
+	}
+	.simple-fields-metabox-field-file-col2 {
+		margin-left: 56px;
+		margin-top: -46px;
+	}
+
+/*	.xxxsimple-fields-metabox-field-file-select,*/
+	.simple-fields-metabox-field-file-edit,
+	.simple-fields-metabox-field-file-clear {
+		visibility: hidden;
+	}
+	.simple-fields-metabox-field-group:hover .simple-fields-metabox-field-file-select,
+	.simple-fields-metabox-field-group:hover .simple-fields-metabox-field-file-edit,
+	.simple-fields-metabox-field-group:hover .simple-fields-metabox-field-file-clear {
+		visibility: visible;
+	}
+
+
+
+.simple-fields-metabox-field-description,
+.simple-fields-meta-box-field-group-description
+ {
+	font-style: italic;
+	color: #666;
+}
+
+.simple-fields-metabox-field-file-select, .simple-fields-metabox-field-file-edit, .simple-fields-metabox-field-file-clear,
+.simple-fields-metabox-field-post-clear {
+	border-left: 1px solid #ccc;
+	padding-left: 4px;
+	margin-left: 4px;
+}
+
+/*.simple-fields-bonny-plugins-inner-sidebar {
+	display: none;
+}*/
+
+/**
+ * field dropdown
+ */
+.simple-fields-fieldgroups-field-type-dropdown select {
+	/*width: 50%;*/
+}
+
+/** 
+ * field post
+ */
+.simple-fields-meta-box-field-group-field-type-post-dialog {
+	margin: 10px;
+}
+	.simple-fields-meta-box-field-group-field-type-post-dialog p {
+		margin: 0;
+	}
+
+	.simple-fields-meta-box-field-group-field-type-post-dialog-post-types {
+		margin-bottom: 10px;
+	}
+	.simple-fields-meta-box-field-group-field-type-post-dialog-post-types li {
+		display: inline;
+		margin-right: 5px;
+	}
+	.simple-fields-meta-box-field-group-field-type-post-dialog-post-types li.selected {
+		font-weight: bold;
+	}
+	.simple-fields-meta-box-field-group-field-type-post-dialog-post-posts,
+	.simple-fields-meta-box-field-group-field-type-post-dialog-post-posts li
+	 {
+		line-height: 1;
+		margin: 4px 0 4px 0;
+	}
+	.simple-fields-meta-box-field-group-field-type-post-dialog-post-posts-wrap {
+		height: 185px;
+		overflow: auto;
+		border: 1px solid #DFDFDF;
+		padding: 10px;
+		margin-bottom: 10px;
+	}
+
+	.simple-fields-meta-box-field-group-field-type-post-dialog-post-posts ul {
+		margin-left: 20px;
+	}
+
+
+/* taxonomy terms */
+.simple-fields-metabox-field-taxonomymeta-terms {
+	max-height: 100px;
+	overflow: auto;
+	margin-top: 5px;
+}
+
+	ul.simple-fields-metabox-field-group-fields-repeatable .simple-fields-metabox-field-taxonomymeta-terms li {
+		line-height: 1;
+		background-image: none;
+		border: none;
+		margin-left: 0;
+		padding-left: 0;
+		opacity: 1;
+	}
+
+	.simple-fields-metabox-field-taxonomymeta-terms ul.children {
+		margin-left: 18px;
+		margin-top: 5px;
+		
+	}
+	.simple-fields-metabox-field-taxonomymeta-terms label {
+		font-weight: normal;
+	}
+
+
+
+/* test style for thumbnail repeatable view */
+.simple-fields-metabox-field-group-fields-view-table {
+
+}
+
+.simple-fields-metabox-field-group-fields-view-table li {
+	border: 0 !important;
+	background-image: none !important;
+}
+
+.simple-fields-metabox-field-group-fields-view-table .simple-fields-metabox-field {
+	float: left;
+	padding: 0 20px 0 0;
+	margin: 0;
+	-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
+}
+
+.simple-fields-metabox-field-group-fields-view-table .simple-fields-metabox-field-first,
+.simple-fields-metabox-field-group-fields-view-table .simple-fields-metabox-field-second {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.simple-fields-metabox-field-group-fields-view-table .simple-fields-metabox-field-first {
+	display: none;
+	float: none;
+}
+.simple-fields-metabox-field-group-fields-view-table .simple-fields-metabox-field-first label {
+	font-weight: bold;
+}
+
+.simple-fields-metabox-field-group-fields-view-table .simple-fields-metabox-field-second {
+	float: none;
+}
+
+.simple-fields-metabox-field-group-fields-view-table .simple-fields-metabox-field-group-handle {
+	margin-top: 0;
+}
+
+
+.simple-fields-metabox-field-group-fields-view-table li:first-of-type {
+	border-top: 0;
+}
+
+.simple-fields-metabox-field-group-fields-view-table li:first-of-type .simple-fields-metabox-field-group-handle {
+	margin-top: 34px;
+}
+.simple-fields-metabox-field-group-fields-view-table li:first-of-type .simple-fields-metabox-field-group-delete {
+	top: 44px;
+}
+
+.simple-fields-metabox-field-group-fields-view-table li:first-of-type .simple-fields-metabox-field-first {
+	display: block;
+	margin-bottom: 10px;
+	padding-bottom: 5px;
+	border-bottom: 1px solid #ccc;
+}
+.simple-fields-metabox-field-group-fields-view-table li:first-of-type .simple-fields-metabox-field-second {
+	margin-bottom: 25px;
+}
+
+/* different widths depending on num of added fields. and yes, this feel a bit stupud */
+/* we support up to 10 fields, even that is proably to many too look good*/
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-1 .simple-fields-metabox-field {
+	width: 100%;
+}
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-2 .simple-fields-metabox-field {
+	width: 30%;
+}
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-3 .simple-fields-metabox-field {
+	width: 33.33%;
+}
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-4 .simple-fields-metabox-field {
+	width: 25%;
+}
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-5 .simple-fields-metabox-field {
+	width: 20%;
+}
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-6 .simple-fields-metabox-field {
+	width: 16.66%;
+}
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-7 .simple-fields-metabox-field {
+	width: 14.28%;
+}
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-8 .simple-fields-metabox-field {
+	width: 12.5%;
+}
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-9 .simple-fields-metabox-field {
+	width: 11.11%;
+}
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-10 .simple-fields-metabox-field {
+	width: 10%;
+}

@@ -11,12 +11,14 @@
  */
 if (!function_exists("sf_d")) {
 function sf_d($var) {
-
 	echo "<pre class='sf_box_debug'>";
 	if (is_array($var) || is_object($var)) {
 		echo htmlspecialchars( print_r($var, true), ENT_QUOTES, 'UTF-8' );
 	} else if( is_null($var) ) {
 		echo "Var is NULL";
+	} else if ( is_bool($var)) {
+		echo "Var is BOOLEAN ";
+		echo $var ? "TRUE" : "FALSE";
 	} else {
 		echo htmlspecialchars( $var, ENT_QUOTES, 'UTF-8' );
 	}
@@ -26,7 +28,8 @@ function sf_d($var) {
 
 
 /**
- * get all values or just the from a field in a field group
+ * get values from a field in a field group
+ * deprecated, use simple_fields_value or simple_fields_values
  *
  * @param $post_id
  * @param $field_name_or_id name as string or field group id and field id as array. 
@@ -36,6 +39,8 @@ function sf_d($var) {
  */
 function simple_fields_get_post_value($post_id, $field_name_or_id, $single = true) {
 
+	global $sf;
+
 	$fetch_by_id = true;
 	if (is_array($field_name_or_id) && sizeof($field_name_or_id) == 2) {
 		$field_group_id = $field_name_or_id[0];
@@ -44,7 +49,7 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 	}
 
 	$connector = simple_fields_get_all_fields_and_values_for_post($post_id);
-	
+
 	$return_val = null;
 	if ($connector) {
 		foreach ($connector["field_groups"] as $one_field_group) {
@@ -58,7 +63,7 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 				}
 	
 				$saved_values = isset($one_field["saved_values"]) ? $one_field["saved_values"] : null;
-	
+
 				if ($one_field["type"] == "radiobuttons" || $one_field["type"] == "dropdown") {
 					if ($one_field["type"] == "radiobuttons") {
 						$get_value_key = "type_radiobuttons_options";
@@ -71,22 +76,43 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 						$saved_values[$saved_i] = $one_field[$get_value_key][$saved_values[$saved_i]]["value"];
 					}
 				}
+
+				// xxx make sure extended return value works here too
+				// check for settings saved for the field (in gui or through register_field_group)
+				$parsed_options_for_this_field = array();
+				$field_options_key = "type_".$one_field["type"]."_options";
+				if (isset($one_field[$field_options_key])) {
+					// settings exist for this field
+					if (isset($one_field[$field_options_key]["enable_extended_return_values"]) && $one_field[$field_options_key]["enable_extended_return_values"]) {
+						$parsed_options_for_this_field["extended_return"] = 1;
+					}
+
+					if (isset($parsed_options_for_this_field["extended_return"]) && $parsed_options_for_this_field["extended_return"]) {
+						// Yep, use extended return values
+						$num_values = count($saved_values);
+						while ($num_values--) {
+							$saved_values[$num_values] = $sf->get_extended_return_values_for_field($one_field, $saved_values[$num_values]);
+						}
+					}
+
+				}
 				
 				if ($is_found && $single) {
 					$return_val = $saved_values[0];
 				} else if ($is_found) {
 					$return_val = $saved_values;
 				}
-	
+
+				// hm.. can't get here right??!
 				if ($is_found) {
 					return $return_val;
 				}
-	
-	
+
+
 			}
 		}
 	}
-	
+
 	return; // oh no! nothing found. bummer.
 }
 
@@ -126,7 +152,7 @@ function simple_fields_get_post_group_values($post_id, $field_group_name_or_id, 
 		if ($is_found) {
 			$arr_return = array();
 			foreach ($one_field_group["fields"] as $one_field) {
-			
+
 				$saved_values = $one_field["saved_values"];
 
 				if (is_null($saved_values)) {
@@ -153,9 +179,9 @@ function simple_fields_get_post_group_values($post_id, $field_group_name_or_id, 
 					$arr_return[$one_field["id"]] = $saved_values;
 				}
 			}
-			
+
 			$set_count = sizeof($one_field["saved_values"]);
-			
+
 			$arr_return2 = array();
 			for ($i=0; $i<$set_count; $i++) {
 				$arr_return2[$i] = array();
@@ -178,93 +204,123 @@ function simple_fields_get_post_group_values($post_id, $field_group_name_or_id, 
  * returns connector structure, field groups, fields, and values
  * well.. everything! it's really funky.
  *
+ * used from many places
+ *
  * return @array a really fat one!
  */
-function simple_fields_get_all_fields_and_values_for_post($post_id) {
+function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") {
 	
 	global $sf;
+	$cache_key = 'simple_fields_'.$sf->ns_key.'_get_all_fields_and_values_for_post_' . $post_id . json_encode($args);
+	$selected_post_connector = wp_cache_get( $cache_key , 'simple_fields' );
 
-	$defaults = array(
-		"include_deleted" => TRUE
-	);
-	$args = wp_parse_args($args, $defaults);
+	if (FALSE === $selected_post_connector) {
 
-	$post                     = get_post($post_id);
-	$connector_to_use         = $sf->get_selected_connector_for_post($post);
-	$existing_post_connectors = $sf->get_post_connectors();
-	$field_groups             = $sf->get_field_groups();
-	$selected_post_connector  = isset($existing_post_connectors[$connector_to_use]) ? $existing_post_connectors[$connector_to_use] : NULL;
+		$defaults = array(
+			"include_deleted" => TRUE
+		);
+		$args = wp_parse_args($args, $defaults);
 	
-	if($selected_post_connector == null) {
-		return false;
-	}
-
-	// Remove deleted field groups
-	if (!$args["include_deleted"]) {
-		$arr_field_groups_to_keep = array();
-		foreach ($selected_post_connector["field_groups"] as $one_field_group_id => $one_field_group) {
+		$post                     = get_post($post_id);
+		$connector_to_use         = $sf->get_selected_connector_for_post($post);
+		$existing_post_connectors = $sf->get_post_connectors();
+		$field_groups             = $sf->get_field_groups();
+		$selected_post_connector  = isset($existing_post_connectors[$connector_to_use]) ? $existing_post_connectors[$connector_to_use] : NULL;
 	
-			if ($one_field_group["deleted"]) continue;
-	
-			$arr_field_groups_to_keep[$one_field_group_id] = $one_field_group;
-	
+		if ($selected_post_connector == null) {
+			return false;
 		}
-		$selected_post_connector["field_groups"] = $arr_field_groups_to_keep;
-	}
 	
-	// Do stuff
-	foreach ($selected_post_connector["field_groups"] as $one_field_group) { // one_field_group = name, deleted, context, priority, id
+		// Remove deleted field groups
+		if (!$args["include_deleted"]) {
 	
-		// now get all fields for that fieldgroup and join them together
-		$selected_post_connector["field_groups"][$one_field_group["id"]] = array_merge($selected_post_connector["field_groups"][$one_field_group["id"]], $field_groups[$one_field_group["id"]]);
+			$arr_field_groups_to_keep = array();
+			foreach ($selected_post_connector["field_groups"] as $one_field_group_id => $one_field_group) {
 	
-		// loop through all fields within this field group
-		// now find out how many times this field group has been added
-		// can be zero, 1 and several (if field group is repeatable)
-		$num_added_field_groups = 0;
-
-		while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
-			$num_added_field_groups++;
+				if ($one_field_group["deleted"]) continue;
+	
+				$arr_field_groups_to_keep[$one_field_group_id] = $one_field_group;
+	
+			}
+			$selected_post_connector["field_groups"] = $arr_field_groups_to_keep;
 		}
-		
-		// Field groups should only be allowed to be 0 if the group is repeatable
-		if ($num_added_field_groups == 0 && !$one_field_group['repeatable']) {
-		    $num_added_field_groups++;
-		}
-
-		// now fetch the stored values, one field at a time
-		for ($num_in_set = 0; $num_in_set < $num_added_field_groups; $num_in_set++) {
-
-			// fetch value for each field
-			foreach ($selected_post_connector["field_groups"][$one_field_group["id"]]["fields"] as $one_field_id => $one_field_value) {
-
-				$custom_field_key = "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_{$one_field_id}_numInSet_{$num_in_set}";
-				$saved_value = get_post_meta($post_id, $custom_field_key, true); // empty string if does not exist
-
-				if ($one_field_value["type"] == "textarea") {
-					$match_count = preg_match_all('/http:\/\/[a-z0-9A-Z\.]+[a-z0-9A-Z\.\/%&=\?\-_#]+/i', $saved_value, $match);
-					if ($match_count) {
-						$links=$match[0];
-						for ($j=0;$j<$match_count;$j++) {
-							if (strpos($saved_value, 'href="'.$links[$j].'"') === false && strpos($saved_value, "href='".$links[$j]."'") === false) {
-								$attr['discover'] = (apply_filters('embed_oembed_discover', false)) ? true : false;
-								$oembed_html = wp_oembed_get($links[$j], $attr);
-								// If there was a result, oembed the link
-								if ($oembed_html) {
-									$saved_value = str_replace($links[$j], apply_filters('embed_oembed_html', $oembed_html, $links[$j], $attr), $saved_value);
+	
+		// Do stuff
+		foreach ($selected_post_connector["field_groups"] as $one_field_group) { // one_field_group = name, deleted, context, priority, id
+	
+			// now get all fields for that fieldgroup and join them together
+			$selected_post_connector["field_groups"][$one_field_group["id"]] = array_merge($selected_post_connector["field_groups"][$one_field_group["id"]], $field_groups[$one_field_group["id"]]);
+	
+			// loop through all fields within this field group
+			// now find out how many times this field group has been added
+			// can be zero, 1 and several (if field group is repeatable)
+			$num_added_field_groups = 0;
+	
+			while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
+				$num_added_field_groups++;
+			}
+			
+			// Field groups should only be allowed to be 0 if the group is repeatable
+			if ($num_added_field_groups == 0 && (isset($one_field_group['repeatable']) && !$one_field_group['repeatable']) ) {
+			    $num_added_field_groups++;
+			}
+	
+			// now fetch the stored values, one field at a time
+			// echo "<br>num_added_field_groups: $num_added_field_groups";
+			// for repeatable field groups num_added_field_groups is the number of added field groups
+			for ($num_in_set = 0; $num_in_set < $num_added_field_groups; $num_in_set++) {
+	
+				// fetch value for each field
+				foreach ($selected_post_connector["field_groups"][$one_field_group["id"]]["fields"] as $one_field_id => $one_field_value) {
+	
+					#echo "<br>num in set: $num_in_set";
+					#sf_d($one_field_value);
+	
+					$custom_field_key = "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_{$one_field_id}_numInSet_{$num_in_set}";
+					#echo "<br>custom field key: $custom_field_key";
+	
+					$saved_value = get_post_meta($post_id, $custom_field_key, true); // empty string if does not exist
+	
+					// Modify values for some field types
+					if ("textarea" === $one_field_value["type"]) {
+						$match_count = preg_match_all('/http:\/\/[a-z0-9A-Z\.]+[a-z0-9A-Z\.\/%&=\?\-_#]+/i', $saved_value, $match);
+						if ($match_count) {
+							$links=$match[0];
+							for ($j=0;$j<$match_count;$j++) {
+								if (strpos($saved_value, 'href="'.$links[$j].'"') === false && strpos($saved_value, "href='".$links[$j]."'") === false) {
+									$attr['discover'] = (apply_filters('embed_oembed_discover', false)) ? true : false;
+									$oembed_html = wp_oembed_get($links[$j], $attr);
+									// If there was a result, oembed the link
+									if ($oembed_html) {
+										$saved_value = str_replace($links[$j], apply_filters('embed_oembed_html', $oembed_html, $links[$j], $attr), $saved_value);
+									}
 								}
 							}
 						}
-					}
-				}
-				
-				$selected_post_connector["field_groups"][$one_field_group["id"]]["fields"][$one_field_id]["saved_values"][$num_in_set] = $saved_value;
-				$selected_post_connector["field_groups"][$one_field_group["id"]]["fields"][$one_field_id]["meta_keys"][$num_in_set] = $custom_field_key;
+					} else if ("dropdown" === $one_field_value["type"]) {
+						
+						// dropdown can be multiple since 1.1.4
+						if (isset($one_field_value["type_dropdown_options"]["enable_multiple"]) && $one_field_value["type_dropdown_options"]["enable_multiple"]) {
 
+							// value should always be array when using multiple
+							if (!is_array($saved_value)) $saved_value = array();
+
+						}
+
+					}
+
+					// 
+	
+					$selected_post_connector["field_groups"][$one_field_group["id"]]["fields"][$one_field_id]["saved_values"][$num_in_set] = $saved_value;
+					$selected_post_connector["field_groups"][$one_field_group["id"]]["fields"][$one_field_id]["meta_keys"][$num_in_set] = $custom_field_key;
+	
+				}
 			}
+	
 		}
-		
+		wp_cache_set( $cache_key, $selected_post_connector, 'simple_fields' );
 	}
+
 	return $selected_post_connector;
 }
 
@@ -283,9 +339,9 @@ class Simple_Fields_Walker_Category_Checklist extends Walker {
 	}
 
 	function start_el(&$output, $category, $depth, $args) {
-		
+
 		global $simple_fields_taxonomyterm_walker_field_name;
-				
+
 		extract($args);
 		if ( empty($taxonomy) )
 			$taxonomy = 'category';
@@ -409,12 +465,12 @@ function simple_fields_merge_arrays($array1 = array(), $array2 = array()) {
   *
  * @param string $slug the slug of this field group. must be unique.
  * @param array $new_field_group settings/options for the new group
- * @param return array the new field group as an array
+ * @return array the new field group as an array
  */
 function simple_fields_register_field_group($slug = "", $new_field_group = array()) {
 
 	global $sf;
-	
+
 	$field_groups = $sf->get_field_groups();
 	#sf_d($field_groups);
 	$highest_id = 0;
@@ -447,7 +503,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 	if ($highest_id === 0) {
 		$field_group_id = 1;
 	}
-	
+
 	// Set default values for slug and name
 	if (empty($slug)) {
 		// Make sure that the field group gets a slug
@@ -457,6 +513,9 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 		$new_field_group["name"] = $slug;
 	}
 	
+	// make sure slug is valid
+	$slug = sanitize_key($slug);
+
 	if (!isset($field_groups[$field_group_id])) {
 		// Set up default values if this is a new field group
 		$field_group_defaults = array(
@@ -473,7 +532,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 		// This is an existing field group so get the old values
 		$field_group_defaults = $field_groups[$field_group_id];
 	}
-		
+
 	// Merge the new values of this field group with the old values
 	// Let the new values overwrite the hold ones
 	// @done: Should not http://codex.wordpress.org/Function_Reference/wp_parse_args work for this?
@@ -489,7 +548,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 		// Loop through all fields
 		// somewhwere here added fields from gui disapears
 		foreach($new_field_group["fields"] as $one_new_field) {
-			
+
 			// Set up default values for this field
 			$fields[$field_id] = array();
 			$field_slug = "field_$field_id";
@@ -508,7 +567,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 					"id"      => "",
 					"deleted" => 0
 			);
-			
+
 			// If a field with this index/id exists then merge that fields values with our default values
 			// so if you add one field in php, then one in the gui, and then extend the php with one more field = 
 			// field from gui is overwritten since it get's the id that the php version want
@@ -521,28 +580,30 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 
 			// Find id of possibly existing field using the slug
 			// If existing field is found then merge old values with new
-			foreach ($field_groups[$field_group_id]["fields"] as $one_existing_field) {
-
-				if ($one_existing_field["slug"] == $one_new_field["slug"]) {
-					// Found existing field with same slug
-					// Merge new field values with the old values, so $field_defaults will have the combines values
-					$field_defaults = simple_fields_merge_arrays($field_defaults, $one_existing_field);
+			if (isset($field_groups[$field_group_id]["fields"]) && is_array($field_groups[$field_group_id]["fields"])) {
+				foreach ($field_groups[$field_group_id]["fields"] as $one_existing_field) {
+	
+					if ($one_existing_field["slug"] == $one_new_field["slug"]) {
+						// Found existing field with same slug
+						// Merge new field values with the old values, so $field_defaults will have the combines values
+						$field_defaults = simple_fields_merge_arrays($field_defaults, $one_existing_field);
+					}
+	
 				}
-
 			}
 
 			// Do wierd stuff with field default values
 			foreach($field_defaults as $oneDefaultFieldKey => $oneDefaultFieldValue) {
-				
+
 				if ($oneDefaultFieldKey == "id") {
 					$fields[$field_id]["id"] = $field_id;
 				} else {
 					if (!isset($one_new_field[$oneDefaultFieldKey])) {
 						$fields[$field_id][$oneDefaultFieldKey] = $oneDefaultFieldValue;
 					}
-					
+
 				}
-				
+
 				// If the default key is an array
 				if (isset($one_new_field[$oneDefaultFieldKey]) && is_array($one_new_field[$oneDefaultFieldKey]) && !empty($one_new_field[$oneDefaultFieldKey])) {
 
@@ -550,7 +611,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 					// For example "type_post_options" or "type_taxonomyterm_options"
 					$options_type = preg_replace("/type_([a-z]+)_options/i", '$1', $oneDefaultFieldKey);
 					if (!empty($options_type)) {
-					
+
 						foreach(array_keys($one_new_field[$oneDefaultFieldKey]) as $optionKey) {
 
 							if (is_numeric($optionKey)) {
@@ -564,9 +625,9 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 									$fields[$field_id][$oneDefaultFieldKey][$optionKey]["deleted"] = 0;
 								}
 							}
-							
+
 						} // foreach
-						
+
 					}
 				} // foreach
 
@@ -574,7 +635,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 					$fields[$field_id][$oneDefaultFieldKey] = $oneDefaultFieldValue;
 				}
 			}
-			
+
 			$field_id++;
 
 		}
@@ -598,7 +659,7 @@ foreach ($field_groups[$field_group_id]["fields"] as $key => $val) {
 #sf_d($fields_copy);
 #sf_d($existing_fields_copy);
 
-	
+
 		$merged_fields = simple_fields_merge_arrays($fields, $field_groups[$field_group_id]["fields"]);
 
 		// Mergin is done, but we want to get our old order back now...
@@ -619,20 +680,22 @@ foreach ($field_groups[$field_group_id]["fields"] as $key => $val) {
 
 	} // if passed as arg field group has fields
 
-#sf_d($field_groups[$field_group_id]);
-#sf_d($fields);
+	$sf->clear_caches();
 	update_option("simple_fields_groups", $field_groups);
 
 	return $field_groups[$field_group_id];
-	
+
 }
 
+/**
+ * @todo: documentation
+ */
 function simple_fields_register_post_connector($unique_name = "", $new_post_connector = array()) {
 
 	global $sf;
 
 	$post_connectors = $sf->get_post_connectors();
-	
+
 	$highest_connector_id = 0;
 	foreach ($post_connectors as $oneConnector) {
 		if ($oneConnector["key"] == $unique_name && !empty($unique_name)) {
@@ -642,14 +705,14 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 			$highest_connector_id = $oneConnector["id"];
 		}
 	}
-	
+
 	if (!isset($connector_id) || !is_numeric($connector_id)) {
 		if (!empty($post_connectors[$highest_connector_id]) || $highest_connector_id > 0) {
 			$highest_connector_id++;
 		}
 		$connector_id = $highest_connector_id;
 	}
-	
+
 	// If $connector_id is 0 here then it's the first ever created
 	// But 0 is the id to tell SF to create new, so we must up it to 1
 	if ($connector_id === 0) $connector_id = 1;
@@ -659,7 +722,9 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 	} else if (!isset($new_post_connector["name"]) || empty($new_post_connector["name"])) {
 		$new_post_connector["name"] = $unique_name;
 	}
-	
+
+	$unique_name = sanitize_key($unique_name);
+
 	$post_connector_defaults = array(
 		"id" => $connector_id,
 		"key" => $unique_name,
@@ -670,11 +735,11 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 		"deleted" => false,
 		"hide_editor" => false
 	);
-	
+
 	if (isset($post_connectors[$connector_id])) {
 		$post_connector_defaults = $post_connectors[$connector_id];
 	}
-	
+
 	$post_connectors[$connector_id] = simple_fields_merge_arrays($post_connector_defaults, $new_post_connector);
 	$post_connectors[$connector_id]['post_types'] = array_unique($post_connectors[$connector_id]['post_types']);
 	
@@ -689,7 +754,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 							"deleted" => 0,
 							"context" => "normal",
 							"priority" => "low"
-			
+
 		);
 		foreach($new_post_connector["field_groups"] as $field_group_options) {
 			$field_group_found = false;
@@ -718,19 +783,20 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 						} else {
 							$field_group_connectors[$field_group_id][$oneGroupConnectorDefaultKey] = $oneGroupConnectorDefaultValue;
 						}
-						
+
 					}
 				}
 			}
 		}
 		$post_connectors[$connector_id]["field_groups"] = $field_group_connectors;
-		
+
 	}
 	
+	$sf->clear_caches();
 	update_option("simple_fields_post_connectors", $post_connectors);
-	
+
 	return $post_connectors[$connector_id];
-	
+
 }
 
 /**
@@ -746,17 +812,17 @@ function simple_fields_register_post_type_default($connector_id_or_special_type 
 	// simple_fields::debug("simple_fields_register_post_type_default()", array("post_type_connector" => $connector_id_or_special_type, "post_type" => $post_type));
 
 	if (is_numeric($connector_id_or_special_type)) {
-		
+
 		$connector_id_or_special_type = (int) $connector_id_or_special_type;
-		
+
 	} else if ( in_array($connector_id_or_special_type, array("__inherit__", "__none__") ) ) {
-			
+
 		// Nothing to do here - It's good already
-		
+
 	} else if (!is_numeric($connector_id_or_special_type)) {
-	
+
 		// Connector is probably the name
-	
+
 		if (empty($connector_id_or_special_type)) {
 			return false;
 		}
@@ -771,16 +837,17 @@ function simple_fields_register_post_type_default($connector_id_or_special_type 
 			// Still not numeric?
 			return false;
 		}
-		
+
 	}
-	
-	$post_type_defaults = (array) get_option("simple_fields_post_type_defaults");
+
+	$post_type_defaults = $sf->get_post_type_defaults();
 
 	$post_type_defaults[$post_type] = $connector_id_or_special_type;
 	if (isset($post_type_defaults[0])) {
 		unset($post_type_defaults[0]);
 	}
-
+	
+	$sf->clear_caches();
 	update_option("simple_fields_post_type_defaults", $post_type_defaults);
 
 }
@@ -804,8 +871,13 @@ function simple_fields_register_post_type_default($connector_id_or_special_type 
  */
 function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $new_post_connector = null, $new_value) {
 
+	/*
+	echo "<br><br>Setting field with slug " . $field_slug . " for post " . $post_id;
+	echo "<br>value to set is: " . $new_value;
+	// */
+
 	global $sf;
-	
+
 	// First check the post connector for this post
 	// The post must have a connector or there will be problems getting the saved values
 	$post = get_post($post_id);
@@ -817,56 +889,58 @@ function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $n
 	// if no $post_connector, set it to default connector to use
 	$set_post_connector_to = null;
 	if (empty($saved_connector)) {
-		
+
 		if (empty($new_post_connector)) {
 			$set_post_connector_to = $default_connector_to_use;
 		} else {
 			$set_post_connector_to = $new_post_connector;
 		}
-		
+
 		update_post_meta($post->ID, "_simple_fields_selected_connector", $set_post_connector_to);			
 
 	}
-	
+
 	// Loop through the field groups that this post connector has and locate the field_slug we are looking for
 	$post_connector_info = simple_fields_get_all_fields_and_values_for_post($post_id);
 	foreach ($post_connector_info["field_groups"] as $one_field_group) {
 
+		// check number of added field groups
+		$num_added_field_groups = 0; 
+		while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
+			$num_added_field_groups++;
+		}
+
 		// Loop the fields in this field group
 		foreach ($one_field_group["fields"] as $one_field_group_field) { 
-			
+
 			// Skip deleted fields
 			if ($one_field_group_field["deleted"]) continue;
-			
+
 			if ($field_slug === $one_field_group_field["slug"]) {
-				
+
 				// Found field with selected slug
-				
+
 				$field_group_id = $one_field_group["id"];
 				$field_id = $one_field_group_field["id"];
-				
-				// check number of added field groups
-		        $num_added_field_groups = 0; 
-		        while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
-		            $num_added_field_groups++;
-		        }
-		        
-		        if (empty($new_numInSet)) {
-			        $num_in_set = $new_numInSet;
-		        } else {
-			        $num_in_set = $num_added_field_groups;			        
-		        }
 
+				if (!empty($new_numInSet)) {
+					$num_in_set = $new_numInSet;
+				} else {
+					$num_in_set = $num_added_field_groups;			        
+				}
+				
 				update_post_meta($post_id, "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_{$field_id}_numInSet_{$num_in_set}", $new_value);
 				update_post_meta($post_id, "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_added_numInSet_{$num_in_set}", 1);
-
-				// value updated. exit function.
-				return;
+				update_post_meta($post_id, "_simple_fields_been_saved", 1);
+				
+				// value updated. clear cache and exit function.
+				$sf->clear_caches();
+				return TRUE;
 
 			} // if
-			
+
 		} // foreach
-		
+
 	} // foreach
 }
 
@@ -919,35 +993,48 @@ function simple_fields_value($field_slug = NULL, $post_id = NULL, $options = NUL
  * )
  */
 function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NULL) {
-	
+
 	if (empty($field_slug)) {
 		return FALSE;
 	}
-	
+
 	if (is_null($post_id)) {
 		$post_id = get_the_ID();
 	}
-	
+
 	// if field_slug contains commas then get all fields. awe-some!
 	if (strpos($field_slug, ",") !== FALSE) {
+
 		$arr_comma_slugs_values = array();
 		$arr_field_slugs = explode(",", $field_slug);
 		if ($arr_field_slugs) {
 			foreach ($arr_field_slugs as $one_of_the_comma_separated_slug) {
+			
+				$one_of_the_comma_separated_slug = trim($one_of_the_comma_separated_slug);
+
 				$one_slug_values = simple_fields_values($one_of_the_comma_separated_slug, $post_id, $options);
+
+				// no value, don't add
+				if (empty($one_slug_values)) continue;
+
 				$loopnum = 0;
+
 				if (!isset($arr_comma_slugs_values[$loopnum])) $arr_comma_slugs_values[$loopnum] = array();
+
 				foreach ($one_slug_values as $one_slug_sub_value) {
 					$arr_comma_slugs_values[$loopnum][$one_of_the_comma_separated_slug] = $one_slug_sub_value;
 					$loopnum++;
 				}
+
 			}
 		}
+
 		return $arr_comma_slugs_values;
+
 	}
-		
+
 	global $sf;
-	
+
 	// Post connector for this post, with lots of info
 	$post_connector_info = simple_fields_get_all_fields_and_values_for_post($post_id, "include_deleted=0");
 
@@ -955,58 +1042,118 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 		return FALSE;
 	}
 
+	$parsed_options = wp_parse_args($options);
+
 	// Loop through the field groups that this post connector has and locate the field_slug we are looking for
 	foreach ($post_connector_info["field_groups"] as $one_field_group) {
 
 		// Loop the fields in this field group
 		foreach ($one_field_group["fields"] as $one_field_group_field) { 
-			
+
+			//_simple_fields_fieldGroupID_23_fieldID_2_numInSet_
+			#file
+			#sf_d($one_field_group_field);
+
 			// Skip deleted fields
 			if ($one_field_group_field["deleted"]) continue;
-			
+
 			if ($field_slug === $one_field_group_field["slug"]) {
+			
+				// Detect options for the field with this slug
+				// options are in format:
+				// extended_output=1&file[extended_output]=1&file[anotherOptions]=yepp indeed
+				// where the first arg is for all fields, and the one with square-brackets are for specific slugs
+				$parsed_options_for_this_field = array();
+
+				// First check for settings saved for the field (in gui or through register_field_group)
+				$field_options_key = "type_".$one_field_group_field["type"]."_options";
+				if (isset($one_field_group_field[$field_options_key])) {
+					// settings exist for this field
+					if (isset($one_field_group_field[$field_options_key]["enable_extended_return_values"]) && $one_field_group_field[$field_options_key]["enable_extended_return_values"]) {
+						$parsed_options_for_this_field["extended_return"] = 1;
+					}
+
+				}
 				
+				// check for options savailable for all fields
+				// all keys for values that are not arrays. these are args that are meant for all slugs
+				foreach ($parsed_options as $key => $val) {
+					if (!is_array($val)) {
+						$parsed_options_for_this_field = array_merge($parsed_options_for_this_field, array($key => $val));
+					}
+				}
+
+				// check for options for just this specific slug
+				// if our field slug is available as a key and that key is an array = value is for this field slug
+				if ( isset($parsed_options[$one_field_group_field["slug"]]) && is_array($parsed_options[$one_field_group_field["slug"]]) ) {
+					$parsed_options_for_this_field = array_merge($parsed_options_for_this_field, $parsed_options[$one_field_group_field["slug"]]);
+				}
+
+				// that's it, we have the options that should be available for this field slug
+				// echo "<br>field: " . $one_field_group_field["slug"];
+				// sf_d($parsed_options_for_this_field);
+					
 				// Slug is found. Get and return values.
-				$saved_values = isset($one_field_group_field["saved_values"]) ? $one_field_group_field["saved_values"] : "";
-				
+				// If no value is set. Should we return string, null, or false? NULL as in "no value exists"?
+				$saved_values = isset($one_field_group_field["saved_values"]) ? $one_field_group_field["saved_values"] : NULL;
+
 				// If no values just return
-				if (!sizeof($saved_values)) return;
+				// But return an array, since that's what we except it to return
+				// if (!sizeof($saved_values)) return array(); // no, don't return here. let the action further down run.
+				if (!sizeof($saved_values)) $saved_values = array();
 				
 				/*
 					For old/core/legacy fields it's like this:
 					Array
 					(
-					    [0] => Entered text into field one
-					    [1] => Entered text into field two
+						[0] => Entered text into field one
+						[1] => Entered text into field two
 					)
-					
+
 					For new/cool/custom field types it's like this:
 					Array
 					(
-					    [0] => Array
-					        (
-					            [option1] => Yeah
-					            [option2] => aha
-					        )
-					
-					    [1] => Array
-					        (
-					            [option1] => hejhopp
-					            [option2] => snopp-pop
-					        )
+						[0] => Array
+							(
+								[option1] => Yeah
+								[option2] => aha
+							)
+
+						[1] => Array
+							(
+								[option1] => hejhopp
+								[option2] => snopp-pop
+							)
 					)
 				*/
-				
+
 				// If the type is among the registered_field_types then use it
-				if (isset($sf->registered_field_types[$one_field_group_field["type"]]) && isset($saved_values[0]) && is_array($saved_values[0])) {
+				//if (isset($sf->registered_field_types[$one_field_group_field["type"]]) && isset($saved_values[0]) && is_array($saved_values[0])) {
+				if ( isset($sf->registered_field_types[$one_field_group_field["type"]]) && isset($saved_values[0]) ) {
 
 					// Use the custom field object to output this value, since we can't guess how the data is supposed to be used
 					$custom_field_type = $sf->registered_field_types[$one_field_group_field["type"]];
-					$saved_values = $custom_field_type->return_values($saved_values, $options);
+					$saved_values = $custom_field_type->return_values($saved_values, $parsed_options_for_this_field);
 
 				} else {
-					
+
 					// legacy/core field type, uses plain $saved_values
+					// ...but since 1.0.3 you can use extened return
+					// $parsed_options_for_this_field
+
+
+					// Check if field should return extended return values
+					if ( isset($parsed_options_for_this_field["extended_return"]) && (bool) $parsed_options_for_this_field["extended_return"] ) {
+						
+						// check if current field type supports this
+						if ( in_array($one_field_group_field["type"], array("file", "radiobuttons", "dropdown", "post", "user", "taxonomy", "taxonomyterm", "date")) ) {
+							
+							foreach ($saved_values as $one_saved_value_key => $one_saved_value) {
+								$saved_values[$one_saved_value_key] = $sf->get_extended_return_values_for_field($one_field_group_field, $one_saved_value);
+							}
+							
+						}
+					}
 
 				}
 
@@ -1024,18 +1171,26 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 			}
 		}
 	}
-	
+
 } // simple field values
 
 
 /**
- * Return the name of the post connector for the current post in the loop
- *
- * @return mixed False if no connector or connector not found. String name of connector if found.
+ * Return the slug of the post connector for the current post in the loop or for the post specified in $post_id
+ * @param $post_id optional post or post id
+ * @return mixed False if no connector or connector not found. String slug of connector if found.
  */
-function simple_fields_connector() {
+function simple_fields_connector($post_id = NULL) {
+
 	global $post, $sf;
-	$connector_id = $sf->get_selected_connector_for_post($post);
+	
+	if (is_numeric($post_id)) {
+		$post_this = get_post($post_id);
+	} else {
+		$post_this = $post;
+	}
+
+	$connector_id = $sf->get_selected_connector_for_post($post_this);
 
 	if ($connector_id == "__none__") {
 		// no connector selected
@@ -1050,6 +1205,7 @@ function simple_fields_connector() {
 		return $post_connectors[$connector_id]["slug"];
 	}
 }
+
 /**
  * Checks if the current post in the loop has the connector with slug $slug selected
  *
@@ -1060,3 +1216,42 @@ function simple_fields_is_connector($slug) {
 	$connector_slug = simple_fields_connector();
 	return ($connector_slug === $slug);
 }
+
+/**
+ * Returns allt the values in a field group
+ * It's a shortcut to running simple_fields_value(slugs) with all slugs already entered
+ * Depending if the field group is repeatable or not, simple_field_value or simple_fields_values will be used
+ * @param mixed $field_group_id_or_slug
+ * @return mixed, but probably array, depending on how many field the group has (just one field, and not repeatable = no array for you!)
+ */
+function simple_fields_fieldgroup($field_group_id_or_slug, $post_id = NULL, $options = array()) {
+
+	if (!is_numeric($post_id)) {
+		global $post;
+		$post_id = $post->ID;
+	}
+
+	global $sf;
+	$cache_key = "simple_fields_".$sf->ns_key."_fieldgroup_" . $field_group_id_or_slug . "_" . $post_id . json_encode($options);
+	$values = wp_cache_get( $cache_key, 'simple_fields');
+	if (FALSE === $values) {
+	
+		$field_group = $sf->get_field_group_by_slug($field_group_id_or_slug);
+	
+		$arr_fields = array();
+		foreach ($field_group["fields"] as $one_field) {
+			if ($one_field["deleted"]) continue;
+			$arr_fields[] = trim($one_field["slug"]);
+		}
+		
+		$str_field_slugs = join(",", $arr_fields);
+		if ($field_group["repeatable"]) {
+			$values = simple_fields_values($str_field_slugs, $post_id);
+		} else {
+			$values = simple_fields_value($str_field_slugs, $post_id);
+		}
+		wp_cache_set( $cache_key, $values, 'simple_fields' );
+	}
+	return $values;
+}
+

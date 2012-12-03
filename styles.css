@@ -1,24 +1,35 @@
+/**
+ * Styles used in Simple Fields Admin
+ */
+
+.sf-cf:before, .sf-cf:after { content:""; display:table; }
+.sf-cf:after { clear:both; }
+.sf-cf { zoom:1; } /* For IE 6/7 (trigger hasLayout) */
+
+.sf_box_debug {
+	padding: .5em;
+	background-color: lightyellow;
+}
+
 ul.simple-fields-edit-field-groups-added-fields {
-	border-top: 1px solid #DFDFDF;
-	padding-top: 2em;
-	margin-top: 1em;
+	margin-top: 0;
 	position: relative;
 }
-ul.simple-fields-edit-field-groups-added-fields li {
-	position: relative;
-	padding: 1em 2em;
-	margin: 0;
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(whiteSmoke), to(white));
-	background-image: -webkit-linear-gradient(top, whiteSmoke, white);
-	background-image:    -moz-linear-gradient(top, whiteSmoke, white);
-	background-image:     -ms-linear-gradient(top, whiteSmoke, white);
-	background-image:      -o-linear-gradient(top, whiteSmoke, white);
-	border-top: 2px solid #eee;
-	margin-bottom: 2em;
-}
-ul.simple-fields-edit-field-groups-added-fields li li {
-	background-image: none;
-}
+	ul.simple-fields-edit-field-groups-added-fields li {
+		position: relative;
+		padding: 1em 2em;
+		margin: 0;
+		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(whiteSmoke), to(#fcfcfc));
+		background-image: -webkit-linear-gradient(top, whiteSmoke, #fcfcfc);
+		background-image:    -moz-linear-gradient(top, whiteSmoke, #fcfcfc);
+		background-image:     -ms-linear-gradient(top, whiteSmoke, #fcfcfc);
+		background-image:      -o-linear-gradient(top, whiteSmoke, #fcfcfc);
+		border-top: 2px solid #eee;
+		margin-bottom: 2em;
+	}
+	ul.simple-fields-edit-field-groups-added-fields li li {
+		background-image: none;
+	}
 
 
 #field_group_name,
@@ -30,11 +41,47 @@ ul.simple-fields-edit-field-groups-added-fields li li {
 
 .simple-fields-field-group-one-field-name {
 	font-size: 1.25em;
+	width: 20em !important;
 }
 
 .simple-fields-field-group-one-field-row {
 	margin-bottom: .75em;
 }
+
+.simple-fields-field-group-one-field-row-radiobuttons-values {
+	margin-top: 2em;
+}
+
+.simple-fields-field-group-one-field-row-col-first,
+.simple-fields-field-group-one-field-row-col-second {
+	display: inline-block;
+	-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
+	min-height: 1px;
+	vertical-align: top;
+}
+
+.simple-fields-field-group-one-field-row-col-first p,
+.simple-fields-field-group-one-field-row-col-second p {
+	margin: 0;
+}
+
+
+.simple-fields-field-group-one-field-row-col-first {
+	padding-right: 4em;
+}
+.simple-fields-field-group-one-field-row-col-second {
+	width: 80%;
+}
+
+.simple-fields-field-group-one-field-row-col-first,
+.simple-fields-field-group-one-field-row label {
+	width: 15%;
+}
+#simple-fields-field-group-existing-fields .description {
+	/*margin-left: 12.5em;*/
+	margin-left: 16%;
+}
+
 
 .simple-fields-field-group-one-field-row fieldset {
 	border: 1px solid silver;
@@ -49,19 +96,26 @@ ul.simple-fields-edit-field-groups-added-fields li li {
  {
 	display: block;
 }
-
-.simple-fields-field-group-one-field-row-description {
+.simple-fields-field-group-one-field-row label {
+	display: inline-block;
 }
 
-.simple-fields-field-group-one-field-row p input[type=text],
-.simple-fields-field-group-one-field-row p textarea
-{
-	width: 100%;
+.simple-fields-field-group-one-field-row-col-first label {
+	width: auto;
 }
+
+.simple-fields-field-type-options label {
+	display: block;
+}
+#simple-fields-field-group-existing-fields .simple-fields-field-type-options .description {
+	margin-left: auto;
+}
+
 .simple-fields-field-group-one-field-row p textarea {
 	height: 8em;
 }
 
+/* @todo: these just a tad to un-specific... */
 div.delete a {
 	color: #BC0B0B;
 }
@@ -101,10 +155,6 @@ simple-fields-post-connector-delete a:hover
  {
 	 margin-top: 2em;
 }
-.simple-fields-edit-post-connectors {
-}
-.simple-fields-edit-field-groups {
-}
 
 .simple-fields-edit-field-groups ul,
 .simple-fields-edit-post-connectors ul,
@@ -131,8 +181,7 @@ ul#simple-fields-post-connector-added-fields li
 .simple-fields-field-type-options-radiobutton-handle,
 .simple-fields-field-type-options-dropdown-handle,
 .simple-fields-post-connector-addded-fields-handle,
-.simple-fields-field-group-one-field-handle,
-.simple-fields-metabox-field-group-handle
+.simple-fields-field-group-one-field-handle
  {
 	width: 16px;
 	height: 16px;
@@ -181,11 +230,11 @@ ul#simple-fields-post-connector-added-fields {
 }
 ul#simple-fields-post-connector-added-fields li {
 	margin-bottom: 2em;
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(whiteSmoke), to(white));
-	background-image: -webkit-linear-gradient(top, whiteSmoke, white);
-	background-image:    -moz-linear-gradient(top, whiteSmoke, white);
-	background-image:     -ms-linear-gradient(top, whiteSmoke, white);
-	background-image:      -o-linear-gradient(top, whiteSmoke, white);
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(whiteSmoke), to(#fcfcfc));
+	background-image: -webkit-linear-gradient(top, whiteSmoke, #fcfcfc);
+	background-image:    -moz-linear-gradient(top, whiteSmoke, #fcfcfc);
+	background-image:     -ms-linear-gradient(top, whiteSmoke, #fcfcfc);
+	background-image:      -o-linear-gradient(top, whiteSmoke, #fcfcfc);
 	border-top: 2px solid #eee;
 }
 .simple-fields-post-connector-addded-fields-options {
@@ -198,275 +247,8 @@ ul#simple-fields-post-connector-added-fields li {
 	margin-right: 1em;
 }
 
-.simple-fields-post-type-defaults,
-.simple-fields-edit-post-connectors
- {
-	
-}
 
 #simple-fields-post-edit-side-field-settings-select-connector-please-save {
 	margin-top: .5em;
-}
-
-
-.simple-fields-metabox-field,
-.simple-fields-metabox-field-add
- {
-	margin-top: .5em;
-	margin-bottom: .5em;
-	margin-right: 11px;
-}
-
-.simple-fields-metabox-field label {
-	font-weight: bold;
-	display: block;
-}
-.simple-fields-metabox-field .simple-fields-for-radiobutton,
-.simple-fields-metabox-field .simple-fields-for-checkbox {
-	display: inline;
-	font-weight: normal;
-}
-.simple-fields-metabox-field-radiobutton {
-	display: block;
-	margin-top: .5em;
-	margin-bottom: .5em;
-}
-ul.simple-fields-metabox-field-group-fields li {
-	position: relative;
-}
-ul.simple-fields-metabox-field-group-fields-repeatable li {
-	margin-top: 1em;
-	padding-top: .5em;
-	padding-bottom: .5em;
-	padding-left: 11px;
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(whiteSmoke), to(white));
-	background-image: -webkit-linear-gradient(top, whiteSmoke, white);
-	background-image:    -moz-linear-gradient(top, whiteSmoke, white);
-	background-image:     -ms-linear-gradient(top, whiteSmoke, white);
-	background-image:      -o-linear-gradient(top, whiteSmoke, white);
-	border-top: 2px solid #eee;
-	padding: .5em 1.5em;
-	margin: 0 0 0 0;
-}
-ul.simple-fields-metabox-field-group-fields-repeatable li.hover {
-	background-color: #fffcf1;
-}
-ul.simple-fields-metabox-field-group-fields-repeatable li.active {
-	background-color: #fff7db;
-}
-
-.simple-fields-metabox-field-group-handle {
-	display: none;
-}
-ul.simple-fields-metabox-field-group-fields-repeatable .simple-fields-metabox-field-group-handle {
-	display: block;
-	margin-left: -16px;
-}
-.simple-fields-metabox-field-group input.text {
-	border: 1px solid #dfdfdf;
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
-}
-.simple-fields-metabox-field-group input.text,
-.simple-fields-metabox-field-group textarea
-{
-	width: 95%;
-}
-
-.simple-fields-metabox-field-group input.simple-fields-field-type-color,
-.simple-fields-metabox-field-group input.simple-fields-field-type-date
- {
-	width: 6em;
-}
-
-.simple-fields-metabox-field-textarea-tinymce-wrapper {
-	width: 100%;
-}
-.simple-fields-metabox-field-textarea-tinymce-wrapper .mce_fullscreen {
-	display: none !important;
-}
-
-.simple-fields-metabox-field-textarea-tinymce-wrapper .simple-fields-metabox-field-group textarea {
-
-}
-
-.simple-fields-metabox-field-textarea-tinymce-media {
-	padding: 5px;
-}
-.simple-fields-metabox-field-textarea-tinymce-media a {
-	padding: 0 0 5px 10px;
-}
-
-#post-body .simple-fields-metabox-field-textarea-tinymce-wrapper .wp_themeSkin .mceStatusbar a.mceResize {
-	margin: 0;
-	top: 0;
-}
-
-.simple_fields_editor_switch {
-	display: inline;
-	padding: 5px;
-}
-.simple_fields_editor_switch a {
-	padding: 0 0 0 2px;
-}
-.simple_fields_editor_switch a.selected {
-	color: black;
-	text-decoration: none;
-	font-weight: bold;
-}
-
-.simple-fields-metabox-field-group-delete {
-	position: absolute;
-	top: 10px;
-	right: 10px;
-}
-.simple-fields-metabox-field-group-delete a {
-	background: transparent url(bin_closed.png) no-repeat 0 50%;
-	display: block;
-	opacity: .5;
-	width: 16px;
-	height: 16px;
-}
-.simple-fields-metabox-field-group-delete a:hover {
-	opacity: 1;
-}
-
-ul.simple-fields-file-browser-list {
-	margin: 1em;
-}
-ul.simple-fields-file-browser-list li {
-	border-top: 1px solid #DFDFDF;
-	clear: both;
-	margin: 0;
-	padding-top: 1em;
-	padding-bottom: 1em;
-}
-ul.simple-fields-file-browser-list .thumbnail {
-	float: left;
-}
-ul.simple-fields-file-browser-list .simple-fields-file-browser-list-file-info {
-	float: left;
-	margin-left: 1em;
-}
-ul.simple-fields-file-browser-list .thumbnail img {
-	width: 46px;
-}
-ul.simple-fields-file-browser-list li p {
-	margin: 0;
-}
-ul.simple-fields-file-browser-list h3 {
-	margin-top: 0;
-	margin-bottom: 0.25em;
-}
-
-.simple-fields-metabox-field-file {
-	height: 64px;
-}
-.simple-fields-metabox-field-with-description {
-	height: 85px;
-}
-
-.simple-fields-metabox-field-file-col1 {
-	width: 46px;
-	height: 46px;
-	background-color: #eee;
-	border: 1px solid #ddd;
-	overflow: hidden;
-}
-.simple-fields-metabox-field-file-col1 img {
-	width: 46px;
-	display: block;
-}
-.simple-fields-metabox-field-file-col2 {
-	margin-left: 56px;
-	margin-top: -46px;
-}
-
-.simple-fields-metabox-field-description,
-.simple-fields-meta-box-field-group-description
- {
-	font-style: italic;
-	color: #666;
-}
-
-.simple-fields-metabox-field-file-edit, .simple-fields-metabox-field-file-clear,
-.simple-fields-metabox-field-post-clear {
-	border-left: 1px solid #555555;
-	padding-left: 4px;
-	margin-left: 4px;
-}
-
-.simple-fields-bonny-plugins-inner-sidebar {
-	display: none;
-}
-/*.simple-fields-bonny-plugins-inner-sidebar {
-	float: right;
-	width: 210px;
-	padding-right: 10px;
-	padding-left: 10px;
-	border-left: 1px solid #E3E3E3;
-}
-.simple-fields-settings-wrap {
-	margin-right: -250px;
-	float: left;
-}
-*/
-
-.simple-fields-meta-box-field-group-field-type-post-dialog {
-	margin: 10px;
-}
-.simple-fields-meta-box-field-group-field-type-post-dialog p {
-	margin: 0;
-}
-
-.simple-fields-meta-box-field-group-field-type-post-dialog-post-types {
-	margin-bottom: 10px;
-}
-.simple-fields-meta-box-field-group-field-type-post-dialog-post-types li {
-	display: inline;
-	margin-right: 5px;
-}
-.simple-fields-meta-box-field-group-field-type-post-dialog-post-types li.selected {
-	font-weight: bold;
-}
-.simple-fields-meta-box-field-group-field-type-post-dialog-post-posts,
-.simple-fields-meta-box-field-group-field-type-post-dialog-post-posts li
- {
-	line-height: 1;
-	margin: 4px 0 4px 0;
-}
-.simple-fields-meta-box-field-group-field-type-post-dialog-post-posts-wrap {
-	height: 185px;
-	overflow: auto;
-	border: 1px solid #DFDFDF;
-	padding: 10px;
-	margin-bottom: 10px;
-}
-
-.simple-fields-meta-box-field-group-field-type-post-dialog-post-posts ul {
-	margin-left: 20px;
-}
-
-.simple-fields-metabox-field-taxonomymeta-terms {
-	height: 100px;
-	overflow: auto;
-	margin-top: 5px;
-}
-.simple-fields-metabox-field-taxonomymeta-terms li {
-	line-height: 1;
-}
-.simple-fields-metabox-field-taxonomymeta-terms ul.children {
-	margin-left: 18px;
-	margin-top: 5px;
-	
-}
-.simple-fields-metabox-field-taxonomymeta-terms label {
-	font-weight: normal;
-}
-
-.sf_box_debug {
-	padding: .5em;
-	background-color: lightyellow;
 }
 
