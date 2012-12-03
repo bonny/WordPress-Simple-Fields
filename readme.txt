@@ -142,7 +142,8 @@ simple_fields_register_post_connector('test_connector',
                                                   'context' => 'normal',
                                                   'priority' => 'high')
                                       ),
-                    'post_types' => array('post')
+                    'post_types' => array('post'),
+                    'hide_editor' => 0
                 )
 );
 
