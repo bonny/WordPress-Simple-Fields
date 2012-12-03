@@ -3085,7 +3085,7 @@ class simple_fields {
 					<h3><?php _e('Post Connectors', 'simple-fields') ?></h3>
 	
 					<?php
-					if (isset($simple_fields_did_save_connector) && $simple_fields_did_save_connector) {
+					if (isset($simple_fields_did_save_connector) && $simple_fields_did_save_connector === true) {
 						?><div id="message" class="updated"><p><?php _e('Post connector saved', 'simple-fields') ?></p></div><?php
 					}
 	
