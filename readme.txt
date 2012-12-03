@@ -165,6 +165,10 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
+#### Version 1.1.x
+- Fixed bug that could lead to memoryleak
+- 
+
 #### Version 1.1.5
 - Added "view" link to file field, so you can view images/attachments/pdfs/whatever directly from the edit post screen.
 
