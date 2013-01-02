@@ -3506,16 +3506,18 @@ class simple_fields {
 			
 				if ($button_key == "checked_by_default_num") continue;
 				
-				if ($button_value["deleted"]) continue;
+				if (isset($button_value["deleted"]) && $button_value["deleted"]) continue;
+				
+				$button_value_value = isset($button_value["value"]) ? $button_value["value"] : "";
 				
 				$return_field_value["radiobuttons"][] = array(
-					"value"       => $button_value["value"],
+					"value"       => $button_value_value,
 					"key"         => $button_key,
 					"is_selected" => ($field_value === $button_key)
 				);
 				if ($field_value === $button_key) {
 					$return_field_value["selected_radiobutton"] = array(
-						"value"       => $button_value["value"],
+						"value"       => $button_value_value,
 						"key"         => $button_key,
 						"is_selected" => TRUE
 					);
@@ -3539,10 +3541,12 @@ class simple_fields {
 
 				foreach ($type_dropdown_options as $dropdown_key => $dropdown_value) {
 
-					if ($dropdown_value["deleted"]) continue;
+					if (isset($dropdown_value["deleted"]) && $dropdown_value["deleted"]) continue;
+					
+					$dropdown_value_value = isset($dropdown_value["value"]) ? $dropdown_value["value"] : "";
 					
 					$return_field_value["options"][] = array(
-						"value"       => $dropdown_value["value"],
+						"value"       => $dropdown_value_value,
 						"key"         => $dropdown_key,
 						"is_selected" => in_array($dropdown_key, $arr_dropdown_values)
 					);
@@ -3550,7 +3554,7 @@ class simple_fields {
 					if (in_array($dropdown_key, $arr_dropdown_values)) {
 						
 						$return_field_value["selected_options"][] = array(
-							"value"       => $dropdown_value["value"],
+							"value"       => $dropdown_value_value,
 							"key"         => $dropdown_key,
 							"is_selected" => TRUE
 						);
