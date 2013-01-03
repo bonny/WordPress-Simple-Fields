@@ -227,6 +227,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 #### Version 1.1.x
 - Fixed bug that could lead to memoryleak. Thanks to plux/angry creative for patch.
 - Fixed some notice messages
+- Changed CDN for Date Picker 2 to use Google instead of Microsoft, because the one from Microsoft - ajax.aspnetcdn.com - was always slow for me + it have been completely down too.
 
 #### Version 1.1.5
 - Added "view" link to file field, so you can view images/attachments/pdfs/whatever directly from the edit post screen.
