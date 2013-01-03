@@ -680,10 +680,13 @@ foreach ($field_groups[$field_group_id]["fields"] as $key => $val) {
 
 	} // if passed as arg field group has fields
 
-	$sf->clear_caches();
 	update_option("simple_fields_groups", $field_groups);
+	$sf->clear_caches();
 
-	return $field_groups[$field_group_id];
+	// Re-get the field so it's the same as when getting a field group manually
+	return $sf->get_field_group_by_slug($slug);
+
+	// return $field_groups[$field_group_id];
 
 }
 
