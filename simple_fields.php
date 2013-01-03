@@ -3580,6 +3580,10 @@ class simple_fields {
 
 				foreach ($type_dropdown_options as $dropdown_key => $dropdown_value) {
 
+					// Only values like dropdown_num_2 are allowed
+					if ( strpos($dropdown_key, "dropdown_num_") === FALSE) { continue; }
+
+					// Skip deleted
 					if ($dropdown_value["deleted"]) continue;
 					
 					$return_field_value["options"][] = array(
