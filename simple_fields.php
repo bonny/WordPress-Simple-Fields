@@ -2581,6 +2581,7 @@ class simple_fields {
 				$field_group_id = (int) $_GET["group-id"];
 				$field_groups[$field_group_id]["deleted"] = true;
 				update_option("simple_fields_groups", $field_groups);
+				$sf->clear_caches();
 				$simple_fields_did_delete = true;
 				$action = "";
 			}
@@ -2593,6 +2594,7 @@ class simple_fields {
 				$post_connector_id = (int) $_GET["connector-id"];
 				$post_connectors[$post_connector_id]["deleted"] = 1;
 				update_option("simple_fields_post_connectors", $post_connectors);
+				$sf->clear_caches();
 				$simple_fields_did_delete_post_connector = true;
 				$action = "";
 			}
@@ -2627,6 +2629,7 @@ class simple_fields {
 					}
 					
 					update_option("simple_fields_groups", $field_groups);
+					$sf->clear_caches();
 
 					// we can have changed the options of a field group, so update connectors using this field group
 					$post_connectors = (array) $this->get_post_connectors();
@@ -2637,6 +2640,7 @@ class simple_fields {
 						}
 					}
 					update_option("simple_fields_post_connectors", $post_connectors);
+					$sf->clear_caches();
 					
 					$simple_fields_did_save = true;
 				}
@@ -2684,6 +2688,7 @@ class simple_fields {
 					$post_connectors = $post_connectors_tmp;
 	
 					update_option("simple_fields_post_connectors", $post_connectors);
+					$sf->clear_caches();
 	
 					$simple_fields_did_save_connector = true;
 				}
@@ -3296,6 +3301,7 @@ class simple_fields {
 		$old_options = $this->get_options();
 		$new_options = wp_parse_args($new_options, $old_options);
 		update_option("simple_fields_options", $new_options);
+		$sf->clear_caches();
 	}
 	
 	/**
@@ -3768,6 +3774,10 @@ class simple_fields {
 		return FALSE;
 	}
 
+	/**
+	 * Clear the key used for wp_cache_get and wp_cache_set
+	 * Run this when options etc have been changed so fresh values are fetched upon next get
+	 */
 	function clear_caches() {
 		$this->ns_key = wp_cache_incr( 'simple_fields_namespace_key', 1, 'simple_fields' );
 	}
