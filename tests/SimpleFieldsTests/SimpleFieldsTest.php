@@ -8,8 +8,8 @@ class MyPluginTest extends WP_UnitTestCase {
 	{
 		parent::setUp();
 		global $sf;
+
 		$this->sf = $sf;
-		
 	}
 
 	// test defaults, should all be empty since we cleared the db...
@@ -28,8 +28,6 @@ class MyPluginTest extends WP_UnitTestCase {
 	}
 
 	function testInsertManuallyAddedFields() {
-		// insert field directly via sql
-		// this function is located directly on the unit test server btw, not here
 		_insert_manually_added_fields();
 	}
 	
@@ -436,7 +434,7 @@ class MyPluginTest extends WP_UnitTestCase {
 		    )
 		);
 		$this->assertEquals($arr, $this->sf->get_post_connectors() );
-			
+
 	}
 
 	public function testSaveGetOptions() {
@@ -984,7 +982,7 @@ class MyPluginTest extends WP_UnitTestCase {
 		);
 
 		$expected_return = array(
-		    'id' => 2,
+		    'id' => 4,
 		    'key' => 'my_new_field_group',
 		    'slug' => 'my_new_field_group',
 		    'name' => 'Test field group',
@@ -1004,12 +1002,21 @@ class MyPluginTest extends WP_UnitTestCase {
 		                'additional_arguments' => ''
 		            ),
 		            'id' => 0,
-		            'deleted' => 0
-		        )
+		            'deleted' => 0,
+				    "field_group" => array(
+						"id" => 4,
+						"name" => "Test field group",
+						"slug" => "my_new_field_group",
+						"description" => "Test field description",
+						"repeatable" => 1,
+						"fields_count" => 1
+				    )
+		        ),
 		    ),
-		    'deleted' => false
+		    'deleted' => false,
+		    "fields_count" => 1
 		);
-		
+#echo "xxx";print_r($arr_return);
 		$this->assertEquals( $expected_return, $arr_return );
 		
 
@@ -1057,12 +1064,14 @@ class MyPluginTest extends WP_UnitTestCase {
 		                'additional_arguments' => ''
 		            ),
 		            'id' => 0,
-		            'deleted' => 0
+		            'deleted' => 0,
+		            "field_group" => array()
 		        ),
 		    ),
-		    'deleted' => false
+		    'deleted' => false,
+		    "fields_count" => 1
 		);
-		
+
 		$this->assertEquals( array_keys($expected_return), array_keys($arr_return) );
 		
 		// @todo: add test of values here also
@@ -1077,7 +1086,7 @@ class MyPluginTest extends WP_UnitTestCase {
 		*/
 
 		// test manually added fields again to make sure nothing broke
-		// does this work btw? think is does; once there was a problem and the problem came up twice then
+		// does this work btw?
 		$this->testManuallyAddedFields();
 
 		/*
