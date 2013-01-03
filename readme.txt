@@ -6,45 +6,104 @@ Requires at least: 3.3.1
 Tested up to: 3.5
 Stable tag: 1.1.5
 
-Add more advanced custom fields types to your edit post page. Field can be of several types, including textarea, checkbox, radio buttons, files and color picker.
+With Simple Fields you can add any kind of custom fields to your pages and posts.
 
 == Description ==
+The built in custom fields in WordPress are great, but they do come with a big limitation: they only support plain text. To overcome this limitation I created the Simple Fields WordPress plugin.
 
-Simple Fields for WordPress let you add groups of fields to your edit post page.
+With Simple Fields you can add for example textboxes, text areas, checkboxes, radio buttons, dropdowns, and file browser to the post admin area. These fields are all much easier to use for the user than regular custom fields.
 
-Simple Fields turns WordPress into an even more powerful Content Management System (CMS).
+All fields are grouped into logical groups called Field Groups. You can for example combine File + Name + Description into a an Attachments-group, that lets you add multiple files to your posts.
 
-#### Features and highlight
+Use "repeatable" field groups to add many any amount of field groups to a single post (great for images or attachments!)
 
-* Add textboxes, text areas, checkboxes, radio buttons, dropdowns, and file browser to the post admin area
-* Much easier for the user than regular custom fields
-* Group fields together into logical groups. For example combine File + Name + Description into a an Attachments-group, that let's you add multiple files to your posts
-* Use "repeatable" field groups to add many any amount of field groups to a single post (great for images or attachments!)
-* Use drag and drop to change order of added repeatable groups
-* Different post types can use different field groups - actually you can even use different field groups even for same post type
-* Can be used on any post type, including custom post types
-* Nice GUI that looks like it belongs to the regular WordPress GUI
+Simple Fields can be used on any post type, including custom post types.
 
-For more information check out my introductory blog post:
-http://eskapism.se/blogg/2010/05/simple-fields-wp-custom-fields-on-steroids/
+## Field Types
 
-To get started check out the getting started section here:
-http://simple-fields.com/documentation/getting-started/
+Simple Fields comes bundled with a useful variation of fields. Note that any field can be added any number of times to a post using repeatable fields.
 
-#### Upgrading? Then backup your database
+The fields that are included in Simple Fields are:
 
-Please remember to backup your database when you upgrade this plugin. Everything should work fine, but just to be sure and safe: backup the database!
+Text
+: A simple text input to enter any kind of information.
 
-#### Help and Support
+Textarea
+: A bigger area for inputing text. Even support WYSIWYG/TinyMCE-mode that makes it work like the regular content editor, so you can insert images, headlines, list, paragraphs and so on.
 
-If you have questions/bug reports/feature requests for Simple Fields please use the WordPress [Support Forum](http://wordpress.org/tags/simple-fields?forum_id=10) or 
-[the new GitHub project page for Simple Fields](github.com/bonny/WordPress-Simple-Fields/).
-There are also [tutorials available for Simple Fields](http://simple-fields.com/documentation/).
+Checkbox
+: A simple checkbox to be able to select something on/off.
 
-#### Donation and more plugins
-* If you like this plugin don't forget to [donate to support further development](http://simple-fields.com/about/donate/).
-* Also check out some [more CMS-focused plugins](http://wordpress.org/extend/plugins/profile/eskapism) by the same author.
+ Radio Buttons
+: Add multiple radiobuttons where a user can select one of the buttons. Useful for letting a user choose between multiple options.
+ 
+Dropdown
+: Add multiple values to a dropdown box. User can select one or several items in the list. Useful for letting your users select one or severall things.
 
+File
+: Select any file using the built in file/media browser in WordPress. Since it's using the built in media browser you can also upload new images/attachments to your posts. Using this field together with repeatable field groups = very powerful! :)
+
+Post
+: Select any post that exists in WordPress. Can be pages or any custom post type.
+
+Taxonomy
+: Select a taxonomy from a list of taxonomies.
+
+Taxonomy Term
+: Select a term from a taxonomy.
+
+Color
+: Show a color picker where the user can choose any color. The color can also be entered manually, if the user knows the hex value of the color.
+
+ Date and Time
+: Chose a date and optionally time from a JQuery UI date and time picker.
+ 
+ User
+: Choose a user from the system.
+ 
+See the [field documentation](http://simple-fields.com/documentation/field-types/) for more details about the different fields.
+ 
+## Use Field Type Extensions to add your own field types
+
+If you miss a field type in Simple Fields you can use [Field Extensions](http://simple-fields.com/extensions/) to add more field types. These are fields that are created by other developers and shared with the Simple Fields community.
+
+if you want to create your own field you can do that using the [Extension API](http://simple-fields.com/documentation/api/extension-api/).
+
+## Repeatable fields
+
+Often just a single field is not enough. Why limit yourself to just one image or one attachment? With Repeatable Fields you can add as many images, text fields, textareas, or any other field type, as you want to to a post. This is a very useful feature when you want to create for example image slideshows or pages with many file attachments.
+
+Add attachments and image slideshows in a snap.
+
+Also, the fields in a a repeatable field group are easily sorted using drag and drop.
+
+## Simple PHP functions to speed up your development
+
+`
+simple_fields_value();
+simple_fields_values();
+`
+
+## Works with all post types
+
+With Simple Fields you can add fields to both regular pages and posts and to any custom post type.
+
+Different post types can use different field groups - actually you can even use different field groups even for same post type, on a post to post basis.
+
+## Unit testing to minimize risk of errors
+
+A lot of the functionality in Simple Fields is tested using unit testing. Test cases exists for all the functions that involve getting field values from your posts. This way the risk of anything breaking on a site after upgrade in minimized.
+
+## Help and Support
+
+If you have questions/bug reports/feature requests for Simple Fields then:
+
+* use the [WordPress Support Forum](http://wordpress.org/support/plugin/simple-fields) 
+* visit the [GitHub project page for Simple Fields](http://github.com/bonny/WordPress-Simple-Fields)
+* view the [getting started guide](http://simple-fields.com/documentation/getting-started/)
+
+## Donate to keep this plugin free
+ * If you like this plugin don't forget to [donate to support further development](http://simple-fields.com/about/donate/).
 
 == Installation ==
 
@@ -167,7 +226,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 #### Version 1.1.x
 - Fixed bug that could lead to memoryleak. Thanks to plux/angry creative for patch.
-- 
+- Fixed some notice messages
 
 #### Version 1.1.5
 - Added "view" link to file field, so you can view images/attachments/pdfs/whatever directly from the edit post screen.
