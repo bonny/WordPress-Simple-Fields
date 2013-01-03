@@ -4,7 +4,7 @@ Donate link: http://simple-fields.com/about/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, more fields, repeatable fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom, simple fields, cms, date picker, time picker, repeatable fields, multiple fields
 Requires at least: 3.3.1
 Tested up to: 3.5
-Stable tag: 1.1.5
+Stable tag: 1.1.6
 
 With Simple Fields you can add any kind of custom fields to your pages and posts.
 
@@ -224,10 +224,13 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
-#### Version 1.1.x
+#### Version 1.1.6
 - Fixed bug that could lead to memoryleak. Thanks to plux/angry creative for patch.
 - Fixed some notice messages
 - Changed CDN for Date Picker 2 to use Google instead of Microsoft, because the one from Microsoft - ajax.aspnetcdn.com - was always slow for me + it have been completely down too.
+- Fixed problem with slug for field group info inside a field
+- Perhaps fixed a problem with the wp object cache
+- Updated readme to contain lots of more information
 
 #### Version 1.1.5
 - Added "view" link to file field, so you can view images/attachments/pdfs/whatever directly from the edit post screen.
