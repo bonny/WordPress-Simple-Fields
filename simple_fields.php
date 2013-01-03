@@ -621,15 +621,21 @@ class simple_fields {
 						echo "</div>";
 
 						echo "<div class='simple-fields-metabox-field-second'>";
+
 						$radio_options = $field["type_radiobuttons_options"];
 						$radio_checked_by_default_num = @$radio_options["checked_by_default_num"];
 	
-
 						$loopNum = 0;
 						foreach ($radio_options as $one_radio_option_key => $one_radio_option_val) {
-							if ($one_radio_option_key == "checked_by_default_num") { continue; }
-							if ($one_radio_option_val["deleted"]) { continue; }
+							
+							// only values like radiobutton_num_2 are allowed
+							if ( strpos($one_radio_option_key, "radiobutton_num_") === FALSE) { continue; }
+							
+							// Skip deleted ones
+							if (isset($one_radio_option_val["deleted"]) && $one_radio_option_val["deleted"]) { continue; }
+
 							$radio_field_unique_id = $field_unique_id . "_radio_".$loopNum;
+							$one_radio_option_val_val = isset($one_radio_option_val["value"]) ? $one_radio_option_val["value"] : "";
 							
 							$selected = "";
 							if ($use_defaults) {
@@ -639,14 +645,12 @@ class simple_fields {
 							}
 													
 							echo "<div class='simple-fields-metabox-field-radiobutton'>";
-							echo "<input $selected name='$field_name' id='$radio_field_unique_id' type='radio' value='$one_radio_option_key' />";
-							echo "<label for='$radio_field_unique_id' class='simple-fields-for-radiobutton'> ".$one_radio_option_val["value"]."</label>";
-							echo "</div>";
-							
+							echo "	<input $selected name='$field_name' id='$radio_field_unique_id' type='radio' value='$one_radio_option_key' />";
+							echo "	<label for='$radio_field_unique_id' class='simple-fields-for-radiobutton'> " . $one_radio_option_val_val . "</label>";
+							echo "</div>";							
 							
 							$loopNum++;
 						}
-
 
 						echo "</div>";
 		
@@ -671,7 +675,7 @@ class simple_fields {
 						echo "<select id='$field_unique_id' name='$field_name_dropdown' $str_multiple size='$field_size' >";
 						foreach ($field["type_dropdown_options"] as $one_option_internal_name => $one_option) {
 							
-							if ($one_option["deleted"]) { continue; }
+							if (isset($one_option["deleted"]) && $one_option["deleted"]) { continue; }
 							if (strpos($one_option_internal_name, "dropdown_num_") === FALSE) continue;
 
 							$dropdown_value_esc = esc_html($one_option["value"]);
