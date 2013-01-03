@@ -1451,7 +1451,7 @@ class simple_fields {
 						$field_groups[$i]["fields"][$one_field_id]["field_group"] = array(
 							"id"           => $field_groups[$i]["id"],
 							"name"         => $field_groups[$i]["name"],
-							"slug"         => $field_groups[$i]["id"],
+							"slug"         => $field_groups[$i]["slug"],
 							"description"  => $field_groups[$i]["description"],
 							"repeatable"   => $field_groups[$i]["repeatable"],
 							"fields_count" => $field_groups[$i]["fields_count"]
