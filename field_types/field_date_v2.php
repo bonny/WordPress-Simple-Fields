@@ -31,13 +31,15 @@ function init_simple_fields_field_date_v2() {
 			global $wp_scripts;
 			wp_enqueue_script('jquery-ui-datepicker');
 			$ui = $wp_scripts->query('jquery-ui-core');
-			$url = "https://ajax.aspnetcdn.com/ajax/jquery.ui/{$ui->ver}/themes/smoothness/jquery.ui.all.css";
+			//$url = "https://ajax.aspnetcdn.com/ajax/jquery.ui/{$ui->ver}/themes/smoothness/jquery.ui.all.css";
+			$url = "https://ajax.googleapis.com/ajax/libs/jqueryui/{$ui->ver}/themes/smoothness/jquery-ui.css";
 			wp_enqueue_style('jquery-ui-smoothness', $url, false, $ui->ver);
 
 			wp_enqueue_script("jquery-ui-datepicker");
 
 			// Language files
-			$url = "https://ajax.aspnetcdn.com/ajax/jquery.ui/{$ui->ver}/i18n/jquery-ui-i18n.min.js";
+			//$url = "https://ajax.aspnetcdn.com/ajax/jquery.ui/{$ui->ver}/i18n/jquery-ui-i18n.min.js";
+			$url = "https://ajax.googleapis.com/ajax/libs/jqueryui/{$ui->ver}/i18n/jquery-ui-i18n.min.js";
 			wp_enqueue_script('jquery-ui-18n', $url, false, $ui->ver);
 
 			// Timepicker
