@@ -62,9 +62,13 @@ class simple_fields {
 		// based on stuff found here:
 		// http://core.trac.wordpress.org/ticket/4476
 		$ns_key = wp_cache_get( 'simple_fields_namespace_key', 'simple_fields' );
-		if ( $ns_key === false ) wp_cache_set( 'simple_fields_namespace_key', 1, 'simple_fields' );
+		if ( $ns_key === false ) {
+			wp_cache_set( 'simple_fields_namespace_key', 1, 'simple_fields' );
+			// echo "cache key init set";
+		}
 		$this->ns_key = wp_cache_get( 'simple_fields_namespace_key', 'simple_fields' );
-		
+		// echo "ns_key is: $this->ns_key"; // 1
+
 		require( dirname(__FILE__) . "/functions.php" );
 		require( dirname(__FILE__) . "/class_simple_fields_field.php" );
 		
@@ -105,7 +109,7 @@ class simple_fields {
 
 		// Boot up
 		do_action("simple_fields_init", $this);
-		
+
 	}
 
 	// check some things regarding update
@@ -3710,8 +3714,10 @@ class simple_fields {
 	 * @return mixed array with field group info if field groups exists, false if does not exist
 	 */
 	function get_field_group_by_slug($field_group_slug) {
-		
+#echo 111;		
+#var_dump($this->ns_key);
 		$cache_key = 'simple_fields_'.$this->ns_key.'_get_field_group_by_slug_' . $field_group_slug;
+#echo $cache_key;
 		$return_val = wp_cache_get( $cache_key, 'simple_fields' );
 		if (FALSE === $return_val) {
 		
@@ -3779,7 +3785,16 @@ class simple_fields {
 	 * Run this when options etc have been changed so fresh values are fetched upon next get
 	 */
 	function clear_caches() {
+
+		$prev_key = $this->ns_key;
 		$this->ns_key = wp_cache_incr( 'simple_fields_namespace_key', 1, 'simple_fields' );
+		if ($this->ns_key === FALSE) {
+			// I really don't know why, but wp_cache_incr returns false...always or sometimes?
+			// Manually update namespace key by one
+			$this->ns_key = $prev_key + 1;
+			wp_cache_set( 'simple_fields_namespace_key', $this->ns_key, 'simple_fields' );
+		}
+		// echo "clear_key";var_dump($this->ns_key);
 	}
 	
 } // end class
