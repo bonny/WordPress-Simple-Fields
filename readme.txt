@@ -19,7 +19,7 @@ Use "repeatable" field groups to add many any amount of field groups to a single
 
 Simple Fields can be used on any post type, including custom post types.
 
-## Field Types
+= Field Types =
 
 Simple Fields comes bundled with a useful variation of fields. Note that any field can be added any number of times to a post using repeatable fields.
 
@@ -63,13 +63,13 @@ Color
  
 See the [field documentation](http://simple-fields.com/documentation/field-types/) for more details about the different fields.
  
-## Use Field Type Extensions to add your own field types
+= Use Field Type Extensions to add your own field types =
 
 If you miss a field type in Simple Fields you can use [Field Extensions](http://simple-fields.com/extensions/) to add more field types. These are fields that are created by other developers and shared with the Simple Fields community.
 
 if you want to create your own field you can do that using the [Extension API](http://simple-fields.com/documentation/api/extension-api/).
 
-## Repeatable fields
+= Repeatable fields =
 
 Often just a single field is not enough. Why limit yourself to just one image or one attachment? With Repeatable Fields you can add as many images, text fields, textareas, or any other field type, as you want to to a post. This is a very useful feature when you want to create for example image slideshows or pages with many file attachments.
 
@@ -77,24 +77,24 @@ Add attachments and image slideshows in a snap.
 
 Also, the fields in a a repeatable field group are easily sorted using drag and drop.
 
-## Simple PHP functions to speed up your development
+= Simple PHP functions to speed up your development =
 
 `
 simple_fields_value();
 simple_fields_values();
 `
 
-## Works with all post types
+= Works with all post types =
 
 With Simple Fields you can add fields to both regular pages and posts and to any custom post type.
 
 Different post types can use different field groups - actually you can even use different field groups even for same post type, on a post to post basis.
 
-## Unit testing to minimize risk of errors
+= Unit testing to minimize risk of errors =
 
 A lot of the functionality in Simple Fields is tested using unit testing. Test cases exists for all the functions that involve getting field values from your posts. This way the risk of anything breaking on a site after upgrade in minimized.
 
-## Help and Support
+= Help and Support =
 
 If you have questions/bug reports/feature requests for Simple Fields then:
 
@@ -102,7 +102,7 @@ If you have questions/bug reports/feature requests for Simple Fields then:
 * visit the [GitHub project page for Simple Fields](http://github.com/bonny/WordPress-Simple-Fields)
 * view the [getting started guide](http://simple-fields.com/documentation/getting-started/)
 
-## Donate to keep this plugin free
+= Donate to keep this plugin free =
  * If you like this plugin don't forget to [donate to support further development](http://simple-fields.com/about/donate/).
 
 == Installation ==
