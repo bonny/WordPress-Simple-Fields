@@ -28,6 +28,8 @@ class MyPluginTest extends WP_UnitTestCase {
 	}
 
 	function testInsertManuallyAddedFields() {
+		// insert field directly via sql
+		// this function is located directly on the unit test server btw, not here
 		_insert_manually_added_fields();
 	}
 	
@@ -1075,7 +1077,7 @@ class MyPluginTest extends WP_UnitTestCase {
 		*/
 
 		// test manually added fields again to make sure nothing broke
-		// does this work btw?
+		// does this work btw? think is does; once there was a problem and the problem came up twice then
 		$this->testManuallyAddedFields();
 
 		/*
