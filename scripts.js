@@ -5,10 +5,10 @@ if (typeof jscolor != "undefined") {
 }
 
 // global js stuff; sorry about that...
-var simple_fields_metabox_field_file_select_input_selectedID = null;
-var simple_fields_is_simple_fields_popup = false;
-var simple_fields_datepicker_args = { "clickInput": true };
-var simple_fields_tinymce_iframes = [];
+var simple_fields_metabox_field_file_select_input_selectedID = null,
+	simple_fields_is_simple_fields_popup = false,
+	simple_fields_datepicker_args = { "clickInput": true },
+	simple_fields_tinymce_iframes = [];
 
 // Global module for Simple Fields, using the reveal module pattern
 var simple_fields = (function() {
@@ -415,16 +415,16 @@ var simple_fields = (function() {
 	});
 	
 	// field type post
-	// popup a dialog where the user can choose  the post to attach
+	// popup a dialog where the user can choose the post to attach
 	$(document).on("click", "a.simple-fields-metabox-field-post-select", function(e) {
 
 		e.preventDefault();
-		
-		var a = $(this);
-		// get post types to show
-		var div = a.closest(".simple-fields-metabox-field");
-		var enabled_post_types = div.find("input[name='simple-fields-metabox-field-post-enabled-post-types']").val();
-		
+
+		var a = $(this),
+			div = a.closest(".simple-fields-metabox-field"),
+			enabled_post_types = div.find("input[name='simple-fields-metabox-field-post-enabled-post-types']").val(),
+			additional_args = div.find('input[name="additional_arguments"]').val();
+
 		$("div.simple-fields-meta-box-field-group-field-type-post-dialog").data("originLink", this).dialog({
 			width: 480,
 			height: 'auto',
@@ -432,16 +432,18 @@ var simple_fields = (function() {
 			dialogClass: 'wp-dialog',
 			zIndex: 300000,
 			open: function(event, ui) {
-				var originLink = $($(this).data("originLink"));
-				arr_enabled_post_types = enabled_post_types.split(",");
+				var originLink = $($(this).data("originLink")),
+					arr_enabled_post_types = enabled_post_types.split(",");
 				$(this).text("Loading...").load(ajaxurl, {
 					"action": "simple_fields_field_type_post_dialog_load",
-					"arr_enabled_post_types": arr_enabled_post_types
+					"arr_enabled_post_types": arr_enabled_post_types,
+					"additional_arguments" : additional_args
 				});
 			}
 		});
 
 	});
+
 	
 	/**
 	 * Post type dialog: click on cancel link
