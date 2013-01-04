@@ -236,6 +236,8 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 == Changelog ==
 
 #### Version 1.1.x
+- Fixed memory leak when using cache. When using functions that cleared the cache, for example simple_fields_set_value(), then memory usage could increase pretty much, and when the function is used in a loop then eventionally the script would eat up all memory. Nom nom nom. But in a bad way.
+- Changed the way some cache keys where stored, beacuse a key in an array that contains quotes is just silly looking (but valid, apparently)
 - Fixed passing additional arguments for field type post
 - Little better looking output of "Show custom field keys"
 
