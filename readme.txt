@@ -19,6 +19,15 @@ Use "repeatable" field groups to add many any amount of field groups to a single
 
 Simple Fields can be used on any post type, including custom post types.
 
+The saved values are easy get in your theme or functions.php-file. Like this:
+
+`
+<?php
+// Get the saved value for a field called "video"
+$video_url = simple_field_value('video');
+?>
+`
+
 = Field Types =
 
 Simple Fields comes bundled with a useful variation of fields. Note that any field can be added any number of times to a post using repeatable fields.
@@ -80,8 +89,10 @@ Also, the fields in a a repeatable field group are easily sorted using drag and 
 = Simple PHP functions to speed up your development =
 
 `
-simple_fields_value();
-simple_fields_values();
+<?php
+simple_fields_value("field_slug");
+simple_fields_values("field_slug_1, field_slug_2, field_slug_n");
+?>
 `
 
 = Works with all post types =
@@ -226,6 +237,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 #### Version 1.1.x
 - Fixed passing additional arguments for field type post
+- Little better looking output of "Show custom field keys"
 
 #### Version 1.1.6
 - Fixed bug that could lead to memoryleak. Thanks to plux/angry creative for patch.

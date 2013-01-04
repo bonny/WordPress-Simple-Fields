@@ -161,6 +161,15 @@ ul.simple-fields-metabox-field-group-fields-repeatable li:hover {
 }
 
 
+/* hidden view for custom field keys/slugs */
+.simple-fields-metabox-field-custom-field-key {
+}
+.simple-fields-metabox-field-custom-field-key-visible {
+	display: block;
+	clear: both;
+	margin-bottom: 1em;
+}
+
 
 .simple_fields_editor_switch {
 	display: inline;

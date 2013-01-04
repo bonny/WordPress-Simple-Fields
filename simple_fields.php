@@ -1085,11 +1085,11 @@ class simple_fields {
 					
 					// Output hidden field that can be shown with JS to see the name and slug of a field
 					?>
-					<div class="simple-fields-metabox-field-custom-field-key hidden highlight">
+					<div class="simple-fields-metabox-field-custom-field-key hidden">
 						<strong><?php _e('Meta key:', 'simple-fields') ?></strong>
 						<?php echo $custom_field_key ?>
 						<?php if (isset($field["slug"])) { ?>
-							<br><strong><?php _e('Field slug:', 'simple-fields') ?></strong>
+							<br><strong><?php _e('Slug:', 'simple-fields') ?></strong>
 							<?php echo $field["slug"] ?>
 						<?php } ?>
 					</div>
@@ -1504,7 +1504,7 @@ class simple_fields {
 	/**
 	 * Returns a field from a field group
 	 * @param int $field_group
-	 * @param int $field_id
+	 * @param mixed $field_id id or name of field
 	 * @return false on error
 	 */
 	function get_field_in_group($field_group, $field_id) {

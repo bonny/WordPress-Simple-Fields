@@ -364,20 +364,25 @@ class Simple_Fields_Walker_Category_Checklist extends Walker {
 // of times a field has been repeated on any single post so that $num_in_set can
 // be determined dynamically.
 function simple_fields_get_meta_query($group_id, $field_id, $value, $compare = "=", $type = "CHAR", $order = "", $num_in_set = 1) {
+
 	global $sf;
 	$field_group = $sf->get_field_group($group_id);
 	$field 		 = $sf->get_field_in_group($field_group, $field_id);
+
 	if (!is_array($field_group) || !is_array($field)) {
 		return false;
 	}
+
 	if(!is_numeric($num_in_set) || $num_in_set < 1) {
 		$num_in_set = 1;
 	}
+
 	if ($field["type"] == "radiobuttons") {
 		$get_value_key = "type_radiobuttons_options";
 	} else if ($field["type"] == "dropdown") {
 		$get_value_key = "type_dropdown_options";
 	}
+
 	if (!empty($get_value_key) && is_array($field[$get_value_key])) {
 		foreach($field[$get_value_key] as $option_key => $option) {
 			if ($option['value'] == $value && (!isset($option['deleted']) || intval($option['deleted']) == 0)) {
@@ -385,60 +390,82 @@ function simple_fields_get_meta_query($group_id, $field_id, $value, $compare = "
 			}
 		}
 	}
+
 	$query_args = array('meta_query' => array('relation' => 'OR'));
+
 	for($i=0;$i<$num_in_set;$i++) {
 		$query_args['meta_query'][$i]['key'] = "_simple_fields_fieldGroupID_{$field_group['id']}_fieldID_{$field['id']}_numInSet_{$i}";
 		$query_args['meta_query'][$i]['value'] = $value;
 		$query_args['meta_query'][$i]['compare'] = $compare;
 		$query_args['meta_query'][$i]['type'] = $type;
 	}
+
 	if ($order == "ASC" || $order == "DESC") {
 		$query_args['meta_key'] = $query_args['meta_query'][0]['key'];
 		$query_args['orderby'] = 'meta_value';
 		$query_args['order'] = $order;
 	}
+
 	return $query_args;
 }
 
-// Extends args for WP_Query() with simple fields meta query args
-// and returns query result object
+/**
+ * Extends args for WP_Query() with simple fields meta query args
+ * and returns query result object
+ * 
+ * Example:
+ *  $args = array(
+ *		"post_type" => "books", 
+ * 		"sf_group" => "Book details", 
+ *		"sf_field" => "Author", 
+ * 		"sf_value" => "Stephen King"
+ *	);
+ *
+ *	$my_query = simple_fields_query_posts($args);
+ */
 function simple_fields_query_posts($query_args = array()) {
-        $query_keys = array('sf_group',
-                'sf_field',
-                'sf_value',
-                'sf_compare',
-                'sf_type',
-                'sf_order',
-                'sf_num_in_set');
+
+		$query_keys = array(
+			'sf_group',
+			'sf_field',
+			'sf_value',
+			'sf_compare',
+			'sf_type',
+			'sf_order',
+			'sf_num_in_set'
+		);
+        
         foreach($query_keys as $key) {
-		switch($key) {
-			case "sf_group":
-			case "sf_field":
-			case "sf_value":
-				if(empty($query_args[$key]))
-					return false;
-				break;
-			case "sf_compare":
-				if(empty($query_args[$key]))
-					$query_args[$key] = "=";
-				break;
-			case "sf_type":
-				if(empty($query_args[$key]))
-					$query_args[$key] = "CHAR";
-				break;
-			case "sf_order":
-				if($query_args[$key] != "ASC" && $query_args[$key] != "DESC")
-					$query_args[$key] = "";
-				break;
-			case "sf_num_in_set":
-				if(!is_numeric($query_args[$key]) || $query_args[$key] < 1)
-					$query_args[$key] = 1;
-				break;
-		}
+			switch($key) {
+				case "sf_group":
+				case "sf_field":
+				case "sf_value":
+					if(empty($query_args[$key]))
+						return false;
+					break;
+				case "sf_compare":
+					if(empty($query_args[$key]))
+						$query_args[$key] = "=";
+					break;
+				case "sf_type":
+					if(empty($query_args[$key]))
+						$query_args[$key] = "CHAR";
+					break;
+				case "sf_order":
+					if($query_args[$key] != "ASC" && $query_args[$key] != "DESC")
+						$query_args[$key] = "";
+					break;
+				case "sf_num_in_set":
+					if(!is_numeric($query_args[$key]) || $query_args[$key] < 1)
+						$query_args[$key] = 1;
+					break;
+			}
 	}
+	
 	$meta_query_args = simple_fields_get_meta_query($query_args['sf_group'], $query_args['sf_field'], $query_args['sf_value'], $query_args['sf_compare'], $query_args['sf_type'], $query_args['sf_order'], $query_args['sf_num_in_set']);
 	$query_args = array_merge($query_args, $meta_query_args);
 	return new WP_Query($query_args);
+
 }
 
 

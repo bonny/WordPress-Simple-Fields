@@ -624,7 +624,14 @@ var simple_fields = (function() {
 
 		// Click show custom field keys
 		$(document).on("click", "#simple-fields-post-edit-side-field-settings-show-keys", function() {
-			$("div.simple-fields-metabox-field-custom-field-key").toggle();
+			var $this = $(this),
+				divs = $("div.simple-fields-metabox-field-custom-field-key");
+
+			if (divs.is(":hidden")) {
+				divs.addClass("simple-fields-metabox-field-custom-field-key-visible");
+			} else {
+				divs.removeClass("simple-fields-metabox-field-custom-field-key-visible");
+			}
 			return false;
 		});
 
