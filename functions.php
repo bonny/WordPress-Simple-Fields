@@ -211,7 +211,7 @@ function simple_fields_get_post_group_values($post_id, $field_group_name_or_id, 
 function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") {
 	
 	global $sf;
-	$cache_key = 'simple_fields_'.$sf->ns_key.'_get_all_fields_and_values_for_post_' . $post_id . json_encode($args);
+	$cache_key = 'simple_fields_'.$sf->ns_key.'_get_all_fields_and_values_for_post_' . $post_id . "_" . md5(json_encode($args));
 	$selected_post_connector = wp_cache_get( $cache_key , 'simple_fields' );
 
 	if (FALSE === $selected_post_connector) {
@@ -1262,7 +1262,7 @@ function simple_fields_fieldgroup($field_group_id_or_slug, $post_id = NULL, $opt
 	}
 
 	global $sf;
-	$cache_key = "simple_fields_".$sf->ns_key."_fieldgroup_" . $field_group_id_or_slug . "_" . $post_id . json_encode($options);
+	$cache_key = "simple_fields_".$sf->ns_key."_fieldgroup_" . $field_group_id_or_slug . "_" . $post_id . "_" . md5(json_encode($options));
 	$values = wp_cache_get( $cache_key, 'simple_fields');
 	if (FALSE === $values) {
 	
