@@ -132,6 +132,31 @@ class MyPluginTest extends WP_UnitTestCase {
 			1 => "1"
 		);
 		$this->assertEquals($val, simple_fields_values("field_user", $post_id));
+		
+		// date & time picker 2
+		$val = array(
+			    0 => array(
+			            "type" => "datetime",
+			            "date_unixtime" => "1359624600",
+			            "ISO_8601" => "2013-01-31 09:30",
+			            "RFC_2822" => "Thu, 31 Jan 2013 09:30:00 +0000",
+			            "Y-m-d" => "2013-01-31",
+			            "Y-m-d H:i" => "2013-01-31 09:30",
+			            "date_format" => "January 31, 2013",
+			            "date_time_format" => "January 31, 2013 9:30 am"
+			        ),			
+				    1 => array(
+			            "type" => "datetime",
+			            "date_unixtime" => "1355162400",
+			            "ISO_8601" => "2012-12-10 18:00",
+			            "RFC_2822" => "Mon, 10 Dec 2012 18:00:00 +0000",
+			            "Y-m-d" => "2012-12-10",
+			            "Y-m-d H:i" => "2012-12-10 18:00",
+			            "date_format" => "December 10, 2012",
+			            "date_time_format" => "December 10, 2012 6:00 pm",
+			        )			
+				);
+		$this->assertEquals($val, simple_fields_values("field_date_picker_2", $post_id));
 
 	}
 
