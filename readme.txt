@@ -224,6 +224,9 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
+#### Version 1.1.x
+- Fixed passing additional arguments for field type post
+
 #### Version 1.1.6
 - Fixed bug that could lead to memoryleak. Thanks to plux/angry creative for patch.
 - Fixed some notice messages
