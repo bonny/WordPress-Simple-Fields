@@ -3157,7 +3157,7 @@ class simple_fields {
 											
 											$connector = $this->get_connector_by_id($default_connector);
 											if ($connector !== FALSE) {
-												$default_connector_str = sprintf(__('Default is to use connector <em>%s</em>', 'simple-fields'), $connector["name"]);
+												$default_connector_str = sprintf(__('Default is to use connector <em>%s</em>', 'simple-fields'), $connector["name"]);
 											}
 										}
 	
