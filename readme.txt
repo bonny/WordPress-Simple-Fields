@@ -241,6 +241,31 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 - Fixed passing additional arguments for field type post
 - Little better looking output of "Show custom field keys"
 - Added unit tests for date/time picker v2.
+- Added a couple of filters and actions that you can use in your functions.php-file or in your plugin or field extension or whatever. Added filters are:
+  simple_fields_debug_output
+  simple_fields_get_post_value
+  simple_fields_get_post_group_values
+  simple_fields_get_all_fields_and_values_for_post
+  simple_fields_get_meta_query
+  simple_fields_query_posts
+  simple_fields_values
+  simple_fields_value
+  simple_fields_connector
+  simple_fields_fieldgroup
+  simple_fields_get_slug_pattern
+  simple_fields_get_default_connector_for_post_type
+  simple_fields_get_post_type_defaults
+  simple_fields_get_field_groups
+  simple_fields_get_field_group
+  simple_fields_get_field_in_group
+  simple_fields_get_pages_args
+  simple_fields_get_pages_output
+  simple_fields_get_post_connectors_for_post_type
+  simple_fields_get_options
+  simple_fields_save_options
+  simple_fields_get_extended_return_values_for_field
+  simple_fields_get_field_group_by_slug
+  simple_fields_clear_caches
 
 #### Version 1.1.6
 - Fixed bug that could lead to memoryleak. Thanks to plux/angry creative for patch.

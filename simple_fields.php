@@ -145,7 +145,9 @@ class simple_fields {
 	 * @return string
 	 */
 	function get_slug_pattern() {
-		return "[A-Za-z0-9_]+";
+		$pattern = "[A-Za-z0-9_]+";
+		$pattern = apply_filters( "simple_fields_get_slug_pattern", $pattern);
+		return $pattern;
 	}
 	
 	/**
@@ -243,14 +245,11 @@ class simple_fields {
 		}
 
 		// Common scripts
-
 		wp_enqueue_script("jquery-ui-core");
 		wp_enqueue_script("jquery-ui-sortable");
 		wp_enqueue_script("jquery-ui-dialog");
-		wp_enqueue_style('wp-jquery-ui-dialog');
 		wp_enqueue_script("jquery-effects-highlight");
-
-		wp_register_script('simple-fields-scripts', SIMPLE_FIELDS_URL.'scripts.js', false, SIMPLE_FIELDS_VERSION);
+		wp_register_script('simple-fields-scripts', SIMPLE_FIELDS_URL.'scripts.js', false, SIMPLE_FIELDS_VERSION);		
 		wp_localize_script('simple-fields-scripts', 'sfstrings', array(
 			'page_type' => $page_type,
 			'txtDelete' => __('Delete', 'simple-fields'),
@@ -271,6 +270,9 @@ class simple_fields {
 			'high' => __('high'),
 		));
 		wp_enqueue_script('simple-fields-scripts');
+
+		// Common styles
+		wp_enqueue_style('wp-jquery-ui-dialog');
 
 		// Hook for plugins
 		do_action("simple_fields_enqueue_scripts", $this);
@@ -337,9 +339,13 @@ class simple_fields {
 	 * @return mixed int connector id or string __none__ or __inherit__
 	 */
 	function get_default_connector_for_post_type($post_type) {
+
 		$post_type_defaults = $this->get_post_type_defaults();
 		$selected_post_type_default = (isset($post_type_defaults[$post_type]) ? $post_type_defaults[$post_type] : "__none__");
+		
+		$selected_post_type_default = apply_filters( "simple_fields_get_default_connector_for_post_type", $post_type );
 		return $selected_post_type_default;
+
 	}
 
 	/**
@@ -1370,6 +1376,9 @@ class simple_fields {
 		return $connectors;
 	}
 
+	/**
+	 * Returns 
+	 */
 	function get_post_type_defaults() {
 
 		$post_type_defaults = wp_cache_get( 'simple_fields_'.$this->ns_key.'_post_type_defaults', 'simple_fields' );
@@ -1377,6 +1386,8 @@ class simple_fields {
 			$post_type_defaults = (array) get_option("simple_fields_post_type_defaults");
 			wp_cache_set( 'simple_fields_'.$this->ns_key.'_post_type_defaults', $post_type_defaults, 'simple_fields' );
 		}
+
+		$post_type_defaults = apply_filters( "simple_fields_get_post_type_defaults", $post_type_defaults );
 
 		return $post_type_defaults;
 
@@ -1470,6 +1481,7 @@ class simple_fields {
 			
 		}
 
+		$field_groups = apply_filters( "simple_fields_get_field_groups", $field_groups );
 		return $field_groups;
 		
 	}
@@ -1480,6 +1492,7 @@ class simple_fields {
 	 * @return array with field group or false if field group is not found
 	 */
 	function get_field_group($group_id) {
+
 		$field_groups = $this->get_field_groups();
 		$return = false;
 		if (is_array($field_groups)) {
@@ -1497,17 +1510,22 @@ class simple_fields {
 				}
 			}
 		}
+
+		$return = apply_filters( "simple_fields_get_field_group", $return );
 		return $return;
+
 	}
 
 
 	/**
 	 * Returns a field from a field group
+	 *
 	 * @param int $field_group
 	 * @param mixed $field_id id or name of field
 	 * @return false on error
 	 */
 	function get_field_in_group($field_group, $field_id) {
+
 		$return = false;
 		if (is_array($field_group) && is_array($field_group['fields'])) {
 			foreach($field_group['fields'] as $field) {
@@ -1524,7 +1542,10 @@ class simple_fields {
 				}
 			}
 		}
+	
+		$return = apply_filters( "simple_fields_get_field_in_group", $return, $field_group, $field_id);
 		return $return;
+	
 	}
 
 
@@ -1660,6 +1681,7 @@ class simple_fields {
 			$connector_to_use = "__none__";
 		}
 	
+		$connector_to_use = apply_filters( "simple_fields_get_selected_connector_for_post", $connector_to_use, $post);
 		return $connector_to_use;
 	
 	} // function get_selected_connector_for_post
@@ -1682,6 +1704,7 @@ class simple_fields {
 			"post_status" => "any"
 		);
 		$args = wp_parse_args( $args, $defaults );
+		$args = apply_filters( "simple_fields_get_pages_args", $args);
 		$pages = get_posts($args);
 	
 		$output = "";
@@ -1719,6 +1742,7 @@ class simple_fields {
 			$output = "<ul class='simple-fields-tree-page-tree_childs'>$output</ul>";
 		}
 		
+		$output = apply_filters( "simple_fields_get_pages_output", $output, $args);
 		return $output;
 	}
 
@@ -1728,6 +1752,7 @@ class simple_fields {
 	 * hide some things there to make it more clean and user friendly
 	 */
 	function admin_head_select_file() {
+
 		// Only output this css when we are showing a file dialog for simple fields
 		if (isset($_GET["simple_fields_action"]) && $_GET["simple_fields_action"] == "select_file") {
 			?>
@@ -1738,6 +1763,7 @@ class simple_fields {
 			</style>
 			<?php
 		}
+
 	}
 
 	
@@ -2445,6 +2471,7 @@ class simple_fields {
 			<input type='hidden' name='field[{$fieldID}][deleted]' value='{$field_deleted}' class='hidden_deleted' />
 	
 		</li>";
+
 		return $out;
 	
 	} // /simple_fields_field_group_add_field_template
@@ -2453,10 +2480,12 @@ class simple_fields {
 	 * Called from AJAX call to add a field group to the post in edit
 	 */
 	function field_group_add_field() {
+
 		global $sf;
 		$simple_fields_highest_field_id = (int) $_POST["simple_fields_highest_field_id"];
 		echo $this->field_group_add_field_template($simple_fields_highest_field_id);
 		exit;
+
 	}
 
 
@@ -3230,6 +3259,7 @@ class simple_fields {
 		</div>	
 	
 		<?php
+
 	} // end func simple_fields_options
 
 
@@ -3271,7 +3301,10 @@ class simple_fields {
 				$arr_found_connectors[] = $one_connector;
 			}
 		}
+
+		$arr_found_connectors = apply_filters( "simple_fields_get_post_connectors_for_post_type", $arr_found_connectors, $post_type);
 		return $arr_found_connectors;
+
 	}
 	
 	/**
@@ -3293,8 +3326,11 @@ class simple_fields {
 	 * @return array
 	 */
 	function get_options() {
+
 		$options = (array) get_option("simple_fields_options");
+		$options = apply_filters( "simple_fields_get_options", $options);
 		return $options;
+
 	}
 	
 	/**
@@ -3302,10 +3338,13 @@ class simple_fields {
 	 * @param array $new_options. will be merged with old options, so you only need to add your modified stuff to the array, and then all old stuff will be untouched.
 	 */
 	function save_options($new_options) {
+
 		$old_options = $this->get_options();
 		$new_options = wp_parse_args($new_options, $old_options);
+		$new_options = apply_filters( "simple_fields_save_options", $new_options);
 		update_option("simple_fields_options", $new_options);
 		$this->clear_caches();
+
 	}
 	
 	/**
@@ -3470,11 +3509,12 @@ class simple_fields {
 
 	/**
 	 * Retrieve and return extended return values for a field type
+	 * Only used for internal/built in file types.
+	 *
 	 * @param mixed $field array or string or int or whatever with field info
 	 * @param mixed $field_value the saved value
 	 */
 	function get_extended_return_values_for_field($field, $field_value) {
-	
 
 		$return_field_value = array();
 
@@ -3484,6 +3524,7 @@ class simple_fields {
 			// lets get more info about that file then, so we have most useful stuff in an array – hooray!
 			
 			if (isset($field_value) && is_numeric($field_value)) {
+
 				$file_id                             = (int) $field_value;
 				$return_field_value["id"]            = $file_id;
 				$return_field_value["is_image"]      = wp_attachment_is_image( $file_id );
@@ -3626,8 +3667,7 @@ class simple_fields {
 				$return_field_value["permalink"] 	= get_permalink( $post_id );
 				$return_field_value["post"] 		= get_post( $post_id );
 			}
-			
-		
+				
 		} else if ("user" === $field["type"]) {
 
 			if (isset($field_value) && is_numeric($field_value)) {
@@ -3703,8 +3743,11 @@ class simple_fields {
 			}
 			
 		}
-			
+		
+		$return_field_value = apply_filters( "simple_fields_get_extended_return_values_for_field", $return_field_value, $field, $field_value);
+
 		return $return_field_value;
+
 	}
 
 	/**
@@ -3730,28 +3773,42 @@ class simple_fields {
 					if ($one_field_group["deleted"]) continue;
 					if ($one_field_group["slug"] == $field_group_slug) {
 						wp_cache_set( $cache_key, $one_field_group, 'simple_fields' );
+
+						$one_field_group = apply_filters( "simple_fields_get_field_group_by_slug", $one_field_group, $field_group_slug);
 						return $one_field_group;
 					}
 				}
 				
 				wp_cache_set( $cache_key, FALSE, 'simple_fields' );
-				return FALSE;
+				
+				$return_val = FALSE;
+				$return_val = apply_filters( "simple_fields_get_field_group_by_slug", $return_val, $field_group_slug);
+				return $return_val;
 	
 			} else {
 	
 				// look for group using id
 			 	if (isset($field_groups[$field_group_slug]) && is_array($field_groups[$field_group_slug]) && !$field_groups[$field_group_slug]["deleted"]) {
+
 					wp_cache_set( $cache_key, $field_groups[$field_group_slug], 'simple_fields' );
-				 	return $field_groups[$field_group_slug];
+
+					$return_val = $field_groups[$field_group_slug];
+					$return_val = apply_filters( "simple_fields_get_field_group_by_slug", $return_val, $field_group_slug);
+				 	return $return_val;
+
 			 	} else {
+
 				 	wp_cache_set( $cache_key, FALSE, 'simple_fields' );
-				 	return FALSE;
+					
+					$return_val = apply_filters( "simple_fields_get_field_group_by_slug", $return_val, $field_group_slug);
+					return $return_val;
 			 	}
 			 	
 			}
 				
 		}
 
+		$return_val = apply_filters( "simple_fields_get_field_group_by_slug", $return_val, $field_group_slug);
 		return $return_val;
 
 	}
@@ -3772,12 +3829,15 @@ class simple_fields {
 		
 		foreach ($field_group["fields"] as $one_field) {
 			if ($field_slug === $one_field["slug"]) {
+				$one_field = apply_filters( "simple_fields_get_field_by_slug", $one_field, $field_slug, $fieldgroup_slug);
 				return $one_field;
 			}
 		}
 		
 		// No field with that slug found
-		return FALSE;
+		$return_val = FALSE;
+		$return_val = apply_filters( "simple_fields_get_field_by_slug", $return_val, $field_slug, $fieldgroup_slug);
+		return $return_val;
 	}
 
 	/**
@@ -3785,6 +3845,8 @@ class simple_fields {
 	 * Run this when options etc have been changed so fresh values are fetched upon next get
 	 */
 	function clear_caches() {
+
+		do_action("simple_fields_clear_caches");
 
 		$prev_key = $this->ns_key;
 		$this->ns_key = wp_cache_incr( 'simple_fields_namespace_key', 1, 'simple_fields' );

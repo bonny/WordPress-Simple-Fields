@@ -11,18 +11,20 @@
  */
 if (!function_exists("sf_d")) {
 function sf_d($var) {
-	echo "<pre class='sf_box_debug'>";
+	$out = "";
+	$out .= "<pre class='sf_box_debug'>";
 	if (is_array($var) || is_object($var)) {
-		echo htmlspecialchars( print_r($var, true), ENT_QUOTES, 'UTF-8' );
+		$out .= htmlspecialchars( print_r($var, true), ENT_QUOTES, 'UTF-8' );
 	} else if( is_null($var) ) {
-		echo "Var is NULL";
+		$out .= "Var is NULL";
 	} else if ( is_bool($var)) {
-		echo "Var is BOOLEAN ";
-		echo $var ? "TRUE" : "FALSE";
+		$out .= "Var is BOOLEAN ";
+		$out .= $var ? "TRUE" : "FALSE";
 	} else {
-		echo htmlspecialchars( $var, ENT_QUOTES, 'UTF-8' );
+		$out .= htmlspecialchars( $var, ENT_QUOTES, 'UTF-8' );
 	}
-	echo "</pre>";
+	$out .= "</pre>";
+	echo apply_filters( "simple_fields_debug_output", $out );
 }
 }
 
@@ -103,8 +105,8 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 					$return_val = $saved_values;
 				}
 
-				// hm.. can't get here right??!
 				if ($is_found) {
+					$return_val = apply_filters( "simple_fields_get_post_value", $return_val, $post_id, $field_name_or_id, $single);
 					return $return_val;
 				}
 
@@ -113,7 +115,11 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 		}
 	}
 
-	return; // oh no! nothing found. bummer.
+	// Nothing found
+	$return_val = NULL;
+	$return_val = apply_filters( "simple_fields_get_post_value", $return_val, $post_id, $field_name_or_id, $single);
+	return $return_val;
+
 }
 
 
@@ -137,7 +143,8 @@ function simple_fields_get_post_group_values($post_id, $field_group_name_or_id, 
 	$connector = simple_fields_get_all_fields_and_values_for_post($post_id);
 
 	if (!$connector) {
-		return array();
+		$return_val = apply_filters( "simple_fields_get_post_group_values", array(), $post_id, $field_group_name_or_id, $use_name, $return_format);
+		return $return_val;
 	}
 
 	foreach ($connector["field_groups"] as $one_field_group) {
@@ -189,11 +196,19 @@ function simple_fields_get_post_group_values($post_id, $field_group_name_or_id, 
 					$arr_return2[$i][$key] = $val[$i];
 				}
 			}
+
 			if ($return_format == 1) {
+
+				$arr_return = apply_filters( "simple_fields_get_post_group_values", $arr_return, $post_id, $field_group_name_or_id, $use_name, $return_format);
 				return $arr_return;
+
 			} elseif ($return_format == 2) {
+
+				$arr_return2 = apply_filters( "simple_fields_get_post_group_values", $arr_return2, $post_id, $field_group_name_or_id, $use_name, $return_format);
 				return $arr_return2;
+
 			}
+
 		}
 	}
 
@@ -228,7 +243,9 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 		$selected_post_connector  = isset($existing_post_connectors[$connector_to_use]) ? $existing_post_connectors[$connector_to_use] : NULL;
 	
 		if ($selected_post_connector == null) {
-			return false;
+			$return_val = FALSE;
+			$return_val = apply_filters( "simple_fields_get_all_fields_and_values_for_post", $return_val, $post_id, $args);
+			return $return_val;
 		}
 	
 		// Remove deleted field groups
@@ -321,6 +338,7 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 		wp_cache_set( $cache_key, $selected_post_connector, 'simple_fields' );
 	}
 
+	$selected_post_connector = apply_filters( "simple_fields_get_all_fields_and_values_for_post", $selected_post_connector, $post_id, $args);
 	return $selected_post_connector;
 }
 
@@ -406,6 +424,7 @@ function simple_fields_get_meta_query($group_id, $field_id, $value, $compare = "
 		$query_args['order'] = $order;
 	}
 
+	$query_args = apply_filters( "simple_fields_get_meta_query", $query_args, $group_id, $field_id, $value, $compare, $type, $order, $num_in_set);
 	return $query_args;
 }
 
@@ -464,6 +483,8 @@ function simple_fields_query_posts($query_args = array()) {
 	
 	$meta_query_args = simple_fields_get_meta_query($query_args['sf_group'], $query_args['sf_field'], $query_args['sf_value'], $query_args['sf_compare'], $query_args['sf_type'], $query_args['sf_order'], $query_args['sf_num_in_set']);
 	$query_args = array_merge($query_args, $meta_query_args);
+	
+	$query_args = apply_filters( "simple_fields_query_posts", $query_args);
 	return new WP_Query($query_args);
 
 }
@@ -985,9 +1006,12 @@ function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $n
  * @return mixed string or array, depending on the field type
  */
 function simple_fields_value($field_slug = NULL, $post_id = NULL, $options = NULL) {
+	
 	$values = simple_fields_values($field_slug, $post_id, $options);
 	$value = isset($values[0]) ? $values[0] : "";
+	$value = apply_filters( "simple_fields_value", $value, $field_slug, $post_id, $options);
 	return $value;
+
 }
 
 /**
@@ -1059,6 +1083,7 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 			}
 		}
 
+		$arr_comma_slugs_values = apply_filters( "simple_fields_values", $arr_comma_slugs_values, $field_slug, $post_id, $options);
 		return $arr_comma_slugs_values;
 
 	}
@@ -1069,7 +1094,8 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 	$post_connector_info = simple_fields_get_all_fields_and_values_for_post($post_id, "include_deleted=0");
 
 	if ($post_connector_info === FALSE) {
-		return FALSE;
+		$return_val = apply_filters( "simple_fields_values", FALSE, $field_slug, $post_id, $options);
+		return $return_val;
 	}
 
 	$parsed_options = wp_parse_args($options);
@@ -1196,6 +1222,7 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 				});
 				*/
 				$saved_values = apply_filters("simple-fields-return-values-" . $one_field_group_field["type"], $saved_values);
+				$saved_values = apply_filters( "simple_fields_values", $saved_values, $field_slug, $post_id, $options, $one_field_group_field["type"]);
 				return $saved_values;					
 
 			}
@@ -1223,16 +1250,26 @@ function simple_fields_connector($post_id = NULL) {
 	$connector_id = $sf->get_selected_connector_for_post($post_this);
 
 	if ($connector_id == "__none__") {
+
 		// no connector selected
-		return FALSE;
+		$return_val = FALSE;
+		$return_val = apply_filters( "simple_fields_connector", $return_val, $post_id);
+		return $return_val;
+
 	} else {
+
 		// connector is selected, get slug of it
 		$post_connectors = $sf->get_post_connectors();
 		if (!isset($post_connectors[$connector_id])) {
-			return FALSE;
+			$return_val = FALSE;
+			$return_val = apply_filters( "simple_fields_connector", $return_val, $post_id);
+			return $return_val;
 		} 
 
+		$return_val = $post_connectors[$connector_id]["slug"];
+		$return_val = apply_filters( "simple_fields_connector", $return_val, $post_id);
 		return $post_connectors[$connector_id]["slug"];
+
 	}
 }
 
@@ -1251,6 +1288,7 @@ function simple_fields_is_connector($slug) {
  * Returns allt the values in a field group
  * It's a shortcut to running simple_fields_value(slugs) with all slugs already entered
  * Depending if the field group is repeatable or not, simple_field_value or simple_fields_values will be used
+ *
  * @param mixed $field_group_id_or_slug
  * @return mixed, but probably array, depending on how many field the group has (just one field, and not repeatable = no array for you!)
  */
@@ -1282,6 +1320,9 @@ function simple_fields_fieldgroup($field_group_id_or_slug, $post_id = NULL, $opt
 		}
 		wp_cache_set( $cache_key, $values, 'simple_fields' );
 	}
+
+	$values = apply_filters( "simple_fields_fieldgroup", $values, $field_group_id_or_slug, $post_id, $options);
 	return $values;
+
 }
 
