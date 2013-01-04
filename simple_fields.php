@@ -3481,16 +3481,28 @@ class simple_fields {
 			?>
 			<script>
 			window.simple_fields_post_debug_show_hide = window.simple_fields_post_debug_show_hide || function(t) {
-				var $t = jQuery(t);
-				var $div_wrap = $t.closest("div.simple-fields-post-debug-wrap");
-				var debug_content = $div_wrap.find("div.simple-fields-post-debug-content");
-				debug_content.toggle();
-				if (debug_content.is(":visible")) {
-					$t.text("<?php echo $str_hide_fields ?>");
-				} else {
-					$t.text("<?php echo $str_show_fields ?>");
+
+				var div_debug_contents = t.parentNode.parentNode.getElementsByClassName("simple-fields-post-debug-content"),
+					new_style,
+					link_text;
+
+				if (div_debug_contents.length) {
+					
+					if (div_debug_contents[0].style.display === "block") {
+						new_style = "none";
+						link_text = "<?php echo $str_show_fields ?>";
+					} else {
+						new_style = "block";
+						link_text = "<?php echo $str_hide_fields ?>";
+					}
+
+					div_debug_contents[0].style.display = new_style;
+					t.innerHTML = link_text;
+
 				}
+
 				return false;
+				
 			}
 			</script>
 			<?php

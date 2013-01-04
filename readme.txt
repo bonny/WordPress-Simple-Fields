@@ -241,6 +241,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 - Fixed passing additional arguments for field type post
 - Little better looking output of "Show custom field keys"
 - Added unit tests for date/time picker v2.
+- Changed debug box to stop using jQuery, so it should work with more themes and in more situations where jQuery may not be available
 - Added a couple of filters and actions that you can use in your functions.php-file or in your plugin or field extension or whatever. Added filters are:
   simple_fields_debug_output
   simple_fields_get_post_value
