@@ -3788,6 +3788,18 @@ class simple_fields {
 
 		$prev_key = $this->ns_key;
 		$this->ns_key = wp_cache_incr( 'simple_fields_namespace_key', 1, 'simple_fields' );
+
+		// this can consume lots of memory if we for example use set_value a lot because
+		// it gets all field values and such and then increase the namespace key, bloating up the memory
+		// kinda correct, but kinda too much memory
+		// this is perhaps naughty, but will work: get all keys belonging to simple fields and just remove them
+		global $wp_object_cache;
+		if (isset($wp_object_cache->cache["simple_fields"])) {
+			// cache exists for simple fields
+			// remove all keys
+			$wp_object_cache->cache["simple_fields"] = array();
+		}
+
 		if ($this->ns_key === FALSE) {
 			// I really don't know why, but wp_cache_incr returns false...always or sometimes?
 			// Manually update namespace key by one
@@ -3795,8 +3807,8 @@ class simple_fields {
 			wp_cache_set( 'simple_fields_namespace_key', $this->ns_key, 'simple_fields' );
 		}
 		// echo "clear_key";var_dump($this->ns_key);
-	}
-	
+
+	}	
 } // end class
 
 
