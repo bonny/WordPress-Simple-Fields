@@ -34,41 +34,41 @@ Simple Fields comes bundled with a useful variation of fields. Note that any fie
 
 The fields that are included in Simple Fields are:
 
-Text
-: A simple text input to enter any kind of information.
+* Text *
+A simple text input to enter any kind of information.
 
-Textarea
-: A bigger area for inputing text. Even support WYSIWYG/TinyMCE-mode that makes it work like the regular content editor, so you can insert images, headlines, list, paragraphs and so on.
+* Textarea *
+A bigger area for inputing text. Even support WYSIWYG/TinyMCE-mode that makes it work like the regular content editor, so you can insert images, headlines, list, paragraphs and so on.
 
-Checkbox
-: A simple checkbox to be able to select something on/off.
+* Checkbox *
+A simple checkbox to be able to select something on/off.
 
- Radio Buttons
-: Add multiple radiobuttons where a user can select one of the buttons. Useful for letting a user choose between multiple options.
+* Radio Buttons *
+Add multiple radiobuttons where a user can select one of the buttons. Useful for letting a user choose between multiple options.
  
-Dropdown
-: Add multiple values to a dropdown box. User can select one or several items in the list. Useful for letting your users select one or severall things.
+* Dropdown *
+Add multiple values to a dropdown box. User can select one or several items in the list. Useful for letting your users select one or severall things.
 
-File
-: Select any file using the built in file/media browser in WordPress. Since it's using the built in media browser you can also upload new images/attachments to your posts. Using this field together with repeatable field groups = very powerful! :)
+* File *
+Select any file using the built in file/media browser in WordPress. Since it's using the built in media * browser you can also upload new images/attachments to your posts. Using this field together with repeatable field groups = very powerful! :)
 
-Post
-: Select any post that exists in WordPress. Can be pages or any custom post type.
+* Post *
+Select any post that exists in WordPress. Can be pages or any custom post type.
 
-Taxonomy
-: Select a taxonomy from a list of taxonomies.
+* Taxonomy *
+Select a taxonomy from a list of taxonomies.
 
-Taxonomy Term
-: Select a term from a taxonomy.
+* Taxonomy Term *
+Select a term from a taxonomy.
 
-Color
-: Show a color picker where the user can choose any color. The color can also be entered manually, if the user knows the hex value of the color.
+* Color *
+Show a color picker where the user can choose any color. The color can also be entered manually, if the user knows the hex value of the color.
 
- Date and Time
-: Chose a date and optionally time from a JQuery UI date and time picker.
+* Date and Time *
+Chose a date and optionally time from a JQuery UI date and time picker.
  
- User
-: Choose a user from the system.
+* User *
+Choose a user from the system.
  
 See the [field documentation](http://simple-fields.com/documentation/field-types/) for more details about the different fields.
  
@@ -240,6 +240,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 - Changed the way some cache keys where stored, beacuse a key in an array that contains quotes is just silly looking (but valid, apparently)
 - Fixed passing additional arguments for field type post
 - Little better looking output of "Show custom field keys"
+- Added unit tests for date/time picker v2.
 
 #### Version 1.1.6
 - Fixed bug that could lead to memoryleak. Thanks to plux/angry creative for patch.
