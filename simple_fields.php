@@ -342,8 +342,8 @@ class simple_fields {
 
 		$post_type_defaults = $this->get_post_type_defaults();
 		$selected_post_type_default = (isset($post_type_defaults[$post_type]) ? $post_type_defaults[$post_type] : "__none__");
-		
-		$selected_post_type_default = apply_filters( "simple_fields_get_default_connector_for_post_type", $post_type );
+		$selected_post_type_default = apply_filters( "simple_fields_get_default_connector_for_post_type", $selected_post_type_default, $post_type );
+
 		return $selected_post_type_default;
 
 	}
