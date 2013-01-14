@@ -3,7 +3,7 @@
 Plugin Name: Simple Fields
 Plugin URI: http://simple-fields.com
 Description: Add groups of textareas, input-fields, dropdowns, radiobuttons, checkboxes and files to your edit post screen.
-Version: 1.1.6
+Version: 1.1.x
 Author: Pär Thernström
 Author URI: http://eskapism.se/
 License: GPL2
@@ -1402,14 +1402,17 @@ class simple_fields {
 		
 		$field_groups = wp_cache_get( 'simple_fields_'.$this->ns_key.'_groups', 'simple_fields' );
 		if (FALSE === $field_groups) {
-			
+
 			$field_groups = get_option("simple_fields_groups");
-			if ($field_groups === FALSE) $field_groups = array();
 			
+			if ($field_groups === FALSE) $field_groups = array();
+
 			// Calculate the number of active fields
 			// And some other things
+
+			// With each field group among all field groups
 			foreach (array_keys($field_groups) as $i) {
-	                    
+
                 // Sanity check the field group id
                 if (empty($field_groups[$i]["id"]) && empty($field_groups[$i]["deleted"])) {
                     
@@ -1449,31 +1452,30 @@ class simple_fields {
 					$field_groups[$i]["slug"] = $field_groups[$i]["key"];
 				}
 	
+
+				// Calculate number of active fields in this field group
 				$num_active_fields = 0;
 				foreach ($field_groups[$i]["fields"] as $one_field) {
-					if (!$one_field["deleted"]) $num_active_fields++;
+					if ( ! $one_field["deleted"] ) $num_active_fields++;
 				}
 				$field_groups[$i]["fields_count"] = $num_active_fields;
-				
+
 				// Also add some info about the field group is belongs to
 				// This can be useful to have if you're only fetching a single field
 				// but need to do something with that fields field group 
 				// (like getting the id to calcualte that custom field meta key to use)
 				foreach ($field_groups[$i]["fields"] as $one_field_id => $one_field) {
 
-					if (!isset($field_groups[$i]["fields"][$one_field_id]["field_group"])) {
+					// Info about the field group that this field belongs to did not exist, so add it
+					$field_groups[$i]["fields"][$one_field_id]["field_group"] = array(
+						"id"           => $field_groups[$i]["id"],
+						"name"         => $field_groups[$i]["name"],
+						"slug"         => $field_groups[$i]["slug"],
+						"description"  => $field_groups[$i]["description"],
+						"repeatable"   => $field_groups[$i]["repeatable"],
+						"fields_count" => $field_groups[$i]["fields_count"]
+					);
 
-						$field_groups[$i]["fields"][$one_field_id]["field_group"] = array(
-							"id"           => $field_groups[$i]["id"],
-							"name"         => $field_groups[$i]["name"],
-							"slug"         => $field_groups[$i]["slug"],
-							"description"  => $field_groups[$i]["description"],
-							"repeatable"   => $field_groups[$i]["repeatable"],
-							"fields_count" => $field_groups[$i]["fields_count"]
-						);
-						
-					}
-					
 				}
 			}
 
@@ -3775,17 +3777,17 @@ class simple_fields {
 #echo $cache_key;
 		$return_val = wp_cache_get( $cache_key, 'simple_fields' );
 		if (FALSE === $return_val) {
-		
+
 		 	$field_groups = $this->get_field_groups();
 		 	
-			if (!is_numeric($field_group_slug)) {
+			if ( ! is_numeric($field_group_slug) ) {
 	
 				// not number so look for field group with this variable as slug
 				foreach ($field_groups as $one_field_group) {
 					if ($one_field_group["deleted"]) continue;
 					if ($one_field_group["slug"] == $field_group_slug) {
-						wp_cache_set( $cache_key, $one_field_group, 'simple_fields' );
 
+						wp_cache_set( $cache_key, $one_field_group, 'simple_fields' );
 						$one_field_group = apply_filters( "simple_fields_get_field_group_by_slug", $one_field_group, $field_group_slug);
 						return $one_field_group;
 					}
