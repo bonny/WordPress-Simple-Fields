@@ -697,12 +697,15 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 				#$found_saved_field_slug = FALSE;
 
 				if ( isset( $field_groups[$field_group_id]["fields_by_slug"][$one_new_field["slug"]] ) ) {
-					
+#echo "\none new field slug: " . $one_new_field["slug"];
 					$existing_field_array_from_slug = & $field_groups[$field_group_id]["fields_by_slug"][$one_new_field["slug"]];
-
+#echo "\nexisting_field_array_from_slug\n";
+#print_r($existing_field_array_from_slug);
+#echo "\nfieldid: $field_id";
 					// Update old/existings fields by mergering with new fields
 					$field_defaults = simple_fields_merge_arrays($field_defaults, $existing_field_array_from_slug );
-
+#echo "\nfield_defaults:\n";
+#print_r($field_defaults);
 					// Do stuff with field default values
 					// Key = name, slug, type etc.
 					// Value = string, array, etc.
@@ -711,9 +714,11 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 						if ($oneDefaultFieldKey === "id") {
 
 							// If this is a field with no id set, then it's a new field that should get a id
-							#var_dump( $existing_field_array_from_slug["id"] );
-							if ( is_null( $existing_field_array_from_slug["id"] ) || $existing_field_array_from_slug["id"] === "" ) {
-								// echo "<br>new field - added id $field_id";
+#echo "\nID: ";
+#var_dump( $existing_field_array_from_slug["id"] );
+							#if ( isset( $existing_field_array_from_slug["id"] ) && ( is_null( $existing_field_array_from_slug["id"] ) || $existing_field_array_from_slug["id"] === "" ) ) {
+							if ( is_null($oneDefaultFieldValue) || $oneDefaultFieldValue === "" ) {
+								#echo "<br>new field - added id $field_id";
 								$existing_field_array_from_slug["id"] = $field_id;
 								$field_id++;
 							}
