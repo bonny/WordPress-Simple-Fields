@@ -713,7 +713,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 							// If this is a field with no id set, then it's a new field that should get a id
 							#var_dump( $existing_field_array_from_slug["id"] );
 							if ( is_null( $existing_field_array_from_slug["id"] ) || $existing_field_array_from_slug["id"] === "" ) {
-								echo "<br>new field - added id $field_id";
+								// echo "<br>new field - added id $field_id";
 								$existing_field_array_from_slug["id"] = $field_id;
 								$field_id++;
 							}
