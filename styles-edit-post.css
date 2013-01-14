@@ -407,7 +407,7 @@ ul.simple-fields-file-browser-list {
 	margin-top: 0;
 }
 
-
+/*
 .simple-fields-metabox-field-group-fields-view-table li:first-of-type {
 	border-top: 0;
 }
@@ -428,36 +428,64 @@ ul.simple-fields-file-browser-list {
 .simple-fields-metabox-field-group-fields-view-table li:first-of-type .simple-fields-metabox-field-second {
 	margin-bottom: 25px;
 }
+*/
+.simple-fields-metabox-field-group-view-table-headline {
+	float: left;
+	border-bottom: 1px solid #ccc;
+	margin-bottom: .75em;
+	padding-bottom: .75em;
+}
+
+	.simple-fields-field-group-view-table-headline-name {
+		font-weight: bold;
+		display: block;
+	}
+
+	.simple-fields-field-group-view-table-headline-description {
+		font-style: italic;
+		color: #666;
+	}
 
 /* different widths depending on num of added fields. and yes, this feel a bit stupud */
-/* we support up to 10 fields, even that is proably to many too look good*/
-.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-1 .simple-fields-metabox-field {
+/* we support up to 10 fields, even that is proably to many too look good */
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-1 .simple-fields-metabox-field,
+.simple-fields-metabox-field-group-view-table-headline-count-1
+ {
 	width: 100%;
 }
-.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-2 .simple-fields-metabox-field {
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-2 .simple-fields-metabox-field,
+.simple-fields-metabox-field-group-view-table-headline-count-2 {
 	width: 30%;
 }
-.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-3 .simple-fields-metabox-field {
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-3 .simple-fields-metabox-field,
+.simple-fields-metabox-field-group-view-table-headline-count-3 {
 	width: 33.33%;
 }
-.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-4 .simple-fields-metabox-field {
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-4 .simple-fields-metabox-field,
+.simple-fields-metabox-field-group-view-table-headline-count-4 {
 	width: 25%;
 }
-.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-5 .simple-fields-metabox-field {
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-5 .simple-fields-metabox-field,
+.simple-fields-metabox-field-group-view-table-headline-count-5 {
 	width: 20%;
 }
-.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-6 .simple-fields-metabox-field {
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-6 .simple-fields-metabox-field,
+.simple-fields-metabox-field-group-view-table-headline-count-6 {
 	width: 16.66%;
 }
-.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-7 .simple-fields-metabox-field {
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-7 .simple-fields-metabox-field,
+.simple-fields-metabox-field-group-view-table-headline-count-7 {
 	width: 14.28%;
 }
-.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-8 .simple-fields-metabox-field {
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-8 .simple-fields-metabox-field,
+.simple-fields-metabox-field-group-view-table-headline-count-8 {
 	width: 12.5%;
 }
-.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-9 .simple-fields-metabox-field {
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-9 .simple-fields-metabox-field,
+.simple-fields-metabox-field-group-view-table-headline-count-9 {
 	width: 11.11%;
 }
-.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-10 .simple-fields-metabox-field {
+.simple-fields-metabox-field-group-fields-view-table.simple-fields-metabox-field-group-fields-count-10 .simple-fields-metabox-field,
+.simple-fields-metabox-field-group-view-table-headline-count-10 {
 	width: 10%;
 }
