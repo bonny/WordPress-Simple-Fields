@@ -1028,6 +1028,7 @@ class MyPluginTest extends WP_UnitTestCase {
 		            ),
 		            'id' => 0,
 		            'deleted' => 0,
+		            "options" => array(),
 				    "field_group" => array(
 						"id" => 4,
 						"name" => "Test field group",
@@ -1035,14 +1036,23 @@ class MyPluginTest extends WP_UnitTestCase {
 						"description" => "Test field description",
 						"repeatable" => 1,
 						"fields_count" => 1
-				    )
+				    ),
 		        ),
 		    ),
 		    'deleted' => false,
 		    "fields_count" => 1
+		    // "fields_by_slug" => array()
 		);
-#echo "xxx";print_r($arr_return);
-		$this->assertEquals( $expected_return, $arr_return );
+		
+		// check that all keys in expected_return and it's values exist in arr_return
+		foreach ($expected_return as $expected_return_key => $expected_return_value) {
+			$this->assertArrayHasKey( $expected_return_key, $arr_return );
+			$this->assertEquals( $expected_return_value, $arr_return[$expected_return_key] );
+		}
+
+		foreach ($expected_return["fields"][0] as $expected_return_key => $expected_return_value) {
+			$this->assertArrayHasKey($expected_return_key, $arr_return["fields"][0]);
+		}
 		
 
 		// generate arr with all field types
@@ -1090,13 +1100,16 @@ class MyPluginTest extends WP_UnitTestCase {
 		            ),
 		            'id' => 0,
 		            'deleted' => 0,
-		            "field_group" => array()
+		            "field_group" => array(),
+		            "options" => array()
 		        ),
 		    ),
 		    'deleted' => false,
 		    "fields_count" => 1
 		);
 
+		unset($arr_return["fields_by_slug"]);
+		
 		$this->assertEquals( array_keys($expected_return), array_keys($arr_return) );
 		
 		// @todo: add test of values here also
@@ -1114,6 +1127,92 @@ class MyPluginTest extends WP_UnitTestCase {
 		// does this work btw?
 		$this->testManuallyAddedFields();
 
+		// Some more texts with addings fields
+		// Added 14 jan 2013
+		$new_field_group_fields = array (
+				'name' => 'Attachments',
+				'description' => "Add some attachments to this post",
+				'repeatable' => 1,
+				'fields' => array(
+					array(
+						'slug' => "attachment_file",
+						'name' => 'A file',
+						'description' => 'Select a file, for example an image',
+						'type' => 'file',
+						"type_file_options" => array(
+							"enable_extended_return_values" => 1
+						)
+					),
+				)
+		);
+		$added_field_group = simple_fields_register_field_group('attachments', $new_field_group_fields);
+
+		// check most important things		
+		//$this->assertEquals( array_keys($expected_return), array_keys($arr_return) );
+		$this->assertArrayHasKey("slug", $added_field_group);
+		foreach ($new_field_group_fields as $field_key => $field_val) {
+			$this->assertArrayHasKey($field_key, $added_field_group);	
+		}
+		foreach ($new_field_group_fields["fields"][0] as $field_key => $field_val) {
+			$this->assertArrayHasKey($field_key, $added_field_group["fields"][0]);	
+		}
+
+		// Change some small things, like adding another fields after the first
+		$new_field_group_fields_modified1 = $new_field_group_fields;
+		$new_field_group_fields_modified1["name"] = "Attachments changed text";
+		$new_field_group_fields_modified1["description"] = "Attachments changed description";
+		$new_field_group_fields_modified1["fields"][] = array(
+															'slug' => "attachment_description",
+															'name' => 'A description',
+															'description' => 'bla bla bla',
+															'type' => 'text',
+															"type_file_options" => array(
+																"enable_extended_return_values" => 1
+														)
+													);
+		$added_field_group_after_modified1 = simple_fields_register_field_group('attachments', $new_field_group_fields_modified1);		
+		foreach ($expected_return as $field_key => $field_val) {
+			$this->assertArrayHasKey($field_key, $added_field_group_after_modified1);			
+		}
+
+		$this->assertCount( 2, $added_field_group_after_modified1["fields"] );
+		$this->assertEquals( $added_field_group_after_modified1["fields"][0]["slug"], "attachment_file" );
+		$this->assertEquals( $added_field_group_after_modified1["fields"][1]["slug"], "attachment_description" );
+		
+		
+		// Update an existing field with, with as little code as possible
+		$added_field_group_after_updated_field_with_little_code = simple_fields_register_field_group('attachments', array (
+				'key' => 'attachments',
+				'fields' => array(
+					array(
+						'slug' => "attachment_file",
+						'name' => 'A file, updated',
+						'description' => 'Select a file, for example an image, updated'
+					),
+				)
+			)
+		);
+
+		$this->assertEquals( $added_field_group_after_updated_field_with_little_code["fields"][0]["slug"], "attachment_file" );
+		$this->assertEquals( $added_field_group_after_updated_field_with_little_code["fields"][1]["slug"], "attachment_description" );
+
+		// Update an existing field with, with as little code as possible
+		// after this attachment_description should be the first key in fields
+		$added_field_group_after_updated_field_with_little_code = simple_fields_register_field_group('attachments', array (
+				'key' => 'attachments',
+				'fields' => array(
+					array(
+						'slug' => "attachment_description"
+					),
+				)
+			)
+		);
+
+		$this->assertEquals( $added_field_group_after_updated_field_with_little_code["fields"][0]["slug"], "attachment_file" );
+		$this->assertEquals( $added_field_group_after_updated_field_with_little_code["fields"][1]["slug"], "attachment_description" );
+
+		$this->assertEquals( array(1, 0), array_keys( $added_field_group_after_updated_field_with_little_code["fields"] ) );
+		
 		/*
 
 			left to write tests for:
