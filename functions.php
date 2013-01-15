@@ -623,11 +623,9 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 	// Find the highest existing id. New fields will get this id plus one
 	// Note that the highest ID is not the last, since the order of the keys is in custom order, not ascending
 	if ( isset($field_groups[$field_group_id]["fields"]) && is_array($field_groups[$field_group_id]["fields"]) && sizeof($field_groups[$field_group_id]["fields"]) > 0) {
-		$field_id_highest_existing = max( array_keys( $field_groups[$field_group_id]["fields"] ) );
-		$field_id = $field_id_highest_existing + 1;
+		$field_id = max( array_keys( $field_groups[$field_group_id]["fields"] ) ) + 1;
 	} else {
-		$field_id_highest_existing = 0;
-		$field_id = $field_id_highest_existing;
+		$field_id = 0;
 	}
 
 	// Add fields by slug for new fields
@@ -638,8 +636,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 
 	// Merge the new values of this field group with the old values
 	// Let the new values overwrite the hold ones
-	// here the new field gets a id key complete wrong
-	// problem is with keys that are id. what if we turn them into slugs instead? then merge would work. yep, seems to do it.
+	// This merge is the reason why we use fields_by_slug
 	$field_groups[$field_group_id] = simple_fields_merge_arrays($field_group_defaults, $new_field_group);
 
 	// Now the existing fields that has new values, has new values
@@ -647,8 +644,6 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 
 	// If the field group has an array of fields
 	if ( isset($new_field_group["fields"]) && is_array($new_field_group["fields"]) && ! empty($new_field_group["fields"]) ) {
-
-		//$fields = array();
 
 		// Loop through all fields that are passed to function, 
 		// make sure new fields has all necessary keys and values
@@ -694,18 +689,13 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 				// Check if our current field has an old version
 
 				// Loop through all fields to find any field with our slug
-				#$found_saved_field_slug = FALSE;
-
 				if ( isset( $field_groups[$field_group_id]["fields_by_slug"][$one_new_field["slug"]] ) ) {
-#echo "\none new field slug: " . $one_new_field["slug"];
+
 					$existing_field_array_from_slug = & $field_groups[$field_group_id]["fields_by_slug"][$one_new_field["slug"]];
-#echo "\nexisting_field_array_from_slug\n";
-#print_r($existing_field_array_from_slug);
-#echo "\nfieldid: $field_id";
+
 					// Update old/existings fields by mergering with new fields
 					$field_defaults = simple_fields_merge_arrays($field_defaults, $existing_field_array_from_slug );
-#echo "\nfield_defaults:\n";
-#print_r($field_defaults);
+
 					// Do stuff with field default values
 					// Key = name, slug, type etc.
 					// Value = string, array, etc.
@@ -714,39 +704,13 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 						if ($oneDefaultFieldKey === "id") {
 
 							// If this is a field with no id set, then it's a new field that should get a id
-#echo "\nID: ";
-#var_dump( $existing_field_array_from_slug["id"] );
-							#if ( isset( $existing_field_array_from_slug["id"] ) && ( is_null( $existing_field_array_from_slug["id"] ) || $existing_field_array_from_slug["id"] === "" ) ) {
 							if ( is_null($oneDefaultFieldValue) || $oneDefaultFieldValue === "" ) {
 								#echo "<br>new field - added id $field_id";
 								$existing_field_array_from_slug["id"] = $field_id;
 								$field_id++;
 							}
-
-							// If key is id then let this field have that id
-							// This means that the existing field gets the correctold id, as fetched from/by the slug
-							// $fields[$field_id]["id"] = $field_id;
-							// echo "<br>set to use existing field id: $oneDefaultFieldValue";
-
-							// if field does not have an id then set to highest, since it's a non-existent field, that was not found in slug
-							/*var_dump($oneDefaultFieldValue);
-							if ( empty($oneDefaultFieldValue) ) {
-								$fields[$field_id]["id"] = $field_id_highest_existing;
-								echo "<br>set id to highest";
-								$field_id_highest_existing++;
-							}*/
-
-							#sf_d($oneDefaultFieldValue);
 						
 						}
-						# else {
-							
-							// Add a default value to the new/updated field if the key does not exist
-						#	if ( ! isset($one_new_field[$oneDefaultFieldKey]) ) {
-						#		$fields[$field_id][$oneDefaultFieldKey] = $oneDefaultFieldValue;
-						#	}
-
-						#}
 
 						// If a value in the new/updated field is an array 
 						// and is among the default values keys, and it's is not empty
@@ -785,7 +749,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 
 						} // foreach
 
-						// 
+						// If dfault value does not exist in new field then add it
 						if ( ! isset( $existing_field_array_from_slug[$oneDefaultFieldKey] ) ) {
 							$existing_field_array_from_slug[$oneDefaultFieldKey] = $oneDefaultFieldValue;
 						}
@@ -794,28 +758,10 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 			
 			}
 
+		} // foreach field default
 
-/*
-					// Add a default value to the new/updated field if the key does not exist
-					if ( ! isset($one_new_field[$oneDefaultFieldKey]) ) {
-						$fields[$field_id][$oneDefaultFieldKey] = $oneDefaultFieldValue;
-					}
-
-*/
-			} // foreach field default
-
-			// Increase field id
-			// TODO: isn't there a risk that an existing field may get overwritten by this new field_id?
-			// if we have an old field with id 2 and then add two three new fields, won't the third one also have id 2?
-			// solution: make new field_id one higher than the highest id among all fields in this field group, all new ids should be fine
-			// ok, bug confirmed/tested: create for example 3 new fields, and then a new field somewhere berfore the last field =
-			// new field overwrites/takes over old id, and fields suddenly have wrong id's and stuff and everything is messy messy
-			#$field_id++;
 
 		} // for each field in a field grouo
-		#$merged_fields = simple_fields_merge_arrays($fields, $field_groups[$field_group_id]["fields"]);
-
-		//$merged_fields = simple_fields_merge_arrays( $fields, $field_groups[$field_group_id]["fields_by_slug"]);
 
 		$merged_fields = $field_groups[$field_group_id]["fields_by_slug"];
 
@@ -824,8 +770,6 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 		foreach( $merged_fields as $one_field_array) {
 			$field_groups[$field_group_id]["fields"][$one_field_array["id"]] = $one_field_array;
 		}
-#sf_d( $field_groups );
-#exit;
 
 		// Re-order fields to be in same way as in passed arg, because that's the order the user wants it
 		// Use order from $new_field_group["fields"]
@@ -834,21 +778,22 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 
 		// First add new fields in the order we got them to this function
 		foreach ( $new_field_group["fields"] as $field_array ) {
+			
 			$this_field_id = $field_groups[$field_group_id]["fields_by_slug"][$field_array["slug"]]["id"];
-			#echo "<br>adding from args " . $field_array["slug"] . ", id $this_field_id";
 			$fields_in_new_order[ $this_field_id ] = $field_groups[$field_group_id]["fields"][ $this_field_id ];
+
 		}
 
 		// Then add old fields
 		foreach ( $field_groups[$field_group_id]["fields"] as $field_array ) {
 
 			if (! isset ($fields_in_new_order[$field_array["id"]] ) ) {
-				#echo "<br>adding old " . $field_array["slug"];
 				$fields_in_new_order[ $field_array["id"] ] = $field_array;
 			}
 
 		}
 
+		// Update the field group with
 		$field_groups[$field_group_id]["fields"] = $fields_in_new_order;
 
 		// And add the correct order to fields_by_slugs too
@@ -857,24 +802,9 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 			$field_groups[$field_group_id]["fields_by_slug"][$field_array["slug"]] = $field_array;
 		}
 
-		// Merging is done, but we want to get our old order back now...
-		// $field_groups[$field_group_id]["fields"] <- order is correct here
-		/*$keys_org_order = array_keys($field_groups[$field_group_id]["fields"]);
-		$keys_possibly_wrong_but_new_order = array_keys($merged_fields);
-		$keys_all_in_new_and_org_combined = $keys_org_order + $keys_possibly_wrong_but_new_order; // <- this is the order we want it in
-		$merged_fields_correct_order = array();
-		foreach ($keys_all_in_new_and_org_combined as $order_key) {
-			$merged_fields_correct_order[$order_key] = $merged_fields[$order_key];
-		}
-
-		// Finally use the new fields in the field group
-		$field_groups[$field_group_id]["fields"] = $merged_fields_correct_order;
-		*/
-
 	} // if passed as arg field group has fields
 
 	// Save to options and clear cache
-	#sf_d($field_groups);exit;
 	update_option("simple_fields_groups", $field_groups);
 	$sf->clear_caches();
 
