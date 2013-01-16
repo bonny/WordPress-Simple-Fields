@@ -461,16 +461,18 @@ var simple_fields = (function() {
 
 		e.preventDefault();
 
-		var a = $(this);
-		var dialog = $("div.simple-fields-meta-box-field-group-field-type-post-dialog");
-		var originLink = dialog.data("originLink");
-		originLink = $(originLink);
-		var div = originLink.closest(".simple-fields-metabox-field");
-		var enabled_post_types = div.find("input[name='simple-fields-metabox-field-post-enabled-post-types']").val();
+		var a = $(this),
+			dialog = $("div.simple-fields-meta-box-field-group-field-type-post-dialog"),
+			originLink = $(dialog.data("originLink")),
+			div = originLink.closest(".simple-fields-metabox-field"),
+			enabled_post_types = div.find("input[name='simple-fields-metabox-field-post-enabled-post-types']").val();
 
+		// add this too?
+		// additional_args = div.find('input[name="additional_arguments"]').val();
+		
 		dialog.load(ajaxurl, {
 			"action": "simple_fields_field_type_post_dialog_load",
-			"arr_enabled_post_types": arr_enabled_post_types,
+			"str_enabled_post_types": enabled_post_types,
 			"selected_post_type": a.attr("href")
 		});
 

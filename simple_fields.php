@@ -11,18 +11,18 @@ License: GPL2
 
 /*  Copyright 2010  Pär Thernström (email: par.thernstrom@gmail.com)
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License, version 2, as 
-    published by the Free Software Foundation.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License, version 2, as 
+	published by the Free Software Foundation.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 /**
@@ -107,10 +107,36 @@ class simple_fields {
 		add_action( 'wp_ajax_simple_fields_field_type_post_dialog_load', array($this, 'field_type_post_dialog_load') );
 		add_action( 'wp_ajax_simple_fields_field_group_add_field', array($this, 'field_group_add_field') );
 
+		// Add to debug bar if debug is enabled
+		add_filter( 'debug_bar_panels', array($this, "debug_panel_insert") );
+
 		// Boot up
 		do_action("simple_fields_init", $this);
 
 	}
+
+	/**
+	 * Inserts debug panel to debug bar
+	 * Called form debug bar filter "debug_bar_panels", so will only be run'ed when debug bar is activated
+	 */
+	function debug_panel_insert( $panels ) {
+		
+		$options = $this->get_options();
+		if (isset($options["debug_type"]) && $options["debug_type"] !== 0) {
+
+			// 1 = debug for admins only, 2 = debug for all
+			if ( ($options["debug_type"] === 1 && current_user_can("edit_themes")) || $options["debug_type"] === 2) {
+
+				require_once( dirname(__FILE__) . "/class_simple_fields_debug_panel.php" );
+				$panels[] = new class_simple_fields_debug_panel;
+
+			}
+
+		}
+
+		return $panels;
+
+}
 
 	// check some things regarding update
 	function check_upgrade_stuff() {
@@ -472,17 +498,17 @@ class simple_fields {
 							Date field:
 							Array
 							(
-							    [date_unixtime] => 1351983600000
+								[date_unixtime] => 1351983600000
 							)
 							
 							Map field:
 							Array
 							(
-							    [lat] => 59.312089
-							    [lng] => 18.074117
-							    [name] => Monki Skrapan
-							    [formatted_address] => GÃ¶tgatan 78, Stockholm, Sverige
-							    [address_components] => [{\"long_name\":\"78\",\"short_name\":\"78\",\"types\":[\"street_number\"]},{\"long_name\":\"GÃ¶tgatan\",\"short_name\":\"GÃ¶tgatan\",\"types\":[\"route\"]},{\"long_name\":\"SÃ¶dermalm\",\"short_name\":\"SÃ¶dermalm\",\"types\":[\"sublocality\",\"political\"]},{\"long_name\":\"Stockholm\",\"short_name\":\"Stockholm\",\"types\":[\"locality\",\"political\"]},{\"long_name\":\"Stockholms lÃ¤n\",\"short_name\":\"Stockholms lÃ¤n\",\"types\":[\"administrative_area_level_2\",\"political\"]},{\"long_name\":\"SE\",\"short_name\":\"SE\",\"types\":[\"country\",\"political\"]},{\"long_name\":\"11830\",\"short_name\":\"11830\",\"types\":[\"postal_code\"]}]
+								[lat] => 59.312089
+								[lng] => 18.074117
+								[name] => Monki Skrapan
+								[formatted_address] => GÃ¶tgatan 78, Stockholm, Sverige
+								[address_components] => [{\"long_name\":\"78\",\"short_name\":\"78\",\"types\":[\"street_number\"]},{\"long_name\":\"GÃ¶tgatan\",\"short_name\":\"GÃ¶tgatan\",\"types\":[\"route\"]},{\"long_name\":\"SÃ¶dermalm\",\"short_name\":\"SÃ¶dermalm\",\"types\":[\"sublocality\",\"political\"]},{\"long_name\":\"Stockholm\",\"short_name\":\"Stockholm\",\"types\":[\"locality\",\"political\"]},{\"long_name\":\"Stockholms lÃ¤n\",\"short_name\":\"Stockholms lÃ¤n\",\"types\":[\"administrative_area_level_2\",\"political\"]},{\"long_name\":\"SE\",\"short_name\":\"SE\",\"types\":[\"country\",\"political\"]},{\"long_name\":\"11830\",\"short_name\":\"11830\",\"types\":[\"postal_code\"]}]
 							)
 							*/
 							//echo "xxx save value for custom field type"; sf_d($custom_field_value);
@@ -698,8 +724,8 @@ class simple_fields {
 								/*
 								Array
 								(
-								    [0] => dropdown_num_2
-								    [1] => dropdown_num_3
+									[0] => dropdown_num_2
+									[1] => dropdown_num_3
 								)
 								*/
 								if (in_array($one_option_internal_name, $arr_saved_value_dropdown)) {
@@ -968,8 +994,8 @@ class simple_fields {
 							$showHideClass = "hidden";
 						}
 						
-						$type_post_options = (array) @$field["type_post_options"];
-						$enabled_post_types = $type_post_options["enabled_post_types"];
+						$type_post_options = isset($field["type_post_options"]) ? (array) $field["type_post_options"] : array();
+						$enabled_post_types = isset($type_post_options["enabled_post_types"]) ? (array) $type_post_options["enabled_post_types"] : array();
 						
 						echo "<div class='simple-fields-metabox-field-post'>";
 
@@ -1199,14 +1225,14 @@ class simple_fields {
 	 */
 	function meta_box_output($post_connector_field_id, $post_id) {
 	 
-	    // if not repeatable, just print it out
-	    // if repeatable: only print out the ones that have a value
-	    // and + add-button
-	    
-	    global $sf;
+		// if not repeatable, just print it out
+		// if repeatable: only print out the ones that have a value
+		// and + add-button
+		
+		global $sf;
 	 
-	    $field_groups = $this->get_field_groups();
-	    $current_field_group = $field_groups[$post_connector_field_id];
+		$field_groups = $this->get_field_groups();
+		$current_field_group = $field_groups[$post_connector_field_id];
 
 		// check for prev. saved fieldgroups
 		// _simple_fields_fieldGroupID_1_fieldID_added_numInSet_0
@@ -1225,22 +1251,22 @@ class simple_fields {
 			$field_group_slug_css = "simple-fields-meta-box-field-group-wrapper-slug-" . $current_field_group["slug"];
 		}
 	 
-	    echo "<div class='simple-fields-meta-box-field-group-wrapper $num_added_field_groups_css $field_group_slug_css'>";
-	    echo "<input type='hidden' name='simple-fields-meta-box-field-group-id' value='$post_connector_field_id' />";
+		echo "<div class='simple-fields-meta-box-field-group-wrapper $num_added_field_groups_css $field_group_slug_css'>";
+		echo "<input type='hidden' name='simple-fields-meta-box-field-group-id' value='$post_connector_field_id' />";
 	 
-	    // show description
-	    if (!empty($current_field_group["description"])) {
-	        printf("<p class='%s'>%s</p>", "simple-fields-meta-box-field-group-description", esc_html($current_field_group["description"]));
-	    }
-	    //echo "<pre>";print_r($current_field_group);echo "</pre>";
+		// show description
+		if (!empty($current_field_group["description"])) {
+			printf("<p class='%s'>%s</p>", "simple-fields-meta-box-field-group-description", esc_html($current_field_group["description"]));
+		}
+		//echo "<pre>";print_r($current_field_group);echo "</pre>";
 	 
-	    if ($current_field_group["repeatable"]) {
+		if ($current_field_group["repeatable"]) {
 
 			// Start of list with added field groups
-	        $ul_add_css = "";
+			$ul_add_css = "";
 
 			// add link at top	 
-	        echo "
+			echo "
 				<div class='simple-fields-metabox-field-add'>
 					<a href='#'>+ ".__('Add', 'simple-fields')."</a>
 					<!-- 
@@ -1248,58 +1274,58 @@ class simple_fields {
 					<a href='#' id='sfToggleView{$current_field_group["id"]}'>Toggle view</a>
 					-->
 				</div>
-	        ";
+			";
 
 			/*
-	        ?>
-	        <script>
-	        	jQuery(function($) {
-	        		$("#sfToggleView<?php echo $current_field_group["id"] ?>").click(function(e) {
-	        			e.preventDefault();
-	        			$(this).closest(".simple-fields-meta-box-field-group-wrapper").find("ul:first").toggleClass("simple-fields-metabox-field-group-fields-view-table");
-	        		});
-	        	});
-	        </script>
-	        <?php
-	        */
+			?>
+			<script>
+				jQuery(function($) {
+					$("#sfToggleView<?php echo $current_field_group["id"] ?>").click(function(e) {
+						e.preventDefault();
+						$(this).closest(".simple-fields-meta-box-field-group-wrapper").find("ul:first").toggleClass("simple-fields-metabox-field-group-fields-view-table");
+					});
+				});
+			</script>
+			<?php
+			*/
 
-	        // add test class to test table layout
-	        // $ul_add_css .= " simple-fields-metabox-field-group-fields-view-table";
+			// add test class to test table layout
+			// $ul_add_css .= " simple-fields-metabox-field-group-fields-view-table";
 
-	        // add class with number of fields in field group
-	        $ul_add_css .= " simple-fields-metabox-field-group-fields-count-" . $current_field_group["fields_count"];
-	        echo "<ul class='sf-cf simple-fields-metabox-field-group-fields simple-fields-metabox-field-group-fields-repeatable $ul_add_css'>";
+			// add class with number of fields in field group
+			$ul_add_css .= " simple-fields-metabox-field-group-fields-count-" . $current_field_group["fields_count"];
+			echo "<ul class='sf-cf simple-fields-metabox-field-group-fields simple-fields-metabox-field-group-fields-repeatable $ul_add_css'>";
 	 
-	        // now add them. ooooh my, this is fancy stuff.
-	        $use_defaults = null;
-	        for ($num_in_set=0; $num_in_set<$num_added_field_groups; $num_in_set++) {
-	            $this->meta_box_output_one_field_group($post_connector_field_id, $num_in_set, $post_id, $use_defaults);  
-	        }
+			// now add them. ooooh my, this is fancy stuff.
+			$use_defaults = null;
+			for ($num_in_set=0; $num_in_set<$num_added_field_groups; $num_in_set++) {
+				$this->meta_box_output_one_field_group($post_connector_field_id, $num_in_set, $post_id, $use_defaults);  
+			}
 	 
-	 		// end list with added field groups
-	        echo "</ul>";
+			// end list with added field groups
+			echo "</ul>";
 
 			// add link at bottom
 			echo "
-	            <div class='simple-fields-metabox-field-add simple-fields-metabox-field-add-bottom'>
-	                <a href='#'>+ ".__('Add', 'simple-fields')."</a>
-	            </div>
-	        ";
+				<div class='simple-fields-metabox-field-add simple-fields-metabox-field-add-bottom'>
+					<a href='#'>+ ".__('Add', 'simple-fields')."</a>
+				</div>
+			";
 
 	 
-	    } else {
-	         
-	        // is this a new post, ie. should default values be used
-	        $been_saved = (bool) get_post_meta($post_id, "_simple_fields_been_saved", true);
-	        if ($been_saved) { $use_defaults = false; } else { $use_defaults = true; }
-	         
-	        echo "<ul>";
-	        $this->meta_box_output_one_field_group($post_connector_field_id, 0, $post_id, $use_defaults);
-	        echo "</ul>";
+		} else {
+			 
+			// is this a new post, ie. should default values be used
+			$been_saved = (bool) get_post_meta($post_id, "_simple_fields_been_saved", true);
+			if ($been_saved) { $use_defaults = false; } else { $use_defaults = true; }
+			 
+			echo "<ul>";
+			$this->meta_box_output_one_field_group($post_connector_field_id, 0, $post_id, $use_defaults);
+			echo "</ul>";
 	 
-	    }
-	     
-	    echo "</div>";
+		}
+		 
+		echo "</div>";
 	 
 	} // end
 
@@ -1320,38 +1346,38 @@ class simple_fields {
 			// calculate number of active field groups
 			// @todo: check this a bit more, does not seem to be any deleted groups. i thought i saved the deletes ones to, but with deleted flag set
 			foreach (array_keys($connectors) as $i) {
-	                    
-	                    // Sanity check the connector id
-	                    if (empty($connectors[$i]["id"]) && empty($connectors[$i]["deleted"])) {
-	                        
-	                        // Found field group without id, let's try to repair it
-	                        $highest_id = 0;
-	                        foreach($connectors as $one_connector) {
-	                            if ($one_connector["id"] > $highest_id)
-	                                $highest_id = $one_connector["id"];
-	                            if ($one_connector["id"] === $i)
-	                                $id_already_exists = true;
-	                        }
-	                        
-	                        if ($i > 0 && !$id_already_exists) {
-	                            // If the array key is larger than 0 and
-	                            // not used as id by any other connector,
-	                            // then it's the perfect id
-	                            $connectors[$i]["id"] = $i;
-	                        } else {
-	                            // The array key is either less than or equal to 0,
-	                            // or another connector is using it as id. In any case,
-	                            // let's treat it as a new connector and give it a new id.
-	                            $new_id = $highest_id + 1;
-	                            $connectors[$i]["id"] = $new_id;
-	                            
-	                            // Now make sure the array key matches the new id
-	                            $connectors[$new_id] = $connectors[$i];
-	                            unset($connectors[$i]);
-	                            $i = $new_id;
-	                        }
-	                        
-	                    }
+				
+				// Sanity check the connector id
+				if (empty($connectors[$i]["id"]) && empty($connectors[$i]["deleted"])) {
+					
+					// Found field group without id, let's try to repair it
+					$highest_id = 0;
+					foreach($connectors as $one_connector) {
+						if ($one_connector["id"] > $highest_id)
+							$highest_id = $one_connector["id"];
+						if ($one_connector["id"] === $i)
+							$id_already_exists = true;
+					}
+					
+					if ($i > 0 && !$id_already_exists) {
+						// If the array key is larger than 0 and
+						// not used as id by any other connector,
+						// then it's the perfect id
+						$connectors[$i]["id"] = $i;
+					} else {
+						// The array key is either less than or equal to 0,
+						// or another connector is using it as id. In any case,
+						// let's treat it as a new connector and give it a new id.
+						$new_id = $highest_id + 1;
+						$connectors[$i]["id"] = $new_id;
+						
+						// Now make sure the array key matches the new id
+						$connectors[$new_id] = $connectors[$i];
+						unset($connectors[$i]);
+						$i = $new_id;
+					}
+					
+				}
 			
 				// compatibility fix key vs slug
 				if (isset($connectors[$i]["slug"]) && $connectors[$i]["slug"]) {
@@ -1413,37 +1439,37 @@ class simple_fields {
 			// With each field group among all field groups
 			foreach (array_keys($field_groups) as $i) {
 
-                // Sanity check the field group id
-                if (empty($field_groups[$i]["id"]) && empty($field_groups[$i]["deleted"])) {
-                    
-                    // Found field group without id, let's try to repair it
-                    $highest_id = 0;
-                    foreach($field_groups as $one_field_group) {
-                        if ($one_field_group["id"] > $highest_id)
-                            $highest_id = $one_field_group["id"];
-                        if ($one_field_group["id"] === $i)
-                            $id_already_exists = true;
-                    }
-                    
-                    if ($i > 0 && !$id_already_exists) {
-                        // If the array key is larger than 0 and
-                        // not used as id by any other field group,
-                        // then it's the perfect id
-                        $field_groups[$i]["id"] = $i;
-                    } else {
-                        // The array key is either less than or equal to 0,
-                        // or another field group is using it as id. In any case,
-                        // let's treat it as a new field group and give it a new id.
-                        $new_id = $highest_id + 1;
-                        $field_groups[$i]["id"] = $new_id;
-                        
-                        // Now make sure the array key matches the new id
-                        $field_groups[$new_id] = $field_groups[$i];
-                        unset($field_groups[$i]);
-                        $i = $new_id;
-                    }
-                    
-                }
+				// Sanity check the field group id
+				if (empty($field_groups[$i]["id"]) && empty($field_groups[$i]["deleted"])) {
+					
+					// Found field group without id, let's try to repair it
+					$highest_id = 0;
+					foreach($field_groups as $one_field_group) {
+						if ($one_field_group["id"] > $highest_id)
+							$highest_id = $one_field_group["id"];
+						if ($one_field_group["id"] === $i)
+							$id_already_exists = true;
+					}
+					
+					if ($i > 0 && !$id_already_exists) {
+						// If the array key is larger than 0 and
+						// not used as id by any other field group,
+						// then it's the perfect id
+						$field_groups[$i]["id"] = $i;
+					} else {
+						// The array key is either less than or equal to 0,
+						// or another field group is using it as id. In any case,
+						// let's treat it as a new field group and give it a new id.
+						$new_id = $highest_id + 1;
+						$field_groups[$i]["id"] = $new_id;
+						
+						// Now make sure the array key matches the new id
+						$field_groups[$new_id] = $field_groups[$i];
+						unset($field_groups[$i]);
+						$i = $new_id;
+					}
+					
+				}
 	
 				// Make sure we have both key and slug set to same. key = old name for slug
 				if (isset($field_groups[$i]["slug"]) && $field_groups[$i]["slug"]) {
@@ -1697,7 +1723,7 @@ class simple_fields {
 		global $sf;
 	
 		$defaults = array(
-	    	"post_type" => "page",
+			"post_type" => "page",
 			"xparent" => "0",
 			"xpost_parent" => "0",
 			"numberposts" => "-1",
@@ -1885,10 +1911,25 @@ class simple_fields {
 	
 		global $sf;
 	
-		$arr_enabled_post_types = (array) $_POST["arr_enabled_post_types"];
+		$arr_enabled_post_types = isset($_POST["arr_enabled_post_types"]) ? $_POST["arr_enabled_post_types"] : array();
+		$str_enabled_post_types = isset($_POST["str_enabled_post_types"]) ? $_POST["str_enabled_post_types"] : "";
 		$additional_arguments = isset($_POST["additional_arguments"]) ? $_POST["additional_arguments"] : "";
 		$existing_post_types = get_post_types(NULL, "objects");
-		$selected_post_type = (string) @$_POST["selected_post_type"];
+		$selected_post_type = isset($_POST["selected_post_type"]) ? (string) $_POST["selected_post_type"] : "";
+
+		if (empty($arr_enabled_post_types)) {
+			$arr_enabled_post_types = explode(",", $str_enabled_post_types);
+		}
+
+		/*echo "<br>selected_post_type: $selected_post_type";
+		echo "<br>str_enabled_post_types: $str_enabled_post_types";
+		echo "<br>enabled post types:"; print_r($arr_enabled_post_types);*/
+
+		// If no post type is selected then don't show any posts
+		if (empty($arr_enabled_post_types)) {
+			_e("<p>No post type is selected. Please at at least one post type in Simple Fields.</p>", "simple-fields");
+			exit;
+		}
 		?>
 	
 		<?php if (count($arr_enabled_post_types) > 1) { ?>
@@ -2029,9 +2070,9 @@ class simple_fields {
 			$field_type_options looks like this:
 			Array
 			(
-			    [myTextOption] => No value entered yet
-			    [mapsTextarea] => Enter some cool text here please!
-			    [funkyDropdown] => 
+				[myTextOption] => No value entered yet
+				[mapsTextarea] => Enter some cool text here please!
+				[funkyDropdown] => 
 			)
 			*/
 			
@@ -2258,7 +2299,7 @@ class simple_fields {
 			foreach ($taxonomies as $one_tax) {
 				// skip some built in types
 				if (in_array($one_tax->name, array("attachment", "revision", "nav_menu_item"))) {
-				    continue;
+					continue;
 				}
 				$input_name = "field[{$fieldID}][type_taxonomy_options][enabled_taxonomies][]";
 				$out .= sprintf("%s<input name='%s' type='checkbox' %s value='%s'> %s", 
@@ -2298,7 +2339,7 @@ class simple_fields {
 			foreach ($taxonomies as $one_tax) {
 				// skip some built in types
 				if (in_array($one_tax->name, array("attachment", "revision", "nav_menu_item"))) {
-				    continue;
+					continue;
 				}
 				$input_name = "field[{$fieldID}][type_taxonomyterm_options][enabled_taxonomy]";
 				$out .= sprintf("%s<input name='%s' type='radio' %s value='%s'> %s", 
@@ -2934,14 +2975,14 @@ class simple_fields {
 
 				?>
 				<form method="post" action="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-field-group-save">
-		            <h3><?php _e('Field group details', 'simple-fields') ?></h3>
-		            <table class="form-table">
-		            	<tr>
-		            		<th>
-		            			<label for="field_group_name"><?php _e('Name', 'simple-fields') ?></label>
-		            		</th>
-		            		<td>
-		            			<input type="text" name="field_group_name" id="field_group_name" class="regular-text" value="<?php echo esc_html($field_group_in_edit["name"]) ?>" required />
+					<h3><?php _e('Field group details', 'simple-fields') ?></h3>
+					<table class="form-table">
+						<tr>
+							<th>
+								<label for="field_group_name"><?php _e('Name', 'simple-fields') ?></label>
+							</th>
+							<td>
+								<input type="text" name="field_group_name" id="field_group_name" class="regular-text" value="<?php echo esc_html($field_group_in_edit["name"]) ?>" required />
 							</td>
 						</tr>
 						<tr>
@@ -2977,17 +3018,17 @@ class simple_fields {
 								<?php echo __("Options", 'simple-fields') ?>
 							</th>
 							<td>
-		            			<label for="field_group_repeatable">
+								<label for="field_group_repeatable">
 									<input type="checkbox" <?php echo ($field_group_in_edit["repeatable"] == true) ? "checked='checked'" : ""; ?> value="1" id="field_group_repeatable" name="field_group_repeatable" />
 									<?php _e('Repeatable', 'simple-fields') ?>
 								</label>								
-		            		</td>
-		            	</tr>
-		            	<tr>
-		            		<th><?php _e('Fields', 'simple-fields') ?></th>
-		            		<td>
-		            			<div id="simple-fields-field-group-existing-fields">
-		            				<ul class='simple-fields-edit-field-groups-added-fields'>
+							</td>
+						</tr>
+						<tr>
+							<th><?php _e('Fields', 'simple-fields') ?></th>
+							<td>
+								<div id="simple-fields-field-group-existing-fields">
+									<ul class='simple-fields-edit-field-groups-added-fields'>
 										<?php
 										foreach ($field_group_in_edit["fields"] as $oneField) {
 											if (!$oneField["deleted"]) {
@@ -2995,11 +3036,11 @@ class simple_fields {
 											}
 										}
 										?>
-		            				</ul>
-		            			</div>
-		            			<p><a href="#" id="simple-fields-field-group-add-field">+ <?php _e('Add field', 'simple-fields') ?></a></p>
-		            		</td>
-		            	</tr>			
+									</ul>
+								</div>
+								<p><a href="#" id="simple-fields-field-group-add-field">+ <?php _e('Add field', 'simple-fields') ?></a></p>
+							</td>
+						</tr>			
 					</table>
 	
 					<p class="submit">
@@ -3359,12 +3400,8 @@ class simple_fields {
 		if (isset($options["debug_type"]) && $options["debug_type"] !== 0) {
 		
 			// 1 = debug for admins only, 2 = debug for all
-			if ( ($options["debug_type"] === 1 && current_user_can("edit_themes")) ||  $options["debug_type"] === 2) {
-
-				// enqueu jquery because that is used to show/hide the debug box
-				wp_enqueue_script("jquery");
-				
-				// add filter
+			if ( ($options["debug_type"] === 1 && current_user_can("edit_themes")) || $options["debug_type"] === 2) {
+			
 				add_filter("the_content", array($this, "simple_fields_content_debug_output"));
 			}	
 	
@@ -3374,30 +3411,33 @@ class simple_fields {
 	
 	/** 
 	 * Outputs the names of the post connectors attached to the post you view + outputs the values
+	 * @param string $the_content
+	 * @param bool $allow_always Set to true to bypass checks that we are inside the correct the_content-filter
 	 */
-	function simple_fields_content_debug_output($the_content) {
+	function simple_fields_content_debug_output($the_content, $allow_always = FALSE) {
 
 		// we only want to appen the debug code when being used from get_the_content or the_content
 		// but for example get_the_excerpt is also using filter the_content which leads to problems
 		// so check that we are somewhere inside the right functions
-		$is_inside_righ_function = FALSE;
-	    $arr_trace = debug_backtrace();
-	    $arr_trace_count = count($arr_trace);
+		if ($allow_always === FALSE) {
+			$is_inside_righ_function = FALSE;
+			$arr_trace = debug_backtrace();
+			$arr_trace_count = count($arr_trace);
 
-	    for ($i = 0; $i < $arr_trace_count; $i++) {
-		    if ( isset($arr_trace[$i]["function"]) && in_array($arr_trace[$i]["function"], array("the_content", "get_the_content"))) {
-		    	$is_inside_righ_function = TRUE;
-		    	break;
-		    }
-	    }
+			for ($i = 0; $i < $arr_trace_count; $i++) {
+				if ( isset($arr_trace[$i]["function"]) && in_array($arr_trace[$i]["function"], array("the_content", "get_the_content"))) {
+					$is_inside_righ_function = TRUE;
+					break;
+				}
+			}
 
-	    if (!$is_inside_righ_function) {
+			if ( ! $is_inside_righ_function ) {
 
-		    // Don't do the debug, since we're not in the_content
-		    return $the_content;
+				// Don't do the debug, since we're not in the_content
+				return $the_content;
 
-	    }
-
+			}
+		}
 		
 		$output = "";
 		$output_all = "";
@@ -3518,6 +3558,7 @@ class simple_fields {
 		// if a field has the slug caption the output will be [caption] and then it will crash with some shortcodes, so we try to fix that here
 		$output_all = str_replace("[", "&#91;", $output_all);
 		$output_all = str_replace("]", "&#93;", $output_all);
+
 		return $the_content . $output_all;
 	}
 
@@ -3778,8 +3819,8 @@ class simple_fields {
 		$return_val = wp_cache_get( $cache_key, 'simple_fields' );
 		if (FALSE === $return_val) {
 
-		 	$field_groups = $this->get_field_groups();
-		 	
+			$field_groups = $this->get_field_groups();
+			
 			if ( ! is_numeric($field_group_slug) ) {
 	
 				// not number so look for field group with this variable as slug
@@ -3802,22 +3843,22 @@ class simple_fields {
 			} else {
 	
 				// look for group using id
-			 	if (isset($field_groups[$field_group_slug]) && is_array($field_groups[$field_group_slug]) && !$field_groups[$field_group_slug]["deleted"]) {
+				if (isset($field_groups[$field_group_slug]) && is_array($field_groups[$field_group_slug]) && !$field_groups[$field_group_slug]["deleted"]) {
 
 					wp_cache_set( $cache_key, $field_groups[$field_group_slug], 'simple_fields' );
 
 					$return_val = $field_groups[$field_group_slug];
 					$return_val = apply_filters( "simple_fields_get_field_group_by_slug", $return_val, $field_group_slug);
-				 	return $return_val;
+					return $return_val;
 
-			 	} else {
+				} else {
 
-				 	wp_cache_set( $cache_key, FALSE, 'simple_fields' );
+					wp_cache_set( $cache_key, FALSE, 'simple_fields' );
 					
 					$return_val = apply_filters( "simple_fields_get_field_group_by_slug", $return_val, $field_group_slug);
 					return $return_val;
-			 	}
-			 	
+				}
+				
 			}
 				
 		}
