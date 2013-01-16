@@ -242,7 +242,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 - Changed the way some cache keys where stored, beacuse a key in an array that contains quotes is just silly looking (but valid, apparently)
 - Fixed passing additional arguments for field type post
 - Little better looking output of "Show custom field keys"
-- Added unit tests for date/time picker v2.
+- Added unit tests for date/time picker v2 and register_post_connector
 - Changed debug box to stop using jQuery, so it should work with more themes and in more situations where jQuery may not be available
 - Added a couple of filters and actions that you can use in your functions.php-file or in your plugin or field extension or whatever. Added filters are:
   simple_fields_debug_output
@@ -269,6 +269,8 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
   simple_fields_get_extended_return_values_for_field
   simple_fields_get_field_group_by_slug
   simple_fields_clear_caches
+- Lotsa code cleanups and stuff
+- Fixed ordering of fields when using simple_fields_register_field_group
 
 #### Version 1.1.6
 - Fixed bug that could lead to memoryleak. Thanks to plux/angry creative for patch.
