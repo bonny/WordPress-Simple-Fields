@@ -914,8 +914,10 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 	// This is where field groups get attached to this connector
 	if (isset($new_post_connector["field_groups"]) && is_array($new_post_connector["field_groups"]) && !empty($new_post_connector["field_groups"])) {
 
+		// Array with all field groups that this connector has
 		$field_group_connectors = array();
-		$field_groups = $sf->get_field_groups();
+
+		// Default values
 		$field_group_connector_defaults = array(
 							"id" => "",
 							"key" => "",
@@ -958,41 +960,53 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 				}
 
 				// Add id from found field group
-				$field_group_connectors[$field_group_id]["id"] = $field_group_id;
 				// And slug + also key for backwards compatibility
+				// And name
+				$field_group_connectors[$field_group_id]["id"] = $field_group_id;
 				$field_group_connectors[$field_group_id]["slug"] = $field_group_slug;
 				$field_group_connectors[$field_group_id]["key"] = $field_group_slug;
-				// Add name
 				$field_group_connectors[$field_group_id]["name"] = $field_group_name;
 
-				// Go through all default values and apply them
+				// Go through all default values and make sure field array has each of them set
 				foreach ($default_field_group_connector as $oneGroupConnectorDefaultKey => $oneGroupConnectorDefaultValue) {
 				
-					// Skip some keys, that are added above
+					// Skip some keys, that are added always above
 					if ( in_array( $oneGroupConnectorDefaultKey, array("id", "slug", "name") ) ) {
 						continue;
 					}
 
-					// Ok, what happens here? xxx
-					if ( isset($field_group_options[$oneGroupConnectorDefaultKey]) ) {
+					// Ok, what happens here?
+					// field_group_options is one of the field groups what we want to connect to post connector, as send here by parameter (not as saved in db or such)
+					// field_group_connectors is array with all field groups that this connector will have
+					if ( isset( $field_group_options[$oneGroupConnectorDefaultKey] ) ) {
+						
+						// If the key from the defaults array did exist in the field group sent in to this function
+						// So use the value that we got as an parameter, overwriting the default value
 						$field_group_connectors[$field_group_id][$oneGroupConnectorDefaultKey] = $field_group_options[$oneGroupConnectorDefaultKey];
+
 					} else {
+						
+						// Key from defaults array was not found in the field group sent to this function
+						// So use default value
 						$field_group_connectors[$field_group_id][$oneGroupConnectorDefaultKey] = $oneGroupConnectorDefaultValue;
+
 					}
 
-				}
-			}
+				} // make sure all keys form default values exists
+			
+			} // if field group found
 
-		}
+		} // foreach field group
 
+		// Done adding field group
 		$post_connectors[$connector_id]["field_groups"] = $field_group_connectors;
 
-	}
+	} // if field groups was sent along as arg
 	
+	// Clear cache, store values, and return
 	$sf->clear_caches();
 	update_option("simple_fields_post_connectors", $post_connectors);
-
-	return $post_connectors[$connector_id];
+	return $sf->get_connector_by_id($connector_id);
 
 }
 
