@@ -236,6 +236,8 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 == Changelog ==
 
 #### Version 1.1.x
+- Added debug panel to debug bar (if installed). Makes it possible to preview stored values when inside WordPress admin and editing posts. Only visible when debug is enabled.
+- Fixed bug with post field type dialog.
 - Fixed memory leak when using cache. When using functions that cleared the cache, for example simple_fields_set_value(), then memory usage could increase pretty much, and when the function is used in a loop then eventionally the script would eat up all memory. Nom nom nom. But in a bad way.
 - Changed the way some cache keys where stored, beacuse a key in an array that contains quotes is just silly looking (but valid, apparently)
 - Fixed passing additional arguments for field type post
