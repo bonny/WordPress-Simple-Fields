@@ -815,6 +815,9 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 
 /**
  * @todo: documentation
+ * Register a post connector
+ * @param string $unique_name The slug for this connector
+ * @param array $new_post_connector Args for this connector
  */
 function simple_fields_register_post_connector($unique_name = "", $new_post_connector = array()) {
 
@@ -822,21 +825,42 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 
 	$post_connectors = $sf->get_post_connectors();
 
+	// Id of found or new connector
+	$connector_id = NULL;
+
+	// Id of highest connector, if no connector found for slug
 	$highest_connector_id = 0;
-	foreach ($post_connectors as $oneConnector) {
-		if ($oneConnector["key"] == $unique_name && !empty($unique_name)) {
+
+	// Check if connector already exist 
+	// or if it does not then get a new id for it
+	foreach ($post_connectors as $oneConnector ) {
+
+		if ( $oneConnector["slug"] == $unique_name && !empty( $unique_name) ) {
+			
 			// Connector already exists
 			$connector_id = $oneConnector["id"];
-		} else if (!isset($connector_id) && $oneConnector["id"] > $highest_connector_id) {
+			
+			// No need to loop further once we found the connector
+			break;
+
+		} else if ( ! isset($connector_id) && $oneConnector["id"] > $highest_connector_id ) {
+		
+			// Connector not found so far and id of this connector is the highest so far
 			$highest_connector_id = $oneConnector["id"];
+
 		}
+
 	}
 
-	if (!isset($connector_id) || !is_numeric($connector_id)) {
-		if (!empty($post_connectors[$highest_connector_id]) || $highest_connector_id > 0) {
+	// If no connector_id was found then this is a new connector
+	if ( ! isset($connector_id) || ! is_numeric($connector_id) ) {
+	
+		if ( ! empty($post_connectors[$highest_connector_id]) || $highest_connector_id > 0 ) {
 			$highest_connector_id++;
 		}
+
 		$connector_id = $highest_connector_id;
+
 	}
 
 	// If $connector_id is 0 here then it's the first ever created
@@ -870,6 +894,7 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 	$post_connectors[$connector_id]['post_types'] = array_unique($post_connectors[$connector_id]['post_types']);
 	
 	if (isset($new_post_connector["field_groups"]) && is_array($new_post_connector["field_groups"]) && !empty($new_post_connector["field_groups"])) {
+
 		$field_group_connectors = array();
 		$field_groups = $sf->get_field_groups();
 		$field_group_connector_defaults = array(
@@ -880,19 +905,24 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 							"deleted" => 0,
 							"context" => "normal",
 							"priority" => "low"
-
-		);
-		foreach($new_post_connector["field_groups"] as $field_group_options) {
+						);
+		
+		foreach ( $new_post_connector["field_groups"] as $field_group_options ) {
+		
 			$field_group_found = false;
 			foreach ($field_groups as $oneGroup) {
-				if ( (isset($oneGroup["id"]) && isset($field_group_options["id"]) && $oneGroup["id"] == $field_group_options["id"]) || ( $oneGroup["key"] == $field_group_options["key"] )) {
+
+				if ( (isset($oneGroup["id"]) && isset($field_group_options["id"]) && $oneGroup["id"] == $field_group_options["id"]) || ( (isset($oneGroup["key"]) && isset($field_group_options["key"])) && $oneGroup["key"] == $field_group_options["key"] )) {
 					// Field group found
 					$field_group_found = true;
 					$field_group_id = $oneGroup["id"];
 					$field_group_key = $oneGroup["key"];
 				}
+
 			}
+
 			if ($field_group_found !== false) {
+
 				if (isset($field_group_connectors[$field_group_id]) && !$field_group_connectors[$field_group_id]["deleted"]) {
 					$default_field_group_connector = $field_group_connectors[$field_group_id];
 				} else {
@@ -913,7 +943,9 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 					}
 				}
 			}
+
 		}
+
 		$post_connectors[$connector_id]["field_groups"] = $field_group_connectors;
 
 	}
