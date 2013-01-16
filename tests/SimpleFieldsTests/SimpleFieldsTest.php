@@ -29,8 +29,7 @@ class MyPluginTest extends WP_UnitTestCase {
 
 	function testInsertManuallyAddedFields() {
 		_insert_manually_added_fields();
-	}
-	
+	}	
 
 	// insert and test manually added fields
 	function testManuallyAddedFields()
@@ -1123,6 +1122,99 @@ class MyPluginTest extends WP_UnitTestCase {
 
 		*/
 
+
+		// Test post connectors
+		$connector_return1 = simple_fields_register_post_connector('test_connector',
+			array (
+				'name' => "A test connector",
+				'field_groups' => array(
+					array(
+						'slug' => 'my_new_field_group'
+					)
+				),
+				'post_types' => array('post', "page")
+			)
+		);	
+
+		$connector_return2 = simple_fields_register_post_connector('another_connector',
+			array (
+				'name' => "Another connector",
+				'field_groups' => array(
+					array(
+						'slug' => 'my_new_field_group_all_fields'
+					),
+					array(
+						'slug' => 'my_new_field_group'
+					),
+				),
+				'post_types' => array('post', "page")
+			)
+		);
+
+		$connector_return1_expected = array(
+                'id' => 2,
+                'key' => 'test_connector',
+                'slug' => 'test_connector',
+                'name' => 'A test connector',
+                'field_groups' => array(
+                                4 => array(
+                                                'id' => 4,
+                                                'slug' => 'my_new_field_group',
+                                                'key' => 'my_new_field_group',
+                                                'name' => 'Test field group',
+                                                'deleted' => 0,
+                                                'context' => 'normal',
+                                                'priority' => 'low'
+                                )
+                ),
+                'post_types' => array(
+                                0 => 'post',
+                                1 => 'page'
+                ),
+                'deleted' => false,
+                'hide_editor' => false,
+                'field_groups_count' => 1
+              );
+        
+        $this->assertEquals($connector_return1_expected, $connector_return1);
+        
+		$connector_return2_expected = array(
+                'id' => 3,
+                'key' => 'another_connector',
+                'slug' => 'another_connector',
+                'name' => 'Another connector',
+                'field_groups' => array(
+                                3 => array(
+                                                'id' => 3,
+                                                'slug' => 'my_new_field_group_all_fields',
+                                                'key' => 'my_new_field_group_all_fields',
+                                                'name' => 'Test field group with all fields',
+                                                'deleted' => 0,
+                                                'context' => 'normal',
+                                                'priority' => 'low'
+                                ),
+                                4 => array(
+                                                'id' => 4,
+                                                'slug' => 'my_new_field_group',
+                                                'key' => 'my_new_field_group',
+                                                'name' => 'Test field group',
+                                                'deleted' => 0,
+                                                'context' => 'normal',
+                                                'priority' => 'low'
+                                )
+                ),
+                'post_types' => array(
+                                0 => 'post',
+                                1 => 'page'
+                ),
+                'deleted' => false,
+                'hide_editor' => false,
+                'field_groups_count' => 2
+              );
+
+        $this->assertEquals($connector_return2_expected, $connector_return2);
+        
+        
 		// test manually added fields again to make sure nothing broke
 		// does this work btw?
 		$this->testManuallyAddedFields();
