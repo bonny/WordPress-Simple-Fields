@@ -831,6 +831,8 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 	// Id of highest connector, if no connector found for slug
 	$highest_connector_id = 0;
 
+	$is_new_connector = FALSE;
+
 	// Check if connector already exist 
 	// or if it does not then get a new id for it
 	foreach ($post_connectors as $oneConnector ) {
@@ -853,46 +855,63 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 	}
 
 	// If no connector_id was found then this is a new connector
+	// Set connector_id to the highest connector_id + 1
 	if ( ! isset($connector_id) || ! is_numeric($connector_id) ) {
-	
+		
+		$is_new_connector = TRUE;
+
 		if ( ! empty($post_connectors[$highest_connector_id]) || $highest_connector_id > 0 ) {
 			$highest_connector_id++;
 		}
 
 		$connector_id = $highest_connector_id;
 
+		// If $connector_id is 0 here then it's the first ever created
+		// But 0 is the id to tell SF to create new (in admin), so we must up it to 1
+		if ( $connector_id === 0 ) $connector_id = 1;
+
 	}
 
-	// If $connector_id is 0 here then it's the first ever created
-	// But 0 is the id to tell SF to create new, so we must up it to 1
-	if ($connector_id === 0) $connector_id = 1;
-
+	// Make sure connector has a slug
 	if (empty($unique_name)) {
 		$unique_name = "post_connector_" . $connector_id;
-	} else if (!isset($new_post_connector["name"]) || empty($new_post_connector["name"])) {
-		$new_post_connector["name"] = $unique_name;
 	}
 
 	$unique_name = sanitize_key($unique_name);
 
-	$post_connector_defaults = array(
-		"id" => $connector_id,
-		"key" => $unique_name,
-		"slug" => $unique_name,
-		"name" => $unique_name."_".$connector_id,
-		"field_groups" => array(),
-		"post_types" => array(),
-		"deleted" => false,
-		"hide_editor" => false
-	);
-
-	if (isset($post_connectors[$connector_id])) {
-		$post_connector_defaults = $post_connectors[$connector_id];
+	// Make sure name is not empty
+	if (! isset($new_post_connector["name"]) || empty($new_post_connector["name"])) {
+		$new_post_connector["name"] = $unique_name;
 	}
 
+	// Setup defaults to merge to
+	if ($is_new_connector) {
+
+		// New connector, setup defaults
+		$post_connector_defaults = array(
+			"id" => $connector_id,
+			"key" => $unique_name,
+			"slug" => $unique_name,
+			"name" => $unique_name."_".$connector_id,
+			"field_groups" => array(),
+			"post_types" => array(),
+			"deleted" => false,
+			"hide_editor" => false
+		);
+
+	} else {
+
+		// Existing connector, get old values
+		$post_connector_defaults = $post_connectors[$connector_id];
+
+	}
+
+	// Create or update this connector_id id the array of existing connectors
 	$post_connectors[$connector_id] = simple_fields_merge_arrays($post_connector_defaults, $new_post_connector);
 	$post_connectors[$connector_id]['post_types'] = array_unique($post_connectors[$connector_id]['post_types']);
 	
+	// If field group passed as args is a non-empty array
+	// This is where field groups get attached to this connector
 	if (isset($new_post_connector["field_groups"]) && is_array($new_post_connector["field_groups"]) && !empty($new_post_connector["field_groups"])) {
 
 		$field_group_connectors = array();
