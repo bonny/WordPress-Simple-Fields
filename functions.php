@@ -919,47 +919,67 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 		$field_group_connector_defaults = array(
 							"id" => "",
 							"key" => "",
-							"slug" => "",
-							"name" => "",
 							"deleted" => 0,
 							"context" => "normal",
 							"priority" => "low"
 						);
 		
+		// For each field group that we want to connect to this connector
 		foreach ( $new_post_connector["field_groups"] as $field_group_options ) {
 		
-			$field_group_found = false;
-			foreach ($field_groups as $oneGroup) {
-
-				if ( (isset($oneGroup["id"]) && isset($field_group_options["id"]) && $oneGroup["id"] == $field_group_options["id"]) || ( (isset($oneGroup["key"]) && isset($field_group_options["key"])) && $oneGroup["key"] == $field_group_options["key"] )) {
-					// Field group found
-					$field_group_found = true;
-					$field_group_id = $oneGroup["id"];
-					$field_group_key = $oneGroup["key"];
-				}
-
+			// Key is deprecated, use slug
+			if ( isset( $field_group_options["key"] ) && ! empty( $field_group_options["key"] ) ) {
+				$field_group_options["slug"] = $field_group_options["key"];
+			} else if ( isset( $field_group_options["slug"] ) && ! empty( $field_group_options["slug"] ) ) {
+				$field_group_options["key"] = $field_group_options["slug"];
 			}
 
-			if ($field_group_found !== false) {
+			// Check if the field group we want to connect actually exists
+			// First check by id, then if not found by slug - slug is prefered and the only options kinda supported...by me at least :)
+			$found_field_group = NULL;
+			$found_field_group = isset( $field_group_options["id"] ) ? $sf->get_field_group_by_slug($field_group_options["id"]) : NULL;
+			$found_field_group = ! isset( $found_field_group ) && isset( $field_group_options["slug"] ) ? $sf->get_field_group_by_slug($field_group_options["slug"]) : NULL;
 
-				if (isset($field_group_connectors[$field_group_id]) && !$field_group_connectors[$field_group_id]["deleted"]) {
+			// Field group was found, so now add it to the connector
+			if ( isset( $found_field_group ) ) {
+
+				$field_group_id = $found_field_group["id"];
+				$field_group_slug = $found_field_group["slug"];
+				$field_group_name = $found_field_group["name"];
+
+				// If field group is deleted or not
+				// default_field_group_connector = a copy of new field group defaults or a copy of existing field group values
+				$default_field_group_connector = NULL;
+				if ( isset( $field_group_connectors[$field_group_id] ) && ! $field_group_connectors[$field_group_id]["deleted"] ) {
+					// A little unsure on how when we get here
 					$default_field_group_connector = $field_group_connectors[$field_group_id];
 				} else {
 					$default_field_group_connector = $field_group_connector_defaults;
 				}
-				foreach($default_field_group_connector as $oneGroupConnectorDefaultKey => $oneGroupConnectorDefaultValue) {
-					if ($oneGroupConnectorDefaultKey == "id") {
-						$field_group_connectors[$field_group_id]["id"] = $field_group_id;
-					} else if ($oneGroupConnectorDefaultKey == "key") {
-						$field_group_connectors[$field_group_id]["key"] = $field_group_key;
-					} else {
-						if (isset($field_group_options[$oneGroupConnectorDefaultKey])) {
-							$field_group_connectors[$field_group_id][$oneGroupConnectorDefaultKey] = $field_group_options[$oneGroupConnectorDefaultKey];
-						} else {
-							$field_group_connectors[$field_group_id][$oneGroupConnectorDefaultKey] = $oneGroupConnectorDefaultValue;
-						}
 
+				// Add id from found field group
+				$field_group_connectors[$field_group_id]["id"] = $field_group_id;
+				// And slug + also key for backwards compatibility
+				$field_group_connectors[$field_group_id]["slug"] = $field_group_slug;
+				$field_group_connectors[$field_group_id]["key"] = $field_group_slug;
+				// Add name
+				$field_group_connectors[$field_group_id]["name"] = $field_group_name;
+
+				// Go through all default values and apply them
+				foreach ($default_field_group_connector as $oneGroupConnectorDefaultKey => $oneGroupConnectorDefaultValue) {
+				
+					// Skip some keys, that are added above
+					if ( in_array( $oneGroupConnectorDefaultKey, array("id", "slug", "name") ) ) {
+						continue;
 					}
+
+					// Ok, what happens here? xxx
+					if ( isset($field_group_options[$oneGroupConnectorDefaultKey]) ) {
+						$field_group_connectors[$field_group_id][$oneGroupConnectorDefaultKey] = $field_group_options[$oneGroupConnectorDefaultKey];
+					} else {
+						$field_group_connectors[$field_group_id][$oneGroupConnectorDefaultKey] = $oneGroupConnectorDefaultValue;
+					}
+
 				}
 			}
 
