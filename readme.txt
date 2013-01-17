@@ -271,6 +271,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
   simple_fields_clear_caches
 - Lotsa code cleanups and stuff
 - Fixed ordering of fields when using simple_fields_register_field_group
+- Fixed bug with post field and extended return values, where a field with no post/page selected would return the post of the current post in the loop. Now returns empty array instead.
 
 #### Version 1.1.6
 - Fixed bug that could lead to memoryleak. Thanks to plux/angry creative for patch.

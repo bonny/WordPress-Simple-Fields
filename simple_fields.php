@@ -609,7 +609,7 @@ class simple_fields {
 				//  - array if field type extension, unless the field extension overrides this
 				$custom_field_key = "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_{$field_id}_numInSet_{$num_in_set}";
 				$saved_value = get_post_meta($post_id, $custom_field_key, true);
-				
+
 				$description = "";
 				if (!empty($field["description"])) {
 					$description = sprintf("<div class='simple-fields-metabox-field-description'>%s</div>", esc_html($field["description"]));
@@ -3715,7 +3715,10 @@ class simple_fields {
 			
 		} else if ("post" === $field["type"]) {
 
-			if (isset($field_value) && is_numeric($field_value)) {
+			// For post field
+			// Get shortcut for id, title, and permalink
+			// and then the whole post
+			if ( isset( $field_value ) && is_numeric( $field_value ) && (int) $field_value !== 0) {
 				$post_id = (int) $field_value;
 				$return_field_value["id"] 			= $post_id;
 				$return_field_value["title"] 		= get_the_title( $post_id );
@@ -3733,7 +3736,7 @@ class simple_fields {
 				// user is a WP_User object,
 				// see this url for more info on what data you can get:
 				// http://codex.wordpress.org/Function_Reference/get_userdata
-				$user                                = get_user_by( "id", $user_id );				
+				$user                                = get_user_by( "id", $user_id );
 				$return_field_value["first_name"]    = $user->first_name;
 				$return_field_value["last_name"]     = $user->last_name;
 				$return_field_value["user_login"]    = $user->user_login;
