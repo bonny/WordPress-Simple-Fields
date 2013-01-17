@@ -237,14 +237,19 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 #### Version 1.1.x
 - Added debug panel to debug bar (if installed). Makes it possible to preview stored values when inside WordPress admin and editing posts. Only visible when debug is enabled.
+- Changed debug box to stop using jQuery, so it should work with more themes and in more situations where jQuery may not be available
 - Fixed bug with post field type dialog.
+- Fixed passing additional arguments for field type post
 - Fixed memory leak when using cache. When using functions that cleared the cache, for example simple_fields_set_value(), then memory usage could increase pretty much, and when the function is used in a loop then eventionally the script would eat up all memory. Nom nom nom. But in a bad way.
 - Changed the way some cache keys where stored, beacuse a key in an array that contains quotes is just silly looking (but valid, apparently)
-- Fixed passing additional arguments for field type post
 - Little better looking output of "Show custom field keys"
 - Added unit tests for date/time picker v2 and register_post_connector
-- Changed debug box to stop using jQuery, so it should work with more themes and in more situations where jQuery may not be available
-- Added a couple of filters and actions that you can use in your functions.php-file or in your plugin or field extension or whatever. Added filters are:
+- Fixed ordering of fields when using simple_fields_register_field_group
+- Fixed bug with post field and extended return values, 
+  where a field with no post/page selected would return the post of the current post in the loop. 
+  Now returns empty array instead. Thanks to [hjalle](https://twitter.com/hjalle) for finding.
+- simple_fields_register_post_connector now uses name from each field group, so no need to enter that manually any more (if entered manually, it will be removed)
+- Added filters and actions that you can use in your functions.php-file or in your plugin or field extension or whatever. Added filters are:
   simple_fields_debug_output
   simple_fields_get_post_value
   simple_fields_get_post_group_values
@@ -270,8 +275,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
   simple_fields_get_field_group_by_slug
   simple_fields_clear_caches
 - Lotsa code cleanups and stuff
-- Fixed ordering of fields when using simple_fields_register_field_group
-- Fixed bug with post field and extended return values, where a field with no post/page selected would return the post of the current post in the loop. Now returns empty array instead.
+- Fixed so plugin works with jQuery 1.9, beacuse now jQuery(htmlString) requires first char to be < for string to be considered HTML. Was not working due to spaces before first HMTL tag.
 
 #### Version 1.1.6
 - Fixed bug that could lead to memoryleak. Thanks to plux/angry creative for patch.

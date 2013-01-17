@@ -36,8 +36,8 @@ var simple_fields = (function() {
 		};
 
 		$.post(ajaxurl, data, function(response) {
-			var ul = $("#simple-fields-field-group-existing-fields ul:first");
-			$response = $(response);
+			var ul = $("#simple-fields-field-group-existing-fields ul:first"),
+				$response = $(response);
 			ul.append($response);
 			ul.find(".simple-fields-field-group-one-field:last").effect("highlight").find(".simple-fields-field-group-one-field-name").focus();
 		});

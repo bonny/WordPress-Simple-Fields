@@ -2113,8 +2113,7 @@ class simple_fields {
 		}
 		
 		$out = "";
-		$out .= "
-		<li class='simple-fields-field-group-one-field simple-fields-field-group-one-field-id-{$fieldID}'>
+		$out .= "<li class='simple-fields-field-group-one-field simple-fields-field-group-one-field-id-{$fieldID}'>
 			<div class='simple-fields-field-group-one-field-handle'></div>
 	
 			<div class='simple-fields-field-group-one-field-row'>
