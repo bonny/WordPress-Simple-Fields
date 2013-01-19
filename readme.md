@@ -11,6 +11,12 @@ for the latest and stable version.
 * See http://simple-fields.com for getting started guides and API documentation.
 * Author: [Pär Thernström](https://twitter.com/eskapism "@eskapism")
 
+## Screenshots
+
+![Screenshot 1](http://simple-fields.com/wordpress/wp-content/uploads/2012/09/feature-fields-types.png)
+
+![Screenshot 2](http://simple-fields.com/wordpress/wp-content/uploads/2012/09/feature-image-repeatable-fields11.png)
+
 ## Field Types
 
 There are many built in custom field types in Simple Fields:
