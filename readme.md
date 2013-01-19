@@ -25,11 +25,11 @@ There are many built in custom field types in Simple Fields:
 * and more ...
 
 ## Usage
-´´´php
+```php
 <?php
 
 $textfield_output = simple_fields_value("my_text_field");
 $file_attachment = simple_fields_value("my_file_field");
 
 ?>
-´´´
+```
