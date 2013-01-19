@@ -745,23 +745,92 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 
 								} // foreach
 
-							}
+							} // if empty options type
 
-						} // foreach
+						} // if isset
 
-						// If dfault value does not exist in new field then add it
+						// If default value does not exist in new field then add it
 						if ( ! isset( $existing_field_array_from_slug[$oneDefaultFieldKey] ) ) {
 							$existing_field_array_from_slug[$oneDefaultFieldKey] = $oneDefaultFieldValue;
 						}
 
-				}
-			
-			}
 
-		} // foreach field default
+					} // foreach field default
 
+					// Setup new options array that exists since 1.2
+					// existing_field_array_from_slug = the merged array, with old + new options
+					// new values from arg = $one_new_field
+					// move new options to sub-array by field type
+					#sf_d( $existing_field_array_from_slug );
+					if ( ! isset( $existing_field_array_from_slug["options"][ $existing_field_array_from_slug["type"] ] ) ) {
+
+						$existing_field_array_from_slug["options"][ $existing_field_array_from_slug["type"] ] = array();
+
+					}
+
+					// Merge in new values, overwriting existing, but also letting existing keys that have no new value be
+					$existing_field_array_from_slug["options"][ $existing_field_array_from_slug["type"] ] = simple_fields_merge_arrays( $existing_field_array_from_slug["options"][ $existing_field_array_from_slug["type"] ], $one_new_field["options"] );
+
+					$new_options_keys = array_keys( $one_new_field["options"] );
+
+					// Remove the keys we added from the options array (just keep them in the sub-array)
+					// TODO: if someone did enter values like this:
+					// options[field_type] => array(options..)
+					// then don't break that by removing
+
+					// Remove the keys we added from the options array (but keep them in the sub-array)
+					if ( ($key_to_remove_pos = array_search( $one_new_field["type"], $new_options_keys )) !== FALSE ) {
+						unset( $new_options_keys[ $key_to_remove_pos ] );
+						unset( $existing_field_array_from_slug["options"][ $one_new_field["type"] ][ $one_new_field["type"] ] );
+					} 
+
+					foreach ( $new_options_keys as $one_key_to_remove ) {
+						unset( $existing_field_array_from_slug["options"][ $one_key_to_remove ] );
+					}
+
+					#foreach ( $one_new_field["options"] as $one_option_key => $one_option_value ) {
+						
+					#	$existing_field_array_from_slug["options"][ $existing_field_array_from_slug["type"] ][]
+
+					#}
+
+					sf_d($existing_field_array_from_slug);
+					#sf_d($one_new_field);
+					#exit;
+
+				
+				} // if field exists among fields by slugs
+
+			} // foreach field default
 
 		} // for each field in a field grouo
+
+		// Options array
+		// Store options by field type here
+		$options = array();
+#echo "<hr>before";sf_d( $field_groups[$field_group_id]["fields_by_slug"] );
+		// For each field group as passed to function as arg
+/*
+		foreach ( $field_groups[$field_group_id]["fields_by_slug"] as & $one_field_group) {
+			
+			if ( isset( $one_field_group["options"] ) && is_array( $one_field_group["options"] ) ) {
+
+				$old_keys = array_keys( $one_field_group["options"] );
+
+				// Create key for the current field type and move over options there
+				$one_field_group["options"][ $one_field_group["type"] ] = $one_field_group["options"];
+
+				// Remove keys since they are moved to sub array
+				foreach ( $old_keys as $one_key_to_remove ) {
+					unset( $one_field_group["options"][ $one_key_to_remove ] );
+				}
+
+			}
+
+		}
+
+		echo "<hr>after";sf_d( $field_groups[$field_group_id]["fields_by_slug"] );
+*/
 
 		$merged_fields = $field_groups[$field_group_id]["fields_by_slug"];
 
