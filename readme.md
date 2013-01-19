@@ -35,6 +35,13 @@ There are many built in custom field types in Simple Fields:
 * and more ...
 
 ## Usage
+
+### Adding fields
+Use the GUI in WordPress or use PHP directly in your functions.php like this:
+https://gist.github.com/3851387
+
+### Getting field values
+
 ```php
 <?php
 
