@@ -13,9 +13,13 @@ for the latest and stable version.
 
 ## Screenshots
 
-![Screenshot 1](http://simple-fields.com/wordpress/wp-content/uploads/2012/09/feature-fields-types.png)
+Works great for attachments
 
 ![Screenshot 2](http://simple-fields.com/wordpress/wp-content/uploads/2012/09/feature-image-repeatable-fields11.png)
+
+Mix fields any way you want to
+
+![Screenshot 1](http://simple-fields.com/wordpress/wp-content/uploads/2012/09/feature-fields-types.png)
 
 ## Field Types
 
