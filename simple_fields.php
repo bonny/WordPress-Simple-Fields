@@ -122,17 +122,17 @@ class simple_fields {
 	function debug_panel_insert( $panels ) {
 		
 		$options = $this->get_options();
-		if (isset($options["debug_type"]) && $options["debug_type"] !== 0) {
+		// if (isset($options["debug_type"]) && $options["debug_type"] !== 0) {
 
 			// 1 = debug for admins only, 2 = debug for all
-			if ( ($options["debug_type"] === 1 && current_user_can("edit_themes")) || $options["debug_type"] === 2) {
+			//if ( ($options["debug_type"] === 1 && current_user_can("edit_themes")) || $options["debug_type"] === 2) {
 
-				require_once( dirname(__FILE__) . "/class_simple_fields_debug_panel.php" );
+				include_once( dirname(__FILE__) . "/class_simple_fields_debug_panel.php" );
 				$panels[] = new class_simple_fields_debug_panel;
 
-			}
+			//}
 
-		}
+		//}
 
 		return $panels;
 
@@ -2110,7 +2110,7 @@ class simple_fields {
 				$field_options_output
 			);
 
-		}
+		} // end output registered field types
 		
 		$out = "";
 		$out .= "<li class='simple-fields-field-group-one-field simple-fields-field-group-one-field-id-{$fieldID}'>
@@ -2165,7 +2165,7 @@ class simple_fields {
 	
 			$registred_field_types_output_options
 
-			<!-- options for field type  textarea -->
+			<!-- options for field type textarea -->
 			<div class='simple-fields-field-group-one-field-row " . (($field_type=="textarea") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-textarea'>
 				<div class='simple-fields-field-group-one-field-row'>
 					<div class='simple-fields-field-group-one-field-row-col-first'>
@@ -3413,12 +3413,20 @@ class simple_fields {
 	 * @param string $the_content
 	 * @param bool $allow_always Set to true to bypass checks that we are inside the correct the_content-filter
 	 */
-	function simple_fields_content_debug_output($the_content, $allow_always = FALSE) {
+	function simple_fields_content_debug_output($the_content, $args = "") {
+
+		$defaults = array(
+			"always_show" => FALSE,
+			"show_expanded" => FALSE
+		);
+
+		$args = wp_parse_args( $args, $defaults);
 
 		// we only want to appen the debug code when being used from get_the_content or the_content
 		// but for example get_the_excerpt is also using filter the_content which leads to problems
 		// so check that we are somewhere inside the right functions
-		if ($allow_always === FALSE) {
+		if ($args["always_show"] === FALSE) {
+
 			$is_inside_righ_function = FALSE;
 			$arr_trace = debug_backtrace();
 			$arr_trace_count = count($arr_trace);
@@ -3466,8 +3474,8 @@ class simple_fields {
 					$field_count++;
 					$content = "";
 					$content .= "<ul style='background:#eee;padding:.5em;margin:0;display:block;'>";
-					$content .= "<li>Field <b>" . $one_field["name"] . "</b>";
-					$content .= ", type <b>" . $one_field["type"] . "</b>";
+					$content .= "<li>" . __("Field", "simple-fields") . " <b>" . $one_field["name"] . "</b>";
+					$content .= ", " . __("type", "simple-fields") . " <b>" . $one_field["type"] . "</b>";
 
 					if (isset($one_field["slug"])) {
 						
@@ -3487,7 +3495,7 @@ class simple_fields {
 						}
 						
 					} else {
-						$content .= "<br>No slug for this field found (probably old field that has not been edited and saved).";
+						$content .= "<br>" . __("No slug for this field found (probably old field that has not been edited and saved).", "simple-fields");
 					}
 					$content .= "</ul>";
 					$output_all .= $content;
@@ -3547,12 +3555,21 @@ class simple_fields {
 			}
 			</script>
 			<?php
-			$output_all = '
+
+			$str_show_hide = "";
+			$display = "block";
+			if ($args["show_expanded"] === FALSE) {
+				$str_show_hide = '<a href="#" onclick="return simple_fields_post_debug_show_hide(this);">'.$str_show_fields.'</a></p>';
+				$display = "none";
+			}
+
+			$output_all = sprintf('
 				<div class="simple-fields-post-debug-wrap" style="display:block;margin:0;padding:0;">
-					<p style="margin:0;padding:0;display:block;">This post has ' . $field_count . ' Simple Fields-fields attached. <a href="#" onclick="return simple_fields_post_debug_show_hide(this);">'.$str_show_fields.'</a></p>
-					<div class="simple-fields-post-debug-content" style="display:none;">'.$output_all.'</div>
+					<p style="margin:0;padding:0;display:block;">This post has %1$s Simple Fields-fields attached. 
+					%2$s
+					<div class="simple-fields-post-debug-content" style="display:%3$s;">%4$s</div>
 				</div>
-				';
+				', $field_count, $str_show_hide, $display, $output_all);
 		}
 		// if a field has the slug caption the output will be [caption] and then it will crash with some shortcodes, so we try to fix that here
 		$output_all = str_replace("[", "&#91;", $output_all);
@@ -3927,7 +3944,111 @@ class simple_fields {
 		}
 		// echo "clear_key";var_dump($this->ns_key);
 
-	}	
+	} // clear caches
+
+
+	/**
+	 * @param string $str_field_key Key of field type to get
+	 * @return mixed. Returns false if field is not found. Returns array with field info if field is found.
+	 */
+	function get_core_field_type_by_key($str_field_key = "") {
+		
+		if ( empty( $str_field_key ) ) return FALSE;
+
+		$arr_field_types = $this->get_core_field_types();
+		if ( isset( $arr_field_types[ $str_field_key ] ) ) {
+			return $arr_field_types[ $str_field_key ];
+		} else {
+			return FALSE;
+		}
+
+	} // end func get_core_field_type_by_key
+
+	/**
+	 * Check if field type with key $str_field_type is one of the core ones
+	 *
+	 * @param string $field_key
+	 * @return Bool
+	 */
+	function field_type_is_core($str_field_key = "")  {
+
+		if ( empty( $str_field_key ) ) return FALSE;
+
+		$arr_field_types = $this->get_core_field_types();
+
+		if ( isset( $arr_field_types[ $str_field_key ] ) ) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+
+	/**
+	 * Get a list of all core field types
+	 * Core = all field types that are not extensions
+	 * Core field types use old and less smart way of storing options
+	 * 
+	 * @return array with all field types
+	 */
+	function get_core_field_types() {
+
+		$arr_core_field_types = array(
+			"text" => array(
+				"key" => 'text',
+				"name" => __('Text', 'simple-fields'),
+			),
+			"textarea" => array(
+				"key" => 'textarea',
+				"name" => __('Textarea', 'simple-fields'),
+			),
+			"checkbox" => array(
+				"key" => 'checkbox',
+				"name" => __('Checkbox', 'simple-fields'),
+			),
+			"radiobuttons" => array(
+				"key" => 'radiobuttons',
+				"name" => __('Radio buttons', 'simple-fields'),
+			),
+			"dropdown" => array(
+				"key" => 'dropdown',
+				"name" => __('Dropdown', 'simple-fields'),
+			),
+			"file" => array(
+				"key" => 'file',
+				"name" => __('File', 'simple-fields'),
+			),
+			"post" => array(
+				"key" => 'post',
+				"name" => __('Post', 'simple-fields'),
+			),
+			"taxonomy" => array(
+				"key" => 'taxonomy',
+				"name" => __('Taxonomy', 'simple-fields'),
+			),
+			"taxonomyterm" => array(
+				"key" => 'taxonomyterm',
+				"name" => __('Taxonomy Term', 'simple-fields'),
+			),
+			"color" => array(
+				"key" => 'color',
+				"name" => __('Color', 'simple-fields'),
+			),
+			"date" => array(
+				"key" => 'date',
+				"name" => __('Date', 'simple-fields'),
+			),
+			"user" => array(
+				"key" => 'user',
+				"name" => __('User', 'simple-fields'),
+			),
+		);
+
+		return $arr_core_field_types;
+
+	} // end func get_core_field_types
+
+
+
 } // end class
 
 
