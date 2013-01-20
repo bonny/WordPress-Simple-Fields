@@ -236,9 +236,9 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 == Changelog ==
 
 #### Version 1.1.x
-- Added debug panel to debug bar (if installed). Makes it possible to preview stored values when inside WordPress admin and editing posts. Only visible when debug is enabled.
+- Added debug panel to debug bar (if installed). Makes it possible to preview stored values when inside WordPress admin and editing posts. Will automatically be enabled when debug bar is installed and activated.
 - Changed debug box to stop using jQuery, so it should work with more themes and in more situations where jQuery may not be available
-- Fixed bug with post field type dialog.
+- Fixed bug with post field type dialog
 - Fixed passing additional arguments for field type post
 - Fixed memory leak when using cache. When using functions that cleared the cache, for example simple_fields_set_value(), then memory usage could increase pretty much, and when the function is used in a loop then eventionally the script would eat up all memory. Nom nom nom. But in a bad way.
 - Changed the way some cache keys where stored, beacuse a key in an array that contains quotes is just silly looking (but valid, apparently)
@@ -275,7 +275,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
   simple_fields_get_field_group_by_slug
   simple_fields_clear_caches
 - Lotsa code cleanups and stuff
-- Fixed so plugin works with jQuery 1.9, beacuse now jQuery(htmlString) requires first char to be < for string to be considered HTML. Was not working due to spaces before first HMTL tag.
+- Fixed so plugin works with jQuery 1.9, because now jQuery(htmlString) requires first char to be < for string to be considered HTML. Was not working due to spaces before first HMTL tag.
 
 #### Version 1.1.6
 - Fixed bug that could lead to memoryleak. Thanks to plux/angry creative for patch.

@@ -18,7 +18,7 @@ class class_simple_fields_debug_panel {
 	function render() {
 
 		global $sf;
-		echo $sf->simple_fields_content_debug_output("", TRUE);
+		echo $sf->simple_fields_content_debug_output("", array("always_show" => TRUE, "show_expanded" => TRUE));
 
 	}
 
