@@ -504,6 +504,10 @@ function array_merge_recursive2($paArray1, $paArray2)
 
 function simple_fields_merge_arrays($array1 = array(), $array2 = array()) {
 
+	// Make sure args is arrays
+	$array1 = (array) $array1;
+	$array2 = (array) $array2;
+
 	foreach($array2 as $key => $value) {
 	
 		if ( is_array($value) ) {
@@ -638,7 +642,6 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 	// Let the new values overwrite the hold ones
 	// This merge is the reason why we use fields_by_slug
 	$field_groups[$field_group_id] = simple_fields_merge_arrays($field_group_defaults, $new_field_group);
-
 	// Now the existing fields that has new values, has new values
 	// Brand new fields have no id set, so thats how we can detect them
 
@@ -687,7 +690,6 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 			if ( isset( $field_groups[$field_group_id]["fields"] ) && is_array( $field_groups[$field_group_id]["fields"] ) ) {
 
 				// Check if our current field has an old version
-
 				// Loop through all fields to find any field with our slug
 				if ( isset( $field_groups[$field_group_id]["fields_by_slug"][$one_new_field["slug"]] ) ) {
 
@@ -761,7 +763,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 					// existing_field_array_from_slug = the merged array, with old + new options
 					// new values from arg = $one_new_field
 					// move new options to sub-array by field type
-					$arr_merged_options = $one_new_field["options"];
+					$arr_merged_options = wp_parse_args( $one_new_field["options"] );
 
 					// Make sure options key for this field type exists
 					if ( ! isset( $existing_field_array_from_slug["options"][ $existing_field_array_from_slug["type"] ] ) ) {
@@ -781,7 +783,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 					$existing_field_array_from_slug["options"][ $existing_field_array_from_slug["type"] ] = $arr_merged_options;
 
 					// Remove the keys we added from the options array (just keep them in the sub-array)
-					$new_options_keys = array_keys( $one_new_field["options"] );
+					$new_options_keys = array_keys( (array) $one_new_field["options"] );
 
 					// if someone did enter values like this:
 					// options[field_type] => array(options..)
@@ -803,7 +805,9 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 					}
 
 					// end move options in place
-					sf_d($existing_field_array_from_slug);
+					// xxx here we are. somewhere.
+					//sf_d($existing_field_array_from_slug);
+
 				
 				} // if field exists among fields by slugs
 
@@ -835,7 +839,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 		// Then add old fields
 		foreach ( $field_groups[$field_group_id]["fields"] as $field_array ) {
 
-			if (! isset ($fields_in_new_order[$field_array["id"]] ) ) {
+			if ( ! isset ($fields_in_new_order[$field_array["id"]] ) ) {
 				$fields_in_new_order[ $field_array["id"] ] = $field_array;
 			}
 
@@ -851,6 +855,41 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 		}
 
 	} // if passed as arg field group has fields
+
+#sf_d($field_groups);
+/*
+TODO: fix problem with field group values from multiple sources
+Example below: "products" and "monkeys" won't get removed, due. to merge.. well.. merging!
+Instead array sent in to function as arg should be allowed to overwrite
+
+If this is the already stored format (from for example GUI, or from previous register_field_group)
+[post] => Array
+    (
+        [enabled_post_types] => Array
+            (
+                [0] => post
+                [1] => page
+                [2] => products
+                [3] => monkeys
+            )
+        [additional_arguments] => cat=10
+        [enable_extended_return_values] => 1
+    )
+
+ And this is the new as sent in as arg to register_field_group:
+ [post] => Array
+    (
+        [enabled_post_types] => Array
+            (
+                [0] => post
+                [1] => page
+            )
+        [additional_arguments] => cat=10
+        [enable_extended_return_values] => 1
+    )
+
+      
+*/
 
 	// Save to options and clear cache
 	update_option("simple_fields_groups", $field_groups);
