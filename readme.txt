@@ -274,6 +274,9 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
   simple_fields_get_extended_return_values_for_field
   simple_fields_get_field_group_by_slug
   simple_fields_clear_caches
+  simple_fields_get_meta_key_template
+  simple_fields_get_meta_key
+- Added method get_meta_key(). Use it to retrieve the key that simple fields uses for meta/custom fields storage.
 - Lotsa code cleanups and stuff
 - Fixed so plugin works with jQuery 1.9, because now jQuery(htmlString) requires first char to be < for string to be considered HTML. Was not working due to spaces before first HMTL tag.
 

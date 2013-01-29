@@ -3889,6 +3889,28 @@ class simple_fields {
 
 
 	/**
+	 * Get meta key name for a field id + field group id combination
+	 *
+	 * @param int $field_group_id
+	 * @param int field_id
+	 * @param int num_in_set
+	 * @return string
+	 */
+	function get_meta_key($field_group_id = NULL, $field_id = NULL, $num_in_set = 0) {
+
+		if ( ! isset($field_group_id) || ! isset($field_group_id) || ! is_numeric($field_group_id) || ! is_numeric($field_id) || ! is_numeric($num_in_set) ) return FALSE;
+
+		$custom_field_key_template = '_simple_fields_fieldGroupID_%1$d_fieldID_%2$d_numInSet_%3$d';
+		$custom_field_key_template = apply_filters("simple_fields_get_meta_key_template", $custom_field_key_template);
+
+		$custom_field_key = sprintf($custom_field_key_template, $field_group_id, $field_id, $num_in_set);
+		$custom_field_key = apply_filters("simple_fields_get_meta_key", $custom_field_key);
+		
+		return $custom_field_key;
+
+	}
+
+	/**
 	 * Returns a field from a fieldgroup using their slugs
 	 *
 	 * @since 1.0.5

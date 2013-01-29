@@ -1332,6 +1332,14 @@ class MyPluginTest extends WP_UnitTestCase {
 		*/
 	}
 
+	public function test_misc() {
+		
+		// Test meta key
+		$key = $this->sf->get_meta_key(1, 2, 3);
+		$this->assertEquals("_simple_fields_fieldGroupID_1_fieldID_2_numInSet_3", $key);
+
+	}
+
 	/**
 	 * A contrived example using some WordPress functionality
 	 */
