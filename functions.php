@@ -809,7 +809,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 					*/
 
 					// Remove the keys we added from the options array (just keep them in the sub-array)
-					$new_options_keys = array_keys( (array) $one_new_field["options"] );
+					$new_options_keys = isset( $one_new_field["options"] ) ? array_keys( (array) $one_new_field["options"] ) : array();
 
 					// if someone did enter values like this:
 					// options[field_type] => array(options..)
