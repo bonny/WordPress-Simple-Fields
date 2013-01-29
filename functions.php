@@ -814,7 +814,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 					// if someone did enter values like this:
 					// options[field_type] => array(options..)
 					// then don't break that by removing
-					if ( ($key_to_remove_pos = array_search( $one_new_field["type"], $new_options_keys )) !== FALSE ) {
+					if ( isset($one_new_field["type"]) && ($key_to_remove_pos = array_search( $one_new_field["type"], $new_options_keys )) !== FALSE ) {
 						unset( $new_options_keys[ $key_to_remove_pos ] );
 						unset( $existing_field_array_from_slug["options"][ $one_new_field["type"] ][ $one_new_field["type"] ] );
 					} 
