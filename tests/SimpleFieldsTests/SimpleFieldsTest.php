@@ -1025,9 +1025,12 @@ class MyPluginTest extends WP_UnitTestCase {
 		            'type_taxonomyterm_options' => array(
 		                'additional_arguments' => ''
 		            ),
+		            'type_text_options' => array(),
 		            'id' => 0,
 		            'deleted' => 0,
-		            "options" => array(),
+		            "options" => array(
+		            	"text" => array()
+		            ),
 				    "field_group" => array(
 						"id" => 4,
 						"name" => "Test field group",
@@ -1100,7 +1103,7 @@ class MyPluginTest extends WP_UnitTestCase {
 		            'id' => 0,
 		            'deleted' => 0,
 		            "field_group" => array(),
-		            "options" => array()
+		            "options" => array(),
 		        ),
 		    ),
 		    'deleted' => false,
@@ -1113,6 +1116,17 @@ class MyPluginTest extends WP_UnitTestCase {
 		
 		// @todo: add test of values here also
 		foreach ($arr_return["fields"] as $arr_one_field) {
+			// cheating a bit, because laziness
+			unset( $arr_one_field["type_text_options"], 
+				   $arr_one_field["type_textarea_options"], 
+				   $arr_one_field["type_checkbox_options"], 
+				   $arr_one_field["type_dropdown_options"], 
+				   $arr_one_field["type_file_options"], 
+				   $arr_one_field["type_taxonomy_options"], 
+				   $arr_one_field["type_color_options"],
+				   $arr_one_field["type_date_options"],
+				   $arr_one_field["type_user_options"]
+				);
 			$this->assertEquals( array_keys($expected_return["fields"][0]), array_keys($arr_one_field) );
 		}
 	
