@@ -243,7 +243,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 - Fixed memory leak when using cache. When using functions that cleared the cache, for example simple_fields_set_value(), then memory usage could increase pretty much, and when the function is used in a loop then eventionally the script would eat up all memory. Nom nom nom. But in a bad way.
 - Changed the way some cache keys where stored, beacuse a key in an array that contains quotes is just silly looking (but valid, apparently)
 - Little better looking output of "Show custom field keys"
-- Added unit tests for date/time picker v2 and register_post_connector
+- Added unit tests for date/time picker v2 and register_post_connector and some other things. Makes Simple Fields a tad safer to use.
 - Fixed ordering of fields when using simple_fields_register_field_group
 - Fixed bug with post field and extended return values, 
   where a field with no post/page selected would return the post of the current post in the loop. 
@@ -277,6 +277,9 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
   simple_fields_get_meta_key_template
   simple_fields_get_meta_key
 - Added method get_meta_key(). Use it to retrieve the key that simple fields uses for meta/custom fields storage.
+- Added "meta_key" as key to all fields when using get_field_by_slug() somewhere. 
+  Makes it easy to know/get the meta key if you need it. returns the meta key for the first field in that field group. 
+  If group is repeatable you must add number to numInSet yourself. Will contain a value like "_simple_fields_fieldGroupID_1_fieldID_2_numInSet_0"
 - Lotsa code cleanups and stuff
 - Fixed so plugin works with jQuery 1.9, because now jQuery(htmlString) requires first char to be < for string to be considered HTML. Was not working due to spaces before first HMTL tag.
 

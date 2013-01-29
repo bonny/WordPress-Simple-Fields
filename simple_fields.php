@@ -1478,11 +1478,12 @@ class simple_fields {
 					$field_groups[$i]["slug"] = $field_groups[$i]["key"];
 				}
 	
-
 				// Calculate number of active fields in this field group
+				// and add some extra info that is nice to have
 				$num_active_fields = 0;
-				foreach ($field_groups[$i]["fields"] as $one_field) {
+				foreach ( $field_groups[$i]["fields"] as & $one_field ) {
 					if ( ! $one_field["deleted"] ) $num_active_fields++;
+					$one_field["meta_key"] = $this->get_meta_key( $field_groups[$i]["id"], $one_field["id"] );
 				}
 				$field_groups[$i]["fields_count"] = $num_active_fields;
 
@@ -3831,11 +3832,11 @@ class simple_fields {
 	 * @return mixed array with field group info if field groups exists, false if does not exist
 	 */
 	function get_field_group_by_slug($field_group_slug) {
-#echo 111;		
-#var_dump($this->ns_key);
+
 		$cache_key = 'simple_fields_'.$this->ns_key.'_get_field_group_by_slug_' . $field_group_slug;
-#echo $cache_key;
+		
 		$return_val = wp_cache_get( $cache_key, 'simple_fields' );
+		
 		if (FALSE === $return_val) {
 
 			$field_groups = $this->get_field_groups();
