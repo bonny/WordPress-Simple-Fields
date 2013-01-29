@@ -1251,7 +1251,14 @@ class simple_fields {
 			$field_group_slug_css = "simple-fields-meta-box-field-group-wrapper-slug-" . $current_field_group["slug"];
 		}
 	 
-		echo "<div class='simple-fields-meta-box-field-group-wrapper $num_added_field_groups_css $field_group_slug_css'>";
+	 	$field_group_wrapper_css = "";
+
+		$default_gui_view = isset( $current_field_group["gui_view"] ) ? $current_field_group["gui_view"] : "list";
+		if ("table" === $default_gui_view) {
+			$field_group_wrapper_css .= " simple-fields-meta-box-field-group-wrapper-view-table ";
+		}
+
+		echo "<div class='simple-fields-meta-box-field-group-wrapper $num_added_field_groups_css $field_group_slug_css $field_group_wrapper_css'>";
 		echo "<input type='hidden' name='simple-fields-meta-box-field-group-id' value='$post_connector_field_id' />";
 	 
 		// show description
@@ -1259,15 +1266,29 @@ class simple_fields {
 			printf("<p class='%s'>%s</p>", "simple-fields-meta-box-field-group-description", esc_html($current_field_group["description"]));
 		}
 		//echo "<pre>";print_r($current_field_group);echo "</pre>";
-	 
+		
 		if ($current_field_group["repeatable"]) {
+
+			// Generate headline for the table view
+			#sf_d($current_field_group);
+			if ("table" === $default_gui_view) {
+				echo "<div class='sf-cf'>";
+				foreach ( $current_field_group["fields"] as $field_id => $field_arr ) {
+					#sf_d($field_arr);
+					printf('<div class="simple-fields-metabox-field-group-view-table-headline simple-fields-metabox-field-group-view-table-headline-count-%1$d">', $current_field_group["fields_count"]);
+					printf('<div class="simple-fields-field-group-view-table-headline-name">%1$s</div>', $field_arr["name"]);
+					printf('<div class="simple-fields-field-group-view-table-headline-description">%1$s</div>', $field_arr["description"]);
+					printf('</div>');
+				}
+				echo "</div>";
+			}
 
 			// Start of list with added field groups
 			$ul_add_css = "";
 
 			// add link at top	 
 			echo "
-				<div class='simple-fields-metabox-field-add'>
+				<div class='simple-fields-metabox-field-add simple-fields-metabox-field-add-top'>
 					<a href='#'>+ ".__('Add', 'simple-fields')."</a>
 					<!-- 
 					|
@@ -1290,7 +1311,9 @@ class simple_fields {
 			*/
 
 			// add test class to test table layout
-			// $ul_add_css .= " simple-fields-metabox-field-group-fields-view-table";
+			if ("table" === $default_gui_view) {
+				$ul_add_css .= " simple-fields-metabox-field-group-fields-view-table";
+			}
 
 			// add class with number of fields in field group
 			$ul_add_css .= " simple-fields-metabox-field-group-fields-count-" . $current_field_group["fields_count"];
@@ -1427,8 +1450,9 @@ class simple_fields {
 	function get_field_groups() {
 		
 		$field_groups = wp_cache_get( 'simple_fields_'.$this->ns_key.'_groups', 'simple_fields' );
-		if (FALSE === $field_groups) {
 
+		if (FALSE === $field_groups) {
+			
 			$field_groups = get_option("simple_fields_groups");
 			
 			if ($field_groups === FALSE) $field_groups = array();
@@ -1481,7 +1505,7 @@ class simple_fields {
 				// Calculate number of active fields in this field group
 				// and add some extra info that is nice to have
 				$num_active_fields = 0;
-				foreach ( $field_groups[$i]["fields"] as & $one_field ) {
+				foreach ( $field_groups[$i]["fields"] as $one_field ) {
 					if ( ! $one_field["deleted"] ) $num_active_fields++;
 					$one_field["meta_key"] = $this->get_meta_key( $field_groups[$i]["id"], $one_field["id"] );
 				}
@@ -1508,7 +1532,7 @@ class simple_fields {
 
 			wp_cache_set( 'simple_fields_'.$this->ns_key.'_groups', $field_groups, 'simple_fields' );
 			
-		}
+		} // cache false
 
 		$field_groups = apply_filters( "simple_fields_get_field_groups", $field_groups );
 		return $field_groups;
@@ -3840,7 +3864,7 @@ class simple_fields {
 		if (FALSE === $return_val) {
 
 			$field_groups = $this->get_field_groups();
-			
+
 			if ( ! is_numeric($field_group_slug) ) {
 	
 				// not number so look for field group with this variable as slug
