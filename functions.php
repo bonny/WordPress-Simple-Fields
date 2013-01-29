@@ -490,18 +490,10 @@ function simple_fields_query_posts($query_args = array()) {
 }
 
 
-/*
-function array_merge_recursive2($paArray1, $paArray2)
-{
-    if (!is_array($paArray1) or !is_array($paArray2)) { return $paArray2; }
-    foreach ($paArray2 AS $sKey2 => $sValue2)
-    {
-        $paArray1[$sKey2] = array_merge_recursive2(@$paArray1[$sKey2], $sValue2);
-    }
-    return $paArray1;
-}
-*/
-
+/**
+ * Merge arrays
+ * Seems to combine, not write over
+ */
 function simple_fields_merge_arrays($array1 = array(), $array2 = array()) {
 
 	// Make sure args is arrays
@@ -524,7 +516,6 @@ function simple_fields_merge_arrays($array1 = array(), $array2 = array()) {
 
 	return $array1;
 }
-
 
 
 /**
@@ -770,17 +761,52 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 						$existing_field_array_from_slug["options"][ $existing_field_array_from_slug["type"] ] = array();
 					}
 
-					// what about for example type_post_options that may already exist?
+					// what about for example "type_post_options" that may already exist?
 					// if they exist, move to merge with options, then merge with options, before new values are merged
 					// do that first since those values are the oldest (pre-upgrade pre-save values)
 					if ( isset( $existing_field_array_from_slug[ "type_". $existing_field_array_from_slug["type"] . "_options" ] ) ) {
-						$arr_merged_options = simple_fields_merge_arrays( $existing_field_array_from_slug[ "type_". $existing_field_array_from_slug["type"] . "_options" ], $arr_merged_options);
+						$arr_merged_options = array_merge($existing_field_array_from_slug[ "type_". $existing_field_array_from_slug["type"] . "_options" ], $arr_merged_options);
 					}
 
 					// Merge in new values, overwriting existing, but also letting existing keys that have no new value be
-					$arr_merged_options = simple_fields_merge_arrays( $existing_field_array_from_slug["options"][ $existing_field_array_from_slug["type"] ], $arr_merged_options );
+					$arr_merged_options = array_merge( $existing_field_array_from_slug["options"][ $existing_field_array_from_slug["type"] ], $arr_merged_options );
 					
 					$existing_field_array_from_slug["options"][ $existing_field_array_from_slug["type"] ] = $arr_merged_options;
+
+					/*
+					problem with field group values from multiple sources:
+
+					Example below: "products" and "monkeys" won't get removed, due. to merge.. well.. merging!
+					Instead array sent in to function as arg should be allowed to overwrite existing array
+					But only overwrite keys that already exists, leaving other keys
+
+					If this is the already stored format (from for example GUI, or from previous register_field_group)
+					[post] => Array
+					    (
+					        [enabled_post_types] => Array
+					            (
+					                [0] => post
+					                [1] => page
+					                [2] => products
+					                [3] => monkeys
+					            )
+					        [additional_arguments] => cat=10
+					        [enable_extended_return_values] => 1
+					    )
+
+					 And this is the new as sent in as arg to register_field_group:
+					 [post] => Array
+					    (
+					        [enabled_post_types] => Array
+					            (
+					                [0] => post
+					                [1] => page
+					            )
+					        [additional_arguments] => cat=10
+					        [enable_extended_return_values] => 1
+					    )
+		      
+					*/
 
 					// Remove the keys we added from the options array (just keep them in the sub-array)
 					$new_options_keys = array_keys( (array) $one_new_field["options"] );
@@ -805,9 +831,6 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 					}
 
 					// end move options in place
-					// xxx here we are. somewhere.
-					//sf_d($existing_field_array_from_slug);
-
 				
 				} // if field exists among fields by slugs
 
@@ -855,41 +878,6 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 		}
 
 	} // if passed as arg field group has fields
-
-#sf_d($field_groups);
-/*
-TODO: fix problem with field group values from multiple sources
-Example below: "products" and "monkeys" won't get removed, due. to merge.. well.. merging!
-Instead array sent in to function as arg should be allowed to overwrite
-
-If this is the already stored format (from for example GUI, or from previous register_field_group)
-[post] => Array
-    (
-        [enabled_post_types] => Array
-            (
-                [0] => post
-                [1] => page
-                [2] => products
-                [3] => monkeys
-            )
-        [additional_arguments] => cat=10
-        [enable_extended_return_values] => 1
-    )
-
- And this is the new as sent in as arg to register_field_group:
- [post] => Array
-    (
-        [enabled_post_types] => Array
-            (
-                [0] => post
-                [1] => page
-            )
-        [additional_arguments] => cat=10
-        [enable_extended_return_values] => 1
-    )
-
-      
-*/
 
 	// Save to options and clear cache
 	update_option("simple_fields_groups", $field_groups);
