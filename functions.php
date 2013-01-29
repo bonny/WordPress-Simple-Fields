@@ -754,7 +754,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 					// existing_field_array_from_slug = the merged array, with old + new options
 					// new values from arg = $one_new_field
 					// move new options to sub-array by field type
-					$arr_merged_options = wp_parse_args( $one_new_field["options"] );
+					$arr_merged_options = isset($one_new_field["options"]) ? wp_parse_args( $one_new_field["options"] ) : array();
 
 					// Make sure options key for this field type exists
 					if ( ! isset( $existing_field_array_from_slug["options"][ $existing_field_array_from_slug["type"] ] ) ) {
