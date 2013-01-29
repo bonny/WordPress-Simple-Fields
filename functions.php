@@ -814,7 +814,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 					// if someone did enter values like this:
 					// options[field_type] => array(options..)
 					// then don't break that by removing
-					if ( isset($one_new_field["type"]) && ($key_to_remove_pos = array_search( $one_new_field["type"], $new_options_keys )) !== FALSE ) {
+					if ( isset( $one_new_field["type"] ) && ( $key_to_remove_pos = array_search( $one_new_field["type"], $new_options_keys ) ) !== FALSE ) {
 						unset( $new_options_keys[ $key_to_remove_pos ] );
 						unset( $existing_field_array_from_slug["options"][ $one_new_field["type"] ][ $one_new_field["type"] ] );
 					} 
@@ -826,7 +826,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 
 					// If this is any of the core fields types then save back options to type_<fieldtype>_options
 					// Can remove that reference completly because it's used at so many places
-					if ( $sf->field_type_is_core( $one_new_field["type"] ) ) {
+					if ( isset( $one_new_field["type"] ) &&  $sf->field_type_is_core( $one_new_field["type"] ) ) {
 						$existing_field_array_from_slug[ "type_" . $one_new_field["type"] . "_options"] = $arr_merged_options;
 					}
 
