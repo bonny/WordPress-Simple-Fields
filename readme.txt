@@ -283,6 +283,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
   If group is repeatable you must add number to numInSet yourself. Will contain a value like "_simple_fields_fieldGroupID_1_fieldID_2_numInSet_0"
 - Lotsa code cleanups and stuff
 - Fixed so plugin works with jQuery 1.9, because now jQuery(htmlString) requires first char to be < for string to be considered HTML. Was not working due to spaces before first HMTL tag.
+- Added Slovak translation by Branco. Thanks a lot!
 
 #### Version 1.1.6
 - Fixed bug that could lead to memoryleak. Thanks to plux/angry creative for patch.

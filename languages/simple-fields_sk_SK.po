@@ -1,0 +1,347 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Simple Fields\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-03-02 20:38-0300\n"
+"PO-Revision-Date: 2013-01-20 16:16+0300\n"
+"Last-Translator: Serg\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: functions_admin.php:113
+msgid "Post type"
+msgstr "Typ stĺpika"
+
+#: functions_admin.php:118
+msgid "Default post connector"
+msgstr "Predvolené post konektor"
+
+#: functions_admin.php:126
+msgid "No post connector"
+msgstr "Žiadny príspevok konektor"
+
+#: functions_admin.php:127
+msgid "Inherit from parent post"
+msgstr "Zdediť z nadradenej post"
+
+#: functions_admin.php:136
+msgid "There are no post connectors for this post type."
+msgstr "Neexistujú žiadne post konektory pre tento typ post."
+
+#: functions_admin.php:146 functions_admin.php:379 functions_admin.php:472
+msgid "cancel"
+msgstr "zrušiť"
+
+#: functions_admin.php:283
+msgid "Post Connector details"
+msgstr "Príspevok konektor Podrobnosti"
+
+#: functions_admin.php:289 functions_admin.php:436 functions_admin.php:642
+msgid "Name"
+msgstr "meno"
+
+#: functions_admin.php:293
+msgid "Field Groups"
+msgstr "Pole skupiny"
+
+#: functions_admin.php:298
+msgid "Add field group..."
+msgstr "Pridať skupinu polí..."
+
+#: functions_admin.php:320 simple_fields.php:83
+msgid "Context"
+msgstr "Kontexte"
+
+#: functions_admin.php:322 simple_fields.php:84
+msgid "normal"
+msgstr "normálne"
+
+#: functions_admin.php:323 simple_fields.php:85
+msgid "advanced"
+msgstr "Pokročilé"
+
+#: functions_admin.php:324 simple_fields.php:86
+msgid "side"
+msgstr "strane"
+
+#: functions_admin.php:327
+msgid "Priority"
+msgstr "Prioritou"
+
+#: functions_admin.php:329 simple_fields.php:87
+msgid "low"
+msgstr "nízka"
+
+#: functions_admin.php:330 simple_fields.php:88
+msgid "high"
+msgstr "vysoká"
+
+#: functions_admin.php:333 functions_admin.php:382 functions_admin.php:475
+#: functions_admin.php:736 simple_fields.php:73
+msgid "Delete"
+msgstr "Odstrániť"
+
+#: functions_admin.php:344
+msgid "Available for post types"
+msgstr "K dispozícii pre post typy"
+
+#: functions_admin.php:374 functions_admin.php:467
+msgid "Save Changes"
+msgstr "Uložiť zmeny"
+
+#: functions_admin.php:433
+msgid "Field group details"
+msgstr "Podrobnosti o poli skupiny"
+
+#: functions_admin.php:442
+msgid "Repeatable"
+msgstr "Opakovateľné"
+
+#: functions_admin.php:448
+msgid "Fields"
+msgstr "Polia"
+
+#: functions_admin.php:461
+msgid "Add field"
+msgstr "Pridať pole"
+
+#: functions_admin.php:182 functions_admin.php:590
+msgid "or"
+msgstr "alebo"
+
+#: functions_admin.php:510
+msgid "Field groups"
+msgstr "Pole skupiny"
+
+#: functions_admin.php:514
+msgid "Field group saved"
+msgstr "Skupinu polí uložené"
+
+#: functions_admin.php:516
+msgid "Field group deleted"
+msgstr "Odstrániť skupinu polí"
+
+#: functions_admin.php:518
+msgid "Post connector deleted"
+msgstr "Príspevok konektor odstránené"
+
+#: functions_admin.php:520
+msgid "Post type defaults saved"
+msgstr "Príspevok typ predvolené nastavenia uložené"
+
+#: functions_admin.php:533
+msgid "No field groups yet."
+msgstr "Žiadne pole skupiny ešte."
+
+#: functions_admin.php:543
+msgid "New field group"
+msgstr "Novú skupinu polí"
+
+#: functions_admin.php:550
+msgid "Post Connectors"
+msgstr "Príspevok konektory"
+
+#: functions_admin.php:554
+msgid "Post connector saved"
+msgstr "Príspevok konektor uložené"
+
+#: functions_admin.php:578
+msgid "New post connector"
+msgstr "Nový príspevok konektor"
+
+#: functions_admin.php:584
+msgid "Post type defaults"
+msgstr "Príspevok typu predvolených nastavení"
+
+#: functions_admin.php:647
+msgid "Description"
+msgstr "Popis"
+
+#: functions_admin.php:652
+msgid "Type"
+msgstr "Typ"
+
+#: functions_admin.php:655 functions_post.php:34
+msgid "Select"
+msgstr "Vyberte"
+
+#: functions_admin.php:656
+msgid "Text"
+msgstr "Text"
+
+#: functions_admin.php:657
+msgid "Textarea"
+msgstr "Textarea"
+
+#: functions_admin.php:658
+msgid "Checkbox"
+msgstr "Začiarkavacie políčko"
+
+#: functions_admin.php:659
+msgid "Radio buttons"
+msgstr "Prepínacie tlačidlá"
+
+#: functions_admin.php:660
+msgid "Dropdown"
+msgstr "Rozbaľovací zoznam"
+
+#: functions_admin.php:661
+msgid "File"
+msgstr "Súbor"
+
+#: functions_admin.php:669
+msgid "Use HTML-editor"
+msgstr "Použitie HTML-editor"
+
+#: functions_admin.php:701
+msgid "Default"
+msgstr "Predvolené"
+
+#: functions_admin.php:705
+msgid "Add radio button"
+msgstr "Pridať prepínač"
+
+#: functions_admin.php:714
+msgid "Checked by default"
+msgstr "V predvolenom nastavení začiarknuté"
+
+#: functions_admin.php:744
+msgid "Added dropdown values"
+msgstr "Pridané rozbaľovací zoznam hodnôt"
+
+#: functions_admin.php:748
+msgid "Add dropdown value"
+msgstr "Pridať hodnotu rozbaľovací zoznam"
+
+#: functions_admin.php:757
+msgid "Delete field"
+msgstr "Odstránenie poľa"
+
+#: functions_post.php:301 simple_fields.php:80
+msgid "Add"
+msgstr "Pridať"
+
+#: functions_post.php:357
+msgid "Remove field group"
+msgstr "Odstrániť skupinu polí"
+
+#: functions_post.php:460
+msgid "Select file"
+msgstr "Vyberte súbor"
+
+#: functions_post.php:462
+msgid "Clear"
+msgstr "Jasné"
+
+#: functions_post.php:469
+msgid "image"
+msgstr "obrázok"
+
+#: functions_post.php:491
+msgid "View"
+msgstr "Zobrazenie"
+
+#: functions_post.php:491
+msgid "Visual"
+msgstr "Vizuálne"
+
+#: functions_post.php:491
+msgid "HTML"
+msgstr "HTML"
+
+#: functions_post.php:496
+msgid "Upload/Insert"
+msgstr "Upload/vložiť"
+
+#: functions_post.php:515
+msgid "Add an Image"
+msgstr "Pridať obrázok"
+
+#: functions_post.php:521
+msgid "Add Video"
+msgstr "Pridať Video"
+
+#: functions_post.php:527
+msgid "Add Audio"
+msgstr "Pridať Audio"
+
+#: functions_post.php:531
+msgid "Add Media"
+msgstr "Pridanie médií"
+
+#: functions_post.php:552
+msgid "Meta key:"
+msgstr "Meta kľúča:"
+
+#: functions_post.php:708
+msgid "None"
+msgstr "Žiadny"
+
+#: functions_post.php:709
+msgid "Inherit from parent"
+msgstr "Od nadradených objektov Zdediť"
+
+#: functions_post.php:717
+msgid "Save post to switch to selected fields."
+msgstr "Uložiť príspevok prepínanie na vybraté polia."
+
+#: functions_post.php:720
+msgid "Show custom field keys"
+msgstr "Zobraziť vlastné pole kľúčov"
+
+#: simple_fields.php:74
+msgid "Delete this field?"
+msgstr "Chcete odstrániť toto pole?"
+
+#: simple_fields.php:75
+msgid "Delete this group?"
+msgstr "Odstrániť túto skupinu?"
+
+#: simple_fields.php:76
+msgid "Delete this post connector?"
+msgstr "Zmazať tento príspevok konektor?"
+
+#: simple_fields.php:77
+msgid "Delete radio button?"
+msgstr "Odstrániť prepínač?"
+
+#: simple_fields.php:78
+msgid "Delete dropdown value?"
+msgstr "Odstrániť hodnotu rozbaľovacej?"
+
+#: simple_fields.php:79
+msgid "Adding..."
+msgstr "Pridanie..."
+
+#: simple_fields.php:81
+msgid "Remove field group from post connector?"
+msgstr "Odstrániť skupinu polí post konektor?"
+
+#: simple_fields.php:82
+msgid "Remove this field group?"
+msgstr "Odstráňte túto skupinu polí?"
+
+#: functions_post.php:819
+msgid "Select post"
+msgstr "Vyberte post"
+
+#: functions_post.php:614
+msgid "Edit"
+msgstr "Upraviť"
+
+#: functions_admin.php:438
+msgid "Options"
+msgstr "Možnosti"
+
+#: functions_admin.php:438
+msgid "Hide the built in editor"
+msgstr "Skryť vstavaný editor"
+
+#~ msgid "Submit"
+#~ msgstr "Predložiť"
