@@ -625,8 +625,10 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 
 	// Add fields by slug for new fields
 	$new_field_group["fields_by_slug"] = array();
-	foreach ($new_field_group["fields"] as $field_array) {
-		$new_field_group["fields_by_slug"][$field_array["slug"]] = $field_array;
+	if ( isset($new_field_group["fields"]) ) {
+		foreach ( $new_field_group["fields"] as $field_array ) {
+			$new_field_group["fields_by_slug"][$field_array["slug"]] = $field_array;
+		}
 	}
 
 	// Merge the new values of this field group with the old values
@@ -706,7 +708,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 						
 						}
 
-						// If a value in the new/updated field is an array 
+						// If a value in the new/updated field is an array
 						// and is among the default values keys, and it's is not empty
 						// then if the key is an old school option field with name type_<field type>_options
 						// then set defaults for that array
@@ -715,23 +717,29 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 							// If this is an array with options for a field type
 							// For example "type_post_options" or "type_taxonomyterm_options"
 							$options_type = preg_replace("/type_([a-z]+)_options/i", '$1', $oneDefaultFieldKey);
-
 							if ( ! empty($options_type) ) {
 
+								// Do things the old way. No slugs used here.
 								foreach ( array_keys($one_new_field[$oneDefaultFieldKey]) as $optionKey ) {
 
+									// Only continue if key is numeric
+									// This code will generate the  "dropdown_num_1"-stuff
+									// and the number is based on the index
 									if ( is_numeric($optionKey) ) {
 
+										if ("radiobuttons" === $options_type) $options_type = "radiobutton";
 										$newOptionKey = $options_type . "_num_" . $optionKey;
+
 										$existing_field_array_from_slug[$oneDefaultFieldKey][$newOptionKey] = $one_new_field[$oneDefaultFieldKey][$optionKey];
 										unset($existing_field_array_from_slug[$oneDefaultFieldKey][$optionKey]);
 										$optionKey = $newOptionKey;
 
 									}
 
+									// mark value as non-deleted if deleted is not in the array of dropdown/radiobutton values
 									if ( isset( $existing_field_array_from_slug[$oneDefaultFieldKey][$optionKey]) && is_array($existing_field_array_from_slug[$oneDefaultFieldKey][$optionKey]) && ! empty($existing_field_array_from_slug[$oneDefaultFieldKey][$optionKey]["value"]) ) {
 
-										if (!isset( $existing_field_array_from_slug[$oneDefaultFieldKey][$optionKey]["deleted"]) ) {
+										if ( ! isset( $existing_field_array_from_slug[$oneDefaultFieldKey][$optionKey]["deleted"]) ) {
 											$existing_field_array_from_slug[$oneDefaultFieldKey][$optionKey]["deleted"] = 0;
 										}
 
@@ -747,7 +755,6 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 						if ( ! isset( $existing_field_array_from_slug[$oneDefaultFieldKey] ) ) {
 							$existing_field_array_from_slug[$oneDefaultFieldKey] = $oneDefaultFieldValue;
 						}
-
 
 					} // foreach field default
 
