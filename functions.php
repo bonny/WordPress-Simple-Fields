@@ -79,7 +79,6 @@ function simple_fields_get_post_value($post_id, $field_name_or_id, $single = tru
 					}
 				}
 
-				// xxx make sure extended return value works here too
 				// check for settings saved for the field (in gui or through register_field_group)
 				$parsed_options_for_this_field = array();
 				$field_options_key = "type_".$one_field["type"]."_options";
@@ -667,7 +666,6 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 					// add general field options
 					// each field has its own array here, with field key as key
 					// old format with type_<field name>_options was/is kinda crappy
-					// @TODO: migrate old settings to new
 					"options" => array(), 
 			);
 
@@ -724,7 +722,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 
 									// Only continue if key is numeric
 									// This code will generate the  "dropdown_num_1"-stuff
-									// and the number is based on the index
+									// and the number is based on the index (the array key)
 									if ( is_numeric($optionKey) ) {
 
 										if ("radiobuttons" === $options_type) $options_type = "radiobutton";
@@ -747,7 +745,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 
 								} // foreach
 
-							} // if empty options type
+							} // if not empty options type
 
 						} // if isset
 
@@ -832,12 +830,119 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 						unset( $existing_field_array_from_slug["options"][ $one_key_to_remove ] );
 					}
 
-					// If this is any of the core fields types then save back options to type_<fieldtype>_options
-					// Can remove that reference completly because it's used at so many places
+					// Fix dropdown and radiobuttons values for the array in with the "options" key
+					// If field type is dropdown or radiobuttons then convert new format to old format,
+					// because old format is used internally in many places
+					if ( $one_new_field["type"] === "dropdown" || $one_new_field["type"] === "radiobuttons" ) {
+
+						if ( isset( $one_new_field["options"]["values"] ) && is_array( $one_new_field["options"]["values"] ) ) {
+							
+							$new_values = array();
+							$did_set_checked_by_default = FALSE;
+							foreach ( $one_new_field["options"]["values"] as $one_dropdown_or_radio_value ) {
+								
+								// Each value must have num and value
+								if ( ! isset( $one_dropdown_or_radio_value["value"] ) || ! isset( $one_dropdown_or_radio_value["value"] ) ) continue;
+
+								$new_values_key = ( "radiobuttons" === $one_new_field["type"] ) ? "radiobutton_num_"  : "dropdown_num_";
+								$new_values_key .= (int) $one_dropdown_or_radio_value["num"];
+								$new_values[ $new_values_key ] = array(
+									"value" => $one_dropdown_or_radio_value["value"],
+									"deleted" => isset( $one_dropdown_or_radio_value["deleted"] ) ? (bool) $one_dropdown_or_radio_value["deleted"] : FALSE
+								);
+
+								// "checked_by_default_num" => "radiobutton_num_2"
+								if ( isset( $one_dropdown_or_radio_value["checked"] ) && TRUE === $one_dropdown_or_radio_value["checked"] ) {
+									$new_values["checked_by_default_num"] = $new_values_key;
+									$did_set_checked_by_default = TRUE;
+								}
+
+							} // foreach
+
+							if ( FALSE === $did_set_checked_by_default ) $new_values["checked_by_default_num"] = NULL;
+
+							// Unset all existing radiobuttons or dropdowns
+							// This will remove dropdowns/radiobuttons that are not in the new field setup, 
+							// and it will make sure that the order is the new order
+							foreach ( $arr_merged_options as $one_key => $one_val ) {
+								// radiobutton_num_10 dropdown_num_2
+								if ( strpos( $one_key, "dropdown_num_" ) !== FALSE || strpos( $one_key, "radiobutton_num_" ) !== FALSE ) {
+									unset( $arr_merged_options[ $one_key ] );
+								}
+							}
+
+							$arr_merged_options = array_merge($arr_merged_options, $new_values);
+#echo 111; sf_d($arr_merged_options);
+
+						} // if
+					
+					} // if
+
+/*
+is like:
+[options] => Array
+    (
+        [dropdown] => Array
+            (
+                [enable_extended_return_values] => 1
+                [enable_multiple] => 1
+                [values] => Array
+                    (
+                        [0] => Array
+                            (
+                                [num] => 0
+                                [value] => Yes New
+                                [deleted] => 1
+                                [possibly_other_stuff_in_future] => yes
+                            )
+
+                        [1] => Array
+                            (
+                                [num] => 1
+                                [value] => No New
+                            )
+
+                        [2] => Array
+                            (
+                                [num] => 2
+                                [value] => Maybe New
+                            )
+
+                    )
+
+            )
+
+must be like:
+[type_dropdown_options] => Array
+    (
+        [dropdown_num_0] => Array
+            (
+                [value] => Yes
+                [deleted] => 1
+            )
+
+        [dropdown_num_1] => Array
+            (
+                [value] => No
+                [deleted] => 0
+            )
+
+        [dropdown_num_2] => Array
+            (
+                [value] => Maybe
+                [deleted] => 0
+            )
+
+        [enable_extended_return_values] => 1
+        [0] => enable_multiple
+        [enable_multiple] => 1
+    )
+*/
+					// If this is any of the core fields types then save back all options to type_<fieldtype>_options
+					// Can't remove that reference completely because it is used at so many places
 					if ( isset( $one_new_field["type"] ) &&  $sf->field_type_is_core( $one_new_field["type"] ) ) {
 						$existing_field_array_from_slug[ "type_" . $one_new_field["type"] . "_options"] = $arr_merged_options;
 					}
-
 					// end move options in place
 				
 				} // if field exists among fields by slugs
