@@ -833,7 +833,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 					// Fix dropdown and radiobuttons values for the array in with the "options" key
 					// If field type is dropdown or radiobuttons then convert new format to old format,
 					// because old format is used internally in many places
-					if ( $one_new_field["type"] === "dropdown" || $one_new_field["type"] === "radiobuttons" ) {
+					if ( isset( $one_new_field["type"] ) && ( $one_new_field["type"] === "dropdown" || $one_new_field["type"] === "radiobuttons" ) ) {
 
 						if ( isset( $one_new_field["options"]["values"] ) && is_array( $one_new_field["options"]["values"] ) ) {
 							
