@@ -1826,7 +1826,7 @@ class simple_fields {
 	 */
 	function media_send_to_editor($html, $id) {
 	
-		parse_str($_POST["_wp_http_referer"], $arr_postinfo);
+		parse_str( isset( $_POST["_wp_http_referer"] ) ? $_POST["_wp_http_referer"] : "" , $arr_postinfo);
 	
 		// only act if file browser is initiated by simple fields
 		if (isset($arr_postinfo["simple_fields_action"]) && $arr_postinfo["simple_fields_action"] == "select_file") {
