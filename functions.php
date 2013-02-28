@@ -1287,6 +1287,10 @@ function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $n
 	// $selected_connector = $sf->get_selected_connector_for_post($post);
 	$default_connector_to_use = $sf->get_default_connector_for_post_type($post->post_type);
 
+	/*echo "saved_connector:"; sf_d($saved_connector);
+	echo "default_connector_to_use:"; sf_d($default_connector_to_use);
+	exit;*/
+
 	// if no saved connector, set it to $post_connector.
 	// if no $post_connector, set it to default connector to use
 	$set_post_connector_to = null;
@@ -1304,7 +1308,10 @@ function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $n
 
 	// Loop through the field groups that this post connector has and locate the field_slug we are looking for
 	$post_connector_info = simple_fields_get_all_fields_and_values_for_post($post_id);
+	// echo "post_connector_info: "; sf_d($post_connector_info); exit;
 	foreach ($post_connector_info["field_groups"] as $one_field_group) {
+
+		$field_group_id = $one_field_group["id"];
 
 		// check number of added field groups
 		$num_added_field_groups = 0; 
@@ -1321,8 +1328,6 @@ function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $n
 			if ($field_slug === $one_field_group_field["slug"]) {
 
 				// Found field with selected slug
-
-				$field_group_id = $one_field_group["id"];
 				$field_id = $one_field_group_field["id"];
 
 				if (!empty($new_numInSet)) {
