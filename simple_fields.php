@@ -83,6 +83,7 @@ class simple_fields {
 		$this->registered_field_types = array();
 
 		// Actions and filters
+
 		add_action( 'admin_init', array($this, 'admin_init') );
 		add_action( 'admin_init', array($this, 'check_upgrade_stuff') );
 		add_action( 'admin_enqueue_scripts', array($this, 'admin_enqueue_scripts') );
@@ -96,6 +97,7 @@ class simple_fields {
 		add_action( 'save_post', array($this, 'save_postdata') );
 		add_action( 'plugins_loaded', array($this, 'plugins_loaded') );
 		add_action( 'init', array($this, "maybe_add_debug_info") ); 
+
 
 		// Hacks for media select dialog
 		add_filter( 'media_send_to_editor', array($this, 'media_send_to_editor'), 15, 2 );
@@ -853,7 +855,7 @@ class simple_fields {
 							global $post_ID;
 							if (intval($post_ID) == 0) {
 								if (intval($_REQUEST['post_id']) > 0) {
-									$post_ID = intval($_REQUEST['post']);
+									$post_ID = intval($_REQUEST['post_id']);
 								} elseif (intval($_REQUEST['post']) > 0) {
 									$post_ID = intval($_REQUEST['post']);
 								}
@@ -1231,7 +1233,7 @@ class simple_fields {
 		
 		global $sf;
 	 
-		$field_groups = $this->get_field_groups();
+		$field_groups = $this->get_field_groups( false );
 		$current_field_group = $field_groups[$post_connector_field_id];
 
 		// check for prev. saved fieldgroups
@@ -1272,9 +1274,9 @@ class simple_fields {
 			// Generate headline for the table view
 			#sf_d($current_field_group);
 			if ("table" === $default_gui_view) {
-				echo "<div class='sf-cf'>";
+				echo "<div class='sf-cf simple-fields-metabox-field-group-view-table-headline-wrap'>";
 				foreach ( $current_field_group["fields"] as $field_id => $field_arr ) {
-					#sf_d($field_arr);
+					// sf_d($field_arr);
 					printf('<div class="simple-fields-metabox-field-group-view-table-headline simple-fields-metabox-field-group-view-table-headline-count-%1$d">', $current_field_group["fields_count"]);
 					printf('<div class="simple-fields-field-group-view-table-headline-name">%1$s</div>', $field_arr["name"]);
 					printf('<div class="simple-fields-field-group-view-table-headline-description">%1$s</div>', $field_arr["description"]);
@@ -1445,9 +1447,10 @@ class simple_fields {
 	/**
 	 * Returns all defined field groups
 	 *
+	 * @param $include_deleted should deletd fieldgroups and fields also be included? defaults to true for backwards compat
 	 * @return array
 	 */
-	function get_field_groups() {
+	function get_field_groups($include_deleted = true) {
 		
 		$field_groups = wp_cache_get( 'simple_fields_'.$this->ns_key.'_groups', 'simple_fields' );
 
@@ -1533,6 +1536,30 @@ class simple_fields {
 			wp_cache_set( 'simple_fields_'.$this->ns_key.'_groups', $field_groups, 'simple_fields' );
 			
 		} // cache false
+
+		// Maybe remove deleted groups and fields
+		if ( false === $include_deleted) {
+
+			foreach ( $field_groups as $one_field_group_key => $one_field_group ) {
+
+				if ( $one_field_group["deleted"] ) {
+					unset( $field_groups[ $one_field_group_key ] );
+					continue;
+				}
+				
+				// Check fields now
+				// Note: field keys are not in numerical order, they are in "visually order"
+				foreach ( $field_groups[ $one_field_group_key ]["fields"] as $one_field_key => $one_field_value ) {
+					if ( $one_field_value["deleted"] ) {
+						// Remove both field by id and field by slug
+						unset( $field_groups[ $one_field_group_key ]["fields"][ $one_field_key ] );
+						unset( $field_groups[ $one_field_group_key ]["fields_by_slug"][ $one_field_value["slug"] ] );
+					}
+				}
+
+			} // foreach
+
+		} // if don't include deleted
 
 		$field_groups = apply_filters( "simple_fields_get_field_groups", $field_groups );
 		return $field_groups;

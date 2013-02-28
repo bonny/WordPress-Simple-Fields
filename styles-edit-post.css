@@ -429,12 +429,16 @@ ul.simple-fields-file-browser-list {
 	margin-bottom: 25px;
 }
 */
-.simple-fields-metabox-field-group-view-table-headline {
-	float: left;
+
+.simple-fields-metabox-field-group-view-table-headline-wrap {
 	border-bottom: 1px solid #ccc;
+	padding-top: 0.5em;
 	margin-bottom: .75em;
 	padding-bottom: .75em;
-	line-height: 1;
+}
+
+.simple-fields-metabox-field-group-view-table-headline {
+	float: left;
 }
 
 	.simple-fields-field-group-view-table-headline-name {
@@ -447,7 +451,6 @@ ul.simple-fields-file-browser-list {
 	.simple-fields-field-group-view-table-headline-description {
 		font-style: italic;
 		color: #666;
-		min-height: 1em;
 	}
 
 	.simple-fields-meta-box-field-group-wrapper-view-table .simple-fields-metabox-field-add-top {
