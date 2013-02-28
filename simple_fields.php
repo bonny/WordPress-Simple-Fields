@@ -923,7 +923,7 @@ class simple_fields {
 	
 					} elseif ("taxonomy" == $field["type"]) {
 						
-						$arr_taxonomies = get_taxonomies(array(), "objects");					
+						$arr_taxonomies = get_taxonomies(array(), "objects");
 						$enabled_taxonomies = (array) @$field["type_taxonomy_options"]["enabled_taxonomies"];
 						
 						//echo "<pre>";print_r($enabled_taxonomies );echo "</pre>";
@@ -957,6 +957,10 @@ class simple_fields {
 						$enabled_taxonomy = @$field["type_taxonomyterm_options"]["enabled_taxonomy"];
 						$additional_arguments = @$field["type_taxonomyterm_options"]["additional_arguments"];
 	
+						// Check that selected taxonomy exists
+						$enabled_taxonomy_obj = get_taxonomy ( $enabled_taxonomy );
+
+
 						// hämta alla terms som finns för taxonomy $enabled_taxonomy
 						// @todo: kunna skicka in args här, t.ex. för orderby
 						echo "<div class='simple-fields-metabox-field-first'>";
@@ -965,23 +969,33 @@ class simple_fields {
 						echo "</div>";
 
 						echo "<div class='simple-fields-metabox-field-second'>";
-	
 
-						$arr_selected_cats = (array) $saved_value;
+						if ( $enabled_taxonomy_obj === false ) {
+
+							echo __("The selected Taxonomy Term for this field type does not exist", "simple-fields");
+
+						} else {
+
+							$arr_selected_cats = (array) $saved_value;
+							
+							$walker = new Simple_Fields_Walker_Category_Checklist();
+							$args = array(
+								"taxonomy" => $enabled_taxonomy,
+								"selected_cats" => $arr_selected_cats,
+								"walker" => $walker,
+								"sf_field_name" => $field_name // walker is ot able to get this one, therefor global
+							);
+
+							// Add additional argument to args array
+							$args = wp_parse_args( $additional_arguments, $args );
+							
+							global $simple_fields_taxonomyterm_walker_field_name; // sorry for global...
+							$simple_fields_taxonomyterm_walker_field_name = $field_name;
+							echo "<ul class='simple-fields-metabox-field-taxonomymeta-terms'>";
+							wp_terms_checklist(NULL, $args);
+							echo "</ul>";
 						
-						$walker = new Simple_Fields_Walker_Category_Checklist();
-						$args = array(
-							"taxonomy" => $enabled_taxonomy,
-							"selected_cats" => $arr_selected_cats,
-							"walker" => $walker,
-							"sf_field_name" => $field_name // walker is ot able to get this one, therefor global
-						);
-						global $simple_fields_taxonomyterm_walker_field_name; // sorry for global…!
-						$simple_fields_taxonomyterm_walker_field_name = $field_name;
-						echo "<ul class='simple-fields-metabox-field-taxonomymeta-terms'>";
-						wp_terms_checklist(NULL, $args);
-						echo "</ul>";
-						
+						}
 
 						echo "</div>";
 						
