@@ -558,6 +558,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 
 	}
 
+
 	// If a new field group then new field group should get the id of the highest field group id + 1
 	// If this is the very first field group created then it gets num 1
 	if ($is_new_field_group) {
@@ -604,16 +605,48 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 
 		// Add the field id of each field to fields array, since the keys get lost when merging below
 		$field_group_defaults["fields_by_slug"] = array();
+		if ( is_array( $field_group_defaults["fields"] ) && sizeof( $field_group_defaults["fields"] > 0 ) ) {
 
-		if (is_array($field_group_defaults["fields"]) && sizeof($field_group_defaults["fields"] > 0) ) {
-			foreach ($field_group_defaults["fields"] as $field_id => & $field_array) {
+			// Check for deleted fields
+			// Check for fields that exists among the saved values, but that are not in the new array of fields = that field should be considered deleted
+			// a slug in $field_group_defaults["fields"] does not exist in $new_field_group["fields"] = mark that field as deleted
+			foreach ( $field_group_defaults["fields"] as $one_field_key => $one_field ) {
+				
+				if ( ! isset( $one_field["slug"] ) || empty( $one_field["slug"] ) ) continue;
+				if ( ! isset( $new_field_group["fields"] ) || ! is_array( $new_field_group["fields"] ) ) continue;
+
+				$old_field_was_found_among_new_fields = false;
+
+				foreach ( $new_field_group["fields"] as $one_new_field ) {
+
+					if ( isset( $one_new_field["slug"] ) && ! empty( $one_new_field["slug"] ) && $one_new_field["slug"] === $one_field["slug"] ) {
+						$old_field_was_found_among_new_fields = true;
+						break;
+					} 
+				}
+
+				if ( ! $old_field_was_found_among_new_fields) {
+					// echo "<br>not found, considered deleted:"; sf_d($one_field);
+					// unset( $field_group_defaults["fields"][ $one_field_key ] );
+					$field_group_defaults["fields"][ $one_field_key ]["deleted"] = true;
+				}
+
+			} // foreach
+
+			// Create an array with all fields by slug, for faster/easier access
+			foreach ( $field_group_defaults["fields"] as $field_id => & $field_array ) {
+
 				$field_array["id"] = $field_id;
 				$field_slug = isset( $field_array["slug"] ) ? $field_array["slug"] : "field_$field_id";
 				$field_group_defaults["fields_by_slug"][$field_slug] = $field_array;
-			}
+
+			} // foreach
+
 		}
 
+
 	}
+
 	// Find the highest existing id. New fields will get this id plus one
 	// Note that the highest ID is not the last, since the order of the keys is in custom order, not ascending
 	if ( isset($field_groups[$field_group_id]["fields"]) && is_array($field_groups[$field_group_id]["fields"]) && sizeof($field_groups[$field_group_id]["fields"]) > 0) {
