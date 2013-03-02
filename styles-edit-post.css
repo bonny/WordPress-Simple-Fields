@@ -367,14 +367,16 @@ ul.simple-fields-file-browser-list {
 
 
 
-/* test style for thumbnail repeatable view */
+/* styles for thumbnail repeatable view */
 .simple-fields-metabox-field-group-fields-view-table {
 
 }
 
 .simple-fields-metabox-field-group-fields-view-table li {
-	border: 0 !important;
-	background-image: none !important;
+	border-top: 1px solid #eee !important;
+	/*background-image: none !important;*/
+	padding-top: 15px !important;
+	padding-bottom: 15px !important;
 }
 
 .simple-fields-metabox-field-group-fields-view-table .simple-fields-metabox-field {
