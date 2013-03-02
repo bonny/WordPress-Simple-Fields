@@ -61,11 +61,11 @@ ul.simple-fields-metabox-field-group-fields-repeatable li {
 	border-top: 2px solid #eee;
 	padding: .5em 1.5em;
 	margin: 0 0 0 0;
-	opacity: .9;
+        /*opacity: .9;*/
 }
 ul.simple-fields-metabox-field-group-fields-repeatable li:hover {
 	background-color: #fffcf1;
-	opacity: 1;
+        /*opacity: 1;*/
 }
 
 
