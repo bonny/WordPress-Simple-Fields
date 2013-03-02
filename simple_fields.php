@@ -1037,9 +1037,9 @@ class simple_fields {
 						echo "<input type='hidden' class='simple-fields-field-type-post-postID' name='$field_name' id='$field_unique_id' value='$saved_value_int' />";
 						
 						// output additional arguments for this post field
-						echo "<input type='hidden' name='additional_arguments' id='additional_arguments' value='".$type_post_options['additional_arguments']."' />";
+                                                $type_post_options_additional_arguments = isset( $type_post_options['additional_arguments'] ) ? $type_post_options['additional_arguments'] : "";
+                                                echo "<input type='hidden' name='additional_arguments' id='additional_arguments' value='" . $type_post_options_additional_arguments . "' />";
 						
-
 						echo "</div>";
 
 						echo "</div>";
@@ -2861,7 +2861,7 @@ class simple_fields {
 					
 					$post_connector_in_edit = $post_connectors[$connector_id];
 				}
-	
+
 				?>
 				<h3><?php _e('Post Connector details', 'simple-fields') ?></h3>
 	
@@ -2910,6 +2910,7 @@ class simple_fields {
 								<ul id="simple-fields-post-connector-added-fields">
 									<?php
 									foreach ($post_connector_in_edit["field_groups"] as $one_post_connector_added_field) {
+
 										if ($one_post_connector_added_field["deleted"]) { continue; }
 										
 										#d($one_post_connector_added_field);
