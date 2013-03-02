@@ -12,14 +12,14 @@ var simple_fields_metabox_field_file_select_input_selectedID = null,
 
 // Global module for Simple Fields, using the reveal module pattern
 var simple_fields = (function() {
-	
+
 	var
 		i_am_simple_fields = true;
-	
+
 	return {
-		
+
 	};
-	
+
 })();
 
 // Self invoking function for our JS stuff
@@ -43,7 +43,7 @@ var simple_fields = (function() {
 		});
 
 	}
-	
+
 	function simple_fields_metabox_tinymce_attach() {
 		if (typeof( tinyMCE ) == "object" && typeof( tinyMCEPreInit ) == "object" ) {
 			var tiny_init = {};
@@ -72,7 +72,7 @@ var simple_fields = (function() {
 						try { new_qt = new QTags( tinyMCEPreInit.qtInit[id] ); } catch(e){}
 						QTags._buttonsInit();
 					}
-					
+
 					if (!tinyMCEPreInit.mceInit[id]) {
 						tiny_init = tinyMCEPreInit.mceInit[id] = jQuery.extend({}, tinyMCEPreInit.mceInit['content']);
 					} else {
@@ -83,7 +83,7 @@ var simple_fields = (function() {
 					tiny_init.theme_advanced_resizing = true;
 					new_ed = new tinymce.Editor(id, tiny_init);
 					new_ed.render();
-					
+
 					visual_tab = jQuery("#"+id+"-tmce");
 					visual_tab.removeAttr('onclick').click(function() {
 						var id = this.id.substr(0, (this.id.length-5));
@@ -96,7 +96,7 @@ var simple_fields = (function() {
 						dom.addClass(wrap_id, 'tmce-active');
 						dom.removeClass(wrap_id, 'html-active');
 					});
-					
+
 					html_tab = jQuery("#"+id+"-html");
 					html_tab.removeAttr('onclick').click(function() {
 						var id = this.id.substr(0, (this.id.length-5));
@@ -619,35 +619,71 @@ var simple_fields = (function() {
 			return false;
 		});
 
+		// array with the ids of the textareas that are converted to tiny editors
+		var arr_tiny_mce_buffers;
+
 		// Edit post, make repeatable field sortable
 		$("ul.simple-fields-metabox-field-group-fields-repeatable").sortable({
 			distance: 10,
 			axis: 'y',
 			handle: ".simple-fields-metabox-field-group-handle",
 			start: function(event, ui) {
-				ed_move_id = $( ui.item.get(0) ).contents().find('textarea').filter(':first').attr('id');
-				if (ed_move_id && ed_move_id.length > 0) {
-					ed_move_buffer = $('#' + ed_move_id + '_ifr').contents().find('body').html();
-					tinyMCE.execCommand('mceRemoveControl', false, ed_move_id);
-				}
+
+				// when sorting starts we must do things with the tinymce editors, or content will get lost
+
+				// the item being moved
+				var li = $( ui.item.get(0) );
+
+				// get all the textareas that are wysiwyg-editors
+				var tinymce_textareas = li.find(".simple-fields-metabox-field-textarea-tinymce-wrapper textarea.simple-fields-metabox-field-textarea-tinymce");
+
+				arr_tiny_mce_buffers = [];
+
+				// Add contents of each tiny editor to buffer
+				tinymce_textareas.each(function() {
+
+					var elm = $(this),
+						elm_id = elm.attr("id");
+
+					if ( elm_id ) {
+
+						arr_tiny_mce_buffers.push ({
+							"id": elm_id,
+							"html": $('#' + elm_id + '_ifr').contents().find('body').html()
+						});
+
+						// Remove editor instance
+						tinyMCE.execCommand('mceRemoveControl', false, elm_id);
+
+
+					}
+				});
 
 			},
 			stop: function(event, ui) {
-				if (ed_move_id && ed_move_id.length > 0) {
-					tinyMCE.execCommand('mceAddControl', false, ed_move_id);
-					$('#' + ed_move_id + '_ifr').contents().find('body').html(ed_move_buffer);
-					tinyMCE.get(ed_move_id).execCommand('mceRepaint');
+
+				// when sorting stops we restore values to tiny mce editors
+				if (arr_tiny_mce_buffers && arr_tiny_mce_buffers.length) {
+
+					$.each(arr_tiny_mce_buffers, function(i, val) {
+
+						tinyMCE.execCommand('mceAddControl', false, val.id);
+						$('#' + val.id + '_ifr').contents().find('body').html(val.html);
+						tinyMCE.get(val.id).execCommand('mceRepaint');
+
+					});
+
 				}
+
 			}
 		});
 
-			
 		// Media browser: make sure search and filter works by adding hidden inputs
 		// would have been best to do this in PHP, but I can't find any filter for it
 		if ( window.pagenow && window.pagenow == "media-upload-popup" && window.location.search.match(/simple_fields_dummy=/) ) {
 
 			var frm_filter = $("form#filter");
-			
+
 			// http://localhost/wp-admin/media-upload.php?simple_fields_dummy=1&simple_fields_action=select_file&simple_fields_file_field_unique_id=simple_fields_fieldgroups_12_1_0&post_id=-1&
 			// get these
 			// simple_fields_dummy=1
@@ -657,7 +693,7 @@ var simple_fields = (function() {
 				"simple_fields_dummy": 1,
 				"simple_fields_action": "select_file"
 			};
-			
+
 			var match = window.location.search.match(/simple_fields_file_field_unique_id=([\w]+)/);
 			params.simple_fields_file_field_unique_id = match[1];
 			
