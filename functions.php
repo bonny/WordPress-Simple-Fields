@@ -878,7 +878,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 								if ( ! isset( $one_dropdown_or_radio_value["value"] ) || ! isset( $one_dropdown_or_radio_value["value"] ) ) continue;
 
 								$new_values_key = ( "radiobuttons" === $one_new_field["type"] ) ? "radiobutton_num_"  : "dropdown_num_";
-								$new_values_key .= (int) $one_dropdown_or_radio_value["num"];
+								$new_values_key .=  isset( $one_dropdown_or_radio_value["num"] ) ? (int) $one_dropdown_or_radio_value["num"] : 0;
 								$new_values[ $new_values_key ] = array(
 									"value" => $one_dropdown_or_radio_value["value"],
 									"deleted" => isset( $one_dropdown_or_radio_value["deleted"] ) ? (bool) $one_dropdown_or_radio_value["deleted"] : FALSE

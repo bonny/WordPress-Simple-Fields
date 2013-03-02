@@ -3516,7 +3516,12 @@ class simple_fields {
 		$output_all = "";
 		$field_count = 0;
 		
-		$post_connector_with_values = simple_fields_get_all_fields_and_values_for_post(get_the_ID(), "include_deleted=0");
+		if ( ! isset( $GLOBALS['post'] ) ) {
+			return $the_content;
+		}
+		
+		$post_id = get_the_ID();
+		$post_connector_with_values = simple_fields_get_all_fields_and_values_for_post($post_id, "include_deleted=0");
 		if ($post_connector_with_values) {
 
 			foreach ($post_connector_with_values["field_groups"] as $one_field_group) {
