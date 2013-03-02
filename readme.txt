@@ -236,6 +236,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 == Changelog ==
 
 #### Version 1.1.x
+- Fixed bug with repeatable fields containing tiny mce-editors (textarea with wysiwyg/html-capabilities). Fixes https://github.com/bonny/WordPress-Simple-Fields/issues/73.
 - Added a new view for repeatable field groups on the edit post screen: table. It's a much more compact view with a greater overview of the added field. Mostly suitable for field groups with between 1 and 10 fields.
 - Added debug panel to debug bar (if installed). Makes it possible to preview stored values when inside WordPress admin and editing posts. Will automatically be enabled when debug bar is installed and activated.
 - Changed debug box to stop using jQuery, so it should work with more themes and in more situations where jQuery may not be available
