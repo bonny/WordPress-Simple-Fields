@@ -182,7 +182,7 @@ var simple_fields = (function() {
 	});
 	
 	// Field group edit, show delete icon for field
-	$(document).on("hover", "li.simple-fields-field-group-one-field", function(e) {
+	$(document).on("mouseenter mouseleave", "li.simple-fields-field-group-one-field", function(e) {
 		var $t = $(this);
 		if ("mouseenter" == e.type) {
 			$t.find("div.delete").show();
@@ -227,7 +227,7 @@ var simple_fields = (function() {
 		return false;
 	});
 	// Radiobutton: show delete link
-	$(document).on("hover", "ul.simple-fields-field-type-options-radiobutton-values-added li", function(e) {
+	$(document).on("mouseenter mouseleave", "ul.simple-fields-field-type-options-radiobutton-values-added li", function(e) {
 		var $t = $(this);
 		if ("mouseenter" == e.type) {
 			$t.find(".simple-fields-field-type-options-radiobutton-delete").show();
@@ -256,7 +256,7 @@ var simple_fields = (function() {
 		return false;
 	});
 
-	$(document).on("hover", "ul.simple-fields-field-type-options-dropdown-values-added li", function(e) {
+	$(document).on("mouseenter mouseleave", "ul.simple-fields-field-type-options-dropdown-values-added li", function(e) {
 		var $t = $(this);
 		if ("mouseenter" == e.type) {
 			$t.find(".simple-fields-field-type-options-dropdown-delete").show();
@@ -301,7 +301,7 @@ var simple_fields = (function() {
 		$.post(ajaxurl, data, function(response) {
 
 			$ul = $wrapper.find("ul.simple-fields-metabox-field-group-fields");
-			$response = $(response);
+			$response = $( response.replace(/^\s+/, '') );
 			$response.hide();
 			if (is_link_at_bottom) {
 				$ul.append($response);
@@ -606,7 +606,7 @@ var simple_fields = (function() {
 		});
 
 		// Edit post connector, show delete link on mouse over
-		$(document).on("hover", "#simple-fields-post-connector-added-fields li", function(e) {
+		$(document).on("mouseenter mouseleave", "#simple-fields-post-connector-added-fields li", function(e) {
 			$t = $(this);
 			if ("mouseenter" == e.type) {
 				$t.find(".simple-fields-post-connector-addded-fields-delete").show();
