@@ -1517,6 +1517,10 @@ class simple_fields {
 					$field_groups[$i]["key"] = $field_groups[$i]["slug"];
 				} else if (isset($field_groups[$i]["key"]) && $field_groups[$i]["key"]) {
 					$field_groups[$i]["slug"] = $field_groups[$i]["key"];
+				} else {
+					// no slug set at all (for the pre-slug installs that are upgraded)
+					$field_groups[$i]["slug"] = "";
+					$field_groups[$i]["key"] = "";
 				}
 	
 				// Calculate number of active fields in this field group

@@ -159,7 +159,7 @@ function simple_fields_get_post_group_values($post_id, $field_group_name_or_id, 
 			$arr_return = array();
 			foreach ($one_field_group["fields"] as $one_field) {
 
-				$saved_values = $one_field["saved_values"];
+				$saved_values = isset( $one_field["saved_values"] ) ? $one_field["saved_values"] : null;
 
 				if (is_null($saved_values)) {
 					// no saved values. just continue?
@@ -186,7 +186,7 @@ function simple_fields_get_post_group_values($post_id, $field_group_name_or_id, 
 				}
 			}
 
-			$set_count = sizeof($one_field["saved_values"]);
+			$set_count = isset( $one_field["saved_values"] ) ? sizeof( $one_field["saved_values"] ) : 0;
 
 			$arr_return2 = array();
 			for ($i=0; $i<$set_count; $i++) {
