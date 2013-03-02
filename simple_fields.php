@@ -2757,7 +2757,8 @@ class simple_fields {
 					$field_groups[$field_group_id]["name"]        = stripslashes($_POST["field_group_name"]);
 					$field_groups[$field_group_id]["description"] = stripslashes($_POST["field_group_description"]);
 					$field_groups[$field_group_id]["slug"]        = stripslashes($_POST["field_group_slug"]);
-					$field_groups[$field_group_id]["repeatable"]  = (bool) (isset($_POST["field_group_repeatable"]));					
+					$field_groups[$field_group_id]["repeatable"]  = (bool) (isset($_POST["field_group_repeatable"]));
+					$field_groups[$field_group_id]["gui_view"]    = isset( $_POST["field_group_gui_view"] )  ? "table" : "list";
 					$field_groups[$field_group_id]["fields"]      = (array) stripslashes_deep($_POST["field"]);
 
 					// Since 0.6 we really want all things to have slugs, so add one if it's not set
@@ -3088,10 +3089,25 @@ class simple_fields {
 								<?php echo __("Options", 'simple-fields') ?>
 							</th>
 							<td>
-								<label for="field_group_repeatable">
-									<input type="checkbox" <?php echo ($field_group_in_edit["repeatable"] == true) ? "checked='checked'" : ""; ?> value="1" id="field_group_repeatable" name="field_group_repeatable" />
-									<?php _e('Repeatable', 'simple-fields') ?>
-								</label>								
+								
+								<p>
+									<label for="field_group_repeatable">
+										<input type="checkbox" <?php echo ($field_group_in_edit["repeatable"] == true) ? "checked='checked'" : ""; ?> value="1" id="field_group_repeatable" name="field_group_repeatable" />
+										<?php _e('Repeatable', 'simple-fields') ?>
+										<br>
+										<span class="description"><?php echo __("With repeatable checked you can add the fields below to a post multiple times. Great for image slideshow, attachments, and similar.", 'simple-fields') ?></span>
+									</label>
+								</p>
+
+								<p>
+									<label for="field_group_gui_view">
+										<input type="checkbox" <?php echo ( isset( $field_group_in_edit["gui_view"] ) && $field_group_in_edit["gui_view"] === "table") ? "checked='checked'" : ""; ?> value="1" id="field_group_gui_view" name="field_group_gui_view" />
+										<?php _e('Use table view', 'simple-fields') ?>
+										<br>
+										<span class="description"><?php echo __("List fields in a more compact and overviewable table view. Works best when you use just a few fields.", 'simple-fields') ?></span>
+									</label>
+								</p>
+
 							</td>
 						</tr>
 						<tr>
