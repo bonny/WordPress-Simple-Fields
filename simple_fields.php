@@ -1472,7 +1472,7 @@ class simple_fields {
 			
 			$field_groups = get_option("simple_fields_groups");
 			
-			if ($field_groups === FALSE) $field_groups = array();
+			if ( $field_groups === FALSE || ! is_array( $field_groups ) ) $field_groups = array();
 
 			// Calculate the number of active fields
 			// And some other things
@@ -2970,7 +2970,7 @@ class simple_fields {
 								<table>
 									<?php
 									global $wp_post_types;
-									$arr_post_types_to_ignore = array("attachment", "revision", "nav_menu_item");
+									$arr_post_types_to_ignore = array("revision", "nav_menu_item");
 									foreach ($wp_post_types as $one_post_type) {
 										if (!in_array($one_post_type->name, $arr_post_types_to_ignore)) {
 											?>
