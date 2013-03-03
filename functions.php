@@ -803,13 +803,32 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 					// what about for example "type_post_options" that may already exist?
 					// if they exist, move to merge with options, then merge with options, before new values are merged
 					// do that first since those values are the oldest (pre-upgrade pre-save values)
+/*
+sf_d( isset( $existing_field_array_from_slug[ "type_". $existing_field_array_from_slug["type"] . "_options" ] ) );
+sf_d( $existing_field_array_from_slug[ "type_". $existing_field_array_from_slug["type"] . "_options" ] );
+This array will alsways exist after we've added a field
+Array
+(
+    [0] => Array
+        (
+            [num] => 1
+            [value] => Stor
+        )
+
+)
+*/
+#echo "<br>before:<br>";
+#sf_d($arr_merged_options);
 					if ( isset( $existing_field_array_from_slug[ "type_". $existing_field_array_from_slug["type"] . "_options" ] ) ) {
-						$arr_merged_options = array_merge($existing_field_array_from_slug[ "type_". $existing_field_array_from_slug["type"] . "_options" ], $arr_merged_options);
+# denna ökar antalet dropdown values vid varje körning
+						$arr_merged_options = array_merge( $existing_field_array_from_slug[ "type_". $existing_field_array_from_slug["type"] . "_options" ], $arr_merged_options );
 					}
+#echo "<br>after:<br>";
+#sf_d($arr_merged_options);
 
 					// Merge in new values, overwriting existing, but also letting existing keys that have no new value be
+# denna ökar antalet dropdown values vid varje körning
 					$arr_merged_options = array_merge( $existing_field_array_from_slug["options"][ $existing_field_array_from_slug["type"] ], $arr_merged_options );
-					
 					$existing_field_array_from_slug["options"][ $existing_field_array_from_slug["type"] ] = $arr_merged_options;
 
 					/*
@@ -853,6 +872,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 					// if someone did enter values like this:
 					// options[field_type] => array(options..)
 					// then don't break that by removing
+
 					if ( isset( $one_new_field["type"] ) && ( $key_to_remove_pos = array_search( $one_new_field["type"], $new_options_keys ) ) !== FALSE ) {
 						unset( $new_options_keys[ $key_to_remove_pos ] );
 						unset( $existing_field_array_from_slug["options"][ $one_new_field["type"] ][ $one_new_field["type"] ] );
@@ -873,7 +893,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 							$new_values = array();
 							$did_set_checked_by_default = FALSE;
 							foreach ( $one_new_field["options"]["values"] as $one_dropdown_or_radio_value ) {
-								
+
 								// Each value must have num and value
 								if ( ! isset( $one_dropdown_or_radio_value["value"] ) || ! isset( $one_dropdown_or_radio_value["value"] ) ) continue;
 
@@ -974,7 +994,24 @@ must be like:
 					// If this is any of the core fields types then save back all options to type_<fieldtype>_options
 					// Can't remove that reference completely because it is used at so many places
 					if ( isset( $one_new_field["type"] ) &&  $sf->field_type_is_core( $one_new_field["type"] ) ) {
-						$existing_field_array_from_slug[ "type_" . $one_new_field["type"] . "_options"] = $arr_merged_options;
+
+						$arr_type_options = $arr_merged_options;
+						// Oh, and convert back to the old funky _num_ format for dropdown and radiobuttons. Bah.
+						foreach ( $arr_type_options as $one_key => $one_val ) {
+
+							if ( is_int( $one_key ) ) {
+
+								$key = ( "radiobuttons" === $one_new_field["type"] ) ? "radiobutton_num_"  : "dropdown_num_";
+								$key .= $one_val["num"];
+								$arr_type_options[ $key ] = $one_val;
+								unset( $arr_type_options[ $one_key ] );
+
+							}
+
+						}
+
+						$existing_field_array_from_slug[ "type_" . $one_new_field["type"] . "_options"] = $arr_type_options;
+						
 					}
 					// end move options in place
 				
