@@ -821,8 +821,29 @@ Array
 #sf_d($arr_merged_options);
 					if ( isset( $existing_field_array_from_slug[ "type_". $existing_field_array_from_slug["type"] . "_options" ] ) ) {
 # denna ökar antalet dropdown values vid varje körning
-						$arr_merged_options = array_merge( $existing_field_array_from_slug[ "type_". $existing_field_array_from_slug["type"] . "_options" ], $arr_merged_options );
+						#sf_d( $existing_field_array_from_slug[ "type_". $existing_field_array_from_slug["type"] . "_options" ] );
+						$arr_old_vals_to_merge = array();
+						$arr_old_vals_to_merge_values = array();
+						foreach ( $existing_field_array_from_slug[ "type_". $existing_field_array_from_slug["type"] . "_options" ] as $one_key => $one_val ) {
+							
+							// $new_values_key = ( "radiobuttons" === $one_new_field["type"] ) ? "radiobutton_num_"  : "dropdown_num_";
+							if ( strpos( $one_key, "dropdown_num_" ) !== FALSE || strpos( $one_key, "radiobutton_num_" ) !== FALSE ) {
+								$num = str_replace( array("dropdown_num_", "checkbox_num_"), "", $one_key );
+								$one_val["num"] = $num;
+								$arr_old_vals_to_merge_values[] = $one_val;
+							} else {
+								$arr_old_vals_to_merge[ $one_key ] = $one_val;
+							}
+							
+							$arr_old_vals_to_merge["values"] = $arr_old_vals_to_merge_values;
+
+						} // foreach
+
+						#$arr_merged_options = array_merge( $existing_field_array_from_slug[ "type_". $existing_field_array_from_slug["type"] . "_options" ], $arr_merged_options );
+#sf_d($arr_old_vals_to_merge);
+						$arr_merged_options = array_merge( $arr_old_vals_to_merge, $arr_merged_options );
 					}
+#sf_d($arr_merged_options);
 #echo "<br>after:<br>";
 #sf_d($arr_merged_options);
 
@@ -995,23 +1016,24 @@ must be like:
 					// Can't remove that reference completely because it is used at so many places
 					if ( isset( $one_new_field["type"] ) &&  $sf->field_type_is_core( $one_new_field["type"] ) ) {
 
-						$arr_type_options = $arr_merged_options;
+						$arr_type_options_values = $arr_merged_options["values"];
+
 						// Oh, and convert back to the old funky _num_ format for dropdown and radiobuttons. Bah.
-						foreach ( $arr_type_options as $one_key => $one_val ) {
+						foreach ( $arr_type_options_values as $one_key => $one_val ) {
 
 							if ( is_int( $one_key ) ) {
 
 								$key = ( "radiobuttons" === $one_new_field["type"] ) ? "radiobutton_num_"  : "dropdown_num_";
 								$key .= $one_val["num"];
-								$arr_type_options[ $key ] = $one_val;
-								unset( $arr_type_options[ $one_key ] );
+								$arr_type_options_values[ $key ] = $one_val;
+								unset( $arr_type_options_values[ $one_key ] );
 
 							}
 
 						}
 
-						$existing_field_array_from_slug[ "type_" . $one_new_field["type"] . "_options"] = $arr_type_options;
-						
+						$existing_field_array_from_slug[ "type_" . $one_new_field["type"] . "_options"]["values"] = $arr_type_options_values;
+#sf_d($arr_type_options_values);
 					}
 					// end move options in place
 				
