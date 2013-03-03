@@ -2513,7 +2513,9 @@ class simple_fields {
 			$dropdown_values_highest_id = 0;
 			if ($field_type_dropdown_options) {
 				foreach ($field_type_dropdown_options as $key => $val) {
-					if (strpos($key, "dropdown_num_") !== false && $val["deleted"] != true) {
+					
+					$is_deleted = isset( $val["deleted"] ) && $val["deleted"] == true;
+					if (strpos($key, "dropdown_num_") !== false && ! $is_deleted ) {
 						// found one button in format radiobutton_num_0
 						$dropdown_num = str_replace("dropdown_num_", "", $key);
 						if ($dropdown_num > $dropdown_values_highest_id) {
@@ -2528,6 +2530,7 @@ class simple_fields {
 								<a href='#' class='simple-fields-field-type-options-dropdown-delete'>".__('Delete', 'simple-fields')."</a>
 							</li>";
 					}
+
 				}
 			}
 			$dropdown_values_highest_id++;
