@@ -95,6 +95,8 @@ class simple_fields {
 		add_action( 'admin_init', array($this,'post_admin_init') );
 		add_action( 'dbx_post_sidebar', array($this, 'post_dbx_post_sidebar') );
 		add_action( 'save_post', array($this, 'save_postdata') );
+		add_action( 'edit_attachment', array($this, 'save_postdata') );
+
 		add_action( 'plugins_loaded', array($this, 'plugins_loaded') );
 		add_action( 'init', array($this, "maybe_add_debug_info") ); 
 
@@ -3304,7 +3306,7 @@ class simple_fields {
 					<ul>
 						<?php
 						$post_types = get_post_types();
-						$arr_post_types_to_ignore = array("attachment", "revision", "nav_menu_item");
+						$arr_post_types_to_ignore = array("revision", "nav_menu_item");
 						foreach ($post_types as $one_post_type) {
 							$one_post_type_info = get_post_type_object($one_post_type);
 							if (!in_array($one_post_type, $arr_post_types_to_ignore)) {
