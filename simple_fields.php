@@ -2449,7 +2449,10 @@ class simple_fields {
 			$radio_buttons_highest_id = 0;
 			if ($field_type_radiobuttons_options) {
 				foreach ($field_type_radiobuttons_options as $key => $val) {
-					if (strpos($key, "radiobutton_num_") !== false && $val["deleted"] != true) {
+
+					$is_deleted = isset( $val["deleted"] ) && $val["deleted"] == true;
+
+					if ( strpos( $key, "radiobutton_num_" ) !== false && ! $is_deleted ) {
 						// found one button in format radiobutton_num_0
 						$radiobutton_num = str_replace("radiobutton_num_", "", $key);
 						if ($radiobutton_num > $radio_buttons_highest_id) {
@@ -2467,6 +2470,7 @@ class simple_fields {
 							</li>";
 					}
 				}
+
 			}
 			$radio_buttons_highest_id++;
 			$out .= "<div class='" . (($field_type=="radiobuttons") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-radiobuttons'>";

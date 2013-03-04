@@ -1014,26 +1014,37 @@ must be like:
 */
 					// If this is any of the core fields types then save back all options to type_<fieldtype>_options
 					// Can't remove that reference completely because it is used at so many places
+					/*
+					*/
+#echo "<br>arr_merged_options:";
+#sf_d($arr_merged_options);
 					if ( isset( $one_new_field["type"] ) &&  $sf->field_type_is_core( $one_new_field["type"] ) ) {
 
-						$arr_type_options_values = $arr_merged_options["values"];
+						$arr_type_old_school_options = $arr_merged_options;
 
 						// Oh, and convert back to the old funky _num_ format for dropdown and radiobuttons. Bah.
-						foreach ( $arr_type_options_values as $one_key => $one_val ) {
+						if ( isset( $arr_type_old_school_options["values"] ) ) {
 
-							if ( is_int( $one_key ) ) {
+							// Move back from sub values arrays yo the main array
+							foreach ( $arr_type_old_school_options["values"] as $one_key => $one_val ) {
 
-								$key = ( "radiobuttons" === $one_new_field["type"] ) ? "radiobutton_num_"  : "dropdown_num_";
-								$key .= $one_val["num"];
-								$arr_type_options_values[ $key ] = $one_val;
-								unset( $arr_type_options_values[ $one_key ] );
+								if ( is_int( $one_key ) ) {
+
+									$key = ( "radiobuttons" === $one_new_field["type"] ) ? "radiobutton_num_"  : "dropdown_num_";
+									$key .= $one_val["num"];
+									$arr_type_old_school_options[ $key ] = $one_val;
+									unset( $arr_type_old_school_options[ $one_key ] );
+
+								}
 
 							}
 
+							unset( $arr_type_old_school_options["values"] );
+
 						}
 
-						$existing_field_array_from_slug[ "type_" . $one_new_field["type"] . "_options"]["values"] = $arr_type_options_values;
-#sf_d($arr_type_options_values);
+						$existing_field_array_from_slug[ "type_" . $one_new_field["type"] . "_options"] = $arr_type_old_school_options;
+#echo "<br>arr_type_old_school_options:";sf_d( $arr_type_old_school_options );
 					}
 					// end move options in place
 				
@@ -1042,6 +1053,7 @@ must be like:
 			} // foreach field default
 
 		} // for each field in a field grouo
+
 		$merged_fields = $field_groups[$field_group_id]["fields_by_slug"];
 
 		// Update fields (by id) from fields by slugs
