@@ -535,6 +535,12 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 	$highest_id = 0;
 	$is_new_field_group = TRUE;
 
+	// Validate things in the field group we add
+	// It must for example have a slug, or it's not valid
+	if ( empty($new_field_group["slug"]) ) {
+		return FALSE;
+	}
+
 	// First get the id of the field group we are adding. Existing or highest new.
 	// Loop through all existing field groups to see if the field group we are adding already exists
 	// Exists = an existing field group has the same slug as the group we are adding
