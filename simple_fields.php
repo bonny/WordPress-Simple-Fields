@@ -795,7 +795,9 @@ class simple_fields {
 								echo "<a class='thickbox simple-fields-metabox-field-file-select' href='$file_url'>".__('Select', 'simple-fields')."</a>";
 								
 								$class = ($attachment_id) ? " " : " hidden ";
-								$href_edit = ($attachment_id) ? admin_url("media.php?attachment_id={$attachment_id}&action=edit") : "#";
+								// old format: http://viacom.ep/wp-admin/media.php?attachment_id=20314&action=edit
+								// new format: http://viacom.ep/wp-admin/post.php?post=20314&action=edit
+								$href_edit = ($attachment_id) ? admin_url("post.php?post={$attachment_id}&action=edit") : "#";
 								echo " <a href='{$href_edit}' class='simple-fields-metabox-field-file-edit $class'>".__('Edit', 'simple-fields') . "</a>";
 								echo " <a href='#' class='simple-fields-metabox-field-file-clear $class'>".__('Clear', 'simple-fields')."</a>";							
 								echo "<div class='simple-fields-metabox-field-file-selected-image-name'>$image_name</div>";
@@ -1902,8 +1904,7 @@ class simple_fields {
 				sfmff.closest(".simple-fields-metabox-field").find(".simple-fields-metabox-field-file-selected-image-name").html(unescape("<?php echo $file_name?>")).show();
 				
 				// show clear and edit-links
-				//var url = ajaxurl.replace(/admin-ajax.php$/, "") + "media.php?attachment_id="+file_id+"&action=edit";
-				var url = "<?php echo admin_url("media.php?attachment_id={$file_id}&action=edit") ?>";
+				var url = "<?php echo admin_url("post.php?post={$file_id}&action=edit") ?>";
 	
 				sfmff.find(".simple-fields-metabox-field-file-edit").attr("href", url).show();
 				sfmff.find(".simple-fields-metabox-field-file-clear").show();
