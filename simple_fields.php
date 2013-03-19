@@ -95,6 +95,7 @@ class simple_fields {
 		add_action( 'admin_init', array($this,'post_admin_init') );
 		add_action( 'dbx_post_sidebar', array($this, 'post_dbx_post_sidebar') );
 		add_action( 'save_post', array($this, 'save_postdata') );
+		add_action( 'save_post', array($this, 'clear_caches') );
 		add_action( 'edit_attachment', array($this, 'save_postdata') );
 
 		add_action( 'plugins_loaded', array($this, 'plugins_loaded') );
