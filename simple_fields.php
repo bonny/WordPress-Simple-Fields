@@ -1191,7 +1191,7 @@ class simple_fields {
 			if (in_array($post_type, $arr_post_types)) {
 				
 				// general meta box to select fields for the post
-				$add_post_edit_side_field_settings_box = apply_filters("simple_fields_add_post_edit_side_field_settings", true);
+				$add_post_edit_side_field_settings_box = apply_filters("simple_fields_add_post_edit_side_field_settings", true, $post);
 				if ($add_post_edit_side_field_settings_box) add_meta_box('simple-fields-post-edit-side-field-settings', 'Simple Fields', array($this, 'edit_post_side_field_settings'), $post_type, 'side', 'low');
 				
 				$connector_to_use = $this->get_selected_connector_for_post($post);
