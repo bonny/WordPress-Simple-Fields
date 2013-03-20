@@ -415,8 +415,11 @@ class simple_fields {
 		if (wp_is_post_revision($post_id) !== FALSE) return $post_id;
 		
 		// attach post connector
-		$simple_fields_selected_connector = (isset($_POST["simple_fields_selected_connector"])) ? $_POST["simple_fields_selected_connector"] : null;
-		update_post_meta($post_id, "_simple_fields_selected_connector", $simple_fields_selected_connector);
+		// only save if being found in post variable, beacuse it may not exist if meta box is hidden/not outputted on page
+		if ( isset($_POST["simple_fields_selected_connector"]) ) {
+			$simple_fields_selected_connector = (isset($_POST["simple_fields_selected_connector"])) ? $_POST["simple_fields_selected_connector"] : null;
+			update_post_meta($post_id, "_simple_fields_selected_connector", $simple_fields_selected_connector);
+		}
 	
 		$post_id = (int) $post_id;
 		$fieldgroups = (isset($_POST["simple_fields_fieldgroups"])) ? $_POST["simple_fields_fieldgroups"] : null;
@@ -1188,7 +1191,8 @@ class simple_fields {
 			if (in_array($post_type, $arr_post_types)) {
 				
 				// general meta box to select fields for the post
-				add_meta_box('simple-fields-post-edit-side-field-settings', 'Simple Fields', array($this, 'edit_post_side_field_settings'), $post_type, 'side', 'low');
+				$add_post_edit_side_field_settings_box = apply_filters("simple_fields_add_post_edit_side_field_settings", true);
+				if ($add_post_edit_side_field_settings_box) add_meta_box('simple-fields-post-edit-side-field-settings', 'Simple Fields', array($this, 'edit_post_side_field_settings'), $post_type, 'side', 'low');
 				
 				$connector_to_use = $this->get_selected_connector_for_post($post);
 				

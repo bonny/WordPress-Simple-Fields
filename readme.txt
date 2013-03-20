@@ -253,6 +253,8 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
   Now returns empty array instead. Thanks to [hjalle](https://twitter.com/hjalle) for finding.
 - simple_fields_register_post_connector now uses name from each field group, so no need to enter that manually any more (if entered manually, it will be removed)
 - Added filters and actions that you can use in your functions.php-file or in your plugin or field extension or whatever. Added filters are:
+  simple_fields_add_post_edit_side_field_settings
+  simple_fields_get_selected_connector_for_post
   simple_fields_debug_output
   simple_fields_get_post_value
   simple_fields_get_post_group_values
