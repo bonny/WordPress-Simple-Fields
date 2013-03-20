@@ -1716,6 +1716,13 @@ class simple_fields {
 					<?php endforeach; ?>
 				</select>
 			</div>
+			<?php
+			// If connector has been changed with filter then show was connector is being used
+			if ( is_numeric($connector_selected) && $connector_selected != $saved_connector_to_use ) {
+				$connector_selected_info = $this->get_connector_by_id($connector_selected);
+				?><div><p><?php _e("Actual used connector:", "simple-fields") ?><?php echo $connector_selected_info["name"]; ?></p></div><?php
+			}
+			?>
 			<div id="simple-fields-post-edit-side-field-settings-select-connector-please-save" class="hidden">
 				<p><?php _e('Save post to switch to selected fields.', 'simple-fields') ?></p>
 			</div>
