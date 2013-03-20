@@ -1724,7 +1724,7 @@ class simple_fields {
 			// If connector has been changed with filter then show was connector is being used
 			if ( is_numeric($connector_selected) && $connector_selected != $saved_connector_to_use ) {
 				$connector_selected_info = $this->get_connector_by_id($connector_selected);
-				?><div><p><?php _e("Actual used connector:", "simple-fields") ?><?php echo $connector_selected_info["name"]; ?></p></div><?php
+				?><div><p><?php _e("Actual used connector:", "simple-fields") ?> <?php echo $connector_selected_info["name"]; ?></p></div><?php
 			}
 			?>
 			<div id="simple-fields-post-edit-side-field-settings-select-connector-please-save" class="hidden">
@@ -1795,10 +1795,33 @@ class simple_fields {
 			$connector_to_use = "__none__";
 		}
 	
+		// Let user change to connector being used for post
+		// Filter here can return a string that is the slug, 
+		// and then we will get the id for that post before continuing
 		$connector_to_use = apply_filters( "simple_fields_get_selected_connector_for_post", $connector_to_use, $post);
+		if ( ! is_numeric($connector_to_use) ) {
+			$connector_to_use_info = $this->get_post_connector_by_slug( $connector_to_use );
+			$connector_to_use = $connector_to_use_info["id"];
+		}
+
 		return $connector_to_use;
 	
 	} // function get_selected_connector_for_post
+
+
+	/**
+	 * Get post connector by its slug
+	 *
+	 * @param string $post_slug
+	 * @return connector if found, false if not
+	 */
+	function get_post_connector_by_slug($post_slug) {
+		$connectors = $this->get_post_connectors();
+		foreach ($connectors as $one_connector) {
+			if ( $one_connector["slug"] === $post_slug) return $one_connector;
+		}
+		return false;
+	}
 
 
 	/**
