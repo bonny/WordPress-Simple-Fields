@@ -789,9 +789,14 @@ class simple_fields {
 							echo "<div class='simple-fields-metabox-field-file-col1'>";
 								echo "<div class='simple-fields-metabox-field-file-selected-image'>$image_html</div>";
 							echo "</div>";
+
 							echo "<div class='simple-fields-metabox-field-file-col2'>";
 								echo "<input type='hidden' class='text simple-fields-metabox-field-file-fileID' name='$field_name' id='$field_unique_id' value='$attachment_id' />";							
 	
+								// File name
+								echo "<div class='simple-fields-metabox-field-file-selected-image-name'>$image_name</div>";
+
+								// File action links (view, select, edit, etc.)
 								$field_unique_id_esc = rawurlencode($field_unique_id);
 								$file_url = get_bloginfo('wpurl') . "/wp-admin/media-upload.php?simple_fields_dummy=1&simple_fields_action=select_file&simple_fields_file_field_unique_id=$field_unique_id_esc&post_id=$current_post_id&TB_iframe=true";
 								
@@ -803,9 +808,8 @@ class simple_fields {
 								// new format: http://viacom.ep/wp-admin/post.php?post=20314&action=edit
 								$href_edit = ($attachment_id) ? admin_url("post.php?post={$attachment_id}&action=edit") : "#";
 								echo " <a href='{$href_edit}' class='simple-fields-metabox-field-file-edit $class'>".__('Edit', 'simple-fields') . "</a>";
-								echo " <a href='#' class='simple-fields-metabox-field-file-clear $class'>".__('Clear', 'simple-fields')."</a>";							
-								echo "<div class='simple-fields-metabox-field-file-selected-image-name'>$image_name</div>";
-								
+								echo " <a href='#' class='simple-fields-metabox-field-file-clear $class'>".__('Clear', 'simple-fields')."</a>";
+
 							echo "</div>";
 
 
@@ -1030,6 +1034,10 @@ class simple_fields {
 
 						echo "<div class='simple-fields-metabox-field-second'>";
 	
+						// name of the selected post
+						echo "<div class='simple-fields-field-type-post-postName $showHideClass'>$saved_post_name</div>";
+
+						// Output action buttons (select, clear, etc.)
 						echo "<div>";
 						printf("<a class='%s' href='#'>%s</a>", "simple-fields-metabox-field-post-select", __("Select post", "simple-fields"));
 						printf("<a class='%s' href='#'>%s</a>", "simple-fields-metabox-field-post-clear $showHideClass", __("Clear", "simple-fields"));
@@ -1037,10 +1045,7 @@ class simple_fields {
 						
 						// output the post types that are selected for this post field
 						printf("<input type='hidden' name='%s' value='%s' />", "simple-fields-metabox-field-post-enabled-post-types", join(",", $enabled_post_types));
-											
-						// name of the selected post
-						echo "<div class='simple-fields-field-type-post-postName $showHideClass'>$saved_post_name</div>";
-						
+																	
 						// print the id of the current post
 						echo "<input type='hidden' class='simple-fields-field-type-post-postID' name='$field_name' id='$field_unique_id' value='$saved_value_int' />";
 						

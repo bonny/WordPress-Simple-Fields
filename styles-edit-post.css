@@ -206,7 +206,7 @@ ul.simple-fields-metabox-field-group-fields-repeatable .simple-fields-metabox-fi
 		opacity: 1;
 	}
 
-/* file field */
+/* file field type */
 ul.simple-fields-file-browser-list {
 	margin: 1em;
 }
@@ -245,6 +245,10 @@ ul.simple-fields-file-browser-list {
 		position: absolute;
 		left: 0;
 		top: 50px;
+	}
+	
+	.simple-fields-metabox-field-file-selected-image-name {
+		font-weight: bold;
 	}
 
 	.simple-fields-metabox-field-file-col1 {
@@ -296,15 +300,18 @@ ul.simple-fields-file-browser-list {
 }*/
 
 /**
- * field dropdown
+ * dropdown field type
  */
 .simple-fields-fieldgroups-field-type-dropdown select {
 	/*width: 50%;*/
 }
 
 /** 
- * field post
+ * post field type
  */
+.simple-fields-field-type-post-postName {
+	font-weight: bold;
+}
 .simple-fields-meta-box-field-group-field-type-post-dialog {
 	margin: 10px;
 }
