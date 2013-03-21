@@ -257,6 +257,7 @@ ul.simple-fields-file-browser-list {
 	.simple-fields-metabox-field-file-col1 img {
 		width: 46px;
 		display: block;
+		max-height: 100%;
 	}
 	.simple-fields-metabox-field-file-col2 {
 		margin-left: 56px;
