@@ -3625,15 +3625,15 @@ class simple_fields {
 						$str_all_group_fields .= $one_field["slug"] . ",";
 						
 						if ($one_field_group["repeatable"]) {
-							$content .= "<br>Use <code><b>simple_fields_values('".$one_field["slug"]."')</b></code> to get:";
-							ob_start();
+							$content .= "<br>Use <code><b>simple_fields_values('".$one_field["slug"]."')</b></code>.";
+							/*ob_start();
 							sf_d( simple_fields_values($one_field["slug"]) );
-							$content .= ob_get_clean();
+							$content .= ob_get_clean();*/
 						} else {		
-							$content .= "<br>Use <code><b>simple_fields_value('".$one_field["slug"]."')</b></code> to get:";
-							ob_start();
+							$content .= "<br>Use <code><b>simple_fields_value('".$one_field["slug"]."')</b></code>.";
+							/*ob_start();
 							sf_d( simple_fields_value($one_field["slug"]) );
-							$content .= ob_get_clean();
+							$content .= ob_get_clean();*/
 						}
 						
 					} else {
@@ -3649,15 +3649,15 @@ class simple_fields {
 					$str_all_group_fields = preg_replace('!,$!', '', $str_all_group_fields);
 					$output_all .= "<ul style='background:#eee;padding:.5em;margin:0;display:block;'>";
 					if ($one_field_group["repeatable"]) {
-						$content = "<li>Get all fields at once: use <code><b>simple_fields_values('".$str_all_group_fields."')</b></code> to get:";
-						ob_start();
+						$content = "<li>Get all fields at once: use <code><b>simple_fields_values('".$str_all_group_fields."')</b></code>.";
+						/*ob_start();
 						sf_d( simple_fields_values($str_all_group_fields) );
-						$content .= ob_get_clean();
+						$content .= ob_get_clean();*/
 					} else {
-						$content = "<li>Get all fields at once: use <code><b>simple_fields_value('".$str_all_group_fields."')</b></code> to get:";
-						ob_start();
+						$content = "<li>Get all fields at once: use <code><b>simple_fields_value('".$str_all_group_fields."')</b></code>.";
+						/*ob_start();
 						sf_d( simple_fields_value($str_all_group_fields) );
-						$content .= ob_get_clean();
+						$content .= ob_get_clean();*/
 					}
 					$output_all .= $content;
 					$output_all .= "</ul>";
@@ -3718,6 +3718,7 @@ class simple_fields {
 		$output_all = str_replace("]", "&#93;", $output_all);
 
 		return $the_content . $output_all;
+	
 	}
 
 	/**
