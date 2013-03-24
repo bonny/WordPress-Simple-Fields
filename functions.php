@@ -6,13 +6,18 @@
 
 /**
  * Quicky debug a variable
- * @param $var mixed
+ *
+ * @param mixed $var the variable to output
+ * @param string $heading Optional heading/description of what you're debugging
  * @return echo output
  */
 if (!function_exists("sf_d")) {
-function sf_d($var) {
+function sf_d($var, $heading = "") {
 	$out = "";
 	$out .= "<pre class='sf_box_debug'>";
+	if ($heading && ! empty($heading)) {
+		$out .= "<b>" . esc_html($heading) . ":</b>\n";
+	}
 	if (is_array($var) || is_object($var)) {
 		$out .= htmlspecialchars( print_r($var, true), ENT_QUOTES, 'UTF-8' );
 	} else if( is_null($var) ) {
