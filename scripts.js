@@ -14,13 +14,19 @@ var simple_fields_metabox_field_file_select_input_selectedID = null,
 var simple_fields = (function() {
 
 	var
-		i_am_simple_fields = true;
+		my = {};
 
-	return {
-
+	// Output debug/log
+	my.log = function() {
+		if ( typeof console !== "undefined" ) {
+			console.log.apply( console, arguments );
+		}
 	};
 
+	return my;
+
 })();
+
 
 // Self invoking function for our JS stuff
 (function($) {
@@ -44,7 +50,12 @@ var simple_fields = (function() {
 
 	}
 
+	// Add TinyMCE-editors to textareas of type WYSIWYG
+	// Script for this is usually outputted by wp_editor, but it does not exist when calling via ajax
 	function simple_fields_metabox_tinymce_attach() {
+		return;
+		simple_fields.log("simple_fields_metabox_tinymce_attach()");
+
 		if (typeof( tinyMCE ) == "object" && typeof( tinyMCEPreInit ) == "object" ) {
 			var tiny_init = {};
 			var qt_init = {};
@@ -115,7 +126,9 @@ var simple_fields = (function() {
 				}
 			}
 		}
+
 		return false;
+
 	}
 	
 	function simple_fields_get_fieldID_from_this(t) {
@@ -264,7 +277,6 @@ var simple_fields = (function() {
 	$(document).on("click", "div.simple-fields-metabox-field-add a:nth-child(1)", function(e) {
 
 		var $t = $(this).closest("div.simple-fields-metabox-field-add");
-		//var $t = $(this);
 		
 		$t.text(sfstrings.adding);
 		var $wrapper = $t.parents(".simple-fields-meta-box-field-group-wrapper");
@@ -292,19 +304,20 @@ var simple_fields = (function() {
 			}
 
 			var wrapper = $ul.closest("div.simple-fields-meta-box-field-group-wrapper");
-			// var lis = $ul.find(">li");
 
 			$response.slideDown("slow", function() {
 				
 				simple_fields_metabox_tinymce_attach();
-				//$response.effect("highlight", 1000);
+
 				// add jscolor to possibly new fields
 				jscolor.init();
+
 				// add datepicker too
 				$('input.simple-fields-field-type-date', $ul).datePicker(simple_fields_datepicker_args);
 				
 				// Fire event so plugins can listen to the add-button
 				$(document.body).trigger("field_group_added", $response);
+
 			});
 
 			$t.html("<a href='#'>+ "+sfstrings.add+"</a>");
@@ -707,16 +720,15 @@ var simple_fields = (function() {
 		if (sfstrings.page_type == "post") {
 	
 			// attach TinyMCE to textareas
-			simple_fields_metabox_tinymce_attach();
+			// this is only needen when adding with ajax?
+			//simple_fields_metabox_tinymce_attach();
 
 			// type date
 			$('input.simple-fields-field-type-date').datePicker();
 
 		}
-
 		
 	}); // end domready
-
 
 }(jQuery)); // self invoke function
 
@@ -730,6 +742,7 @@ jQuery(".thickbox").bind("click", function (e) {
 	simple_fields_tmpFocus = undefined;
 	simple_fields_isTinyMCE = false;
 });
+
 function simple_fields_focusTextArea(id) {
 	var elm;
 	if ( typeof tinyMCE != "undefined" ) {
@@ -751,6 +764,7 @@ function simple_fields_focusTextArea(id) {
 		elm.setSelectionRange(elm.value.length, elm.value.length);
 	}
 }
+
 function simple_fields_thickbox(link) {
 	var t = link.title || link.name || null;
 	var a = link.href || link.alt;

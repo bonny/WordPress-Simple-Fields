@@ -584,8 +584,7 @@ class simple_fields {
 			$field_group_css .= " simple-fields-fieldgroup-" . $current_field_group["slug"];
 		}*/
 
-		?>
-		<li class="sf-cf simple-fields-metabox-field-group <?php echo $field_group_css ?>">
+		?><li class="sf-cf simple-fields-metabox-field-group <?php echo $field_group_css ?>">
 			<?php // must use this "added"-thingie do be able to track added field group that has no added values (like unchecked checkboxes, that we can't detect ?>
 			<input type="hidden" name="simple_fields_fieldgroups[<?php echo $field_group_id ?>][added][<?php echo $num_in_set ?>]" value="1" />
 			<div class="simple-fields-metabox-field-group-handle"></div>
@@ -862,7 +861,8 @@ class simple_fields {
 
 						echo "<div class='simple-fields-metabox-field-second'>";
 	
-						if (isset($textarea_options["use_html_editor"])) {
+						if ( isset( $textarea_options["use_html_editor"] ) ) {
+							
 							// This helps get_upload_iframe_src() determine the correct post id for the media upload button
 							global $post_ID;
 							if (intval($post_ID) == 0) {
@@ -879,15 +879,88 @@ class simple_fields {
 								"textarea_rows"	=> $textarea_rows,
 								"media_buttons"	=> TRUE
 							);
+
 							echo "<div class='simple-fields-metabox-field-textarea-tinymce-wrapper'>";
+							#sf_d($saved_value, "saved_value");
+							#$field_unique_id = "GORILLA" . rand();
+							#sf_d($args, "args");
+							#sf_d($use_defaults, "use_defaults");
+							/*
+							$editor_id
+							(string) (required) HTML ID attribute value for the textarea and TinyMCE. (may only contain lower-case letters)
+							Note that the ID that is passed to the wp_editor() function can only be composed of lower-case letters. No underscores, no hyphens. Anything else will cause the WYSIWYG editor to malfunction.
+							Default: None
+							
+							Ny, funkar ej:
+								field_unique_id:
+								simple_fields_fieldgroups_6_1_new0
+								args:
+								Array
+								(
+								    [textarea_name] => simple_fields_fieldgroups[6][1][new0]
+								    [editor_class] => simple-fields-metabox-field-textarea-tinymce  simple-fields-metabox-field-textarea-tinymce-size-small 
+								    [textarea_rows] => 3
+								    [media_buttons] => 1
+								)
+							Befintlig, funkar:
+								saved_value:
+								field_unique_id:
+								simple_fields_fieldgroups_6_1_0
+								args:
+								Array
+								(
+								    [textarea_name] => simple_fields_fieldgroups[6][1][0]
+								    [editor_class] => simple-fields-metabox-field-textarea-tinymce  simple-fields-metabox-field-textarea-tinymce-size-small 
+								    [textarea_rows] => 3
+								    [media_buttons] => 1
+								)							
+							*/
+							sf_d($field_unique_id, "adding wp_editor with field_unique_id");
 							wp_editor( $saved_value, $field_unique_id, $args );
+
+							if ($use_defaults) {
+
+								// Must call footer scripts so wp_editor outputs it's stuff
+								// It works with TinyMCE but the quicktags are not outputted due to quicktags being activated on domready
+
+								// remove scripts that we don't need								
+								remove_action( "admin_print_footer_scripts", "wp_auth_check_js");
+
+								ob_start();
+								do_action("admin_print_footer_scripts");
+								$footer_scripts = ob_get_clean();
+								
+								// only keep scripts. works pretty ok, but we get some stray text too, so use preg match to get only script tags
+								$footer_scripts = wp_kses($footer_scripts, array("script" => array()));
+								
+								preg_match_all('/<script>(.*)<\/script>/msU', $footer_scripts, $matches);
+								$footer_scripts = "";
+								foreach ($matches[1] as $one_script_tag_contents) {
+									if ( ! empty( $one_script_tag_contents ) )
+										$footer_scripts .= sprintf('<script>%1$s</script>', $one_script_tag_contents);
+								}
+
+								echo "$footer_scripts";
+
+								?>
+								<script>
+									// We need to call _buttonsInit, but it's private. however calling addButtons calls _buttonsInit
+									// so we fake-add a button, just to fire _buttonsInit again.
+									QTags.addButton( 'simple_fields_dummy_button', '...', '<br />', null, null, null, null, "apa" );
+								</script>
+								<?php
+
+							}
+
 							echo "</div>";
+
 						} else {
+
 							echo "<div class='simple-fields-metabox-field-textarea-wrapper'>";
 							echo "<textarea class='simple-fields-metabox-field-textarea' name='$field_name' id='$field_unique_id' cols='50' rows='$textarea_rows'>$textarea_value_esc</textarea>";
 							echo "</div>";
+
 						}
-						
 
 						echo "</div>";
 		
