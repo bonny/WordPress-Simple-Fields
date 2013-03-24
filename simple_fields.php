@@ -915,7 +915,7 @@ class simple_fields {
 								    [media_buttons] => 1
 								)							
 							*/
-							sf_d($field_unique_id, "adding wp_editor with field_unique_id");
+							// sf_d($field_unique_id, "adding wp_editor with field_unique_id");
 							wp_editor( $saved_value, $field_unique_id, $args );
 
 							if ($use_defaults) {
@@ -939,6 +939,19 @@ class simple_fields {
 									if ( ! empty( $one_script_tag_contents ) )
 										$footer_scripts .= sprintf('<script>%1$s</script>', $one_script_tag_contents);
 								}
+
+								// the scripts only output correct id for the first editor
+								// (for unknown reasons, something to do with the fact that we do this everal times while it's meant do only be done once)
+								// so replace strings like simple_fields_fieldgroups_6_1_new0 to the current editor
+								// mceInit : {'simple_fields_fieldgroups_6_1_new0'
+								/*
+								$pattern = "#simple_fields_fieldgroups_(\d+)_(\d+)_new(\d+)#";
+								$replacement = "$field_unique_id";
+								$footer_scripts = preg_replace($pattern, $replacement, $footer_scripts);
+
+								$footer_scripts = str_replace("tinyMCEPreInit", "tinyMCEPreInit_$field_unique_id", $footer_scripts);
+								$footer_scripts = str_replace("wpActiveEditor", "wpActiveEditor_$field_unique_id", $footer_scripts);
+								*/
 
 								echo "$footer_scripts";
 

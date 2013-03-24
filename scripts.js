@@ -53,7 +53,7 @@ var simple_fields = (function() {
 	// Add TinyMCE-editors to textareas of type WYSIWYG
 	// Script for this is usually outputted by wp_editor, but it does not exist when calling via ajax
 	function simple_fields_metabox_tinymce_attach() {
-		return;
+		//return;
 		simple_fields.log("simple_fields_metabox_tinymce_attach()");
 
 		if (typeof( tinyMCE ) == "object" && typeof( tinyMCEPreInit ) == "object" ) {
