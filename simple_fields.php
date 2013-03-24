@@ -760,7 +760,9 @@ class simple_fields {
 						$image_html = "";
 						$image_name = "";
 						$view_file_url = "";
+						$class = "";
 						if ($attachment_id) {
+							$class .= " simple-fields-metabox-field-file-is-selected ";
 							$image_post = get_post($attachment_id);
 							if ($image_post === NULL) {
 								// hm.. image that no longer exists? trashed?
@@ -772,7 +774,6 @@ class simple_fields {
 							}
 							$view_file_url = wp_get_attachment_url($attachment_id);
 						}
-						$class = "";
 						if ($description) {
 							//$class = "simple-fields-metabox-field-file-with-description";
 						}
@@ -790,6 +791,7 @@ class simple_fields {
 							echo "</div>";
 
 							echo "<div class='simple-fields-metabox-field-file-col2'>";
+								
 								echo "<input type='hidden' class='text simple-fields-metabox-field-file-fileID' name='$field_name' id='$field_unique_id' value='$attachment_id' />";							
 	
 								// File name
@@ -799,15 +801,15 @@ class simple_fields {
 								$field_unique_id_esc = rawurlencode($field_unique_id);
 								$file_url = get_bloginfo('wpurl') . "/wp-admin/media-upload.php?simple_fields_dummy=1&simple_fields_action=select_file&simple_fields_file_field_unique_id=$field_unique_id_esc&post_id=$current_post_id&TB_iframe=true";
 								
-								echo "<a class='simple-fields-metabox-field-file-view' href='$view_file_url'>".__('View', 'simple-fields')."</a>";
-								echo "<a class='thickbox simple-fields-metabox-field-file-select' href='$file_url'>".__('Select', 'simple-fields')."</a>";
+								echo "<a class='simple-fields-metabox-field-file-select' href='$file_url'>".__('Select', 'simple-fields')."</a> ";
+								echo "<a href='#' class='simple-fields-metabox-field-file-clear'>".__('Clear', 'simple-fields')."</a> ";
+								echo "<a class='simple-fields-metabox-field-file-view' target='_blank' href='$view_file_url'>".__('View', 'simple-fields')."</a> ";
 								
-								$class = ($attachment_id) ? " " : " hidden ";
+								//$class = ($attachment_id) ? " " : " hidden ";
 								// old format: http://viacom.ep/wp-admin/media.php?attachment_id=20314&action=edit
 								// new format: http://viacom.ep/wp-admin/post.php?post=20314&action=edit
 								$href_edit = ($attachment_id) ? admin_url("post.php?post={$attachment_id}&action=edit") : "#";
-								echo " <a href='{$href_edit}' class='simple-fields-metabox-field-file-edit $class'>".__('Edit', 'simple-fields') . "</a>";
-								echo " <a href='#' class='simple-fields-metabox-field-file-clear $class'>".__('Clear', 'simple-fields')."</a>";
+								echo "<a href='{$href_edit}' target='_blank' class='simple-fields-metabox-field-file-edit'>".__('Edit', 'simple-fields') . "</a>";
 
 							echo "</div>";
 

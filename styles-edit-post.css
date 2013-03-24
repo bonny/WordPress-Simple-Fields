@@ -250,7 +250,6 @@ ul.simple-fields-file-browser-list {
 	.simple-fields-metabox-field-file-selected-image-name {
 		font-weight: bold;
 	}
-
 	.simple-fields-metabox-field-file-col1 {
 		width: 46px;
 		height: 46px;
@@ -268,7 +267,7 @@ ul.simple-fields-file-browser-list {
 		margin-top: -46px;
 	}
 
-/*	.xxxsimple-fields-metabox-field-file-select,*/
+	/*
 	.simple-fields-metabox-field-file-edit,
 	.simple-fields-metabox-field-file-clear {
 		visibility: hidden;
@@ -278,22 +277,52 @@ ul.simple-fields-file-browser-list {
 	.simple-fields-metabox-field-group:hover .simple-fields-metabox-field-file-clear {
 		visibility: visible;
 	}
+	*/
+
+	.simple-fields-metabox-field-description,
+	.simple-fields-meta-box-field-group-description
+	 {
+		font-style: italic;
+		color: #666;
+	}
+
+	.simple-fields-metabox-field-file-col2 a {
+		border-left: 1px solid #ccc;
+		padding-left: 4px;
+		margin-left: 4px;
+	}
+
+	.simple-fields-metabox-field-file-selected-image-name + a {
+		border-left: none;
+		padding-left: 0;
+		margin-left: 0;
+	}
 
 
+	/* hide things by default */
+	.simple-fields-metabox-field-file-selected-image-name,
+	.simple-fields-metabox-field-file-view,
+	.simple-fields-metabox-field-file-edit,
+	.simple-fields-metabox-field-file-clear
+	{
+		display: none;
+	}
+	
+	/* show things when file is selected */
+	.simple-fields-metabox-field-file-is-selected .simple-fields-metabox-field-file-clear
+	{
+		display: inline;
+	}
+	.simple-fields-metabox-field-file-is-selected .simple-fields-metabox-field-file-selected-image-name {
+		display: block;
+	}
+	
+	/* show some things on hover */
+	.simple-fields-metabox-field-file-is-selected:hover .simple-fields-metabox-field-file-view,
+	.simple-fields-metabox-field-file-is-selected:hover .simple-fields-metabox-field-file-edit {
+		display: inline;
+	}
 
-.simple-fields-metabox-field-description,
-.simple-fields-meta-box-field-group-description
- {
-	font-style: italic;
-	color: #666;
-}
-
-.simple-fields-metabox-field-file-select, .simple-fields-metabox-field-file-edit, .simple-fields-metabox-field-file-clear,
-.simple-fields-metabox-field-post-clear {
-	border-left: 1px solid #ccc;
-	padding-left: 4px;
-	margin-left: 4px;
-}
 
 /*.simple-fields-bonny-plugins-inner-sidebar {
 	display: none;

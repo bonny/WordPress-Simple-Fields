@@ -23,10 +23,104 @@ var simple_fields = (function() {
 		}
 	};
 
+	my.init = function() {
+		my.addListeners();
+	};
+
+	my.addListeners = function() {
+
+	};
+
 	return my;
 
 })();
 
+// Class for file field
+// Handles showing media popup, selecting and clearing files
+var simple_fields_file_field = (function($) {
+
+	var my = {
+		media_frame: null,
+		selectors : {
+			select: ".simple-fields-metabox-field-file-select",
+			clear: ".simple-fields-metabox-field-file-clear"
+		}
+	};
+
+	my.init = function() {
+		simple_fields.log("init simple_fields_file_field");
+		my.addListeners();
+	};
+
+	my.openFileBrowser = function(e) {
+		
+		e.preventDefault();
+
+		var target = $(e.target),
+			container_div = target.closest(".simple-fields-metabox-field-file");
+
+		// Code based on https://github.com/thomasgriffin/New-Media-Image-Uploader/blob/master/js/media.js
+		// TODO: how do i get the filter dropdown?? i think i've tried everything!
+        my.media_frame = wp.media({
+            className: 'media-frame simple-fields-media-frame',
+            frame: 'select', // select | post. select removed left nav (insert media, create gallery, set featured image)
+            multiple: false,
+            title: _wpMediaViewsL10n.mediaLibraryTitle,
+            /*library: {
+                //type: 'audio' // image | audio
+            },*/
+            button: {
+                text: _wpMediaViewsL10n.insertIntoPost
+            }
+        });
+
+        my.media_frame.on('select', function(){
+            
+            var file_json = my.media_frame.state().get('selection').first().toJSON(),
+				file_thumb = "";
+
+			if (file_json.type === "image") {
+				file_thumb = "<img src='" + file_json.sizes.thumbnail.url + "' alt='' />";
+			} else {
+				file_thumb = "<img src='" + file_json.icon + "' alt='' />";
+			}
+			container_div.find(".simple-fields-metabox-field-file-selected-image").html( file_thumb );
+
+			container_div.find(".simple-fields-metabox-field-file-fileID").val( file_json.id );
+			container_div.find(".simple-fields-metabox-field-file-view").attr( "href", file_json.url );
+			container_div.find(".simple-fields-metabox-field-file-edit").attr( "href", file_json.editLink );
+			container_div.find(".simple-fields-metabox-field-file-selected-image-name").text( file_json.title + " (" + file_json.filename + ")" );
+            
+            container_div.addClass("simple-fields-metabox-field-file-is-selected");
+			container_div.effect("highlight", 4000);          
+
+        });
+
+        my.media_frame.open();
+
+	};
+
+	my.clearSelectedFile = function(e) {
+
+		e.preventDefault();
+	
+		var target = $(e.target),
+			container_div = target.closest(".simple-fields-metabox-field-file");
+
+			container_div.find(".simple-fields-metabox-field-file-fileID").val("");
+			container_div.find(".simple-fields-metabox-field-file-selected-image").html("");
+			container_div.removeClass("simple-fields-metabox-field-file-is-selected");
+
+	};
+
+	my.addListeners = function() {
+		jQuery(document).on("click", my.selectors.select, my.openFileBrowser);
+		jQuery(document).on("click", my.selectors.clear, my.clearSelectedFile);
+	};
+
+	return my;
+
+})(jQuery);
 
 // Self invoking function for our JS stuff
 (function($) {
@@ -366,48 +460,17 @@ var simple_fields = (function() {
 	
 	});
 	
-	// click on select file for a field
-	$(document).on("click", ".simple-fields-metabox-field-file-select", function(e) {
-		var input = $(this).closest(".simple-fields-metabox-field").find(".simple-fields-metabox-field-file-fileID");
-		simple_fields_metabox_field_file_select_input_selectedID = input;
-	});
-	
-	// select a file in the file browser (that is in a popup)
-	$(document).on("click", "a.simple-fields-file-browser-file-select", function(e) {
 
-		sfmfli.find(".simple-fields-metabox-field-file-edit").show();
-		sfmf.find(".simple-fields-metabox-field-file-clear").show();
-
-		var file_id = $(this).closest("li").find("input[name='simple-fields-file-browser-list-file-id']").val();
-		var file_thumb = $(this).closest("li").find(".thumbnail img").attr("src");
-		var file_name = $(this).closest("li").find("h3").text();
-
-		self.parent.simple_fields_metabox_file_select(file_id, file_thumb, file_name);
-		self.parent.tb_remove();
-	});
-
-	// clear the file
-	$(document).on("click", "a.simple-fields-metabox-field-file-clear", function(e) {
-		var $li = $(this).closest(".simple-fields-metabox-field-file");
-		$li.find(".simple-fields-metabox-field-file-fileID").val("");
-		
-		$li.find(".simple-fields-metabox-field-file-selected-image").fadeOut();
-		$li.find(".simple-fields-metabox-field-file-selected-image-name").fadeOut();
-				
-		// hide clear and edit
-		$li.find(".simple-fields-metabox-field-file-edit").attr("href", "#").fadeOut();
-		$li.find(".simple-fields-metabox-field-file-clear").fadeOut();
-		
-		return false;
-	});
 
 	// media buttons
+	/*
 	$(document).on("click", ".simple_fields_tiny_media_button", function(e){
 		var id = $(this).closest(".simple-fields-metabox-field").find("textarea").attr("id");
 		simple_fields_focusTextArea(id);
 		simple_fields_thickbox($(this).get(0));
 		return false;
 	});
+	*/
 	
 	// field type post
 	// popup a dialog where the user can choose the post to attach
@@ -512,6 +575,10 @@ var simple_fields = (function() {
 	 * ondomready
 	 */
 	$(function() {
+
+		// boot up
+		simple_fields.init();
+		simple_fields_file_field.init();
 
 		// If meta_box_field_group_wrapper exists on the page then it's a page with simple fields-fields
 		var meta_box_field_group_wrapper = $("div.simple-fields-meta-box-field-group-wrapper");
@@ -776,6 +843,7 @@ function simple_fields_thickbox(link) {
 
 
 // called when selecting file from tiny-area, if I remember correct
+/*
 function simple_fields_metabox_file_select(file_id, file_thumb, file_name) {
 	simple_fields_metabox_field_file_select_input_selectedID.val(file_id);
 	$file_thumb_tag = jQuery("<img src='"+file_thumb+"' alt='' />");
@@ -785,5 +853,6 @@ function simple_fields_metabox_file_select(file_id, file_thumb, file_name) {
 	sfmf.effect("highlight", 4000);
 
 }
+*/
 // simple-fields-metabox-field-file
 
