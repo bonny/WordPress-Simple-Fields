@@ -80,7 +80,14 @@ var simple_fields_file_field = (function($) {
 				file_thumb = "";
 
 			if (file_json.type === "image") {
-				file_thumb = "<img src='" + file_json.sizes.thumbnail.url + "' alt='' />";
+				console.log(file_json);
+				var thumb_url = "";
+				if (file_json.sizes.thumbnail && file_json.sizes.thumbnail.url) {
+					thumb_url = file_json.sizes.thumbnail.url;
+				} else {
+					thumb_url = file_json.sizes.full.url;
+				}
+				file_thumb = "<img src='" + thumb_url + "' alt='' />";
 			} else {
 				file_thumb = "<img src='" + file_json.icon + "' alt='' />";
 			}
