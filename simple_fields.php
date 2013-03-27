@@ -617,10 +617,15 @@ class simple_fields {
 				$custom_field_key = "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_{$field_id}_numInSet_{$num_in_set}";
 				$saved_value = get_post_meta($post_id, $custom_field_key, true);
 
+				// Options, common for all fields
 				$description = "";
-				if (!empty($field["description"])) {
+				if ( ! empty( $field["description"] ) ) {
 					$description = sprintf("<div class='simple-fields-metabox-field-description'>%s</div>", esc_html($field["description"]));
 				}
+
+				// Options, common for most core field
+				$field_type_options = empty( $field["options"][$field["type"]] ) ? array() : (array) $field["options"][$field["type"]];
+				$placeholder = empty( $field_type_options["placeholder"] ) ? "" : esc_attr( $field_type_options["placeholder"] );
 				
 				// div that wraps around each outputed field
 				// Output will be similar to this
@@ -817,15 +822,7 @@ class simple_fields {
 							echo "</div>"; // second
 
 						echo "</div>";
-	
-					} elseif ("image" == $field["type"]) {
-						
-						// @todo: does this field type exist??
-						$text_value_esc = esc_html($saved_value);
-						echo "<label>".__('image', 'simple-fields')."</label>";
-						//echo $description;
-						echo "<input class='text' name='$field_name' id='$field_unique_id' value='$text_value_esc' />";
-						
+							
 					} elseif ("textarea" == $field["type"]) {
 		
 						$textarea_value_esc = esc_html($saved_value);
@@ -972,7 +969,7 @@ class simple_fields {
 						} else {
 
 							echo "<div class='simple-fields-metabox-field-textarea-wrapper'>";
-							echo "<textarea class='simple-fields-metabox-field-textarea' name='$field_name' id='$field_unique_id' cols='50' rows='$textarea_rows'>$textarea_value_esc</textarea>";
+							echo "<textarea class='simple-fields-metabox-field-textarea' name='$field_name' id='$field_unique_id' cols='50' rows='$textarea_rows' placeholder='$placeholder'>$textarea_value_esc</textarea>";
 							echo "</div>";
 
 						}
@@ -982,20 +979,20 @@ class simple_fields {
 					} elseif ("text" == $field["type"]) {
 		
 						$text_value_esc = esc_html($saved_value);
-						
+
 						echo "<div class='simple-fields-metabox-field-first'>";
 						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
 						echo $description;
 						echo "</div>";
 
 						echo "<div class='simple-fields-metabox-field-second'>";
-						echo "<input class='text' name='$field_name' id='$field_unique_id' value='$text_value_esc' />";
+						echo "<input class='text' name='$field_name' id='$field_unique_id' value='$text_value_esc' placeholder='$placeholder' />";
 						echo "</div>";
 		
 					} elseif ("color" == $field["type"]) {
 						
 						$text_value_esc = esc_html($saved_value);
-						
+
 						echo "<div class='simple-fields-metabox-field-first'>";
 						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
 						echo $description;
@@ -2365,12 +2362,31 @@ class simple_fields {
 			</div>
 	
 			$registred_field_types_output_options
-
-			<!-- options for field type textarea -->
-			<div class='simple-fields-field-group-one-field-row " . (($field_type=="textarea") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-textarea'>
+			";
+			
+			// options for text
+			$field_text_options = isset($field_options["text"]) ? (array) $field_options["text"] : array();
+			$out .= "<div class='simple-fields-field-group-one-field-row " . (($field_type=="text") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-textarea'>
+				
 				<div class='simple-fields-field-group-one-field-row'>
 					<div class='simple-fields-field-group-one-field-row-col-first'>
-						<label>Height</label>
+						<label>" . _x('Placeholder text', 'Text field options', 'simple-fields') . "</label>
+					</div>
+					<div class='simple-fields-field-group-one-field-row-col-second'>
+						<input class='regular-text' type='text' name='field[{$fieldID}][options][text][placeholder]' value='" . esc_attr( isset( $field_text_options["placeholder"] ) ? $field_text_options["placeholder"] : "" ) . "'>
+					</div>
+				</div>
+
+			</div>
+			";
+
+			// options for textarea
+			$field_textarea_options = isset($field_options["textarea"]) ? (array) $field_options["textarea"] : array();
+			$out .= "<div class='simple-fields-field-group-one-field-row " . (($field_type=="textarea") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-textarea'>
+				
+				<div class='simple-fields-field-group-one-field-row'>
+					<div class='simple-fields-field-group-one-field-row-col-first'>
+						<label>" . _x('Height', 'Textarea default height', 'simple-fields') . "</label>
 					</div>
 					<div class='simple-fields-field-group-one-field-row-col-second'>
 						<input " . ((empty($field_type_textarea_option_size_height) || $field_type_textarea_option_size_height == "default") ? " checked=checked " : "")  . " type='radio' name='field[{$fieldID}][type_textarea_options][size_height]' value='default'> " . _x('Default', 'Textarea default height', 'simple-fields') . " &nbsp;
@@ -2385,6 +2401,15 @@ class simple_fields {
 					</div>
 					<div class='simple-fields-field-group-one-field-row-col-second'>
 						<input type='checkbox' name='field[{$fieldID}][type_textarea_options][use_html_editor]' " . (($field_type_textarea_option_use_html_editor) ? " checked='checked'" : "") . " value='1' /> ".__('Use HTML-editor', 'simple-fields')."
+					</div>
+				</div>
+
+				<div class='simple-fields-field-group-one-field-row'>
+					<div class='simple-fields-field-group-one-field-row-col-first'>
+						<label>" . _x('Placeholder text (does not work with HTML editor enabled', 'Textarea field options', 'simple-fields') . "</label>
+					</div>
+					<div class='simple-fields-field-group-one-field-row-col-second'>
+						<input class='regular-text' type='text' name='field[{$fieldID}][options][textarea][placeholder]' value='" . esc_attr( isset( $field_textarea_options["placeholder"] ) ? $field_textarea_options["placeholder"] : "" ) . "'>
 					</div>
 				</div>
 
