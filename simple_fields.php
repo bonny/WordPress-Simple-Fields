@@ -2838,10 +2838,15 @@ class simple_fields {
 			 */
 			if ("edit-post-type-defaults-save" == $action) {
 	
-				$post_type = $_POST["simple_fields_save-post_type"];
-				$post_type_connector = $_POST["simple_fields_save-post_type_connector"];
-							
-				simple_fields_register_post_type_default($post_type_connector, $post_type);
+				if ( ! wp_verify_nonce( $_POST["simple-fields"], "save-default-post-connector" ) ) wp_die( __("Cheatin&#8217; uh?") );
+
+				if ( isset($_POST["simple_fields_save-post_type"]) && isset($_POST["simple_fields_save-post_type_connector"]) ) {
+
+					$post_type = $_POST["simple_fields_save-post_type"];
+					$post_type_connector = $_POST["simple_fields_save-post_type_connector"];
+								
+					simple_fields_register_post_type_default($post_type_connector, $post_type);
+				}					
 				
 				$simple_fields_did_save_post_type_defaults = true;
 				$action = "";
@@ -2889,6 +2894,7 @@ class simple_fields {
 						<p class="submit">
 							<input class="button-primary" type="submit" value="<?php _e("Save changes", "simple-fields") ?>" />
 							<input type="hidden" name="simple_fields_save-post_type" value="<?php echo $post_type ?>" />
+							<?php wp_nonce_field( "save-default-post-connector", "simple-fields" ) ?>
 							<?php _e('or', 'simple_fields');  ?>
 							<a href="<?php echo SIMPLE_FIELDS_FILE ?>"><?php _e('cancel', 'simple-fields') ?></a>
 						</p>
