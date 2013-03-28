@@ -86,6 +86,7 @@ class simple_fields {
 
 		add_action( 'admin_init', array($this, 'admin_init') );
 		add_action( 'admin_init', array($this, 'check_upgrade_stuff') );
+		add_action( 'admin_init', array($this, "options_page_save" ));
 		add_action( 'admin_enqueue_scripts', array($this, 'admin_enqueue_scripts') );
 		add_action( 'admin_menu', array($this, "admin_menu") );
 		add_action( 'admin_head', array($this, 'admin_head') );
@@ -2818,6 +2819,21 @@ class simple_fields {
 			
 			$action = (isset($_GET["action"])) ? $_GET["action"] : null;
 
+			// check if message should be printed
+			if ( ! empty( $_GET["message"] ) ) {
+
+				$messages = array(
+					"field-group-saved" => __('Field group saved', 'simple-fields'),
+					"post-connector-saved" => __('Post connector saved', 'simple-fields')
+				);
+				
+				if ( array_key_exists($_GET["message"], $messages) ) {
+					?><div id="message" class="updated"><p><?php echo $messages[$_GET["message"]] ?></p></div><?php
+				}
+
+			}
+
+
 			/**
 			 * save post type defaults
 			 */
@@ -2908,105 +2924,7 @@ class simple_fields {
 				$action = "";
 			}
 			
-			
-			/**
-			 * save a field group
-			 * including fields
-			 */
-			if ("edit-field-group-save" == $action) {
-			
-				if ($_POST) {
-					#sf_d($_POST);
-					$field_group_id                               = (int) $_POST["field_group_id"];
-					$field_groups[$field_group_id]["name"]        = stripslashes($_POST["field_group_name"]);
-					$field_groups[$field_group_id]["description"] = stripslashes($_POST["field_group_description"]);
-					$field_groups[$field_group_id]["slug"]        = stripslashes($_POST["field_group_slug"]);
-					$field_groups[$field_group_id]["repeatable"]  = (bool) (isset($_POST["field_group_repeatable"]));
-					$field_groups[$field_group_id]["gui_view"]    = isset( $_POST["field_group_gui_view"] )  ? "table" : "list";
-					$field_groups[$field_group_id]["fields"]      = isset($_POST["field"]) ? (array) stripslashes_deep($_POST["field"]) : array();
-
-					// When field group is created it's set to deleted in case we don't save, so undo that
-					$field_groups[$field_group_id]["deleted"] = false;
-
-					// Since 0.6 we really want all things to have slugs, so add one if it's not set
-					if (empty($field_groups[$field_group_id]["slug"])) {
-						$field_groups[$field_group_id]["slug"] = "field_group_" . $field_group_id;
-					}
-					
-					/*
-					if just one empty array like this, unset first elm
-					happens if no fields have been added (now why would you do such an evil thing?!)
-					*/
-					if (sizeof($field_groups[$field_group_id]["fields"]) == 1 && empty($field_groups[$field_group_id]["fields"][0])) {
-						unset($field_groups[$field_group_id]["fields"][0]);
-					}
-					
-					update_option("simple_fields_groups", $field_groups);
-					$this->clear_caches();
-
-					// we can have changed the options of a field group, so update connectors using this field group
-					$post_connectors = (array) $this->get_post_connectors();
-					foreach ($post_connectors as $connector_id => $connector_options) {
-						if (isset($connector_options["field_groups"][$field_group_id])) {
-							// field group existed, update name
-							$post_connectors[$connector_id]["field_groups"][$field_group_id]["name"] = stripslashes($_POST["field_group_name"]);
-						}
-					}
-					update_option("simple_fields_post_connectors", $post_connectors);
-					$this->clear_caches();
-					
-					$simple_fields_did_save = true;
-				}
-				$action = "";
-						
-			}
 	
-			/**
-			 * save a post connector
-			 */
-			if ("edit-post-connector-save" == $action) {
-				if ($_POST) {
-										
-					$connector_id = (int) $_POST["post_connector_id"];
-					$post_connectors[$connector_id]["name"] = (string) stripslashes($_POST["post_connector_name"]);
-					$post_connectors[$connector_id]["slug"] = (string) ($_POST["post_connector_slug"]);
-					$post_connectors[$connector_id]["field_groups"] = (array) @$_POST["added_fields"];
-					$post_connectors[$connector_id]["post_types"] = (array) @$_POST["post_types"];
-					$post_connectors[$connector_id]["hide_editor"] = (bool) @$_POST["hide_editor"];
-	
-					// a post type can only have one default connector, so make sure only the connector
-					// that we are saving now has it; remove it from all others;
-					/*
-					$post_types_type_default = (array) $_POST["post_types_type_default"];
-					foreach ($post_types_type_default as $one_default_post_type) {
-						foreach ($post_connectors as $one_post_connector) {
-							if (in_array($one_default_post_type, $one_post_connector["post_types_type_default"])) {
-								$array_key = array_search($one_default_post_type, $one_post_connector["post_types_type_default"]);
-								if ($array_key !== false) {
-									unset($post_connectors[$one_post_connector["id"]]["post_types_type_default"][$array_key]);
-								}
-							}
-						}
-					}
-					$post_connectors[$connector_id]["post_types_type_default"] = $post_types_type_default;
-					*/
-					
-					// for some reason I got an empty connector (array key was empty) so check for these and remove
-					$post_connectors_tmp = array();
-					foreach ($post_connectors as $key => $one_connector) {
-						if (!empty($one_connector)) {
-							$post_connectors_tmp[$key] = $one_connector;
-						}
-					}
-					$post_connectors = $post_connectors_tmp;
-	
-					update_option("simple_fields_post_connectors", $post_connectors);
-					$this->clear_caches();
-	
-					$simple_fields_did_save_connector = true;
-				}
-				$action = "";
-			}
 	
 			
 			/**
@@ -3398,7 +3316,7 @@ class simple_fields {
 					
 					// Show messages, like "saved" and so on
 					if (isset($simple_fields_did_save) && $simple_fields_did_save) {
-						?><div id="message" class="updated"><p><?php _e('Field group saved', 'simple-fields') ?></p></div><?php
+						
 					} elseif (isset($simple_fields_did_delete) && $simple_fields_did_delete) {
 						?><div id="message" class="updated"><p><?php _e('Field group deleted', 'simple-fields') ?></p></div><?php
 					} elseif (isset($simple_fields_did_delete_post_connector) && $simple_fields_did_delete_post_connector) {
@@ -3444,9 +3362,6 @@ class simple_fields {
 					<h3><?php _e('Post Connectors', 'simple-fields') ?></h3>
 	
 					<?php
-					if (isset($simple_fields_did_save_connector) && $simple_fields_did_save_connector === true) {
-						?><div id="message" class="updated"><p><?php _e('Post connector saved', 'simple-fields') ?></p></div><?php
-					}
 	
 					if ($post_connector_count) {
 						?><ul><?php
@@ -4361,6 +4276,110 @@ class simple_fields {
 	} // end func get_core_field_types
 
 
+	function options_page_save() {
+
+		// only perform action on fields pages
+		if ( isset( $_GET["page"] ) && ("simple-fields-options" == $_GET["page"]) ) {
+
+			if ( ! isset($_GET["action"]) || empty( $_GET["action"] ) ) return;
+			$action = $_GET["action"];
+
+			global $sf;
+		
+			$field_groups = $this->get_field_groups();
+			$post_connectors = $this->get_post_connectors();
+			$menu_page_url  = menu_page_url("simple-fields-options", false);
+
+			/**
+			 * save a post connector
+			 */
+			if ("edit-post-connector-save" == $action) {
+				if ($_POST) {
+										
+					$connector_id = (int) $_POST["post_connector_id"];
+					$post_connectors[$connector_id]["name"] = (string) stripslashes($_POST["post_connector_name"]);
+					$post_connectors[$connector_id]["slug"] = (string) ($_POST["post_connector_slug"]);
+					$post_connectors[$connector_id]["field_groups"] = (array) @$_POST["added_fields"];
+					$post_connectors[$connector_id]["post_types"] = (array) @$_POST["post_types"];
+					$post_connectors[$connector_id]["hide_editor"] = (bool) @$_POST["hide_editor"];
+						
+					// for some reason I got an empty connector (array key was empty) so check for these and remove
+					$post_connectors_tmp = array();
+					foreach ($post_connectors as $key => $one_connector) {
+						if (!empty($one_connector)) {
+							$post_connectors_tmp[$key] = $one_connector;
+						}
+					}
+					$post_connectors = $post_connectors_tmp;
+	
+					update_option("simple_fields_post_connectors", $post_connectors);
+					$this->clear_caches();
+	
+					$simple_fields_did_save_connector = true;
+				}
+
+				wp_redirect( add_query_arg( "message", "post-connector-saved", $menu_page_url ) );
+				exit;
+			
+			}
+
+
+			/**
+			 * save a field group
+			 * including fields
+			 */
+			if ("edit-field-group-save" == $action) {
+			
+				if ($_POST) {
+					#sf_d($_POST);
+					$field_group_id                               = (int) $_POST["field_group_id"];
+					$field_groups[$field_group_id]["name"]        = stripslashes($_POST["field_group_name"]);
+					$field_groups[$field_group_id]["description"] = stripslashes($_POST["field_group_description"]);
+					$field_groups[$field_group_id]["slug"]        = stripslashes($_POST["field_group_slug"]);
+					$field_groups[$field_group_id]["repeatable"]  = (bool) (isset($_POST["field_group_repeatable"]));
+					$field_groups[$field_group_id]["gui_view"]    = isset( $_POST["field_group_gui_view"] )  ? "table" : "list";
+					$field_groups[$field_group_id]["fields"]      = isset($_POST["field"]) ? (array) stripslashes_deep($_POST["field"]) : array();
+
+					// When field group is created it's set to deleted in case we don't save, so undo that
+					$field_groups[$field_group_id]["deleted"] = false;
+
+					// Since 0.6 we really want all things to have slugs, so add one if it's not set
+					if (empty($field_groups[$field_group_id]["slug"])) {
+						$field_groups[$field_group_id]["slug"] = "field_group_" . $field_group_id;
+					}
+					
+					/*
+					if just one empty array like this, unset first elm
+					happens if no fields have been added (now why would you do such an evil thing?!)
+					*/
+					if (sizeof($field_groups[$field_group_id]["fields"]) == 1 && empty($field_groups[$field_group_id]["fields"][0])) {
+						unset($field_groups[$field_group_id]["fields"][0]);
+					}
+					
+					update_option("simple_fields_groups", $field_groups);
+					$this->clear_caches();
+
+					// we can have changed the options of a field group, so update connectors using this field group
+					$post_connectors = (array) $this->get_post_connectors();
+					foreach ($post_connectors as $connector_id => $connector_options) {
+						if (isset($connector_options["field_groups"][$field_group_id])) {
+							// field group existed, update name
+							$post_connectors[$connector_id]["field_groups"][$field_group_id]["name"] = stripslashes($_POST["field_group_name"]);
+						}
+					}
+					update_option("simple_fields_post_connectors", $post_connectors);
+					$this->clear_caches();
+					
+					$simple_fields_did_save = true;
+				}
+				
+				wp_redirect( add_query_arg( "message", "field-group-saved", $menu_page_url ) );
+				exit;
+						
+			}
+
+		}
+	}
 
 } // end class
 
