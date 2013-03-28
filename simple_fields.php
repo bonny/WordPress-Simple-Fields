@@ -624,7 +624,7 @@ class simple_fields {
 				}
 
 				// Options, common for most core field
-				$field_type_options = empty( $field["options"][$field["type"]] ) ? array() : (array) $field["options"][$field["type"]];
+				$field_type_options = empty( $field["options"][$field["types"]] ) ? array() : (array) $field["options"][ $field["type"] ];
 				$placeholder = empty( $field_type_options["placeholder"] ) ? "" : esc_attr( $field_type_options["placeholder"] );
 				
 				// div that wraps around each outputed field
@@ -2786,6 +2786,7 @@ class simple_fields {
 		}
 		
 		uasort($field_groups, "simple_fields_uasort");
+		#sf_d($field_groups);
 		uasort($post_connectors, "simple_fields_uasort");
 			
 		?>
@@ -2922,7 +2923,10 @@ class simple_fields {
 					$field_groups[$field_group_id]["slug"]        = stripslashes($_POST["field_group_slug"]);
 					$field_groups[$field_group_id]["repeatable"]  = (bool) (isset($_POST["field_group_repeatable"]));
 					$field_groups[$field_group_id]["gui_view"]    = isset( $_POST["field_group_gui_view"] )  ? "table" : "list";
-					$field_groups[$field_group_id]["fields"]      = (array) stripslashes_deep($_POST["field"]);
+					$field_groups[$field_group_id]["fields"]      = isset($_POST["field"]) ? (array) stripslashes_deep($_POST["field"]) : array();
+
+					// When field group is created it's set to deleted in case we don't save, so undo that
+					$field_groups[$field_group_id]["deleted"] = false;
 
 					// Since 0.6 we really want all things to have slugs, so add one if it's not set
 					if (empty($field_groups[$field_group_id]["slug"])) {
@@ -3185,16 +3189,26 @@ class simple_fields {
 				$field_group_id = (isset($_GET["group-id"])) ? intval($_GET["group-id"]) : false;
 				
 				$highest_field_id = 0;
+				$is_new_field_group = false;
 
 				// check if field group is new or existing
 				if ($field_group_id === 0) {
 
 					// new: save it as unnamed, and then set to edit that
-					$field_group_in_edit = simple_fields_register_field_group();
+					$is_new_field_group = true;
+					$field_group_in_edit = simple_fields_register_field_group("", array("deleted" => true));
+					$field_group_in_edit["name"] = "";
+					$field_group_in_edit["slug"] = "";
 
 					simple_fields::debug("Added new field group", $field_group_in_edit);
 	
 				} else {
+
+					// check that field group exists
+					if ( ! isset($field_groups[$field_group_id]) ) {
+						wp_die( __("Could not find field group. Perhaps it has been deleted?", "simple-fields") );
+					}
+					$field_group_in_edit = $field_groups[$field_group_id];
 
 					// existing: get highest field id
 					foreach ($field_groups[$field_group_id]["fields"] as $one_field) {
@@ -3202,34 +3216,34 @@ class simple_fields {
 							$highest_field_id = $one_field["id"];
 						}
 					}
-	
-					$field_group_in_edit = $field_groups[$field_group_id];
 
 				}
 
 				?>
 				<form method="post" action="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-field-group-save">
+					
 					<h3><?php _e('Field group details', 'simple-fields') ?></h3>
+					
 					<table class="form-table">
 						<tr>
 							<th>
 								<label for="field_group_name"><?php _e('Name', 'simple-fields') ?></label>
 							</th>
 							<td>
-								<input type="text" name="field_group_name" id="field_group_name" class="regular-text" value="<?php echo esc_html($field_group_in_edit["name"]) ?>" required />
+								<input 
+									type="text" 
+									name="field_group_name" 
+									id="field_group_name" 
+									class="regular-text" 
+									value="<?php echo esc_html($field_group_in_edit["name"]) ?>" required
+									placeholder="<?php _e("Enter a name for this field group", "simple-fields"); ?>"
+									<?php if ($is_new_field_group) { ?>
+										autofocus
+									<?php } ?>
+									/>
 							</td>
 						</tr>
-						<tr>
-							<th>
-								<label for="field_group_description"><?php _e('Description', 'simple-fields') ?></label>
-							</th>
-							<td>
-								<input 	type="text" name="field_group_description" id="field_group_description" class="regular-text" 
-										value="<?php echo esc_html(@$field_group_in_edit["description"]) ?>"
-										 />
-							</td>
-						</th>
-
+						
 						<tr>
 							<th>
 								<label for="field_group_slug"><?php _e('Slug', 'simple-fields') ?></label>
@@ -3246,6 +3260,17 @@ class simple_fields {
 								 <span class="description"><?php echo __("A unique identifier for this field group.", 'simple-fields') ?></span>
 							</td>
 						</tr>
+
+						<tr>
+							<th>
+								<label for="field_group_description"><?php _e('Description', 'simple-fields') ?></label>
+							</th>
+							<td>
+								<input 	type="text" name="field_group_description" id="field_group_description" class="regular-text" 
+										value="<?php echo esc_html(@$field_group_in_edit["description"]) ?>"
+									/>
+							</td>
+						</th>
 
 						<tr>
 							<th>
@@ -4082,14 +4107,14 @@ class simple_fields {
 
 	/**
 	 * Gets a field group using it's id. Deleted field groups are not included
+	 *
 	 * @since 1.0.5
 	 * @param string slug of field group (or id, actually)
 	 * @return mixed array with field group info if field groups exists, false if does not exist
 	 */
-	function get_field_group_by_slug($field_group_slug) {
+	function get_field_group_by_slug($field_group_slug, $include_deleted = false) {
 
-		$cache_key = 'simple_fields_'.$this->ns_key.'_get_field_group_by_slug_' . $field_group_slug;
-		
+		$cache_key = 'simple_fields_'.$this->ns_key.'_get_field_group_by_slug_deleted_' . (int) $include_deleted . "_" . $field_group_slug;
 		$return_val = wp_cache_get( $cache_key, 'simple_fields' );
 		
 		if (FALSE === $return_val) {
@@ -4100,7 +4125,9 @@ class simple_fields {
 	
 				// not number so look for field group with this variable as slug
 				foreach ($field_groups as $one_field_group) {
-					if ($one_field_group["deleted"]) continue;
+					
+					if ( $one_field_group["deleted"] && ! $include_deleted ) continue;
+					
 					if ($one_field_group["slug"] == $field_group_slug) {
 
 						wp_cache_set( $cache_key, $one_field_group, 'simple_fields' );
@@ -4118,25 +4145,33 @@ class simple_fields {
 			} else {
 	
 				// look for group using id
-				if (isset($field_groups[$field_group_slug]) && is_array($field_groups[$field_group_slug]) && !$field_groups[$field_group_slug]["deleted"]) {
+				if ( isset($field_groups[$field_group_slug]) && is_array($field_groups[$field_group_slug]) ) {
+
+					if ( $field_groups[$field_group_slug]["deleted"] && ! $include_deleted) {
+	
+						// deleted and we don't want deleted ones
+						wp_cache_set( $cache_key, FALSE, 'simple_fields' );					
+						$return_val = apply_filters( "simple_fields_get_field_group_by_slug", $return_val, $field_group_slug);
+						return $return_val;
+
+					}
 
 					wp_cache_set( $cache_key, $field_groups[$field_group_slug], 'simple_fields' );
-
 					$return_val = $field_groups[$field_group_slug];
 					$return_val = apply_filters( "simple_fields_get_field_group_by_slug", $return_val, $field_group_slug);
 					return $return_val;
 
 				} else {
 
-					wp_cache_set( $cache_key, FALSE, 'simple_fields' );
-					
+					wp_cache_set( $cache_key, FALSE, 'simple_fields' );					
 					$return_val = apply_filters( "simple_fields_get_field_group_by_slug", $return_val, $field_group_slug);
 					return $return_val;
+
 				}
 				
 			}
 				
-		}
+		} // if not in cache
 
 		$return_val = apply_filters( "simple_fields_get_field_group_by_slug", $return_val, $field_group_slug);
 		return $return_val;

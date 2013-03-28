@@ -270,7 +270,7 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 		foreach ($selected_post_connector["field_groups"] as $one_field_group) { // one_field_group = name, deleted, context, priority, id
 	
 			// now get all fields for that fieldgroup and join them together
-			$selected_post_connector["field_groups"][$one_field_group["id"]] = array_merge($selected_post_connector["field_groups"][$one_field_group["id"]], $field_groups[$one_field_group["id"]]);
+			$selected_post_connector["field_groups"][ $one_field_group["id"] ] = array_merge( $selected_post_connector["field_groups"][ $one_field_group["id"] ], $field_groups[ $one_field_group["id"] ] );
 	
 			// loop through all fields within this field group
 			// now find out how many times this field group has been added
@@ -534,6 +534,12 @@ function simple_fields_merge_arrays($array1 = array(), $array2 = array()) {
  */
 function simple_fields_register_field_group($slug = "", $new_field_group = array()) {
 
+	// Make sure options are not completely out of order
+	if ( ! is_string($slug) || ! is_array($new_field_group) ) {
+		_doing_it_wrong( __FUNCTION__, __("Wrong type of arguments passed", "simple-fields"),  1);
+		return false;
+	}
+
 	global $sf;
 
 	$field_groups = $sf->get_field_groups();
@@ -649,8 +655,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 
 		}
 
-
-	}
+	} // if new or not
 
 	// Find the highest existing id. New fields will get this id plus one
 	// Note that the highest ID is not the last, since the order of the keys is in custom order, not ascending
@@ -1102,12 +1107,11 @@ must be like:
 	} // if passed as arg field group has fields
 
 	// Save to options and clear cache
-
 	update_option("simple_fields_groups", $field_groups);
 	$sf->clear_caches();
 
 	// Re-get the field so it's the same as when getting a field group manually
-	$field_group_by_slug = $sf->get_field_group_by_slug($slug);
+	$field_group_by_slug = $sf->get_field_group_by_slug($slug, true);
 
 	return $field_group_by_slug;
 

@@ -36,7 +36,9 @@ ul.simple-fields-edit-field-groups-added-fields {
 #post_connector_name
  {
 	font-size: 1.5em;
-	font-weight: bold;
+	/*font-weight: bold;*/
+	width: 16.6em;
+	line-height: 1.2;
 }
 
 .simple-fields-field-group-one-field-name {
