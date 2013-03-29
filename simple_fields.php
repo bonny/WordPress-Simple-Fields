@@ -625,7 +625,7 @@ class simple_fields {
 				}
 
 				// Options, common for most core field
-				$field_type_options = empty( $field["options"][$field["types"]] ) ? array() : (array) $field["options"][ $field["type"] ];
+				$field_type_options = ! isset( $field["options"] ) || ! isset( $field["options"][$field["type"]] ) ? array() : (array) $field["options"][ $field["type"] ];
 				$placeholder = empty( $field_type_options["placeholder"] ) ? "" : esc_attr( $field_type_options["placeholder"] );
 				
 				// div that wraps around each outputed field
@@ -981,13 +981,15 @@ class simple_fields {
 		
 						$text_value_esc = esc_html($saved_value);
 
+						$type_attr = isset( $field_type_options["subtype"] ) ? $field_type_options["subtype"] : "text";
+
 						echo "<div class='simple-fields-metabox-field-first'>";
 						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
 						echo $description;
 						echo "</div>";
 
 						echo "<div class='simple-fields-metabox-field-second'>";
-						echo "<input class='text' name='$field_name' id='$field_unique_id' value='$text_value_esc' placeholder='$placeholder' />";
+						echo "<input type='$type_attr' class='text' name='$field_name' id='$field_unique_id' value='$text_value_esc' placeholder='$placeholder' />";
 						echo "</div>";
 		
 					} elseif ("color" == $field["type"]) {
