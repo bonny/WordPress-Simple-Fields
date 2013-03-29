@@ -236,6 +236,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 == Changelog ==
 
 #### Version 1.1.x
+- Added support for HTML5 input types like color, date, range, email, url. Bevare, support depends on the browser. These are subtypes of the text field, since browsers do fall back to text field if they don't support the new fancy input type.
 - Added support for the new media manager that was introduced in WordPress 3.5 (yes, finally!)
 - Added support for adding fields to attachments, attachments now works the way as regular posts: just any amount of fields to an attachment.
 - Fixed bug with repeatable fields containing tiny mce-editors (textarea with wysiwyg/html-capabilities). Fixes https://github.com/bonny/WordPress-Simple-Fields/issues/73.
