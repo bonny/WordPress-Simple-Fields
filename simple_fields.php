@@ -2369,67 +2369,7 @@ class simple_fields {
 			$field_text_options = isset($field_options["text"]) ? (array) $field_options["text"] : array();
 			$out .= "<div class='simple-fields-field-group-one-field-row " . (($field_type=="text") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-textarea'>";
 
-			// html input types
-			// @since 1.2
-			$arr_text_input_types = array(
-				"text" => array(
-					"description" => "text",
-					"version" => "html"
-				),
-				"password" => array(
-					"description" => "password",
-					"version" => "html"
-				),
-				"tel" => array(
-					"description" => "tel",
-					"version" => "html5"
-				),
-				"url" => array(
-					"description" => "url",
-					"version" => "html5"
-				),
-				"email" => array(
-					"description" => "email",
-					"version" => "html5"
-				),
-				"datetime" => array(
-					"description" => "datetime",
-					"version" => "html5"
-				),
-				"date" => array(
-					"description" => "date",
-					"version" => "html5"
-				),
-				"month" => array(
-					"description" => "month",
-					"version" => "html5"
-				),
-				"week" => array(
-					"description" => "week",
-					"version" => "html5"
-				),
-				"time" => array(
-					"description" => "time",
-					"version" => "html5"
-				),
-				"datetime-local	" => array(
-					"description" => "datetime",
-					"version" => "html5"
-				),
-				"number" => array(
-					"description" => "number",
-					"version" => "html5"
-				),
-				"range" => array(
-					"description" => "range",
-					"version" => "html5"
-				),
-				"color" => array(
-					"description" => "color",
-					"version" => "html5"
-				),
-			);
-
+			$arr_text_input_types = $this->get_html_text_types();
 			$str_input_types_select = "";
 			$prev_input_version = "";
 
@@ -4489,7 +4429,77 @@ class simple_fields {
 
 		}
 
+	} // save options
+
+	/**
+	 * Get the html input types that we show in text field type
+	 * @since 1.2
+	 * @return array
+	 */
+	function get_html_text_types() {
+
+		$arr_text_input_types = array(
+			"text" => array(
+				"description" => "text",
+				"version" => "html"
+			),
+			"password" => array(
+				"description" => "password",
+				"version" => "html"
+			),
+			"tel" => array(
+				"description" => "tel",
+				"version" => "html5"
+			),
+			"url" => array(
+				"description" => "url",
+				"version" => "html5"
+			),
+			"email" => array(
+				"description" => "email",
+				"version" => "html5"
+			),
+			"datetime" => array(
+				"description" => "datetime",
+				"version" => "html5"
+			),
+			"date" => array(
+				"description" => "date",
+				"version" => "html5"
+			),
+			"month" => array(
+				"description" => "month",
+				"version" => "html5"
+			),
+			"week" => array(
+				"description" => "week",
+				"version" => "html5"
+			),
+			"time" => array(
+				"description" => "time",
+				"version" => "html5"
+			),
+			"datetime-local	" => array(
+				"description" => "datetime",
+				"version" => "html5"
+			),
+			"number" => array(
+				"description" => "number",
+				"version" => "html5"
+			),
+			"range" => array(
+				"description" => "range",
+				"version" => "html5"
+			),
+			"color" => array(
+				"description" => "color",
+				"version" => "html5"
+			),
+		);
+		$arr_text_input_types = apply_filters("simple_fields_get_html_text_types", $arr_text_input_types);
+		return $arr_text_input_types;
 	}
+
 
 } // end class
 
