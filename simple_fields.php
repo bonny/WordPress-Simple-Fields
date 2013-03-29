@@ -2369,94 +2369,120 @@ class simple_fields {
 			$field_text_options = isset($field_options["text"]) ? (array) $field_options["text"] : array();
 			$out .= "<div class='simple-fields-field-group-one-field-row " . (($field_type=="text") ? "" : " hidden ") . " simple-fields-field-type-options simple-fields-field-type-options-textarea'>";
 
-				// html 5 input types
-				// http://www.html5rocks.com/en/tutorials/forms/html5forms/
-				$arr_text_input_types = array(
-					"text" => array(
-						"description" => "text"
-					),					
-					"tel" => array(
-						"description" => "tel"
-					),
-					"url" => array(
-						"description" => "url"
-					),
-					"email" => array(
-						"description" => "email"
-					),
-					"datetime" => array(
-						"description" => "datetime"
-					),
-					"date" => array(
-						"description" => "date"
-					),
-					"month" => array(
-						"description" => "month"
-					),
-					"week" => array(
-						"description" => "week"
-					),
-					"time" => array(
-						"description" => "time"
-					),
-					"datetime-local	" => array(
-						"description" => "datetime"
-					),
-					"number" => array(
-						"description" => "number"
-					),
-					"range" => array(
-						"description" => "range"
-					),
-					"color" => array(
-						"description" => "color"
-					),
-				);
+			// html input types
+			// @since 1.2
+			$arr_text_input_types = array(
+				"text" => array(
+					"description" => "text",
+					"version" => "html"
+				),
+				"password" => array(
+					"description" => "password",
+					"version" => "html"
+				),
+				"tel" => array(
+					"description" => "tel",
+					"version" => "html5"
+				),
+				"url" => array(
+					"description" => "url",
+					"version" => "html5"
+				),
+				"email" => array(
+					"description" => "email",
+					"version" => "html5"
+				),
+				"datetime" => array(
+					"description" => "datetime",
+					"version" => "html5"
+				),
+				"date" => array(
+					"description" => "date",
+					"version" => "html5"
+				),
+				"month" => array(
+					"description" => "month",
+					"version" => "html5"
+				),
+				"week" => array(
+					"description" => "week",
+					"version" => "html5"
+				),
+				"time" => array(
+					"description" => "time",
+					"version" => "html5"
+				),
+				"datetime-local	" => array(
+					"description" => "datetime",
+					"version" => "html5"
+				),
+				"number" => array(
+					"description" => "number",
+					"version" => "html5"
+				),
+				"range" => array(
+					"description" => "range",
+					"version" => "html5"
+				),
+				"color" => array(
+					"description" => "color",
+					"version" => "html5"
+				),
+			);
 
-				// attributes
-				// pattern
-				$str_input_types_select = "";
-				foreach ( $arr_text_input_types as $one_input_type ) {
-					$str_input_types_select .= sprintf('<option>%1$s</option>', $one_input_type["description"]);
+			$str_input_types_select = "";
+			$prev_input_version = "";
+
+			// default sub type is text, since that's the only was that existed before 1.2
+			$selected_sub_type = isset( $field_text_options["subtype"] ) ? $field_text_options["subtype"] : "text";
+
+			foreach ( $arr_text_input_types as $one_input_type_key => $one_input_type ) {
+				if ($prev_input_version != $one_input_type["version"]) {
+					if ("html" == $one_input_type["version"]) {
+						$str_input_types_select .= "<optgroup label='" . _x("Plain Old HTML", "Text field options", "simple-fields") . "'>";
+					} else if ("html5" == $one_input_type["version"]) {
+						$str_input_types_select .= "<optgroup label='" . _x("New Fancy HTML5 Input Types", "Text field options", "simple-fields") . "'>";
+					}
+					$prev_input_version = $one_input_type["version"];
 				}
+				$str_input_types_select .= sprintf('<option %3$s value="%2$s">%1$s</option>', $one_input_type["description"], $one_input_type_key, ($one_input_type_key === $selected_sub_type) ? "selected" : "" );
+			}
 
-				$out .= sprintf('
-					<div class="simple-fields-field-group-one-field-row">
-						<div class="simple-fields-field-group-one-field-row-col-first">
-							<label>%1$s</label>
-						</div>
-						<div class="simple-fields-field-group-one-field-row-col-second">
-							<select>
-								<optgroup label="Plain Text">
-									<option>text</option>
-								</optgroup>
-								<optgroup label="HTML5 Input Types">
-									%2$s
-								</optgroup>
-							</select>
-							<br>
-							<span class="description">%3$s</span>
-						</div>
+			$out .= sprintf('
+				<div class="simple-fields-field-group-one-field-row">
+					<div class="simple-fields-field-group-one-field-row-col-first">
+						<label>%1$s</label>
 					</div>
-					', 
-				 	_x("Input type", "Text field options", "simple-fields"),
-				 	$str_input_types_select,
-				 	"HTML5 introduces 13 new input types. When viewed in a browser that doesn't support them, these input types fall back to text input. http://www.html5rocks.com/en/tutorials/forms/html5forms/"
-				);
-
-				$out .= "
-					<div class='simple-fields-field-group-one-field-row'>
-						<div class='simple-fields-field-group-one-field-row-col-first'>
-							<label>" . _x('Placeholder text', 'Text field options', 'simple-fields') . "</label>
-						</div>
-						<div class='simple-fields-field-group-one-field-row-col-second'>
-							<input class='regular-text' type='text' name='field[{$fieldID}][options][text][placeholder]' value='" . esc_attr( isset( $field_text_options["placeholder"] ) ? $field_text_options["placeholder"] : "" ) . "'>
-						</div>
+					<div class="simple-fields-field-group-one-field-row-col-second">
+						<select name="%4$s">
+							%2$s
+						</select>
+						<br>
+						<span class="description">%3$s</span>
 					</div>
-					";
+				</div>
+				', 
+			 	_x("Sub type", "Text field options", "simple-fields"),
+			 	$str_input_types_select,
+			 	sprintf( _x( 'HTML5 introduces new input types, that fall back to text input in browsers that don\'t support them. <a target="_blank" href="%1$s">Read more at HTML5 Rocks</a>.', "simple-fields"), "http://www.html5rocks.com/en/tutorials/forms/html5forms/" ),
+			 	"field[{$fieldID}][options][text][subtype]"
+			);
 
-				// end text options
-				$out .= "
+			$out .= "
+				<div class='simple-fields-field-group-one-field-row'>
+					<div class='simple-fields-field-group-one-field-row-col-first'>
+						<label>" . _x('Placeholder text', 'Text field options', 'simple-fields') . "</label>
+					</div>
+					<div class='simple-fields-field-group-one-field-row-col-second'>
+						<input class='regular-text' type='text' name='field[{$fieldID}][options][text][placeholder]' value='" . esc_attr( isset( $field_text_options["placeholder"] ) ? $field_text_options["placeholder"] : "" ) . "'>
+						<br>
+						<span class='description'>" . __("A hint to the user of what can be entered in the field.", "simple-fields") . "</span>
+					</div>
+				</div>
+				";
+
+			// end text options
+			$out .= "
 			</div>
 			";
 
