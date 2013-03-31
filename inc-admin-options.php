@@ -680,6 +680,7 @@ if ( isset($_GET["action"]) ) {
 								<?php
 								$field_groups_output = "";
 								foreach ( $one_post_connector["field_groups"] as $one_field_group ) {
+									if ( $one_field_group["deleted"] ) continue;
 									$field_groups_output .= sprintf( '%1$s, ', esc_attr( $one_field_group["name"] ) );
 								}
 								$field_groups_output = preg_replace('/, $/', '', $field_groups_output);
@@ -712,12 +713,14 @@ if ( isset($_GET["action"]) ) {
 			
 			<h3><?php _e('Post type defaults', 'simple-fields') ?></h3>
 			
-			<table class="wp-list-table widefat xfixed">
+			<table class="wp-list-table widefat fixed">
 					
 				<thead>
 					<tr>
 						<th>Post type</th>
 						<th>Default connector</th>
+						<th></th><!-- two empty to make table widths same as the other tables -->
+						<th></th>
 					</tr>
 				</thead>
 
@@ -761,6 +764,8 @@ if ( isset($_GET["action"]) ) {
 								<td>
 									<span><?php echo $default_connector_str ?></span>
 								</td>
+								<td></td>
+								<td></td>
 							</tr>
 							<?php
 					
@@ -771,7 +776,7 @@ if ( isset($_GET["action"]) ) {
 				</tbody>
 
 			</table>
-			
+
 		</div>	
 
 

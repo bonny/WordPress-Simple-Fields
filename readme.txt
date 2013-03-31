@@ -287,10 +287,11 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 - Added "meta_key" as key to all fields when using get_field_by_slug() somewhere. 
   Makes it easy to know/get the meta key if you need it. returns the meta key for the first field in that field group. 
   If group is repeatable you must add number to numInSet yourself. Will contain a value like "_simple_fields_fieldGroupID_1_fieldID_2_numInSet_0"
-- Lotsa code cleanups and stuff
 - Fixed so plugin works with jQuery 1.9, because now jQuery(htmlString) requires first char to be < for string to be considered HTML. Was not working due to spaces before first HMTL tag.
 - Added Slovak translation by Branco. Thanks a lot!
 - Added nonces to admin to prevent CSRF
+- Added table view to admin instead of ul-li-lists. Makes the admin looks nicer and more WordPress-ish.
+- Lotsa code cleanups and stuff
 
 #### Version 1.1.6
 - Fixed bug that could lead to memoryleak. Thanks to plux/angry creative for patch.
