@@ -1891,11 +1891,11 @@ class simple_fields {
 		// Let user change to connector being used for post
 		// Filter here can return a string that is the slug, 
 		// and then we will get the id for that post before continuing
-		$connector_to_use = apply_filters( "simple_fields_get_selected_connector_for_post", $connector_to_use, $post);
-		if ( ! is_numeric($connector_to_use) && ! is_null( $connector_to_use ) ) {
-			$connector_to_use_info = $this->get_post_connector_by_slug( $connector_to_use );
-			$connector_to_use = $connector_to_use_info["id"];
-		}
+		#$connector_to_use = apply_filters( "simple_fields_get_selected_connector_for_post", $connector_to_use, $post);
+		#if ( ! is_numeric($connector_to_use) && ! is_null( $connector_to_use ) ) {
+		#	$connector_to_use_info = $this->get_post_connector_by_slug( $connector_to_use );
+	#		$connector_to_use = $connector_to_use_info["id"];
+#		}
 
 		return $connector_to_use;
 	
