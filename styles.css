@@ -125,6 +125,11 @@ div.delete a:hover {
 	color: #FF0000;
 }
 
+.settings_page_simple-fields-options .add-new-h2 {
+	font-weight: normal;
+	top: 0;
+}
+
 li.simple-fields-field-group-one-field {
 	position: relative;
 }

@@ -33,6 +33,7 @@ if ( isset($_GET["action"]) ) {
 			position: relative;
 			top: -10px;
 			font-size: 12px;
+			font-family: inherit;
 		}
 		.settings_page_simple-fields-options form > h3 {
 			margin-left: 44px;
@@ -73,7 +74,7 @@ if ( isset($_GET["action"]) ) {
 	
 	$action = (isset($_GET["action"])) ? $_GET["action"] : null;
 
-	// check if message should be printed
+	// Print messages at top
 	if ( ! empty( $_GET["message"] ) ) {
 
 		$messages = array(
@@ -90,7 +91,6 @@ if ( isset($_GET["action"]) ) {
 		}
 
 	}
-
 
 	/**
 	 * edit post type defaults
@@ -516,15 +516,25 @@ if ( isset($_GET["action"]) ) {
 
 
 		/**
-		 * view existing field groups
+		 * view list of existing field groups
 		 */	
 		?>
 		<div class="simple-fields-edit-field-groups">
-
-			<h3><?php _e('Field groups', 'simple-fields') ?></h3>
-
+			
 			<?php
-								
+
+			printf('
+				<h3>
+					%1$s
+					<a href="%2$s" class="add-new-h2">%3$s</a>
+				</h3>
+				',
+				__('Field groups', 'simple-fields'),
+				SIMPLE_FIELDS_FILE . "&amp;action=edit-field-group&amp;group-id=0",
+				__('Add new')
+			);
+			
+			// Count num of non deleted field groups		
 			$field_group_count = 0;
 			foreach ($field_groups as $oneFieldGroup) {
 				if (!$oneFieldGroup["deleted"]) {
@@ -533,106 +543,235 @@ if ( isset($_GET["action"]) ) {
 			}
 
 			if ($field_groups == $field_group_count) {
+			
 				echo "<p>".__('No field groups yet.', 'simple-fields')."</p>";
+
 			} else {
-				echo "<ul class=''>";
-				foreach ($field_groups as $oneFieldGroup) {
-					if ($oneFieldGroup["id"] && !$oneFieldGroup["deleted"]) {
-						
-						echo "<li>";
-						echo "<a href='" . SIMPLE_FIELDS_FILE . "&amp;action=edit-field-group&amp;group-id=$oneFieldGroup[id]'>$oneFieldGroup[name]</a>";
-						if ($oneFieldGroup["fields_count"]) {
-							$format = $oneFieldGroup["repeatable"] ? _n('1 added field, repeatable', '%d added fields, repeatable', $oneFieldGroup["fields_count"]) : _n('1 added field', '%d added fields', $oneFieldGroup["fields_count"]);
-							echo "<br>" . __( sprintf($format, $oneFieldGroup["fields_count"]) );
+
+				?>
+				<table class="wp-list-table widefat fixed">
+					
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Slug</th>
+							<th>Fields</th>
+							<th>Added fields</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<?php
+						$loopnum = 0;
+						foreach ($field_groups as $oneFieldGroup) {
+	
+							if ($oneFieldGroup["id"] && !$oneFieldGroup["deleted"]) {
+				
+								$row_class = $loopnum % 2 == 0 ? "alternate" : "";
+
+								$editlink = SIMPLE_FIELDS_FILE . "&amp;action=edit-field-group&amp;group-id=$oneFieldGroup[id]";
+								$remove_url = add_query_arg(array("action" => "delete-field-group", "group-id" => $oneFieldGroup["id"]), SIMPLE_FIELDS_FILE);
+								$remove_url = wp_nonce_url( $remove_url, "delete-field-group");
+
+								echo "<tr class='$row_class'>";
+
+								echo "<td><a href='$editlink'><strong>$oneFieldGroup[name]</strong></a>";
+								?><div class="row-actions">
+									<span class="edit"><a href="<?php echo $editlink ?>" title="<?php _e("Edit this item") ?>"><?php _e("Edit") ?></a></span>
+									<!-- <span class="trash"><a class="submitdelete" href="<?php echo $remove_url ?>"><?php _e("Trash") ?></a></span> -->
+								</div><?php
+								echo "</td>";
+
+								printf('<td>%1$s</td>', $oneFieldGroup["slug"]);
+
+								echo "<td>";
+								if ($oneFieldGroup["fields_count"]) {
+									$format = $oneFieldGroup["repeatable"] ? _n('1 repeatable', '%d repeatable', $oneFieldGroup["fields_count"]) : _n('1', '%d', $oneFieldGroup["fields_count"]);
+									echo __( sprintf($format, $oneFieldGroup["fields_count"]) );
+								}
+								echo "</td>";
+
+								// Fields in this field group
+								echo "<td>";
+								$fields_out = "";
+								foreach ( $oneFieldGroup["fields"] as $one_field ) {
+									if ($one_field["deleted"]) continue;
+									$fields_out .= sprintf(
+										'%1$s (%2$s), ',
+										esc_html($one_field["name"]),
+										esc_html($one_field["type"])
+									);
+								}
+								$fields_out = preg_replace('/, $/', '', $fields_out);
+								echo $fields_out;
+								echo "</td>";
+
+								echo "</tr>";
+
+								$loopnum++;
+	
+							}
 						}
-						echo "</li>";
-					}
-				}
-				echo "</ul>";
+						?>
+					</tbody>
+				</table>
+				<?php
+
 			}
-			echo "<p><a class='button' href='" . SIMPLE_FIELDS_FILE . "&amp;action=edit-field-group&amp;group-id=0'>+ ".__('New field group', 'simple-fields')."</a></p>";
+
 			?>
 		</div>
 	
 	
 		<div class="simple-fields-edit-post-connectors">
 
-			<h3><?php _e('Post Connectors', 'simple-fields') ?></h3>
+			<h3>
+				<?php _e('Post Connectors', 'simple-fields') ?>
+				<a class="add-new-h2" href="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-post-connector&amp;connector-id=0"><?php _e('Add new') ?></a>
+			</h3>
 
 			<?php
 
 			if ($post_connector_count) {
-				?><ul><?php
+				?>				
+				<table class="wp-list-table widefat fixed">
+					
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Slug</th>
+							<th>Field groups</th>
+							<th>Added field groups</th>
+						</tr>
+					</thead>
+
+					<tbody>
+					<?php
+
+					$loopnum = 0;
 					foreach ($post_connectors as $one_post_connector) {
+						
 						if ($one_post_connector["deleted"] || !$one_post_connector["id"]) {
 							continue;
 						}
-
+						
+						$row_class = $loopnum % 2 == 0 ? "alternate" : "";
+						$edit_url = SIMPLE_FIELDS_FILE . "&amp;action=edit-post-connector&amp;connector-id=" . $one_post_connector["id"];
 						?>
-						<li>
-							<a href="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-post-connector&amp;connector-id=<?php echo $one_post_connector["id"] ?>"><?php echo $one_post_connector["name"] ?></a>
-							<?php
-							if ($one_post_connector["field_groups_count"]) {
-								echo "<br>" . sprintf( _n('1 added field group', '%d added field groups', $one_post_connector["field_groups_count"]), $one_post_connector["field_groups_count"] );
-							}
-							?>
-						</li>
+						<tr class='<?php echo $row_class ?>'>
+							<td>
+								<a href="<?php echo $edit_url ?>"><strong><?php echo esc_html( $one_post_connector["name"] ) ?></strong></a>
+								<div class="row-actions">
+									<span class="edit"><a href="<?php echo $edit_url ?>" title="<?php _e("Edit this item") ?>"><?php _e("Edit") ?></a></span>
+									<!-- <span class="trash"><a class="submitdelete" href="<?php echo $remove_url ?>"><?php _e("Trash") ?></a></span> -->
+								</div>
+							</td>
+							<td>
+								<?php echo $one_post_connector["slug"] ?>
+							</td>
+							<td>
+								<?php
+								if ($one_post_connector["field_groups_count"]) {
+									printf( _n('1', '%d', $one_post_connector["field_groups_count"]), $one_post_connector["field_groups_count"] );
+								}
+								?>
+							</td>
+							<td>
+								<?php
+								$field_groups_output = "";
+								foreach ( $one_post_connector["field_groups"] as $one_field_group ) {
+									$field_groups_output .= sprintf( '%1$s, ', esc_attr( $one_field_group["name"] ) );
+								}
+								$field_groups_output = preg_replace('/, $/', '', $field_groups_output);
+								echo $field_groups_output;
+								?>
+							</td>
+						</tr>
 						<?php
+
+						$loopnum++;
 						
 					}
-				?></ul><?php
+
+					?>
+					</tbody>
+
+				</table>
+				<?php
+				
 			} else {
 				?>
 				<!-- <p>No post connectors</p> -->
 				<?php
 			}
 			?>
-			<p>
-				<a href="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-post-connector&amp;connector-id=0" class="button">+ <?php _e('New post connector', 'simple-fields') ?></a>
-			</p>
-			
+
 		</div>
 
 		<div class="simple-fields-post-type-defaults">
+			
 			<h3><?php _e('Post type defaults', 'simple-fields') ?></h3>
-			<ul>
-				<?php
-				$post_types = get_post_types();
-				$arr_post_types_to_ignore = array("revision", "nav_menu_item");
-				foreach ($post_types as $one_post_type) {
-					$one_post_type_info = get_post_type_object($one_post_type);
-					if (!in_array($one_post_type, $arr_post_types_to_ignore)) {
+			
+			<table class="wp-list-table widefat xfixed">
+					
+				<thead>
+					<tr>
+						<th>Post type</th>
+						<th>Default connector</th>
+					</tr>
+				</thead>
 
-						$default_connector = $this->get_default_connector_for_post_type($one_post_type);
-						switch ($default_connector) {
-							case "__none__":
-								$default_connector_str = __('Default is to use <em>no connector</em>', 'simple-fields');
-								break;
-							case "__inherit__":
-								$default_connector_str = __('Default is to inherit from <em>parent connector</em>', 'simple-fields');
-								break;
-							default:
-								if (is_numeric($default_connector)) {
-									
-									$connector = $this->get_connector_by_id($default_connector);
-									if ($connector !== FALSE) {
-										$default_connector_str = sprintf(__('Default is to use connector <em>%s</em>', 'simple-fields'), $connector["name"]);
+				<tbody>
+
+					<?php
+					$post_types = get_post_types();
+					$arr_post_types_to_ignore = array("revision", "nav_menu_item");
+					foreach ($post_types as $one_post_type) {
+						
+						$one_post_type_info = get_post_type_object($one_post_type);
+						
+						if (!in_array($one_post_type, $arr_post_types_to_ignore)) {
+
+							$default_connector = $this->get_default_connector_for_post_type($one_post_type);
+							switch ($default_connector) {
+								case "__none__":
+									$default_connector_str = __('Default is to use <em>no connector</em>', 'simple-fields');
+									break;
+								case "__inherit__":
+									$default_connector_str = __('Default is to inherit from <em>parent connector</em>', 'simple-fields');
+									break;
+								default:
+									if (is_numeric($default_connector)) {
+										
+										$connector = $this->get_connector_by_id($default_connector);
+										if ($connector !== FALSE) {
+											$default_connector_str = sprintf(__('Default is to use connector <em>%s</em>', 'simple-fields'), $connector["name"]);
+										}
 									}
-								}
 
-						}
+							}
 
-						?><li>
-							<a href="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-post-type-defaults&amp;post-type=<?php echo $one_post_type ?>">
-								<?php echo $one_post_type_info->label ?>
-							</a>
-							<br>
-							<span><?php echo $default_connector_str ?></span>
-						</li><?php
-					}
-				}
-				?>
-			</ul>
+							?>
+							<tr>
+								<td>
+									<a href="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-post-type-defaults&amp;post-type=<?php echo $one_post_type ?>">
+										<?php echo $one_post_type_info->label ?>
+									</a>
+								</td>
+								<td>
+									<span><?php echo $default_connector_str ?></span>
+								</td>
+							</tr>
+							<?php
+					
+						} // if in array ignore types
+
+					} // foreach post type
+					?>
+				</tbody>
+
+			</table>
+			
 		</div>	
 
 
