@@ -21,7 +21,28 @@ function simple_fields_uasort($a, $b) {
 uasort($field_groups, "simple_fields_uasort");
 #sf_d($field_groups);
 uasort($post_connectors, "simple_fields_uasort");
-	
+
+if ( isset($_GET["action"]) ) {
+	?>
+	<style>
+
+		.settings_page_simple-fields-options #icon-options-general {
+			margin-top: 16px;
+		}
+		.settings_page_simple-fields-options h2 {
+			position: relative;
+			top: -10px;
+			font-size: 12px;
+		}
+		.settings_page_simple-fields-options form > h3 {
+			margin-left: 44px;
+			line-height: 1;
+			margin-top: -30px;
+			font: 23px normal "HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",sans-serif;
+		}
+	</style>
+	<?php
+}
 ?>
 <div class="wrap">
 
@@ -80,9 +101,10 @@ uasort($post_connectors, "simple_fields_uasort");
 		if (isset($wp_post_types[$post_type])) {
 			$selected_post_type = $wp_post_types[$post_type];
 			?>
-			<h3><?php echo __( sprintf('Edit default post connector for post type %1$s', $selected_post_type->label), "simple-fields" ) ?></h3>
-			
 			<form action="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-post-type-defaults-save" method="post">
+				
+				<h3><?php echo __( sprintf('Edit default post connector for post type %1$s', $selected_post_type->label), "simple-fields" ) ?></h3>
+				
 				<table class="form-table">
 					<tr>
 						<th><?php _e('Default post connector', 'simple-fields') ?></th>
@@ -149,9 +171,9 @@ uasort($post_connectors, "simple_fields_uasort");
 		}
 
 		?>
-		<h3><?php _e('Post Connector details', 'simple-fields') ?></h3>
-
 		<form method="post" action="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-post-connector-save">
+		
+			<h3><?php _e('Post Connector details', 'simple-fields') ?></h3>
 
 			<table class="form-table">
 
@@ -248,32 +270,28 @@ uasort($post_connectors, "simple_fields_uasort");
 						<?php _e('Available for post types', 'simple-fields') ?>
 					</th>
 					<td>
-						<table>
-							<?php
-							global $wp_post_types;
-							$arr_post_types_to_ignore = array("revision", "nav_menu_item");
-							foreach ($wp_post_types as $one_post_type) {
-								if (!in_array($one_post_type->name, $arr_post_types_to_ignore)) {
-									?>
-									<tr>
-										<td>
-											<input <?php echo (in_array($one_post_type->name, $post_connector_in_edit["post_types"]) ? " checked='checked' " : ""); ?> type="checkbox" name="post_types[]" value="<?php echo $one_post_type->name ?>" />
-											<?php echo $one_post_type->name ?>
-										</td>
-										<?php
-										/*
-										<!-- <td>
-											<input <?php echo (in_array($one_post_type->name, $post_connector_in_edit["post_types_type_default"]) ? " checked='checked' " : "") ?> type="checkbox" name="post_types_type_default[]" value="<?php echo $one_post_type->name ?>" />
-											Default connector for post type <?php echo $one_post_type->name ?>
-										</td> -->
-										*/
-									?>
-									</tr>
-									<?php
-								}
+						<?php
+						global $wp_post_types;
+						$arr_post_types_to_ignore = array("revision", "nav_menu_item");
+						foreach ($wp_post_types as $one_post_type) {
+							if (!in_array($one_post_type->name, $arr_post_types_to_ignore)) {
+								?>
+								<p>
+									<input <?php echo (in_array($one_post_type->name, $post_connector_in_edit["post_types"]) ? " checked='checked' " : ""); ?> type="checkbox" name="post_types[]" value="<?php echo $one_post_type->name ?>" />
+									<?php echo $one_post_type->name ?>
+								<?php
+								/*
+								<!-- <td>
+									<input <?php echo (in_array($one_post_type->name, $post_connector_in_edit["post_types_type_default"]) ? " checked='checked' " : "") ?> type="checkbox" name="post_types_type_default[]" value="<?php echo $one_post_type->name ?>" />
+									Default connector for post type <?php echo $one_post_type->name ?>
+								</td> -->
+								*/
+								?>
+								</p>
+								<?php
 							}
-							?>
-						</table>
+						}
+						?>
 					</td>
 				</tr>
 
@@ -417,7 +435,7 @@ uasort($post_connectors, "simple_fields_uasort");
 					</td>
 				</tr>
 				<tr>
-					<th><?php _e('Fields', 'simple-fields') ?></th>
+					<th><h3><?php _e('Fields', 'simple-fields') ?></h3></th>
 					<td>
 						<div id="simple-fields-field-group-existing-fields">
 							<ul class='simple-fields-edit-field-groups-added-fields'>
