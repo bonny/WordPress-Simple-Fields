@@ -2814,14 +2814,12 @@ class simple_fields {
 
 	/**
 	 * Output all stuff for the options page
-	 * Should be modularized a bit, it's way to long/big right now
 	 */
 	function options_page() {
 
 		require( dirname(__FILE__) . "/inc-admin-options.php" );
 
-	} // end func simple_fields_options
-
+	}
 
 	/**
 	 * Add the admin menu page for simple fields

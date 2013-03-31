@@ -1,4 +1,7 @@
 <?php
+/**
+ * All options page output
+ */
 
 global $sf;
 
@@ -22,6 +25,7 @@ uasort($post_connectors, "simple_fields_uasort");
 ?>
 <div class="wrap">
 
+	<?php screen_icon(); ?>
 	<h2><?php echo SIMPLE_FIELDS_NAME ?></h2>
 
 	<div class="clear"></div>
