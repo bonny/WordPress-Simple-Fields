@@ -2871,7 +2871,11 @@ class simple_fields {
 
 				$messages = array(
 					"field-group-saved" => __('Field group saved', 'simple-fields'),
-					"post-connector-saved" => __('Post connector saved', 'simple-fields')
+					"post-connector-saved" => __('Post connector saved', 'simple-fields'),
+					"field-group-deleted" => __('Field group deleted', 'simple-fields'),
+					"post-connector-deleted" => __('Post connector deleted', 'simple-fields'),
+					"post-type-defaults-saved" => __('Post type defaults saved', 'simple-fields'),
+					"debug-options-saved" => __('Debug options saved', 'simple-fields')
 				);
 				
 				if ( array_key_exists($_GET["message"], $messages) ) {
@@ -2880,25 +2884,6 @@ class simple_fields {
 
 			}
 
-			/**
-			 * save post type defaults
-			 */
-			if ("edit-post-type-defaults-save" == $action) {
-	
-				if ( ! wp_verify_nonce( $_POST["simple-fields"], "save-default-post-connector" ) ) wp_die( __("Cheatin&#8217; uh?") );
-
-				if ( isset($_POST["simple_fields_save-post_type"]) && isset($_POST["simple_fields_save-post_type_connector"]) ) {
-
-					$post_type = $_POST["simple_fields_save-post_type"];
-					$post_type_connector = $_POST["simple_fields_save-post_type_connector"];
-								
-					simple_fields_register_post_type_default($post_type_connector, $post_type);
-				}					
-				
-				$simple_fields_did_save_post_type_defaults = true;
-				$action = "";
-	
-			}
 	
 			/**
 			 * edit post type defaults
@@ -2951,34 +2936,7 @@ class simple_fields {
 				}
 			}
 	
-			/**
-			 * Delete a field group
-			 */
-			if ("delete-field-group" == $action) {
-				$field_group_id = (int) $_GET["group-id"];
-				$field_groups[$field_group_id]["deleted"] = true;
-				update_option("simple_fields_groups", $field_groups);
-				$this->clear_caches();
-				$simple_fields_did_delete = true;
-				$action = "";
-			}
-	
-	
-			/**
-			 * Delete a post connector
-			 */
-			if ("delete-post-connector" == $action) {
-				$post_connector_id = (int) $_GET["connector-id"];
-				$post_connectors[$post_connector_id]["deleted"] = 1;
-				update_option("simple_fields_post_connectors", $post_connectors);
-				$this->clear_caches();
-				$simple_fields_did_delete_post_connector = true;
-				$action = "";
-			}
-			
-	
-	
-			
+
 			/**
 			 * edit new or existing post connector
 			 * If new then connector-id = 0
@@ -3143,7 +3101,11 @@ class simple_fields {
 						<a href="<?php echo SIMPLE_FIELDS_FILE ?>"><?php _e('cancel', 'simple-fields') ?></a>
 					</p>
 					<p class="simple-fields-post-connector-delete">
-						<a href="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=delete-post-connector&amp;connector-id=<?php echo $post_connector_in_edit["id"] ?>"><?php _e('Delete') ?></a>
+						<?php
+						$action_url = add_query_arg(array("action" => "delete-post-connector", "connector-id" => $post_connector_in_edit["id"]), SIMPLE_FIELDS_FILE);
+						$action_url = wp_nonce_url( $action_url, "delete-post-connector");
+						?>
+						<a href="<?php echo $action_url ?>"><?php _e('Delete') ?></a>
 					</p>
 	
 				</form>
@@ -3297,7 +3259,11 @@ class simple_fields {
 						<a href="<?php echo SIMPLE_FIELDS_FILE ?>"><?php _e('cancel', 'simple-fields') ?></a>
 					</p>
 					<p class="simple-fields-field-group-delete">
-						<a href="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=delete-field-group&amp;group-id=<?php echo $field_group_in_edit["id"] ?>"><?php _e('Delete', 'simple-fields') ?></a>
+						<?php
+						$action_url = add_query_arg(array("action" => "delete-field-group", "group-id" => $field_group_in_edit["id"]), SIMPLE_FIELDS_FILE);
+						$action_url = wp_nonce_url( $action_url, "delete-field-group");
+						?>
+						<a href="<?php echo $action_url ?>"><?php _e('Delete', 'simple-fields') ?></a>
 					</p>
 					
 				</form>
@@ -3329,21 +3295,9 @@ class simple_fields {
 				sf_d( $this->get_post_type_defaults() );
 				
 			}
-	
-			// Save options
-			if ("edit-options-save" == $action) {
-				
-				$this->save_options(array(
-					"debug_type" => (int) $_POST["debug_type"]
-				));
-				
-				$action = "";
-				$simple_fields_did_save_options = TRUE;
-				
-			}
-	
+		
 			// overview, if no action
-			if (!$action) {
+			if ( ! $action ) {
 	
 	
 				/**
@@ -3366,20 +3320,7 @@ class simple_fields {
 					<h3><?php _e('Field groups', 'simple-fields') ?></h3>
 	
 					<?php
-					
-					// Show messages, like "saved" and so on
-					if (isset($simple_fields_did_save) && $simple_fields_did_save) {
-						
-					} elseif (isset($simple_fields_did_delete) && $simple_fields_did_delete) {
-						?><div id="message" class="updated"><p><?php _e('Field group deleted', 'simple-fields') ?></p></div><?php
-					} elseif (isset($simple_fields_did_delete_post_connector) && $simple_fields_did_delete_post_connector) {
-						?><div id="message" class="updated"><p><?php _e('Post connector deleted', 'simple-fields') ?></p></div><?php
-					} elseif (isset($simple_fields_did_save_post_type_defaults) && $simple_fields_did_save_post_type_defaults) {
-						?><div id="message" class="updated"><p><?php _e('Post type defaults saved', 'simple-fields') ?></p></div><?php
-					} elseif (isset($simple_fields_did_save_options) && $simple_fields_did_save_options) {
-						?><div id="message" class="updated"><p><?php _e('Simple Fields options saved', 'simple-fields') ?></p></div><?php
-					}
-					
+										
 					$field_group_count = 0;
 					foreach ($field_groups as $oneFieldGroup) {
 						if (!$oneFieldGroup["deleted"]) {
@@ -3492,7 +3433,9 @@ class simple_fields {
 
 
 				<div class="simple-fields-debug">
+					
 					<h3><?php echo __('Debug', 'simple-fields') ?></h3>
+					
 					<?php
 					// Dropdown with debug options
 
@@ -3527,7 +3470,10 @@ class simple_fields {
 						<p>
 							<input class="button-primary" type=submit value="<?php _e("Save changes", "simple-fields") ?>">
 						</p>
-					</form> <!-- // enable debug -->
+	
+						<?php wp_nonce_field( "save-debug-options" ) ?>
+
+					</form><!-- // enable debug -->
 				
 					<ul>
 						<li><a href='<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=simple-fields-view-debug-info'><?php echo __('View debug information', 'simple-fields') ?></a></li>
@@ -4333,6 +4279,7 @@ class simple_fields {
 
 		// only perform action on fields pages
 		if ( isset( $_GET["page"] ) && ("simple-fields-options" == $_GET["page"]) ) {
+		
 			if ( ! isset($_GET["action"]) || empty( $_GET["action"] ) ) return;
 			$action = $_GET["action"];
 
@@ -4427,9 +4374,83 @@ class simple_fields {
 				wp_redirect( add_query_arg( "message", "field-group-saved", $menu_page_url ) );
 				exit;
 
+			} // edit field group
+
+
+			/**
+			 * Delete a field group
+			 */
+			if ("delete-field-group" == $action) {
+
+				if ( ! wp_verify_nonce( $_REQUEST["_wpnonce"], "delete-field-group" ) ) {
+					wp_die( __("Cheatin&#8217; uh?") );
+				}
+
+				$field_group_id = (int) $_GET["group-id"];
+				$field_groups[$field_group_id]["deleted"] = true;
+				update_option("simple_fields_groups", $field_groups);
+				$this->clear_caches();
+
+				wp_redirect( add_query_arg( "message", "field-group-deleted", $menu_page_url ) );
+				exit;
+
+			} // delete field group
+
+			/**
+			 * Delete a post connector
+			 */
+			if ("delete-post-connector" == $action) {
+
+				if ( ! wp_verify_nonce( $_REQUEST["_wpnonce"], "delete-post-connector" ) ) {
+					wp_die( __("Cheatin&#8217; uh?") );
+				}
+
+				$post_connector_id = (int) $_GET["connector-id"];
+				$post_connectors[$post_connector_id]["deleted"] = 1;
+				update_option("simple_fields_post_connectors", $post_connectors);
+				$this->clear_caches();
+
+				wp_redirect( add_query_arg( "message", "post-connector-deleted", $menu_page_url ) );
+				exit;
+
+			} // delete post connector
+
+			/**
+			 * save post type defaults
+			 */
+			if ("edit-post-type-defaults-save" == $action) {
+	
+				if ( ! wp_verify_nonce( $_POST["simple-fields"], "save-default-post-connector" ) ) wp_die( __("Cheatin&#8217; uh?") );
+
+				if ( isset($_POST["simple_fields_save-post_type"]) && isset($_POST["simple_fields_save-post_type_connector"]) ) {
+
+					$post_type = $_POST["simple_fields_save-post_type"];
+					$post_type_connector = $_POST["simple_fields_save-post_type_connector"];
+								
+					simple_fields_register_post_type_default($post_type_connector, $post_type);
+				}					
+
+				wp_redirect( add_query_arg( "message", "post-type-defaults-saved", $menu_page_url ) );
+				exit;				
+	
 			}
 
-		}
+			// Save options
+			if ("edit-options-save" == $action) {
+				
+				if ( ! wp_verify_nonce( $_POST["_wpnonce"], "save-debug-options" ) ) wp_die( __("Cheatin&#8217; uh?") );
+				
+				$this->save_options(array(
+					"debug_type" => (int) $_POST["debug_type"]
+				));
+				
+				wp_redirect( add_query_arg( "message", "debug-options-saved", $menu_page_url ) );
+				exit;				
+				
+			}
+
+
+		} // perform action on simple fields pages
 
 	} // save options
 
