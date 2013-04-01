@@ -34,40 +34,40 @@ Simple Fields comes bundled with a useful variation of fields. Note that any fie
 
 The fields that are included in Simple Fields are:
 
-* Text *
+* **Text**<br>
 A simple text input to enter any kind of information.
 
-* Textarea *
+* **Textarea**<br>
 A bigger area for inputing text. Even support WYSIWYG/TinyMCE-mode that makes it work like the regular content editor, so you can insert images, headlines, list, paragraphs and so on.
 
-* Checkbox *
+* **Checkbox**<br>
 A simple checkbox to be able to select something on/off.
 
-* Radio Buttons *
+* **Radio Buttons**<br>
 Add multiple radiobuttons where a user can select one of the buttons. Useful for letting a user choose between multiple options.
  
-* Dropdown *
+* **Dropdown**<br>
 Add multiple values to a dropdown box. User can select one or several items in the list. Useful for letting your users select one or severall things.
 
-* File *
+* **File**<br>
 Select any file using the built in file/media browser in WordPress. Since it's using the built in media * browser you can also upload new images/attachments to your posts. Using this field together with repeatable field groups = very powerful! :)
 
-* Post *
+* **Post**<br>
 Select any post that exists in WordPress. Can be pages or any custom post type.
 
-* Taxonomy *
+* **Taxonomy**<br>
 Select a taxonomy from a list of taxonomies.
 
-* Taxonomy Term *
+* **Taxonomy Term**<br>
 Select a term from a taxonomy.
 
-* Color *
+* **Color**<br>
 Show a color picker where the user can choose any color. The color can also be entered manually, if the user knows the hex value of the color.
 
-* Date and Time *
+* **Date and Time**<br>
 Chose a date and optionally time from a JQuery UI date and time picker.
  
-* User *
+* **User**<br>
 Choose a user from the system.
  
 See the [field documentation](http://simple-fields.com/documentation/field-types/) for more details about the different fields.
@@ -151,6 +151,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 - Added support for adding fields to attachments, attachments now works the way as regular posts: just any amount of fields to an attachment.
 - Fixed bug with repeatable fields containing tiny mce-editors (textarea with wysiwyg/html-capabilities). Fixes https://github.com/bonny/WordPress-Simple-Fields/issues/73.
 - Added a new view for repeatable field groups on the edit post screen: table. It's a much more compact view with a greater overview of the added field. Mostly suitable for field groups with between 1 and 10 fields.
+- Added support for placeholder text on text and textarea fields
 - Added debug panel to debug bar (if installed). Makes it possible to preview stored values when inside WordPress admin and editing posts. Will automatically be enabled when debug bar is installed and activated.
 - Changed debug box to stop using jQuery, so it should work with more themes and in more situations where jQuery may not be available
 - Fixed bug with post field type dialog
@@ -164,34 +165,34 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
   Now returns empty array instead. Thanks to [hjalle](https://twitter.com/hjalle) for finding.
 - simple_fields_register_post_connector now uses name from each field group, so no need to enter that manually any more (if entered manually, it will be removed)
 - Added filters and actions that you can use in your functions.php-file or in your plugin or field extension or whatever. Added filters are:
-  simple_fields_add_post_edit_side_field_settings
-  simple_fields_get_selected_connector_for_post
-  simple_fields_debug_output
-  simple_fields_get_post_value
-  simple_fields_get_post_group_values
-  simple_fields_get_all_fields_and_values_for_post
-  simple_fields_get_meta_query
-  simple_fields_query_posts
-  simple_fields_values
-  simple_fields_value
-  simple_fields_connector
-  simple_fields_fieldgroup
-  simple_fields_get_slug_pattern
-  simple_fields_get_default_connector_for_post_type
-  simple_fields_get_post_type_defaults
-  simple_fields_get_field_groups
-  simple_fields_get_field_group
-  simple_fields_get_field_in_group
-  simple_fields_get_pages_args
-  simple_fields_get_pages_output
-  simple_fields_get_post_connectors_for_post_type
-  simple_fields_get_options
-  simple_fields_save_options
-  simple_fields_get_extended_return_values_for_field
-  simple_fields_get_field_group_by_slug
-  simple_fields_clear_caches
-  simple_fields_get_meta_key_template
-  simple_fields_get_meta_key
+  simple_fields_add_post_edit_side_field_settings<br>
+  simple_fields_get_selected_connector_for_post<br>
+  simple_fields_debug_output<br>
+  simple_fields_get_post_value<br>
+  simple_fields_get_post_group_values<br>
+  simple_fields_get_all_fields_and_values_for_post<br>
+  simple_fields_get_meta_query<br>
+  simple_fields_query_posts<br>
+  simple_fields_values<br>
+  simple_fields_value<br>
+  simple_fields_connector<br>
+  simple_fields_fieldgroup<br>
+  simple_fields_get_slug_pattern<br>
+  simple_fields_get_default_connector_for_post_type<br>
+  simple_fields_get_post_type_defaults<br>
+  simple_fields_get_field_groups<br>
+  simple_fields_get_field_group<br>
+  simple_fields_get_field_in_group<br>
+  simple_fields_get_pages_args<br>
+  simple_fields_get_pages_output<br>
+  simple_fields_get_post_connectors_for_post_type<br>
+  simple_fields_get_options<br>
+  simple_fields_save_options<br>
+  simple_fields_get_extended_return_values_for_field<br>
+  simple_fields_get_field_group_by_slug<br>
+  simple_fields_clear_caches<br>
+  simple_fields_get_meta_key_template<br>
+  simple_fields_get_meta_key<br>
 - Added method get_meta_key(). Use it to retrieve the key that simple fields uses for meta/custom fields storage.
 - Added "meta_key" as key to all fields when using get_field_by_slug() somewhere. 
   Makes it easy to know/get the meta key if you need it. returns the meta key for the first field in that field group. 
