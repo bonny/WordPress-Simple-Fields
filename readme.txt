@@ -137,6 +137,11 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 3. Group field groups together and make them available for different post types.
 
+4. A field group with some HTML5 input types date, url, color, email and range added.
+
+5. The settings screen, as it looks on http://simple-fields.com. And yes, that's the real fields I use on the domain for this plugin :)
+
+
 == Changelog ==
 
 #### Version 1.2
