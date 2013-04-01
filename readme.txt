@@ -141,8 +141,8 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 == Changelog ==
 
 #### Version 1.2
-- Added support for HTML5 input types like color, date, range, email, url. Bevare, support depends on the browser. These are subtypes of the text field, since browsers do fall back to text field if they don't support the new fancy input type.
 - Added support for the new media manager that was introduced in WordPress 3.5 (yes, finally!)
+- Added support for HTML5 input types like color, date, range, email, url. Bevare, support depends on the browser. These are subtypes of the text field, since browsers do fall back to text field if they don't support the new fancy input type.
 - Added support for adding fields to attachments, attachments now works the way as regular posts: just any amount of fields to an attachment.
 - Fixed bug with repeatable fields containing tiny mce-editors (textarea with wysiwyg/html-capabilities). Fixes https://github.com/bonny/WordPress-Simple-Fields/issues/73.
 - Added a new view for repeatable field groups on the edit post screen: table. It's a much more compact view with a greater overview of the added field. Mostly suitable for field groups with between 1 and 10 fields.
@@ -153,7 +153,6 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 - Fixed memory leak when using cache. When using functions that cleared the cache, for example simple_fields_set_value(), then memory usage could increase pretty much, and when the function is used in a loop then eventionally the script would eat up all memory. Nom nom nom. But in a bad way.
 - Changed the way some cache keys where stored, beacuse a key in an array that contains quotes is just silly looking (but valid, apparently)
 - Little better looking output of "Show custom field keys"
-- Added unit tests for date/time picker v2 and register_post_connector and some other things. Makes Simple Fields a tad safer to use.
 - Fixed ordering of fields when using simple_fields_register_field_group
 - Fixed bug with post field and extended return values, 
   where a field with no post/page selected would return the post of the current post in the loop. 
@@ -196,7 +195,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 - Added Slovak translation by Branco. Thanks a lot!
 - Added nonces to admin to prevent CSRF
 - Added table view to admin instead of ul-li-lists. Makes the admin looks nicer and more WordPress-ish.
-- Lotsa code cleanups and stuff
+- Lotsa code cleanups and stuff and unit tests added and a bit of this and also a bit of that
 
 #### Version 1.1.6
 - Fixed bug that could lead to memoryleak. Thanks to plux/angry creative for patch.
