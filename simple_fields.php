@@ -926,6 +926,9 @@ class simple_fields {
 								// remove scripts that we don't need								
 								remove_action( "admin_print_footer_scripts", "wp_auth_check_js");
 
+								// don't load tinymce plugins
+								add_filter('mce_external_plugins', "__return_empty_array");
+
 								ob_start();
 								do_action("admin_print_footer_scripts");
 								$footer_scripts = ob_get_clean();
@@ -953,11 +956,17 @@ class simple_fields {
 								$footer_scripts = str_replace("wpActiveEditor", "wpActiveEditor_$field_unique_id", $footer_scripts);
 								*/
 
+								// the line that begins with 
+								// (function(){var t=tinyMCEPreInit,sl=tinymce.ScriptLoader
+								// breaks my install... so let's remove it
+								// it's only outputed sometimes, something to do with compressed scripts or not. or simpething.
+								$footer_scripts = preg_replace('/\(function\(\){var t=tinyMCEPreInit,sl=tinymce.ScriptLoader.*/', '', $footer_scripts);
+
 								echo "$footer_scripts";
 
 								?>
 								<script>
-									// We need to call _buttonsInit, but it's private. however calling addButtons calls _buttonsInit
+									// We need to call _buttonsInit to make quicktags buttons appear/work, but it's private. however calling addButtons calls _buttonsInit
 									// so we fake-add a button, just to fire _buttonsInit again.
 									QTags.addButton( 'simple_fields_dummy_button', '...', '<br />', null, null, null, null, "apa" );
 								</script>
