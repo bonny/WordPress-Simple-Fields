@@ -144,6 +144,9 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
+#### Version 1.2.x
+- Added: you can now add custom attributes to text and HTML5 fields. Like "required" or "pattern".
+
 #### Version 1.2
 - (Lotsa things modified, so please make a backup of your database before upgrade. I haven't had any problems at all, but... please be safe out there!)
 - Added support for the new media manager that was introduced in WordPress 3.5 (yes, finally!)

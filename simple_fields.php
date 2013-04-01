@@ -3,7 +3,7 @@
 Plugin Name: Simple Fields
 Plugin URI: http://simple-fields.com
 Description: Add groups of textareas, input-fields, dropdowns, radiobuttons, checkboxes and files to your edit post screen.
-Version: 1.2
+Version: 1.2.x
 Author: Pär Thernström
 Author URI: http://eskapism.se/
 License: GPL2
@@ -992,6 +992,7 @@ class simple_fields {
 						$text_value_esc = esc_html($saved_value);
 
 						$type_attr = isset( $field_type_options["subtype"] ) ? $field_type_options["subtype"] : "text";
+						$extra_attributes = isset( $field_type_options["attributes"] ) ? $field_type_options["attributes"] : "";
 
 						echo "<div class='simple-fields-metabox-field-first'>";
 						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
@@ -999,7 +1000,7 @@ class simple_fields {
 						echo "</div>";
 
 						echo "<div class='simple-fields-metabox-field-second'>";
-						echo "<input type='$type_attr' class='text' name='$field_name' id='$field_unique_id' value='$text_value_esc' placeholder='$placeholder' />";
+						echo "<input type='$type_attr' class='text' name='$field_name' id='$field_unique_id' value='$text_value_esc' placeholder='$placeholder' $extra_attributes />";
 						echo "</div>";
 		
 					} elseif ("color" == $field["type"]) {
@@ -2420,6 +2421,7 @@ class simple_fields {
 			 	"field[{$fieldID}][options][text][subtype]"
 			);
 
+			// text, placeholder
 			$out .= "
 				<div class='simple-fields-field-group-one-field-row'>
 					<div class='simple-fields-field-group-one-field-row-col-first'>
@@ -2431,7 +2433,26 @@ class simple_fields {
 						<span class='description'>" . __("A hint to the user of what can be entered in the field.", "simple-fields") . "</span>
 					</div>
 				</div>
-				";
+			";
+
+			// text, custom attributes
+			$out .= "
+				<div class='simple-fields-field-group-one-field-row'>
+					<div class='simple-fields-field-group-one-field-row-col-first'>
+						<label>" . _x('Attributes', 'Text field options', 'simple-fields') . "</label>
+					</div>
+					<div class='simple-fields-field-group-one-field-row-col-second'>
+						<input 
+							class='regular-text' 
+							type='text' 
+							name='field[{$fieldID}][options][text][attributes]' 
+							placeholder='" . _x('attribute_1="value_1" attribute_2="value_2"', 'Text field options', 'simple-fields') . "'
+							value='" . esc_attr( isset( $field_text_options["attributes"] ) ? esc_attr( $field_text_options["attributes"] ) : "" ) . "'>
+						<br>
+						<span class='description'>" . __("Add your own attributes to the input tag.", "simple-fields") . "</span>
+					</div>
+				</div>
+			";
 
 			// end text options
 			$out .= "
