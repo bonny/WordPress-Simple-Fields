@@ -6,7 +6,7 @@ Requires at least: 3.5.1
 Tested up to: 3.5.1
 Stable tag: 1.2
 
-With Simple Fields you can add any kind of custom fields to your pages and posts.
+With Simple Fields you can add any kind of custom fields to your pages, posts and attachments.
 
 == Description ==
 The built in custom fields in WordPress are great, but they do come with a big limitation: they only support plain text. To overcome this limitation I created the Simple Fields WordPress plugin.
@@ -137,10 +137,10 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 3. Group field groups together and make them available for different post types.
 
-
 == Changelog ==
 
 #### Version 1.2
+- (Lotsa things modified, so please make a backup of your database before upgrade. I haven't had any problems at all, but... please be safe out there!)
 - Added support for the new media manager that was introduced in WordPress 3.5 (yes, finally!)
 - Added support for HTML5 input types like color, date, range, email, url. Bevare, support depends on the browser. These are subtypes of the text field, since browsers do fall back to text field if they don't support the new fancy input type.
 - Added support for adding fields to attachments, attachments now works the way as regular posts: just any amount of fields to an attachment.
