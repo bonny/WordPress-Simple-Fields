@@ -489,6 +489,7 @@ class simple_fields {
 						// it's a tiny edit area, so use wpautop to fix p and br
 						$do_wpautop = true;
 					}
+					$do_wpautop = apply_filters("simple_fields_save_postdata_do_wpautop", $do_wpautop, $post_id);
 					
 					// save entered value for each added group
 					$num_in_set = 0;
