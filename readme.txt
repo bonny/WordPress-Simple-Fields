@@ -4,7 +4,7 @@ Donate link: http://simple-fields.com/about/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, more fields, repeatable fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom, simple fields, cms, date picker, time picker, repeatable fields, multiple fields
 Requires at least: 3.5.1
 Tested up to: 3.5.1
-Stable tag: 1.2
+Stable tag: 1.2.1
 
 With Simple Fields you can add any kind of custom fields to your pages, posts and attachments.
 
@@ -144,8 +144,9 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
-#### Version 1.2.x
+#### Version 1.2.1
 - Added: you can now add custom attributes to text and HTML5 fields. Like "required" or "pattern".
+- Fixed: a console.log was of course left in the code... :/ could make the file field not work.
 
 #### Version 1.2
 - (Lotsa things modified, so please make a backup of your database before upgrade. I haven't had any problems at all, but... please be safe out there!)

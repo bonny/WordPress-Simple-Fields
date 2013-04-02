@@ -80,7 +80,6 @@ var simple_fields_file_field = (function($) {
 				file_thumb = "";
 
 			if (file_json.type === "image") {
-				console.log(file_json);
 				var thumb_url = "";
 				if (file_json.sizes.thumbnail && file_json.sizes.thumbnail.url) {
 					thumb_url = file_json.sizes.thumbnail.url;
