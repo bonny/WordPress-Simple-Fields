@@ -248,7 +248,7 @@ class simple_fields {
 			$page_type = "settings";
 		}
 		
-		if (!$is_on_simple_fields_page) return;
+		if ( ! $is_on_simple_fields_page ) return;
 
 		if ("settings" === $page_type) {
 
@@ -273,6 +273,9 @@ class simple_fields {
 			// wp_enqueue_style("chosen", SIMPLE_FIELDS_URL.'js/chosen/chosen.css', false, SIMPLE_FIELDS_VERSION);
 
 			wp_enqueue_style('simple-fields-styles-post', SIMPLE_FIELDS_URL.'styles-edit-post.css', false, SIMPLE_FIELDS_VERSION);
+
+			// Media must be enqueued if we are editing a post with no editor (probably custom post type)
+			wp_enqueue_media(); // edit-form-advanced passes this also: array( 'post' => $post_ID
 	
 		}
 
