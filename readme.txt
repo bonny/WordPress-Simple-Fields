@@ -144,7 +144,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
-#### Version 1.2.x
+#### Version 1.2.3
 - Fixed: could not unset option use_html_editor for textarea field type. props Hayden.
 - Fixed: javascript in editor would break in some situations.
 
