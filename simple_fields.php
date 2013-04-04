@@ -3,7 +3,7 @@
 Plugin Name: Simple Fields
 Plugin URI: http://simple-fields.com
 Description: Add groups of textareas, input-fields, dropdowns, radiobuttons, checkboxes and files to your edit post screen.
-Version: 1.2.2
+Version: 1.2.3
 Author: Pär Thernström
 Author URI: http://eskapism.se/
 License: GPL2
@@ -54,7 +54,7 @@ class simple_fields {
 
 		define( "SIMPLE_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
 		define( "SIMPLE_FIELDS_NAME", "Simple Fields");
-		define( "SIMPLE_FIELDS_VERSION", "1.2.2");
+		define( "SIMPLE_FIELDS_VERSION", "1.2.3");
 
 		load_plugin_textdomain( 'simple-fields', null, basename(dirname(__FILE__)).'/languages/');
 		
@@ -865,7 +865,7 @@ class simple_fields {
 
 						echo "<div class='simple-fields-metabox-field-second'>";
 	
-						if ( isset( $textarea_options["use_html_editor"] ) ) {
+						if ( isset( $textarea_options["use_html_editor"] ) && $textarea_options["use_html_editor"] ) {
 							
 							// This helps get_upload_iframe_src() determine the correct post id for the media upload button
 							global $post_ID;
@@ -922,61 +922,67 @@ class simple_fields {
 							// sf_d($field_unique_id, "adding wp_editor with field_unique_id");
 							wp_editor( $saved_value, $field_unique_id, $args );
 
+							// use_defauls = first time fields are outputed = new post or new fielgroup from ajax call ("+ Add"-link)
 							if ($use_defaults) {
 
-								// Must call footer scripts so wp_editor outputs it's stuff
-								// It works with TinyMCE but the quicktags are not outputted due to quicktags being activated on domready
+								// Do stuff with wp editor, but only when called from ajax
+								if ( defined("DOING_AJAX") && DOING_AJAX ) {
+			
+									// Must call footer scripts so wp_editor outputs it's stuff
+									// It works with TinyMCE but the quicktags are not outputted due to quicktags being activated on domready
 
-								// remove scripts that we don't need								
-								remove_action( "admin_print_footer_scripts", "wp_auth_check_js");
+									// remove scripts that we don't need								
+									remove_action( "admin_print_footer_scripts", "wp_auth_check_js");
 
-								// don't load tinymce plugins
-								add_filter('mce_external_plugins', "__return_empty_array");
+									// don't load tinymce plugins
+									add_filter('mce_external_plugins', "__return_empty_array");
 
-								ob_start();
-								do_action("admin_print_footer_scripts");
-								$footer_scripts = ob_get_clean();
-								
-								// only keep scripts. works pretty ok, but we get some stray text too, so use preg match to get only script tags
-								$footer_scripts = wp_kses($footer_scripts, array("script" => array()));
-								
-								preg_match_all('/<script>(.*)<\/script>/msU', $footer_scripts, $matches);
-								$footer_scripts = "";
-								foreach ($matches[1] as $one_script_tag_contents) {
-									if ( ! empty( $one_script_tag_contents ) )
-										$footer_scripts .= sprintf('<script>%1$s</script>', $one_script_tag_contents);
-								}
+									ob_start();
+									do_action("admin_print_footer_scripts");
+									$footer_scripts = ob_get_clean();
+									
+									// only keep scripts. works pretty ok, but we get some stray text too, so use preg match to get only script tags
+									$footer_scripts = wp_kses($footer_scripts, array("script" => array()));
+									
+									preg_match_all('/<script>(.*)<\/script>/msU', $footer_scripts, $matches);
+									$footer_scripts = "";
+									foreach ($matches[1] as $one_script_tag_contents) {
+										if ( ! empty( $one_script_tag_contents ) )
+											$footer_scripts .= sprintf('<script>%1$s</script>', $one_script_tag_contents);
+									}
 
-								// the scripts only output correct id for the first editor
-								// (for unknown reasons, something to do with the fact that we do this everal times while it's meant do only be done once)
-								// so replace strings like simple_fields_fieldgroups_6_1_new0 to the current editor
-								// mceInit : {'simple_fields_fieldgroups_6_1_new0'
-								/*
-								$pattern = "#simple_fields_fieldgroups_(\d+)_(\d+)_new(\d+)#";
-								$replacement = "$field_unique_id";
-								$footer_scripts = preg_replace($pattern, $replacement, $footer_scripts);
+									// the scripts only output correct id for the first editor
+									// (for unknown reasons, something to do with the fact that we do this everal times while it's meant do only be done once)
+									// so replace strings like simple_fields_fieldgroups_6_1_new0 to the current editor
+									// mceInit : {'simple_fields_fieldgroups_6_1_new0'
+									/*
+									$pattern = "#simple_fields_fieldgroups_(\d+)_(\d+)_new(\d+)#";
+									$replacement = "$field_unique_id";
+									$footer_scripts = preg_replace($pattern, $replacement, $footer_scripts);
 
-								$footer_scripts = str_replace("tinyMCEPreInit", "tinyMCEPreInit_$field_unique_id", $footer_scripts);
-								$footer_scripts = str_replace("wpActiveEditor", "wpActiveEditor_$field_unique_id", $footer_scripts);
-								*/
+									$footer_scripts = str_replace("tinyMCEPreInit", "tinyMCEPreInit_$field_unique_id", $footer_scripts);
+									$footer_scripts = str_replace("wpActiveEditor", "wpActiveEditor_$field_unique_id", $footer_scripts);
+									*/
 
-								// the line that begins with 
-								// (function(){var t=tinyMCEPreInit,sl=tinymce.ScriptLoader
-								// breaks my install... so let's remove it
-								// it's only outputed sometimes, something to do with compressed scripts or not. or simpething.
-								$footer_scripts = preg_replace('/\(function\(\){var t=tinyMCEPreInit,sl=tinymce.ScriptLoader.*/', '', $footer_scripts);
+									// the line that begins with 
+									// (function(){var t=tinyMCEPreInit,sl=tinymce.ScriptLoader
+									// breaks my install... so let's remove it
+									// it's only outputed sometimes, something to do with compressed scripts or not. or simpething.
+									$footer_scripts = preg_replace('/\(function\(\){var t=tinyMCEPreInit,sl=tinymce.ScriptLoader.*/', '', $footer_scripts);
 
-								echo "$footer_scripts";
+									echo "$footer_scripts";
 
-								?>
-								<script>
-									// We need to call _buttonsInit to make quicktags buttons appear/work, but it's private. however calling addButtons calls _buttonsInit
-									// so we fake-add a button, just to fire _buttonsInit again.
-									QTags.addButton( 'simple_fields_dummy_button', '...', '<br />', null, null, null, null, "apa" );
-								</script>
-								<?php
+									?>
+									<script>
+										// We need to call _buttonsInit to make quicktags buttons appear/work, but it's private. however calling addButtons calls _buttonsInit
+										// so we fake-add a button, just to fire _buttonsInit again.
+										QTags.addButton( 'simple_fields_dummy_button', '...', '<br />', null, null, null, null, "apa" );
+									</script>
+									<?php
 
-							}
+								} // if ajax
+
+							}  // if use defaults 
 
 							echo "</div>";
 
@@ -1232,7 +1238,6 @@ class simple_fields {
 
 							// Get and output the edit-output from the field type
 							// Return as array if field type has not specified other
-							// xxx
 							$custom_field_type_saved_value = $saved_value;
 							#echo "saved value"; sf_d($custom_field_type_saved_value);
 							// always return array, or just sometimes?
@@ -2482,7 +2487,7 @@ class simple_fields {
 					<div class='simple-fields-field-group-one-field-row-col-first'>
 					</div>
 					<div class='simple-fields-field-group-one-field-row-col-second'>
-						<input type='checkbox' name='field[{$fieldID}][type_textarea_options][use_html_editor]' " . (($field_type_textarea_option_use_html_editor) ? " checked='checked'" : "") . " value='1' /> ".__('Use HTML-editor', 'simple-fields')."
+						<input type='checkbox' name='field[{$fieldID}][type_textarea_options][use_html_editor]' " . (($field_type_textarea_option_use_html_editor) ? " checked='checked'" : "") . " value='$field_type_textarea_option_use_html_editor' /> " . __('Use HTML-editor', 'simple-fields') . "
 					</div>
 				</div>
 

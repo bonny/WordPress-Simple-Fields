@@ -4,7 +4,7 @@ Donate link: http://simple-fields.com/about/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, more fields, repeatable fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom, simple fields, cms, date picker, time picker, repeatable fields, multiple fields
 Requires at least: 3.5.1
 Tested up to: 3.5.1
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 
 With Simple Fields you can add any kind of custom fields to your pages, posts and attachments.
 
@@ -24,7 +24,7 @@ The saved values are easy get in your theme or functions.php-file. Like this:
 `
 <?php
 // Get the saved value for a field called "video"
-$video_url = simple_field_value('video');
+$video_url = simple_fields_value('video');
 ?>
 `
 
@@ -143,6 +143,10 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 
 == Changelog ==
+
+#### Version 1.2.x
+- Fixed: could not unset option use_html_editor for textarea field type. props Hayden.
+- Fixed: javascript in editor would break in some situations.
 
 #### Version 1.2.2
 - Fixed: file field did not work on custom post types that did not have an editor
