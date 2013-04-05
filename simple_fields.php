@@ -937,10 +937,19 @@ class simple_fields {
 									// don't load tinymce plugins
 									add_filter('mce_external_plugins', "__return_empty_array");
 
+									// Remove some scripts that cause problems
+									global $wp_scripts;
+
+									// From plugin http://time.ly/
+									// For some reason the scripts outputed are html escaped, so scripts are broken
+									$wp_scripts->remove("ai1ec_requirejs");
+									$wp_scripts->remove("ai1ec_common_backend");
+
+									// Start output buffering and output scripts and then get them into a variable
 									ob_start();
 									do_action("admin_print_footer_scripts");
-									$footer_scripts = ob_get_clean();
-									
+									$footer_scripts = ob_get_clean();								
+
 									// only keep scripts. works pretty ok, but we get some stray text too, so use preg match to get only script tags
 									$footer_scripts = wp_kses($footer_scripts, array("script" => array()));
 									
@@ -1496,7 +1505,8 @@ class simple_fields {
 	function get_post_connectors() {
 
 		// use wp_cache
-		$connectors = wp_cache_get( 'simple_fields_'.$this->ns_key.'_post_connectors', 'simple_fields' );
+		$cache_key = 'simple_fields_'.$this->ns_key.'_post_connectors';
+		$connectors = wp_cache_get( $cache_key, 'simple_fields' );
 		if (FALSE === $connectors) {
 
 			$connectors = get_option("simple_fields_post_connectors");
@@ -1555,7 +1565,7 @@ class simple_fields {
 				$connectors[$connectors[$i]["id"]]["field_groups_count"] = $num_fields_in_group;
 			}
 			
-			wp_cache_set( 'simple_fields_'.$this->ns_key.'_post_connectors', $connectors, 'simple_fields' );
+			wp_cache_set( $cache_key, $connectors, 'simple_fields' );
 			
 		}
 	
