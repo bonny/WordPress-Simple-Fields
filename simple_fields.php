@@ -2487,7 +2487,7 @@ class simple_fields {
 					<div class='simple-fields-field-group-one-field-row-col-first'>
 					</div>
 					<div class='simple-fields-field-group-one-field-row-col-second'>
-						<input type='checkbox' name='field[{$fieldID}][type_textarea_options][use_html_editor]' " . (($field_type_textarea_option_use_html_editor) ? " checked='checked'" : "") . " value='$field_type_textarea_option_use_html_editor' /> " . __('Use HTML-editor', 'simple-fields') . "
+						<input type='checkbox' name='field[{$fieldID}][type_textarea_options][use_html_editor]' " . (($field_type_textarea_option_use_html_editor) ? " checked='checked'" : "") . " value='1' /> " . __('Use HTML-editor', 'simple-fields') . "
 					</div>
 				</div>
 
@@ -3473,6 +3473,8 @@ class simple_fields {
 
 		$custom_field_key_template = '_simple_fields_fieldGroupID_%1$d_fieldID_%2$d_numInSet_%3$d';
 		$custom_field_key_template = apply_filters("simple_fields_get_meta_key_template", $custom_field_key_template);
+
+		// TODO: fetch slugs so they are available for the printf too?
 
 		$custom_field_key = sprintf($custom_field_key_template, $field_group_id, $field_id, $num_in_set);
 		$custom_field_key = apply_filters("simple_fields_get_meta_key", $custom_field_key);
