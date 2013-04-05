@@ -1799,3 +1799,11 @@ function simple_fields_fieldgroup($field_group_id_or_slug, $post_id = NULL, $opt
 
 }
 
+/**
+ * helper to sort fields by name. used on options screen
+ * to be used with uasort()
+ */
+function simple_fields_uasort($a, $b) {
+	if ($a["name"] == $b["name"]) { return 0; }
+	return strcasecmp($a["name"], $b["name"]);
+}
