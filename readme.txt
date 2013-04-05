@@ -146,6 +146,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 #### Version 1.2.x
 - Fixed: was unable to enable use html editor when using gui
+- Fixed: Could not add fields with ajax when plugin All-in-One Event Calendar was installed
 
 #### Version 1.2.3
 - Fixed: could not unset option use_html_editor for textarea field type. props Hayden.
