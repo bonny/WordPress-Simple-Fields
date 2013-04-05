@@ -15,7 +15,23 @@ if ( ! $action ) {
 
 	<!-- import and export -->
 	<div class="simple-fields-tools-export-import">
-
+		<script>
+			jQuery(document).on("click", ".simple-fields-tools-export-import .simple-fields-export-what", function(e) {
+				var custom_wrapper = jQuery(".simple-fields-export-custom-wrapper");
+				custom_wrapper.toggle( this.value == "custom" );
+			});
+		</script>
+		<style>
+			.simple-fields-export-custom-wrapper table th,
+			.simple-fields-export-custom-wrapper table td {
+				vertical-align: top;
+				text-align: left;
+			}
+			.simple-fields-export-custom-wrapper ul {
+				margin: 0;
+				list-style-type: none;
+			}
+		</style>
 		<?php
 
 		// Collect for export...
@@ -32,73 +48,92 @@ if ( ! $action ) {
 		<p>
 			Export:
 			<br>
-			<label><input type="radio" name="export-what" checked> All</label>
+			<label><input type="radio" name="export-what" class="simple-fields-export-what" value="all" checked> All</label>
 			<br>
-			<label><input type="radio" name="export-what"> Custom</label>
+			<label><input type="radio" name="export-what" class="simple-fields-export-what" value="custom"> Custom</label>
 		</p>
 
-		<div class="simple-fields-export-custom-wrapper">
+		<div class="simple-fields-export-custom-wrapper hidden">
+			
+			<table>
+				<tr>
+					<th>
+						Field Groups
+					</th>
+					<th>
+						Post connectors
+					</th>
+					<th>
+						Post type defaults
+					</th>
+				</tr>
 
-			<p>Field Groups</p>
-			<?php
-			echo "<ul>";
-			foreach ($field_groups_for_export as $one_field_group) {
-				printf('
-					<li>
-						<label>
-							<input type="checkbox" value="%2$d">
-								%1$s
-						</label>
-					</li>
-					', 
-					esc_html( $one_field_group["name"] ),
-					$one_field_group["id"]
-				);
-			}
-			echo "</ul>";
-			?>
+				<tr>
+					<td>
+						
+						<?php
+						echo "<ul>";
+						foreach ($field_groups_for_export as $one_field_group) {
+							printf('
+								<li>
+									<label>
+										<input type="checkbox" value="%2$d">
+											%1$s
+									</label>
+								</li>
+								', 
+								esc_html( $one_field_group["name"] ),
+								$one_field_group["id"]
+							);
+						}
+						echo "</ul>";
+						?>
+					</td>
+					
+					<td>
+						<?php
+						echo "<ul>";
+						foreach ($post_connectors_for_export as $one_post_connector) {
+							printf('
+								<li>
+									<label>
+										<input type="checkbox" value="%2$d">
+											%1$s
+									</label>
+								</li>
+								', 
+								esc_html( $one_post_connector["name"] ),
+								$one_post_connector["id"]
+							);
+						}
+						echo "</ul>";
+						?>
+					</td>
 
-			<p>Post connectors</p>
-			<?php
-			echo "<ul>";
-			foreach ($post_connectors_for_export as $one_post_connector) {
-				printf('
-					<li>
-						<label>
-							<input type="checkbox" value="%2$d">
-								%1$s
-						</label>
-					</li>
-					', 
-					esc_html( $one_post_connector["name"] ),
-					$one_post_connector["id"]
-				);
-			}
-			echo "</ul>";
-			?>
+					<td>
+						<?php
+						echo "<ul>";
+						foreach ($post_type_defaults_for_export as $one_post_type_default_post_type => $one_post_type_default_key) {
+							#sf_d($one_post_type_default);
+							printf('
+								<li>
+									<label>
+										<input type="checkbox" value="%2$s">
+											%1$s
+									</label>
+								</li>
+								', 
+								esc_html( $one_post_type_default_post_type ),
+								$one_post_type_default_key
+							);
+						}
+						echo "</ul>";
+						?>
+					</td>
 
-			<p>Post type defaults</p>
-			<?php
-			echo "<ul>";
-			foreach ($post_type_defaults_for_export as $one_post_type_default_post_type => $one_post_type_default_key) {
-				#sf_d($one_post_type_default);
-				printf('
-					<li>
-						<label>
-							<input type="checkbox" value="%2$s">
-								%1$s
-						</label>
-					</li>
-					', 
-					esc_html( $one_post_type_default_post_type ),
-					$one_post_type_default_key
-				);
-			}
-			echo "</ul>";
-			?>
+				</tr>
+			</table>
 
-			Select Post Connectors to export
-			Select Post Type Defaults to export
 		</div>
 
 		<?php
