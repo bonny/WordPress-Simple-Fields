@@ -16,17 +16,93 @@ if ( ! $action ) {
 	<!-- import and export -->
 	<div class="simple-fields-tools-export-import">
 
-		<h3><?php echo __('Import & Export', 'simple-fields') ?></h3>
-		<ul>
-			<li><a href="#">Export</a></li>
-			<li><a href="#">Import</a></li>
-		</ul>
+		<?php
+
+		// Collect for export...
+		$field_groups_for_export = $this->get_field_groups(false);
+		$post_connectors_for_export = $this->get_post_connectors();
+		$post_type_defaults_for_export = $this->get_post_type_defaults();
+
+		?>
+
+		<h3><?php echo __('Export', 'simple-fields') ?></h3>
 		
+		<p>Export Field Groups, Post Connectors and Post Type Defaults as JSON</p>
+
+		<p>
+			Export:
+			<br>
+			<label><input type="radio" name="export-what" checked> All</label>
+			<br>
+			<label><input type="radio" name="export-what"> Custom</label>
+		</p>
+
+		<div class="simple-fields-export-custom-wrapper">
+
+			<p>Field Groups</p>
+			<?php
+			echo "<ul>";
+			foreach ($field_groups_for_export as $one_field_group) {
+				printf('
+					<li>
+						<label>
+							<input type="checkbox" value="%2$d">
+								%1$s
+						</label>
+					</li>
+					', 
+					esc_html( $one_field_group["name"] ),
+					$one_field_group["id"]
+				);
+			}
+			echo "</ul>";
+			?>
+
+			<p>Post connectors</p>
+			<?php
+			echo "<ul>";
+			foreach ($post_connectors_for_export as $one_post_connector) {
+				printf('
+					<li>
+						<label>
+							<input type="checkbox" value="%2$d">
+								%1$s
+						</label>
+					</li>
+					', 
+					esc_html( $one_post_connector["name"] ),
+					$one_post_connector["id"]
+				);
+			}
+			echo "</ul>";
+			?>
+
+			<p>Post type defaults</p>
+			<?php
+			echo "<ul>";
+			foreach ($post_type_defaults_for_export as $one_post_type_default_post_type => $one_post_type_default_key) {
+				#sf_d($one_post_type_default);
+				printf('
+					<li>
+						<label>
+							<input type="checkbox" value="%2$s">
+								%1$s
+						</label>
+					</li>
+					', 
+					esc_html( $one_post_type_default_post_type ),
+					$one_post_type_default_key
+				);
+			}
+			echo "</ul>";
+			?>
+
+			Select Post Connectors to export
+			Select Post Type Defaults to export
+		</div>
+
 		<?php
 		$arr_export_data = array();
-
-		// Get post connectors for export
-		$post_connectors_for_export = $this->get_post_connectors();
 
 		// Remove deleted connectors and possibly make other selection
 		foreach ($post_connectors_for_export as $key => $val) {
@@ -35,13 +111,24 @@ if ( ! $action ) {
 
 		$arr_export_data["post_connectors"] = $post_connectors_for_export;
 
-		#sf_d( $this->get_field_groups() );
-		#sf_d( $this->get_post_type_defaults() );
-		
-		sf_d( $arr_export_data ); // 5
-		?>
+		// Get field groups for export
+		$arr_export_data["field_groups"] = $field_groups_for_export;
 
-		<textarea></textarea>
+		$arr_export_data["post_type_defaults"] = $post_type_defaults_for_export;
+			
+		// beautify json if php version is more than or including 5.4.0
+		if ( version_compare ( PHP_VERSION , "5.4.0" ) >= 0 ) {
+			$export_json_string = json_encode( $arr_export_data , JSON_PRETTY_PRINT);
+		} else {
+			$export_json_string = json_encode( $arr_export_data );
+		}
+		?>
+	
+		<textarea cols=100 rows=10><?php echo $export_json_string ;?></textarea>
+
+		<p>
+			<input type="submit" class="button" value="Download export">
+		</p>
 
 	</div>
 
@@ -82,7 +169,7 @@ if ( ! $action ) {
 			</p>
 
 			<p>
-				<input class="button-primary" type=submit value="<?php _e("Save changes", "simple-fields") ?>">
+				<input class="button" type=submit value="<?php _e("Save changes", "simple-fields") ?>">
 			</p>
 
 			<?php wp_nonce_field( "save-debug-options" ) ?>
