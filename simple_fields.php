@@ -113,6 +113,9 @@ class simple_fields {
 		add_action( 'wp_ajax_simple_fields_field_type_post_dialog_load', array($this, 'field_type_post_dialog_load') );
 		add_action( 'wp_ajax_simple_fields_field_group_add_field', array($this, 'field_group_add_field') );
 
+		// Ajax calls for export
+		add_action( 'wp_ajax_simple_fields_get_export', array($this, 'ajax_get_export') );
+
 		// Add to debug bar if debug is enabled
 		add_filter( 'debug_bar_panels', array($this, "debug_panel_insert") );
 
@@ -3899,6 +3902,74 @@ class simple_fields {
 		);
 		$arr_text_input_types = apply_filters("simple_fields_get_html_text_types", $arr_text_input_types);
 		return $arr_text_input_types;
+	} // get html text types
+
+
+	function get_export( array $selection = array()) {
+
+		$arr_export_data = array();
+
+		$field_groups_for_export = $this->get_field_groups(false);
+		$post_connectors_for_export = $this->get_post_connectors();
+		$post_type_defaults_for_export = $this->get_post_type_defaults();
+
+		// Remove deleted connectors and possibly make other selection
+		foreach ($post_connectors_for_export as $key => $val) {
+			if ($val["deleted"]) unset( $post_connectors_for_export[$key] );
+		}
+
+		// if selection is not empty then only include whats in there
+		if ( ! empty( $selection ) ) {
+			sf_d($selection);
+			/*
+			Array
+			(
+			    [export-what] =&gt; custom
+			    [field-groups] =&gt; Array
+			        (
+			            [0] =&gt; 4
+			            [1] =&gt; 10
+			        )
+
+			    [post-connectors] =&gt; Array
+			        (
+			            [0] =&gt; 4
+			        )
+
+			    [post-type-defaults] =&gt; Array
+			        (
+			            [0] =&gt; __inherit__
+			        )
+
+			    [export-json] =&gt; Getting customized JSON ...
+			    [action] =&gt; simple_fields_get_export
+			)
+			*/
+		}
+
+		$arr_export_data["post_connectors"] = $post_connectors_for_export;
+		$arr_export_data["field_groups"] = $field_groups_for_export;
+		$arr_export_data["post_type_defaults"] = $post_type_defaults_for_export;
+		
+		return $arr_export_data;
+
+	}
+
+	function ajax_get_export() {
+		
+		$arr_export_data = $this->get_export( $_POST );
+
+		// beautify json if php version is more than or including 5.4.0
+		if ( version_compare ( PHP_VERSION , "5.4.0" ) >= 0 ) {
+			$export_json_string = json_encode( $arr_export_data , JSON_PRETTY_PRINT);
+		} else {
+			$export_json_string = json_encode( $arr_export_data );
+		}
+		
+		header('Content-Type: text/plain');
+		echo $export_json_string;
+
+		exit;
 	}
 
 
