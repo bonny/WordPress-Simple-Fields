@@ -3920,7 +3920,7 @@ class simple_fields {
 
 		// if selection is not empty then only include whats in there
 		if ( ! empty( $selection ) ) {
-			sf_d($selection);
+			#sf_d($selection);
 			/*
 			Array
 			(
@@ -3945,10 +3945,31 @@ class simple_fields {
 			    [action] =&gt; simple_fields_get_export
 			)
 			*/
+			
+			if ( ! empty( $_POST["field-groups"] ) ) {
+				$field_groups_to_keep = array();
+				foreach ( (array) $_POST["field-groups"] as $one_field_group_id_to_keep) {
+					$field_groups_to_keep[ $one_field_group_id_to_keep ] = $field_groups_for_export[ $one_field_group_id_to_keep ];
+				}
+				$field_groups_for_export = $field_groups_to_keep;
+			} else {
+				$field_groups_for_export = array();
+			}
+
+			if ( ! empty( $_POST["post-connectors"] ) ) {
+				$post_connectors_to_keep = array();
+				foreach ( (array) $_POST["post-connectors"] as $one_post_connector_id_to_keep ) {
+					$post_connectors_to_keep[ $one_post_connector_id_to_keep ] = $post_connectors_for_export[ $one_post_connector_id_to_keep ];
+				}
+				$post_connectors_for_export = $post_connectors_to_keep;
+			} else {
+				$post_connectors_for_export = array();
+			}
+
 		}
 
-		$arr_export_data["post_connectors"] = $post_connectors_for_export;
 		$arr_export_data["field_groups"] = $field_groups_for_export;
+		$arr_export_data["post_connectors"] = $post_connectors_for_export;
 		$arr_export_data["post_type_defaults"] = $post_type_defaults_for_export;
 		
 		return $arr_export_data;
