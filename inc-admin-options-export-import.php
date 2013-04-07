@@ -19,10 +19,12 @@ class simple_fields_options_page_import_export {
 
 		$this->sf = $sf;
 
-		add_action("admin_init", array($this, "maybe_download_export_file") );
-		add_action("simple_fields_settings_admin_head", array($this, "output_scripts_and_styles"));
+		// Add tab and output content when on that tab
 		add_action("simple_fields_after_last_options_nav_tab", array($this, "print_nav_tab"));
 		add_action("simple_fields_subpage_$this->slug", array($this, "output_page"));
+
+		add_action("admin_init", array($this, "maybe_download_export_file") );
+		add_action("simple_fields_settings_admin_head", array($this, "output_scripts_and_styles"));
 		add_action("wp_ajax_simple_fields_get_export", array($this, "ajax_get_export") );
 
 	}

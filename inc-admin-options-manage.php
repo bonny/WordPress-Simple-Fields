@@ -394,25 +394,6 @@ if ("edit-field-group" == $action) {
 
 }
 
-// view debug information
-if ("simple-fields-view-debug-info" == $action) {
-
-	echo "<h3>Post Connectors</h3>\n";
-	echo "<p>Called with function <code>get_post_connectors()</code>";
-	sf_d( $this->get_post_connectors() );
-
-	echo "<hr>";
-	
-	echo "<h3>Field Groups</h3>\n";
-	echo "<p>Called with function <code>get_field_groups()</code>";
-	sf_d( $this->get_field_groups() );
-	
-	echo "<hr>";
-	echo "<h3>simple_fields_post_type_defaults</h3>";
-	echo '<p>Called with: get_option("simple_fields_post_type_defaults")';
-	sf_d( $this->get_post_type_defaults() );
-	
-}
 
 // overview, if no action
 if ( ! $action ) {

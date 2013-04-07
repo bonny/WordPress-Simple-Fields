@@ -69,8 +69,6 @@ if ( isset($_GET["action"]) ) {
 		// Include selected sub page
 		if ("manage" === $subpage) {
 			require( dirname(__FILE__) . "/inc-admin-options-manage.php" );
-		} else if ("tools" === $subpage) {
-			require( dirname(__FILE__) . "/inc-admin-options-tools.php" );
 		} else {
 			do_action("simple_fields_subpage", $subpage);
 			do_action("simple_fields_subpage_$subpage");

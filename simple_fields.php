@@ -81,6 +81,7 @@ class simple_fields {
 
 		// Load option pages
 		require( dirname(__FILE__) . "/inc-admin-options-export-import.php" );
+		require( dirname(__FILE__) . "/inc-admin-options-debug.php" );
 
 		$this->plugin_foldername_and_filename = basename(dirname(__FILE__)) . "/" . basename(__FILE__);
 		$this->registered_field_types = array();
@@ -3687,6 +3688,8 @@ class simple_fields {
 			if ( ! isset($_GET["action"]) || empty( $_GET["action"] ) ) return;
 			$action = $_GET["action"];
 
+			do_action("simple_fields_options_page_save", $action);
+
 			global $sf;
 		
 			$field_groups = $this->get_field_groups();
@@ -3839,21 +3842,6 @@ class simple_fields {
 	
 			}
 
-			// Save options
-			if ("edit-options-save" == $action) {
-				
-				if ( ! wp_verify_nonce( $_POST["_wpnonce"], "save-debug-options" ) ) wp_die( __("Cheatin&#8217; uh?") );
-				
-				$this->save_options(array(
-					"debug_type" => (int) $_POST["debug_type"]
-				));
-				
-				wp_redirect( add_query_arg( "message", "debug-options-saved", $menu_page_url ) );
-				exit;				
-				
-			}
-
-
 		} // perform action on simple fields pages
 
 	} // save options
@@ -3935,7 +3923,6 @@ class simple_fields {
 		?>		
 		<h3 class="nav-tab-wrapper">
 			<a href="<?php echo add_query_arg(array("sf-options-subpage" => "manage"), SIMPLE_FIELDS_FILE) ?>" class="nav-tab <?php echo "manage" === $subpage ? "nav-tab-active" : "" ?>"><?php _e('Manage', 'simple-fields') ?></a>
-			<a href="<?php echo add_query_arg(array("sf-options-subpage" => "tools"), SIMPLE_FIELDS_FILE) ?>" class="nav-tab <?php echo "tools" === $subpage ? "nav-tab-active" : "" ?>"><?php _e('Tools', 'simple-fields') ?></a>
 			<?php
 			do_action("simple_fields_after_last_options_nav_tab", $subpage);
 			?>
