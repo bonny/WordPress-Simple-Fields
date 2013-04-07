@@ -149,7 +149,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 - Fixed: Could not add fields with ajax when plugin All-in-One Event Calendar was installed
 - Added: developers can now add their own tabs to the simple fields options page
 - Added: tab with export function. 
-- Added: filter/action: simple_fields_after_last_options_nav_tab, simple_fields_subpage, simple_fields_subpage_<subpage-name>.
+- Added: filter/action: simple_fields_settings_admin_head, simple_fields_after_last_options_nav_tab, simple_fields_subpage, simple_fields_subpage_<subpage-name>.
 Check inc-admin-options-export-import.php for an example how to use these filters and actions.
 
 #### Version 1.2.3

@@ -93,6 +93,7 @@ class simple_fields {
 		add_action( 'admin_enqueue_scripts', array($this, 'admin_enqueue_scripts') );
 		add_action( 'admin_menu', array($this, "admin_menu") );
 		add_action( 'admin_head', array($this, 'admin_head') );
+		add_action( 'admin_head', array($this, 'settings_admin_head') );
 		add_action( 'admin_head', array($this, 'admin_head_select_file') );
 		add_filter( 'plugin_row_meta', array($this, 'set_plugin_row_meta'), 10, 2 );
 		add_action( 'admin_footer', array($this, 'admin_footer') );
@@ -232,6 +233,27 @@ class simple_fields {
 	}
 
 	/**
+	 * Run action if we are on a settings/options page that belongs to Simple Fields
+	 */
+	function settings_admin_head() {
+		
+		$is_on_simple_fields_page = FALSE;
+		$page_type = "";
+
+		$current_screen = get_current_screen();
+		if ($current_screen->id === "settings_page_simple-fields-options") {
+			$is_on_simple_fields_page = TRUE;
+			$page_type = "settings";
+		}
+		
+		if ( ! $is_on_simple_fields_page ) return;
+
+		if ("settings" === $page_type) {
+			do_action("simple_fields_settings_admin_head");
+		}
+	}
+
+	/**
 	 * Enqueue styles and scripts, but on on pages that use simple fields
 	 * Should speed up the loading of other pages a bit
 	 */
@@ -259,7 +281,6 @@ class simple_fields {
 
 			// Settings page
 			wp_enqueue_style('simple-fields-styles', SIMPLE_FIELDS_URL.'styles.css', false, SIMPLE_FIELDS_VERSION);
-
 
 		} else {
 
