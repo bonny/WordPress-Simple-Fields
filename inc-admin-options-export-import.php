@@ -15,12 +15,12 @@ class simple_fields_options_page_import_export {
 
 	}
 
-	function init() {
+	function init($sf) {
 
-		global $sf;
 		$this->sf = $sf;
 
 		add_action("admin_init", array($this, "maybe_download_export_file") );
+		add_action("simple_fields_settings_admin_head", array($this, "output_scripts_and_styles"));
 		add_action("simple_fields_after_last_options_nav_tab", array($this, "print_nav_tab"));
 		add_action("simple_fields_subpage_$this->slug", array($this, "output_page"));
 		add_action("wp_ajax_simple_fields_get_export", array($this, "ajax_get_export") );
@@ -34,6 +34,76 @@ class simple_fields_options_page_import_export {
 	 */
 	function get_name() {
 		return _e('Import & Export', 'simple-fields');
+	}
+
+	function output_scripts_and_styles() {
+		?>
+		<script>
+			
+			jQuery(function($) {
+			
+				var custom_wrapper = $(".simple-fields-export-custom-wrapper"),
+					form = $("form[name='simple-fields-tools-export-form']"),
+					textarea = form.find("[name='export-json']");
+					btnSubmit = form.find("input[type='submit']");
+					ajaxPost = null;
+
+				// Click on radio button "export all" or "export custom"
+				// = enable download button, show textarea, update export json
+				$(document).on("click", ".simple-fields-tools-export-import .simple-fields-export-what", function(e) {
+					
+					custom_wrapper.toggle( this.value == "custom" );
+					textarea.show();
+					update_export_preview();
+					btnSubmit.removeClass("button-disabled").removeAttr("disabled");
+
+				});
+
+				// Update json export when a checkbox is clicked
+				$(document).on("click", ".simple-fields-export-custom-wrapper input[type='checkbox']", function(e) {
+					update_export_preview();
+				});
+
+				// Get json export from server via ajax
+				function update_export_preview() {
+					
+					// Abort prev call
+					if (ajaxPost && ajaxPost.readyState !== 4) {
+						console.log("aborted");
+						ajaxPost.abort();
+					}
+
+					// Get all checked things
+					textarea.text("Getting JSON ...");
+					var postData = form.serializeArray();
+					ajaxPost = $.post(ajaxurl, postData, function(data) {
+						textarea.text(data);
+					}, "text");
+				}
+
+			});
+
+		</script>
+		<style>
+			.simple-fields-export-custom-wrapper table th,
+			.simple-fields-export-custom-wrapper table td {
+				vertical-align: top;
+				text-align: left;
+				padding: 0 20px 0 0;
+			}
+			.simple-fields-export-custom-wrapper ul {
+				margin: 0;
+				list-style-type: none;
+			}
+			form[name=simple-fields-tools-export-form] textarea {
+				font-family: Consolas,Monaco,monospace;
+				font-size: 12px;
+				width: 50em;
+				background: #f9f9f9;
+				outline: 0;
+			}
+		</style>
+		<?php
 	}
 
 	/**
@@ -56,71 +126,7 @@ class simple_fields_options_page_import_export {
 
 		?>
 		<div class="simple-fields-tools-export-import">
-			<script>
-				
-				jQuery(function($) {
-				
-					var custom_wrapper = $(".simple-fields-export-custom-wrapper"),
-						form = $("form[name='simple-fields-tools-export-form']"),
-						textarea = form.find("[name='export-json']");
-						btnSubmit = form.find("input[type='submit']");
-						ajaxPost = null;
 
-					// Click on radio button "export all" or "export custom"
-					// = enable download button, show textarea, update export json
-					$(document).on("click", ".simple-fields-tools-export-import .simple-fields-export-what", function(e) {
-						
-						custom_wrapper.toggle( this.value == "custom" );
-						textarea.show();
-						update_export_preview();
-						btnSubmit.removeClass("button-disabled").removeAttr("disabled");
-
-					});
-
-					// Update json export when a checkbox is clicked
-					$(document).on("click", ".simple-fields-export-custom-wrapper input[type='checkbox']", function(e) {
-						update_export_preview();
-					});
-
-					// Get json export from server via ajax
-					function update_export_preview() {
-						
-						// Abort prev call
-						if (ajaxPost && ajaxPost.readyState !== 4) {
-							console.log("aborted");
-							ajaxPost.abort();
-						}
-
-						// Get all checked things
-						textarea.text("Getting JSON ...");
-						var postData = form.serializeArray();
-						ajaxPost = $.post(ajaxurl, postData, function(data) {
-							textarea.text(data);
-						}, "text");
-					}
-
-				});
-
-			</script>
-			<style>
-				.simple-fields-export-custom-wrapper table th,
-				.simple-fields-export-custom-wrapper table td {
-					vertical-align: top;
-					text-align: left;
-					padding: 0 20px 0 0;
-				}
-				.simple-fields-export-custom-wrapper ul {
-					margin: 0;
-					list-style-type: none;
-				}
-				form[name=simple-fields-tools-export-form] textarea {
-					font-family: Consolas,Monaco,monospace;
-					font-size: 12px;
-					width: 50em;
-					background: #f9f9f9;
-					outline: 0;
-				}
-			</style>
 			<?php
 
 			// Collect for export...
