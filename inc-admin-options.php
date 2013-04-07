@@ -48,15 +48,6 @@ if ( isset($_GET["action"]) ) {
 		$subpage = isset( $_REQUEST["sf-options-subpage"] ) ? $_REQUEST["sf-options-subpage"] : "manage";
 		$action = (isset($_GET["action"])) ? $_GET["action"] : null;
 
-		add_action("simple_fields_options_print_nav_tabs", function($subpage) {
-			?>		
-			<h3 class="nav-tab-wrapper">
-				<a href="<?php echo add_query_arg(array("sf-options-subpage" => "manage"), SIMPLE_FIELDS_FILE) ?>" class="nav-tab <?php echo "manage" === $subpage ? "nav-tab-active" : "" ?>"><?php _e('Manage', 'simple-fields') ?></a>
-				<a href="<?php echo add_query_arg(array("sf-options-subpage" => "tools"), SIMPLE_FIELDS_FILE) ?>" class="nav-tab <?php echo "tools" === $subpage ? "nav-tab-active" : "" ?>"><?php _e('Tools', 'simple-fields') ?></a>
-			</h3>
-			<?php
-		});
-
 		// Print messages at top
 		if ( ! empty( $_GET["message"] ) ) {
 
@@ -80,6 +71,9 @@ if ( isset($_GET["action"]) ) {
 			require( dirname(__FILE__) . "/inc-admin-options-manage.php" );
 		} else if ("tools" === $subpage) {
 			require( dirname(__FILE__) . "/inc-admin-options-tools.php" );
+		} else {
+			do_action("simple_fields_subpage", $subpage);
+			do_action("simple_fields_subpage_$subpage");
 		}
 
 	?>

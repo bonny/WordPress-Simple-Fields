@@ -79,6 +79,9 @@ class simple_fields {
 		require( dirname(__FILE__) . "/field_types/field_divider.php" );
 		require( dirname(__FILE__) . "/field_types/field_date_v2.php" );
 
+		// Load option pages
+		require( dirname(__FILE__) . "/inc-admin-options-export-import.php" );
+
 		$this->plugin_foldername_and_filename = basename(dirname(__FILE__)) . "/" . basename(__FILE__);
 		$this->registered_field_types = array();
 
@@ -102,7 +105,6 @@ class simple_fields {
 		add_action( 'plugins_loaded', array($this, 'plugins_loaded') );
 		add_action( 'init', array($this, "maybe_add_debug_info") ); 
 
-
 		// Hacks for media select dialog
 		add_filter( 'media_send_to_editor', array($this, 'media_send_to_editor'), 15, 2 );
 		add_filter( 'media_upload_tabs', array($this, 'media_upload_tabs'), 15 );
@@ -113,8 +115,8 @@ class simple_fields {
 		add_action( 'wp_ajax_simple_fields_field_type_post_dialog_load', array($this, 'field_type_post_dialog_load') );
 		add_action( 'wp_ajax_simple_fields_field_group_add_field', array($this, 'field_group_add_field') );
 
-		// Ajax calls for export
-		add_action( 'wp_ajax_simple_fields_get_export', array($this, 'ajax_get_export') );
+		// Options page
+		add_action("simple_fields_options_print_nav_tabs", array($this, "get_options_nav_tabs"));
 
 		// Add to debug bar if debug is enabled
 		add_filter( 'debug_bar_panels', array($this, "debug_panel_insert") );
@@ -3905,94 +3907,20 @@ class simple_fields {
 	} // get html text types
 
 
-	function get_export( array $selection = array()) {
-
-		$arr_export_data = array();
-
-		$field_groups_for_export = $this->get_field_groups(false);
-		$post_connectors_for_export = $this->get_post_connectors();
-		$post_type_defaults_for_export = $this->get_post_type_defaults();
-
-		// Remove deleted connectors and possibly make other selection
-		foreach ($post_connectors_for_export as $key => $val) {
-			if ($val["deleted"]) unset( $post_connectors_for_export[$key] );
-		}
-
-		// if selection is not empty then only include whats in there
-		if ( ! empty( $selection ) ) {
-			#sf_d($selection);
-			/*
-			Array
-			(
-			    [export-what] =&gt; custom
-			    [field-groups] =&gt; Array
-			        (
-			            [0] =&gt; 4
-			            [1] =&gt; 10
-			        )
-
-			    [post-connectors] =&gt; Array
-			        (
-			            [0] =&gt; 4
-			        )
-
-			    [post-type-defaults] =&gt; Array
-			        (
-			            [0] =&gt; __inherit__
-			        )
-
-			    [export-json] =&gt; Getting customized JSON ...
-			    [action] =&gt; simple_fields_get_export
-			)
-			*/
-			
-			if ( ! empty( $_POST["field-groups"] ) ) {
-				$field_groups_to_keep = array();
-				foreach ( (array) $_POST["field-groups"] as $one_field_group_id_to_keep) {
-					$field_groups_to_keep[ $one_field_group_id_to_keep ] = $field_groups_for_export[ $one_field_group_id_to_keep ];
-				}
-				$field_groups_for_export = $field_groups_to_keep;
-			} else {
-				$field_groups_for_export = array();
-			}
-
-			if ( ! empty( $_POST["post-connectors"] ) ) {
-				$post_connectors_to_keep = array();
-				foreach ( (array) $_POST["post-connectors"] as $one_post_connector_id_to_keep ) {
-					$post_connectors_to_keep[ $one_post_connector_id_to_keep ] = $post_connectors_for_export[ $one_post_connector_id_to_keep ];
-				}
-				$post_connectors_for_export = $post_connectors_to_keep;
-			} else {
-				$post_connectors_for_export = array();
-			}
-
-		}
-
-		$arr_export_data["field_groups"] = $field_groups_for_export;
-		$arr_export_data["post_connectors"] = $post_connectors_for_export;
-		$arr_export_data["post_type_defaults"] = $post_type_defaults_for_export;
-		
-		return $arr_export_data;
-
+	/**
+	 * Get tabs for options output
+	 */
+	function get_options_nav_tabs($subpage) {
+		?>		
+		<h3 class="nav-tab-wrapper">
+			<a href="<?php echo add_query_arg(array("sf-options-subpage" => "manage"), SIMPLE_FIELDS_FILE) ?>" class="nav-tab <?php echo "manage" === $subpage ? "nav-tab-active" : "" ?>"><?php _e('Manage', 'simple-fields') ?></a>
+			<a href="<?php echo add_query_arg(array("sf-options-subpage" => "tools"), SIMPLE_FIELDS_FILE) ?>" class="nav-tab <?php echo "tools" === $subpage ? "nav-tab-active" : "" ?>"><?php _e('Tools', 'simple-fields') ?></a>
+			<?php
+			do_action("simple_fields_after_last_options_nav_tab", $subpage);
+			?>
+		</h3>
+		<?php
 	}
-
-	function ajax_get_export() {
-		
-		$arr_export_data = $this->get_export( $_POST );
-
-		// beautify json if php version is more than or including 5.4.0
-		if ( version_compare ( PHP_VERSION , "5.4.0" ) >= 0 ) {
-			$export_json_string = json_encode( $arr_export_data , JSON_PRETTY_PRINT);
-		} else {
-			$export_json_string = json_encode( $arr_export_data );
-		}
-		
-		header('Content-Type: text/plain');
-		echo $export_json_string;
-
-		exit;
-	}
-
 
 } // end class
 

@@ -147,6 +147,10 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 #### Version 1.2.x
 - Fixed: was unable to enable use html editor when using gui
 - Fixed: Could not add fields with ajax when plugin All-in-One Event Calendar was installed
+- Added: developers can now add their own tabs to the simple fields options page
+- Added: tab with export function. 
+- Added: filter/action: simple_fields_after_last_options_nav_tab, simple_fields_subpage, simple_fields_subpage_<subpage-name>.
+Check inc-admin-options-export-import.php for an example how to use these filters and actions.
 
 #### Version 1.2.3
 - Fixed: could not unset option use_html_editor for textarea field type. props Hayden.
