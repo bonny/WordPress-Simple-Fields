@@ -3304,7 +3304,7 @@ class simple_fields {
 					if ( strpos($dropdown_key, "dropdown_num_") === FALSE) { continue; }
 
 					// Skip deleted
-					if ($dropdown_value["deleted"]) continue;
+					if ( isset( $dropdown_value["deleted"] ) && $dropdown_value["deleted"] ) continue;
 					
 					$return_field_value["options"][] = array(
 						"value"       => $dropdown_value["value"],
