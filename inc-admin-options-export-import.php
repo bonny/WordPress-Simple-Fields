@@ -27,6 +27,59 @@ class simple_fields_options_page_import_export {
 		add_action("simple_fields_settings_admin_head", array($this, "output_scripts_and_styles"));
 		add_action("wp_ajax_simple_fields_get_export", array($this, "ajax_get_export") );
 
+		add_action("admin_init", array($this, "maybe_do_import"));
+
+	}
+
+	function maybe_do_import() {
+		if ( isset($_POST) && isset( $_POST["action"] ) && ( $_POST["action"] === "simple_fields_do_import" ) ) {
+			
+			#echo "do import";
+			#sf_d($_POST, "post");
+			#sf_d($_FILES, "files");
+
+			if ("file" === $_POST["import-what"]) {
+
+				if ( empty($_FILES["import-file"]["tmp_name"]) || ! is_uploaded_file($_FILES["import-file"]["tmp_name"]) ||  $_FILES["import-file"]["error"] !== 0 ) {
+					wp_die( __("Import failed: something went wrong while uploading import file.", "simple-fields") );
+				}
+
+				$import_json = file_get_contents( $_FILES["import-file"]["tmp_name"] );
+
+			} elseif ("textarea" === $_POST["import-what"]) {
+
+				$import_json = stripslashes( $_POST["import-json"] );
+
+			}
+
+			$arr_import = json_decode($import_json, true);
+			if ( is_null( $arr_import ) ) {
+				wp_die( __("Import failed: JSON data is not valid.", "simple-fields") );
+			}
+			sf_d( $arr_import, '$arr_import');
+
+			// post:
+			// Array
+			// (
+			//     [import-what] => file | textarea
+			//     [import-json] => ...json data...
+			//     [action] => simple_fields_do_import
+			// )
+			// files:
+			// Array
+			// (
+			//     [import-file] => Array
+			//         (
+			//             [name] => simple-fields-export-attachments.json
+			//             [type] => application/json
+			//             [tmp_name] => /Applications/MAMP/tmp/php/phpdO4yTv
+			//             [error] => 0
+			//             [size] => 6305
+			//         )
+
+			// )
+			exit;
+		}
 	}
 
 	/**
@@ -272,8 +325,8 @@ class simple_fields_options_page_import_export {
 				</p>
 			
 			</form>
-			
-			<form>
+
+			<form enctype="multipart/form-data" method="post" action="<?php echo add_query_arg(array("sf-options-subpage" => "import_export"), SIMPLE_FIELDS_FILE) ?>">
 	
 				<h3><?php _e("Import", "simple-fields" ) ?></h3>
 
@@ -291,6 +344,7 @@ class simple_fields_options_page_import_export {
 				
 				<p>
 					<input class="hidden button btn-submit-import" type="submit" value="Begin import">
+					<input type="hidden" name="action" value="simple_fields_do_import">
 				</p>
 
 			</form>
