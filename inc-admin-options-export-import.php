@@ -153,6 +153,14 @@ class simple_fields_options_page_import_export {
 				background: #f9f9f9;
 				outline: 0;
 			}
+
+
+			.simple-fields-tools-export-import-section-import {
+				border-top: 1px solid #dfdfdf;
+				padding-top: 10px;
+				margin-top: 30px;
+			}
+
 		</style>
 		<?php
 	}
@@ -195,6 +203,7 @@ class simple_fields_options_page_import_export {
 			<form method="post" action="" name="simple-fields-tools-export-form">
 			
 				<h3><?php _e("Export", "simple-fields" ) ?></h3>
+
 
 				<p><?php _e("Export Field Groups, Post Connectors and Post Type Defaults as JSON.", "simple-fields") ?></p>
 
@@ -307,11 +316,11 @@ class simple_fields_options_page_import_export {
 			
 			</form>
 
-			<form enctype="multipart/form-data" method="post" action="<?php echo add_query_arg(array("sf-options-subpage" => "import_export"), SIMPLE_FIELDS_FILE) ?>">
+			<form class="simple-fields-tools-export-import-section-import" enctype="multipart/form-data" method="post" action="<?php echo add_query_arg(array("sf-options-subpage" => "import_export"), SIMPLE_FIELDS_FILE) ?>">
 	
 				<h3><?php _e("Import", "simple-fields" ) ?></h3>
 
-				<p><?php _e("Import Field Groups, Post Connectors and Post Type Defaults from JSON.", "simple-fields") ?></p>
+				<p><?php _e("Import Field Groups, Post Connectors and Post Type Defaults from JSON. Remember to backup your database before importing data.", "simple-fields") ?></p>
 
 				<p>
 					<label><input type="radio" name="import-what" class="simple-fields-import-what" value="textarea"> <?php _e("Import by pasting data from clipboard", "simple-fields") ?></label>
@@ -323,24 +332,28 @@ class simple_fields_options_page_import_export {
 				
 				<p><input class="hidden" type="file" name="import-file" value="Select file"></p>
 				
-				<p>Import mode - what do you want to do with the existing data?</p>
+				<p><strong>Type of import</strong></p>
 
 				<p>
 					<label><input type="radio"> Replace</label>
 					<br>
-					<span class="description">Replace all existing data with data from this import.</span>
+					<span class="description">Replaces all existing data at server with the data from this import.
+					If the slug is the same for an object then the id for that object will be kept.
+					</span>
 				</p>
 
 				<p>
-					<label><input type="radio"> Overwrite</label>
+					<label><input type="radio"> Overwrite & Append</label>
 					<br>
-					<span class="description">Keep existing data, but overwrite if data also exist in this import.</span>
+					<span class="description">Keep existing data at server, but overwrite it if data exists both at server and in this import.
+						Data that only exist in import is appended to server data.
+					</span>
 				</p>
 
 				<p>
 					<label><input type="radio"> Append new</label>
 					<br>
-					<span class="description">Keep existing data and only add new data from the this import.</span>
+					<span class="description">Existing data at server it left alone. New data in this import is added.</span>
 				</p>
 
 				<p>
