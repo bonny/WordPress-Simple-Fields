@@ -58,27 +58,8 @@ class simple_fields_options_page_import_export {
 			}
 			sf_d( $arr_import, '$arr_import');
 
-			// post:
-			// Array
-			// (
-			//     [import-what] => file | textarea
-			//     [import-json] => ...json data...
-			//     [action] => simple_fields_do_import
-			// )
-			// files:
-			// Array
-			// (
-			//     [import-file] => Array
-			//         (
-			//             [name] => simple-fields-export-attachments.json
-			//             [type] => application/json
-			//             [tmp_name] => /Applications/MAMP/tmp/php/phpdO4yTv
-			//             [error] => 0
-			//             [size] => 6305
-			//         )
-
-			// )
 			exit;
+
 		}
 	}
 
@@ -338,10 +319,30 @@ class simple_fields_options_page_import_export {
 					<label><input type="radio" name="import-what" class="simple-fields-import-what" value="file"> <?php _e("Import by uploading file", "simple-fields") ?></label>
 				</p>
 
-				<textarea class="hidden" name="import-json" cols=100 rows=10></textarea>
+				<textarea class="hidden" name="import-json" cols=100 rows=10 placeholder="<?php _e("Paste your JSON data here", "simple-fields") ?>"></textarea>
 				
 				<p><input class="hidden" type="file" name="import-file" value="Select file"></p>
 				
+				<p>Import mode - what do you want to do with the existing data?</p>
+
+				<p>
+					<label><input type="radio"> Replace</label>
+					<br>
+					<span class="description">Replace all existing data with data from this import.</span>
+				</p>
+
+				<p>
+					<label><input type="radio"> Overwrite</label>
+					<br>
+					<span class="description">Keep existing data, but overwrite if data also exist in this import.</span>
+				</p>
+
+				<p>
+					<label><input type="radio"> Append new</label>
+					<br>
+					<span class="description">Keep existing data and only add new data from the this import.</span>
+				</p>
+
 				<p>
 					<input class="hidden button btn-submit-import" type="submit" value="Begin import">
 					<input type="hidden" name="action" value="simple_fields_do_import">
