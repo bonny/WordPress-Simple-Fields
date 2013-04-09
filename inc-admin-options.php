@@ -14,7 +14,8 @@ uasort($post_connectors, "simple_fields_uasort");
 if ( isset($_GET["action"]) ) {
 	?>
 	<style>
-
+		
+		/*
 		.settings_page_simple-fields-options #icon-options-general {
 			margin-top: 16px;
 		}
@@ -30,6 +31,8 @@ if ( isset($_GET["action"]) ) {
 			margin-top: -30px;
 			font: 23px normal "HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",sans-serif;
 		}
+		*/
+		
 	</style>
 	<?php
 }

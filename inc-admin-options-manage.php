@@ -11,11 +11,21 @@ if ("edit-post-type-defaults" == $action) {
 		?>
 		<form action="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-post-type-defaults-save" method="post">
 			
-			<h3><?php echo __( sprintf('Edit default post connector for post type %1$s', $selected_post_type->label), "simple-fields" ) ?></h3>
-			
 			<?php do_action("simple_fields_options_print_nav_tabs", $subpage); ?>
+			
+			<h3><?php echo __( 'Post type defaults', "simple-fields" ) ?></h3>
 
 			<table class="form-table">
+				
+				<tr>
+					<th>
+						<p><?php _e('Post type', "simple-fields" ) ?></p>
+					</th>
+					<td>
+						<p><?php echo esc_html( $selected_post_type->label ) ?></p>
+					</td>
+				</tr>
+				
 				<tr>
 					<th><?php _e('Default post connector', 'simple-fields') ?></th>
 					<td>
@@ -83,9 +93,9 @@ if ("edit-post-connector" == $action) {
 	?>
 	<form method="post" action="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-post-connector-save">
 	
-		<h3><?php _e('Post Connector details', 'simple-fields') ?></h3>
-
 		<?php do_action("simple_fields_options_print_nav_tabs", $subpage); ?>
+
+		<h3><?php _e('Post Connector details', 'simple-fields') ?></h3>
 
 		<table class="form-table">
 
@@ -270,9 +280,9 @@ if ("edit-field-group" == $action) {
 	?>
 	<form method="post" action="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-field-group-save">
 		
-		<h3><?php _e('Field group details', 'simple-fields') ?></h3>
-		
 		<?php do_action("simple_fields_options_print_nav_tabs", $subpage); ?>
+		
+		<h3><?php _e('Field group details', 'simple-fields') ?></h3>
 
 		<table class="form-table">
 			<tr>

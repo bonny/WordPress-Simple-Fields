@@ -44,11 +44,17 @@ class simple_fields_options_page_import_export {
 			
 			jQuery(function($) {
 			
-				var custom_wrapper = $(".simple-fields-export-custom-wrapper"),
+				var 
+					wrapper = $(".simple-fields-tools-export-import"),
+					custom_wrapper = $(".simple-fields-export-custom-wrapper"),
 					form = $("form[name='simple-fields-tools-export-form']"),
-					textarea = form.find("[name='export-json']");
-					btnSubmit = form.find("input[type='submit']");
-					ajaxPost = null;
+					textarea = form.find("[name='export-json']"),
+					btnSubmit = form.find("input[type='submit']"),
+					ajaxPost = null,
+					textarea_export = wrapper.find("[name='import-json']"),
+					file_import = wrapper.find("input[name='import-file']"),
+					btn_import_submit = wrapper.find(".btn-submit-import")
+				;
 
 				// Click on radio button "export all" or "export custom"
 				// = enable download button, show textarea, update export json
@@ -64,6 +70,15 @@ class simple_fields_options_page_import_export {
 				// Update json export when a checkbox is clicked
 				$(document).on("click", ".simple-fields-export-custom-wrapper input[type='checkbox']", function(e) {
 					update_export_preview();
+				});
+
+				// Show import textbox or file
+				$(document).on("click", ".simple-fields-tools-export-import input[name='import-what']", function(e) {
+					
+					textarea_export.toggle( this.value == "textarea" );
+					file_import.toggle( this.value === "file" );
+					btn_import_submit.show();
+
 				});
 
 				// Get json export from server via ajax
@@ -145,6 +160,8 @@ class simple_fields_options_page_import_export {
 
 			<form method="post" action="" name="simple-fields-tools-export-form">
 			
+				<h3><?php _e("Export", "simple-fields" ) ?></h3>
+
 				<p><?php _e("Export Field Groups, Post Connectors and Post Type Defaults as JSON.", "simple-fields") ?></p>
 
 				<p>
@@ -254,6 +271,28 @@ class simple_fields_options_page_import_export {
 					<input type="hidden" name="action" value="simple_fields_get_export">
 				</p>
 			
+			</form>
+			
+			<form>
+	
+				<h3><?php _e("Import", "simple-fields" ) ?></h3>
+
+				<p><?php _e("Import Field Groups, Post Connectors and Post Type Defaults from JSON.", "simple-fields") ?></p>
+
+				<p>
+					<label><input type="radio" name="import-what" class="simple-fields-import-what" value="textarea"> <?php _e("Import by pasting data from clipboard", "simple-fields") ?></label>
+					<br>
+					<label><input type="radio" name="import-what" class="simple-fields-import-what" value="file"> <?php _e("Import by uploading file", "simple-fields") ?></label>
+				</p>
+
+				<textarea class="hidden" name="import-json" cols=100 rows=10></textarea>
+				
+				<p><input class="hidden" type="file" name="import-file" value="Select file"></p>
+				
+				<p>
+					<input class="hidden button btn-submit-import" type="submit" value="Begin import">
+				</p>
+
 			</form>
 
 		</div><!-- simple-fields-tools-export-import -->
