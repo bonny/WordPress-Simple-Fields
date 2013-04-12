@@ -112,7 +112,13 @@ class simple_fields_options_page_import_export {
 					textarea_export.toggle( this.value == "textarea" );
 					file_import.toggle( this.value === "file" );
 					btn_import_submit.show();
+					wrapper.find(".simple-fields-tools-export-import-section-import-type").show();
 
+				});
+
+				// Show import button when click on import type
+				$(document).on("click", "input[name='simple-fields-import-type']", function(e) {
+					btn_import_submit.removeAttr("disabled");
 				});
 
 				// Get json export from server via ajax
@@ -332,34 +338,38 @@ class simple_fields_options_page_import_export {
 				
 				<p><input class="hidden" type="file" name="import-file" value="Select file"></p>
 				
-				<p><strong>Type of import</strong></p>
+				<div class="simple-fields-tools-export-import-section-import-type hidden">
 
-				<p>
-					<label><input type="radio"> Replace</label>
-					<br>
-					<span class="description">Replaces all existing data at server with the data from this import.
-					If the slug is the same for an object then the id for that object will be kept.
-					</span>
-				</p>
+					<p><strong>Type of import</strong></p>
 
-				<p>
-					<label><input type="radio"> Overwrite & Append</label>
-					<br>
-					<span class="description">Keep existing data at server, but overwrite it if data exists both at server and in this import.
-						Data that only exist in import is appended to server data.
-					</span>
-				</p>
+					<p>
+						<label><input value="replace" type="radio" name="simple-fields-import-type"> Replace</label>
+						<br>
+						<span class="description">Replaces all existing data at server with the data from this import.
+						If the slug is the same for an object then the id for that object will be kept.
+						</span>
+					</p>
 
-				<p>
-					<label><input type="radio"> Append new</label>
-					<br>
-					<span class="description">Existing data at server it left alone. New data in this import is added.</span>
-				</p>
+					<p>
+						<label><input value="overwrite-append" type="radio" name="simple-fields-import-type"> Overwrite & Append</label>
+						<br>
+						<span class="description">Keep existing data at server, but overwrite it if data exists both at server and in this import.
+							Data that only exist in import is appended to server data.
+						</span>
+					</p>
 
-				<p>
-					<input class="hidden button btn-submit-import" type="submit" value="Begin import">
-					<input type="hidden" name="action" value="simple_fields_do_import">
-				</p>
+					<p>
+						<label><input value="append-new" type="radio" name="simple-fields-import-type"> Append new</label>
+						<br>
+						<span class="description">Existing data at server it left alone. New data in this import is added.</span>
+					</p>
+
+					<p>
+						<input class="hidden button btn-submit-import" type="submit" value="Begin import" disabled>
+						<input type="hidden" name="action" value="simple_fields_do_import">
+					</p>
+				
+				</div>
 
 			</form>
 
