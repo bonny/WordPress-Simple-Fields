@@ -34,10 +34,6 @@ class simple_fields_options_page_import_export {
 	function maybe_do_import() {
 		if ( isset($_POST) && isset( $_POST["action"] ) && ( $_POST["action"] === "simple_fields_do_import" ) ) {
 			
-			#echo "do import";
-			#sf_d($_POST, "post");
-			#sf_d($_FILES, "files");
-
 			if ("file" === $_POST["import-what"]) {
 
 				if ( empty($_FILES["import-file"]["tmp_name"]) || ! is_uploaded_file($_FILES["import-file"]["tmp_name"]) ||  $_FILES["import-file"]["error"] !== 0 ) {
@@ -56,7 +52,37 @@ class simple_fields_options_page_import_export {
 			if ( is_null( $arr_import ) ) {
 				wp_die( __("Import failed: JSON data is not valid.", "simple-fields") );
 			}
-			sf_d( $arr_import, '$arr_import');
+			
+			$arr_field_groups = isset($arr_import["field_groups"]) ? (array) $arr_import["field_groups"] : array();
+			$arr_post_type_defaults = isset($arr_import["post_type_defaults"]) ? (array) $arr_import["post_type_defaults"] : array();
+			$arr_post_connectors = isset($arr_import["post_connectors"]) ? (array) $arr_import["post_connectors"] : array();
+
+			$import_type = $_POST["simple-fields-import-type"];
+			/*
+			$import_type:
+			replace
+			overwrite-append
+			append-new
+			*/
+			#sf_d( $arr_import, '$arr_import');
+			
+			if ( "replace" === $import_type) {
+				
+				// Just update our options with 
+				update_option("simple_fields_post_connectors", $arr_post_connectors);
+				update_option("simple_fields_groups", $arr_field_groups);
+				update_option("simple_fields_post_type_defaults", $arr_post_type_defaults);
+				
+				wp_redirect( add_query_arg( array(
+					"sf-options-subpage" => "import_export",
+					"message" => "import-done"
+				), SIMPLE_FIELDS_FILE ) );
+
+				exit;
+
+				//simple_fields_register_post_type_default($post_type_connector, $post_type);
+				
+			}
 
 			exit;
 
@@ -193,6 +219,26 @@ class simple_fields_options_page_import_export {
 		<div class="simple-fields-tools-export-import">
 
 			<?php
+			if ( isset( $_GET["message"] ) ) {
+				
+				switch ( $_GET["message"] ) {
+
+					case "import-done":
+						$message = "Import done";
+						break;
+
+					default:
+						$message = "";
+
+				}
+				?>
+				<div id="message" class="updated"><p><?php echo $message ?></p></div>
+				<?php
+				
+			} // if message
+			?>
+
+			<?php
 
 			// Collect for export...
 			$field_groups_for_export = $this->sf->get_field_groups(false);
@@ -207,9 +253,8 @@ class simple_fields_options_page_import_export {
 			?>
 
 			<form method="post" action="" name="simple-fields-tools-export-form">
-			
-				<h3><?php _e("Export", "simple-fields" ) ?></h3>
 
+				<h3><?php _e("Export", "simple-fields" ) ?></h3>
 
 				<p><?php _e("Export Field Groups, Post Connectors and Post Type Defaults as JSON.", "simple-fields") ?></p>
 
@@ -346,7 +391,7 @@ class simple_fields_options_page_import_export {
 						<label><input value="replace" type="radio" name="simple-fields-import-type"> Replace</label>
 						<br>
 						<span class="description">Replaces all existing data at server with the data from this import.
-						If the slug is the same for an object then the id for that object will be kept.
+						<!-- If the slug is the same for an object then the id for that object will be kept. -->
 						</span>
 					</p>
 
