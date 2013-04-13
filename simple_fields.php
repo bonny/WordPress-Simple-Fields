@@ -3710,7 +3710,10 @@ class simple_fields {
 				$post_connectors[$connector_id]["post_types"] = (array) @$_POST["post_types"];
 				$post_connectors[$connector_id]["hide_editor"] = (bool) @$_POST["hide_editor"];
 				$post_connectors[$connector_id]["added_with_code"] = false;
-					
+
+				// When field group is created it's set to deleted in case we don't save, so undo that
+				$post_connectors[$connector_id]["deleted"] = false;
+
 				// for some reason I got an empty connector (array key was empty) so check for these and remove
 				$post_connectors_tmp = array();
 				foreach ($post_connectors as $key => $one_connector) {

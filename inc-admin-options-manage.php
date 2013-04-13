@@ -80,7 +80,7 @@ if ("edit-post-connector" == $action) {
 
 		// is new connector
 		$is_new_post_connector = true;
-		$post_connector_in_edit = simple_fields_register_post_connector(null, array("added_with_code" => false));
+		$post_connector_in_edit = simple_fields_register_post_connector(null, array("deleted" => true, "added_with_code" => false));
 		$post_connector_in_edit["name"] = "";
 		$post_connector_in_edit["slug"] = "";
 
