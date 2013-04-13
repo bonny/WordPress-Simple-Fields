@@ -73,12 +73,16 @@ if ("edit-post-connector" == $action) {
 
 	$connector_id = (isset($_GET["connector-id"])) ? intval($_GET["connector-id"]) : false;
 	$highest_connector_id = 0;
+	$is_new_post_connector = false;
 
 	// if new, save it as unnamed, and then set to edit that
 	if ($connector_id === 0) {
 
 		// is new connector
-		$post_connector_in_edit = simple_fields_register_post_connector();
+		$is_new_post_connector = true;
+		$post_connector_in_edit = simple_fields_register_post_connector(null, array("added_with_code" => false));
+		$post_connector_in_edit["name"] = "";
+		$post_connector_in_edit["slug"] = "";
 
 	} else {
 
@@ -97,11 +101,29 @@ if ("edit-post-connector" == $action) {
 
 		<h3><?php _e('Post Connector details', 'simple-fields') ?></h3>
 
+		<?php
+		if ( ! empty( $post_connector_in_edit["added_with_code"] ) ) {
+			echo "<div class='simple-fields-message'><p>";
+			_e("This post connector was added with PHP code, so the changes made here may not be permanent.", "simple-fields");
+			echo "</p></div>";
+		}
+		?>
+
 		<table class="form-table">
 
 			<tr>
 				<th><label><?php _e('Name', 'simple-fields') ?></label></th>
-				<td><input type="text" id="post_connector_name" name="post_connector_name" class="regular-text" value="<?php echo esc_html($post_connector_in_edit["name"]) ?>" /></td>
+				<td><input 
+						type="text" 
+						id="post_connector_name" 
+						name="post_connector_name" 
+						class="regular-text" 
+						value="<?php echo esc_html($post_connector_in_edit["name"]) ?>" 
+						placeholder="<?php _e("Enter a name for this post connector", "simple-fields"); ?>"
+						<?php if ($is_new_post_connector) { ?>
+							autofocus
+						<?php } ?>
+						/></td>
 			</tr>
 
 			<tr>
@@ -218,6 +240,7 @@ if ("edit-post-connector" == $action) {
 			</tr>
 
 		</table>
+
 		<p class="submit">
 			<input class="button-primary" type="submit" value="<?php _e('Save Changes', 'simple-fields') ?>" />
 			<input type="hidden" name="action" value="update" />
@@ -226,6 +249,7 @@ if ("edit-post-connector" == $action) {
 			or 
 			<a href="<?php echo SIMPLE_FIELDS_FILE ?>"><?php _e('cancel', 'simple-fields') ?></a>
 		</p>
+
 		<p class="simple-fields-post-connector-delete">
 			<?php
 			$action_url = add_query_arg(array("action" => "delete-post-connector", "connector-id" => $post_connector_in_edit["id"]), SIMPLE_FIELDS_FILE);
@@ -254,7 +278,7 @@ if ("edit-field-group" == $action) {
 
 		// new: save it as unnamed, and then set to edit that
 		$is_new_field_group = true;
-		$field_group_in_edit = simple_fields_register_field_group("", array("deleted" => true));
+		$field_group_in_edit = simple_fields_register_field_group("", array("deleted" => true, "added_with_code" => false));
 		$field_group_in_edit["name"] = "";
 		$field_group_in_edit["slug"] = "";
 
@@ -283,6 +307,14 @@ if ("edit-field-group" == $action) {
 		<?php do_action("simple_fields_options_print_nav_tabs", $subpage); ?>
 		
 		<h3><?php _e('Field group details', 'simple-fields') ?></h3>
+
+		<?php
+		if ( ! empty( $field_group_in_edit["added_with_code"] ) ) {
+			echo "<div class='simple-fields-message'><p>";
+			_e("This field group was added with PHP code, so the changes made here may not be permanent.", "simple-fields");
+			echo "</p></div>";
+		}
+		?>
 
 		<table class="form-table">
 			<tr>
@@ -473,7 +505,7 @@ if ( ! $action ) {
 					foreach ($field_groups as $oneFieldGroup) {
 
 						if ($oneFieldGroup["id"] && !$oneFieldGroup["deleted"]) {
-			
+
 							$row_class = $loopnum % 2 == 0 ? "alternate" : "";
 
 							$editlink = SIMPLE_FIELDS_FILE . "&amp;action=edit-field-group&amp;group-id=$oneFieldGroup[id]";
@@ -481,8 +513,9 @@ if ( ! $action ) {
 							$remove_url = wp_nonce_url( $remove_url, "delete-field-group");
 
 							echo "<tr class='$row_class'>";
-
-							echo "<td><a href='$editlink'><strong>$oneFieldGroup[name]</strong></a>";
+							echo "<td>";
+							echo "<a href='$editlink'><strong>" . esc_html( $oneFieldGroup["name"] ) . "</strong></a>";
+							
 							?><div class="row-actions">
 								<span class="edit"><a href="<?php echo $editlink ?>" title="<?php _e("Edit this item") ?>"><?php _e("Edit") ?></a></span>
 								<!-- <span class="trash"><a class="submitdelete" href="<?php echo $remove_url ?>"><?php _e("Trash") ?></a></span> -->

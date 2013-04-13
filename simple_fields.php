@@ -162,7 +162,7 @@ class simple_fields {
 
 			// 1 = the first version, nothing done during update
 			$db_version = 1;
-			update_option("simple_history_db_version", 1);
+			update_option("simple_fields_db_version", 1);
 		
 		}
 
@@ -3709,6 +3709,7 @@ class simple_fields {
 				$post_connectors[$connector_id]["field_groups"] = (array) @$_POST["added_fields"];
 				$post_connectors[$connector_id]["post_types"] = (array) @$_POST["post_types"];
 				$post_connectors[$connector_id]["hide_editor"] = (bool) @$_POST["hide_editor"];
+				$post_connectors[$connector_id]["added_with_code"] = false;
 					
 				// for some reason I got an empty connector (array key was empty) so check for these and remove
 				$post_connectors_tmp = array();

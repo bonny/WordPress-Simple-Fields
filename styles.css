@@ -11,6 +11,22 @@
 	background-color: lightyellow;
 }
 
+.simple-fields-message {
+	background-color: #ffffe0;
+	border-color: #e6db55;
+	margin: 5px 0 15px;
+	padding: 0 .6em;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	border-width: 1px;
+	border-style: solid;
+}
+
+.simple-fields-message p {
+	margin: .5em 0;
+	padding: 2px;
+}
+
 ul.simple-fields-edit-field-groups-added-fields {
 	margin-top: 0;
 	position: relative;

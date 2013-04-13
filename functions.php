@@ -606,13 +606,18 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 			"fields" => array(),
 			"fields_by_slug" => array(),
 			"deleted" => false,
-			"gui_view" => "list" // list | table
+			"gui_view" => "list", // list | table
+			"added_with_code" => true
 		);
 
 	} else {
 
 		// This is an existing field group so get values from existing group
 		$field_group_defaults = $field_groups[$field_group_id];
+
+		// make sure all values are set
+		// added_with_code since 1.2.4
+		if ( ! isset( $field_group_defaults["added_with_code"] ) ) $field_group_defaults["added_with_code"] = true;
 
 		// Add the field id of each field to fields array, since the keys get lost when merging below
 		$field_group_defaults["fields_by_slug"] = array();
@@ -1124,7 +1129,7 @@ must be like:
  * @param array $new_post_connector Args for this connector
  */
 function simple_fields_register_post_connector($unique_name = "", $new_post_connector = array()) {
-
+	#sf_d($new_post_connector);
 	global $sf;
 
 	$post_connectors = $sf->get_post_connectors();
@@ -1200,13 +1205,18 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 			"field_groups" => array(),
 			"post_types" => array(),
 			"deleted" => false,
-			"hide_editor" => false
+			"hide_editor" => false,
+			"added_with_code" => true
 		);
 
 	} else {
 
 		// Existing connector, get old values
 		$post_connector_defaults = $post_connectors[$connector_id];
+
+		// make sure all values are set
+		// added_with_code since 1.2.4
+		if ( ! isset( $post_connector_defaults["added_with_code"] ) ) $post_connector_defaults["added_with_code"] = true;
 
 	}
 
