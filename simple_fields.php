@@ -124,11 +124,12 @@ class simple_fields {
 		add_filter( 'debug_bar_panels', array($this, "debug_panel_insert") );
 
 		// Enable slugs as meta keys. Works. Enable by setting, by default for new installs, or require filter hook like below?
+		/*
 		add_filter("simple_fields_get_meta_key_template", function($str) {
 			$str = '_simple_fields_fieldGroupSlug_%4$s_fieldSlug_%5$s_numInSet_%3$s';
 			return $str;
 		});
-		
+		*/
 
 		// Boot up
 		do_action("simple_fields_init", $this);

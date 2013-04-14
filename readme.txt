@@ -155,6 +155,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 Check inc-admin-options-export-import.php for an example how to use these filters and actions.
 - Fixed: empty/not saved post connectors could be visible in GUI
 - Fixed: misc GUI changes here and there
+- Fixed: filter simple_fields_get_meta_key_template now fully works, so you for example can use it to enable storing fields by its slugs instead of ids. useful when ids have been messed up between development server and production server. also useful when working with import and export, since ids are easily increased
 
 #### Version 1.2.3
 - Fixed: could not unset option use_html_editor for textarea field type. props Hayden.
