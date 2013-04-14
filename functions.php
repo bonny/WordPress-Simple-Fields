@@ -14,7 +14,7 @@
 if (!function_exists("sf_d")) {
 function sf_d($var, $heading = "") {
 	$out = "";
-	$out .= "<pre class='sf_box_debug'>";
+	$out .= "\n<pre class='sf_box_debug'>\n";
 	if ($heading && ! empty($heading)) {
 		$out .= "<b>" . esc_html($heading) . ":</b>\n";
 	}
@@ -28,7 +28,7 @@ function sf_d($var, $heading = "") {
 	} else {
 		$out .= htmlspecialchars( $var, ENT_QUOTES, 'UTF-8' );
 	}
-	$out .= "</pre>";
+	$out .= "\n</pre>";
 	echo apply_filters( "simple_fields_debug_output", $out );
 }
 }
@@ -276,8 +276,8 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 			// now find out how many times this field group has been added
 			// can be zero, 1 and several (if field group is repeatable)
 			$num_added_field_groups = 0;
-	
-			while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
+			$meta_key_num_added = $sf->get_meta_key_num_added( $one_field_group["id"], $one_field_group["slug"] );
+			while (get_post_meta($post_id, "{$meta_key_num_added}{$num_added_field_groups}", true)) {
 				$num_added_field_groups++;
 			}
 			
@@ -1438,7 +1438,8 @@ function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $n
 
 		// check number of added field groups
 		$num_added_field_groups = 0; 
-		while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
+		$meta_key_num_added = $sf->get_meta_key_num_added( $one_field_group["id"], $one_field_group["slug"] );
+		while (get_post_meta($post_id, "{$meta_key_num_added}{$num_added_field_groups}", true)) {
 			$num_added_field_groups++;
 		}
 
@@ -1460,7 +1461,7 @@ function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $n
 					$num_in_set = $num_added_field_groups;			        
 				}
 
-				$meta_key = $sf->get_meta_key($field_group_id, $field_id, $num_in_set);
+				$meta_key = $sf->get_meta_key( $field_group_id, $field_id, $num_in_set, $one_field_group_field["slug"], $one_field_group_field["slug"] );
 
 				update_post_meta($post_id, $meta_key, $new_value);
 				update_post_meta($post_id, "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_added_numInSet_{$num_in_set}", 1);

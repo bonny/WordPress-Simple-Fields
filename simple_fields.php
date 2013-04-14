@@ -646,7 +646,15 @@ class simple_fields {
 				// Returned value is:
 				//  - string if core fields
 				//  - array if field type extension, unless the field extension overrides this
-				$custom_field_key = "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_{$field_id}_numInSet_{$num_in_set}";
+				$custom_field_key = $this->get_meta_key($field_group_id, $field_id, $num_in_set, $current_field_group["slug"], $field["slug"]);
+
+				/*sf_d($field_group_id, '$field_group_id');
+				sf_d($field_id, '$field_id');
+				sf_d($num_in_set, '$num_in_set');
+				sf_d($current_field_group["slug"], '$current_field_group["slug"]');
+				sf_d($field["slug"], '$field["slug"]');
+				sf_d($custom_field_key, '$custom_field_key');*/
+				
 				$saved_value = get_post_meta($post_id, $custom_field_key, true);
 
 				// Options, common for all fields
@@ -1033,7 +1041,7 @@ class simple_fields {
 						echo "</div>";
 		
 					} elseif ("text" == $field["type"]) {
-		
+
 						$text_value_esc = esc_html($saved_value);
 
 						$type_attr = isset( $field_type_options["subtype"] ) ? $field_type_options["subtype"] : "text";
@@ -1411,8 +1419,9 @@ class simple_fields {
 		// _simple_fields_fieldGroupID_1_fieldID_added_numInSet_0
 		// try until returns empty
 		$num_added_field_groups = 0;
-
-		while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$post_connector_field_id}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
+		$meta_key_num_added = $this->get_meta_key_num_added( $current_field_group["id"], $current_field_group["slug"] );
+		#sf_d("{$meta_key_num_added}{$num_added_field_groups}", "meta_key_num_added");
+		while (get_post_meta($post_id, "{$meta_key_num_added}{$num_added_field_groups}", true)) {
 			$num_added_field_groups++;
 		}
 		
@@ -1685,8 +1694,11 @@ class simple_fields {
 				// and add some extra info that is nice to have
 				$num_active_fields = 0;
 				foreach ( $field_groups[$i]["fields"] as $one_field ) {
+
 					if ( ! $one_field["deleted"] ) $num_active_fields++;
-					$one_field["meta_key"] = $this->get_meta_key( $field_groups[$i]["id"], $one_field["id"] );
+
+					$one_field["meta_key"] = $this->get_meta_key( $field_groups[$i]["id"], $one_field["id"], null, $field_groups[$i]["slug"], $one_field["slug"] );
+
 				}
 				$field_groups[$i]["fields_count"] = $num_active_fields;
 
@@ -3423,7 +3435,7 @@ class simple_fields {
 	}
 
 	/**
-	 * Gets a field group using it's id. Deleted field groups are not included
+	 * Gets a field group using it's slug. Deleted field groups are not included
 	 *
 	 * @since 1.0.5
 	 * @param string slug of field group (or id, actually)
@@ -3495,6 +3507,37 @@ class simple_fields {
 
 	}
 
+	/**
+	 * Get meta key name for the custom field used for determine how many fields that has been added to a post
+	 */
+	function get_meta_key_num_added( $field_group_id = null, $field_group_slug = null ) {
+
+		if ( ! isset( $field_group_id ) || ! is_numeric( $field_group_id ) || ! isset( $field_group_slug ) || empty( $field_group_slug ) ) return false;
+
+		// Generate string to be used as template in sprintf
+		// Arguments:
+		// 1 = field group id
+		// 2 = field group slug
+
+		// Legacy version with ids
+		// _simple_fields_fieldGroupID_1_fieldID_added_numInSet_0
+		$custom_field_key_template = '_simple_fields_fieldGroupID_%1$s_fieldID_added_numInSet_';
+
+		// Possibly new version with slugs
+		#$custom_field_key_template = '_simple_fields_fieldGroupSlug_%2$s_fieldID_added_numInSet_';
+
+		$custom_field_key_template = apply_filters("simple_fields_get_meta_key_num_added_template", $custom_field_key_template);
+
+		$custom_field_key = sprintf(
+			$custom_field_key_template, 
+			$field_group_id, // 1
+			$field_group_slug // 2
+		);
+		$custom_field_key = apply_filters("simple_fields_get_meta_key_num_added", $custom_field_key);
+
+		return $custom_field_key;
+
+	}
 
 	/**
 	 * Get meta key name for a field id + field group id combination
@@ -3504,16 +3547,34 @@ class simple_fields {
 	 * @param int num_in_set
 	 * @return string
 	 */
-	function get_meta_key($field_group_id = NULL, $field_id = NULL, $num_in_set = 0) {
+	function get_meta_key($field_group_id = NULL, $field_id = NULL, $num_in_set = 0, $field_group_slug, $field_slug) {
 
-		if ( ! isset($field_group_id) || ! isset($field_group_id) || ! is_numeric($field_group_id) || ! is_numeric($field_id) || ! is_numeric($num_in_set) ) return FALSE;
+		if ( ! isset($field_group_id) || ! isset($field_group_id) || ! is_numeric($field_group_id) || ! is_numeric($field_id) || ! isset($num_in_set) ) return FALSE;
 
+		// Generate string to be used as template in sprintf
+		// Arguments:
+		// 1 = field group id
+		// 2 = field id
+		// 3 = num_in_set
+		// 4 = field group slug
+		// 5 = field slug
+
+		// Legacy version based on ids:
 		$custom_field_key_template = '_simple_fields_fieldGroupID_%1$d_fieldID_%2$d_numInSet_%3$d';
+
+		// Possibly new version with slugs instead
+		#$custom_field_key_template = '_simple_fields_fieldGroupSlug_%4$s_fieldSlug_%5$s_numInSet_%3$d';
+
 		$custom_field_key_template = apply_filters("simple_fields_get_meta_key_template", $custom_field_key_template);
 
-		// TODO: fetch slugs so they are available for the printf too?
-
-		$custom_field_key = sprintf($custom_field_key_template, $field_group_id, $field_id, $num_in_set);
+		$custom_field_key = sprintf(
+			$custom_field_key_template, 
+			$field_group_id, // 1
+			$field_id, // 2
+			$num_in_set, // 3
+			$field_group_slug, // 4
+			$field_slug // 5
+		);
 		$custom_field_key = apply_filters("simple_fields_get_meta_key", $custom_field_key);
 		
 		return $custom_field_key;
