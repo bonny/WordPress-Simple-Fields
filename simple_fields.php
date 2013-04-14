@@ -128,10 +128,6 @@ class simple_fields {
 			$str = '_simple_fields_fieldGroupSlug_%4$s_fieldSlug_%5$s_numInSet_%3$s';
 			return $str;
 		});
-		#add_filter("simple_fields_get_meta_key_num_added_template", function($str) {
-		#	$str = '_simple_fields_fieldGroupSlug_%2$s';
-		#	return $str;
-		#});
 
 		// Boot up
 		do_action("simple_fields_init", $this);
