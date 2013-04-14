@@ -82,6 +82,12 @@ class simple_fields_options_page_import_export {
 
 				//simple_fields_register_post_type_default($post_type_connector, $post_type);
 				
+			} else if ( "append-new" === $import_type) {
+
+				// import new fields
+				// i.e. fields with slugs that do not exist in current data
+				
+
 			}
 
 			exit;
@@ -371,7 +377,8 @@ class simple_fields_options_page_import_export {
 	
 				<h3><?php _e("Import", "simple-fields" ) ?></h3>
 
-				<p><?php _e("Import Field Groups, Post Connectors and Post Type Defaults from JSON. Remember to backup your database before importing data.", "simple-fields") ?></p>
+				<p><?php _e("Import Field Groups, Post Connectors and Post Type Defaults from JSON.") ?></p>
+				<p><?php _e("Remember to backup your database before importing data.", "simple-fields") ?></p>
 
 				<p>
 					<label><input type="radio" name="import-what" class="simple-fields-import-what" value="textarea"> <?php _e("Import by pasting data from clipboard", "simple-fields") ?></label>
@@ -395,16 +402,16 @@ class simple_fields_options_page_import_export {
 						</span>
 					</p>
 
-					<p>
+					<!-- <p>
 						<label><input value="overwrite-append" type="radio" name="simple-fields-import-type"> Overwrite & Append</label>
 						<br>
 						<span class="description">Keep existing data at server, but overwrite it if data exists both at server and in this import.
 							Data that only exist in import is appended to server data.
 						</span>
-					</p>
+					</p> -->
 
 					<p>
-						<label><input value="append-new" type="radio" name="simple-fields-import-type"> Append new</label>
+						<label><input value="append-new" type="radio" name="simple-fields-import-type"> Append</label>
 						<br>
 						<span class="description">Existing data at server it left alone. New data in this import is added.</span>
 					</p>

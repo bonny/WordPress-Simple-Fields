@@ -145,12 +145,16 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 == Changelog ==
 
 #### Version 1.2.x
+- Added: tabs!
+- Added: tab with export and import functions!
+- Added: notice in GUI when editing field group or post connctor that has been added with PHP code, because if you try to change that field group/post connector then the changed may not sticks since it gets overwritten by php code.
 - Fixed: was unable to enable use html editor when using gui
 - Fixed: Could not add fields with ajax when plugin All-in-One Event Calendar was installed
 - Added: developers can now add their own tabs to the simple fields options page
-- Added: tab with export function. 
 - Added: filter/action: simple_fields_settings_admin_head, simple_fields_after_last_options_nav_tab, simple_fields_subpage, simple_fields_subpage_<subpage-name>.
 Check inc-admin-options-export-import.php for an example how to use these filters and actions.
+- Fixed: empty/not saved post connectors could be visible in GUI
+- Fixed: misc GUI changes here and there
 
 #### Version 1.2.3
 - Fixed: could not unset option use_html_editor for textarea field type. props Hayden.
