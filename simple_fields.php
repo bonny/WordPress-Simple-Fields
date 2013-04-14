@@ -123,6 +123,16 @@ class simple_fields {
 		// Add to debug bar if debug is enabled
 		add_filter( 'debug_bar_panels', array($this, "debug_panel_insert") );
 
+		// Enable slugs as meta keys
+		add_filter("simple_fields_get_meta_key_template", function($str) {
+			$str = '_simple_fields_fieldGroupSlug_%4$s_fieldSlug_%5$s_numInSet_%3$s';
+			return $str;
+		});
+		#add_filter("simple_fields_get_meta_key_num_added_template", function($str) {
+		#	$str = '_simple_fields_fieldGroupSlug_%2$s';
+		#	return $str;
+		#});
+
 		// Boot up
 		do_action("simple_fields_init", $this);
 
@@ -465,10 +475,23 @@ class simple_fields {
 	
 			#echo "fieldgroups is:";sf_d($fieldgroups);
 
-			// Delete all exisiting custom fields meta that begins with "_simple_fields_fieldGroupID_", .ie. position 0
+			// Delete all exisiting custom fields meta that are not part of the keep-list
 			$post_meta = get_post_custom($post_id);
+
+			// new format.. can be anything... how to get it?
+			$arr_meta_keys_to_keep = array(
+				"_simple_fields_been_saved",
+				"_simple_fields_selected_connector"
+			);
 			foreach ($post_meta as $meta_key => $meta_val) {
-				if ( strpos($meta_key, "_simple_fields_fieldGroupID_") === 0 ) delete_post_meta($post_id, $meta_key);
+
+				if ( strpos($meta_key, "_simple_fields_") === 0 ) {
+					// this is a meta for simple fields, check if it should be kept or deleted
+					if ( ! in_array($meta_key, $arr_meta_keys_to_keep ) ) {
+						delete_post_meta($post_id, $meta_key);
+					}
+				}
+
 			}
 	
 			// cleanup missing keys, due to checkboxes not being checked
@@ -493,12 +516,17 @@ class simple_fields {
 			update_post_meta($post_id, "_simple_fields_been_saved", "1");
 
 			// Loop through each fieldgroups
-#sf_d($fieldgroups);
+#sf_d($fieldgroups, '$fieldgroups');
 			foreach ($fieldgroups as $one_field_group_id => $one_field_group_fields) {
 				
 				// Loop through each field in each field group
 #simple_fields::debug("one_field_group_fields", $one_field_group_fields);
 #sf_d($one_field_group_fields);
+
+				// Get info about the field group that are saved
+				// (We only get ID:s posted, so no meta info about the group)
+				$arr_fieldgroup_info = $this->get_field_group( $one_field_group_id );
+
 				foreach ($one_field_group_fields as $one_field_id => $one_field_values) {
 
 					// one_field_id = id på fältet vi sparar. t.ex. id:et på "måndag" eller "tisdag"
@@ -525,9 +553,38 @@ class simple_fields {
 					$num_in_set = 0;
 
 					foreach ($one_field_values as $one_field_value) {
-					
-						$custom_field_key = "_simple_fields_fieldGroupID_{$one_field_group_id}_fieldID_{$one_field_id}_numInSet_{$num_in_set}";
+
+
+// $one_field_id may be "added" because it's... a special kind of input field
+$arr_field_info = array();
+$one_field_slug = "";
+if ("added" === $one_field_id) {
+	$one_field_slug = "added";
+} else {
+	#sf_d($arr_fieldgroup_info["fields"], 'fields');
+	foreach ($arr_fieldgroup_info["fields"] as $one_field_in_fieldgroup) {
+		if ( intval( $one_field_in_fieldgroup["id"] ) === intval( $one_field_id ) ) {
+			$arr_field_info = $one_field_in_fieldgroup;
+			break;
+		}
+	}
+	$one_field_slug = $arr_field_info["slug"];
+	#sf_d($one_field_slug, 'one_field_slug');
+	#sf_d($one_field_id, 'one_field_id');
+	#exit;
+}
+
+						$custom_field_key = $this->get_meta_key( $one_field_group_id, $one_field_id, $num_in_set, $arr_fieldgroup_info["slug"], $one_field_slug );
+
 						$custom_field_value = $one_field_value;
+
+/*sf_d($custom_field_key, '$custom_field_key');
+sf_d($one_field_group_id, '$one_field_group_id');
+sf_d($one_field_id, '$one_field_id');
+sf_d($num_in_set, 'num_in_set');
+sf_d($arr_fieldgroup_info["slug"], 'arr_fieldgroup_info["slug"]');
+sf_d($one_field_slug, 'one_field_slug');*/
+
 
 						if (array_key_exists($field_type, $this->registered_field_types)) {
 							
@@ -575,6 +632,7 @@ class simple_fields {
 			// if fieldgroups are empty we still need to save it
 			// remove existing simple fields custom fields for this post
 			// @todo: this should also be using wordpress own functions
+			// TODO: use new meta keys names
 			$wpdb->query("DELETE FROM $table WHERE post_id = $post_id AND meta_key LIKE '_simple_fields_fieldGroupID_%'");
 		} 
 		// echo "end save";
@@ -1416,11 +1474,11 @@ class simple_fields {
 		$current_field_group = $field_groups[$post_connector_field_id];
 
 		// check for prev. saved fieldgroups
-		// _simple_fields_fieldGroupID_1_fieldID_added_numInSet_0
+		// can be found because a custom field with "added" instead of field id is always added
+		// key is something like "_simple_fields_fieldGroupID_1_fieldID_added_numInSet_0"
 		// try until returns empty
 		$num_added_field_groups = 0;
 		$meta_key_num_added = $this->get_meta_key_num_added( $current_field_group["id"], $current_field_group["slug"] );
-		#sf_d("{$meta_key_num_added}{$num_added_field_groups}", "meta_key_num_added");
 		while (get_post_meta($post_id, "{$meta_key_num_added}{$num_added_field_groups}", true)) {
 			$num_added_field_groups++;
 		}
@@ -3509,6 +3567,7 @@ class simple_fields {
 
 	/**
 	 * Get meta key name for the custom field used for determine how many fields that has been added to a post
+	 * hm... this is the same as get_meta_key but with the field id "added" instead of a real id? i think so...
 	 */
 	function get_meta_key_num_added( $field_group_id = null, $field_group_slug = null ) {
 
@@ -3521,10 +3580,10 @@ class simple_fields {
 
 		// Legacy version with ids
 		// _simple_fields_fieldGroupID_1_fieldID_added_numInSet_0
-		$custom_field_key_template = '_simple_fields_fieldGroupID_%1$s_fieldID_added_numInSet_';
+		/*$custom_field_key_template = '_simple_fields_fieldGroupID_%1$s_fieldID';
 
 		// Possibly new version with slugs
-		#$custom_field_key_template = '_simple_fields_fieldGroupSlug_%2$s_fieldID_added_numInSet_';
+		#$custom_field_key_template = '_simple_fields_fieldGroupSlug_%2$s_fieldID';
 
 		$custom_field_key_template = apply_filters("simple_fields_get_meta_key_num_added_template", $custom_field_key_template);
 
@@ -3533,7 +3592,16 @@ class simple_fields {
 			$field_group_id, // 1
 			$field_group_slug // 2
 		);
+
+		$custom_field_key = $custom_field_key . "_added_numInSet_";
 		$custom_field_key = apply_filters("simple_fields_get_meta_key_num_added", $custom_field_key);
+		*/
+
+		$custom_field_key = $this->get_meta_key( $field_group_id, "added", 0, $field_group_slug, "added" );
+
+		// Remove last with num in set
+		$custom_field_key = rtrim($custom_field_key, "0");
+		#sf_d($custom_field_key);
 
 		return $custom_field_key;
 
@@ -3549,7 +3617,7 @@ class simple_fields {
 	 */
 	function get_meta_key($field_group_id = NULL, $field_id = NULL, $num_in_set = 0, $field_group_slug, $field_slug) {
 
-		if ( ! isset($field_group_id) || ! isset($field_group_id) || ! is_numeric($field_group_id) || ! is_numeric($field_id) || ! isset($num_in_set) ) return FALSE;
+		if ( ! isset($field_group_id) || ! isset($field_group_id) || ! is_numeric($field_group_id) || ! isset($field_id) || ! isset($num_in_set) ) return FALSE;
 
 		// Generate string to be used as template in sprintf
 		// Arguments:
@@ -3560,7 +3628,7 @@ class simple_fields {
 		// 5 = field slug
 
 		// Legacy version based on ids:
-		$custom_field_key_template = '_simple_fields_fieldGroupID_%1$d_fieldID_%2$d_numInSet_%3$d';
+		$custom_field_key_template = '_simple_fields_fieldGroupID_%1$d_fieldID_%2$d_numInSet_%3$s';
 
 		// Possibly new version with slugs instead
 		#$custom_field_key_template = '_simple_fields_fieldGroupSlug_%4$s_fieldSlug_%5$s_numInSet_%3$d';

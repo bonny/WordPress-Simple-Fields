@@ -297,7 +297,7 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 					#echo "<br>num in set: $num_in_set";
 					#sf_d($one_field_value);
 	
-					$custom_field_key = "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_{$one_field_id}_numInSet_{$num_in_set}";
+					$custom_field_key = $sf->get_meta_key( $one_field_group["id"], $one_field_id, $num_in_set, $one_field_group["slug"], $one_field_value["slug"] );
 					#echo "<br>custom field key: $custom_field_key";
 	
 					$saved_value = get_post_meta($post_id, $custom_field_key, true); // empty string if does not exist
@@ -416,7 +416,7 @@ function simple_fields_get_meta_query($group_id, $field_id, $value, $compare = "
 	$query_args = array('meta_query' => array('relation' => 'OR'));
 
 	for($i=0;$i<$num_in_set;$i++) {
-		$query_args['meta_query'][$i]['key'] = "_simple_fields_fieldGroupID_{$field_group['id']}_fieldID_{$field['id']}_numInSet_{$i}";
+		$query_args['meta_query'][$i]['key'] = $sf->get_meta_key( $field_group['id'], $field['id'], $i, $field_group['slug'], $field['slug'] );
 		$query_args['meta_query'][$i]['value'] = $value;
 		$query_args['meta_query'][$i]['compare'] = $compare;
 		$query_args['meta_query'][$i]['type'] = $type;
@@ -1435,10 +1435,10 @@ function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $n
 	foreach ($post_connector_info["field_groups"] as $one_field_group) {
 
 		$field_group_id = $one_field_group["id"];
+		$meta_key_num_added = $sf->get_meta_key_num_added( $one_field_group["id"], $one_field_group["slug"] );
 
 		// check number of added field groups
 		$num_added_field_groups = 0; 
-		$meta_key_num_added = $sf->get_meta_key_num_added( $one_field_group["id"], $one_field_group["slug"] );
 		while (get_post_meta($post_id, "{$meta_key_num_added}{$num_added_field_groups}", true)) {
 			$num_added_field_groups++;
 		}
@@ -1462,9 +1462,9 @@ function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $n
 				}
 
 				$meta_key = $sf->get_meta_key( $field_group_id, $field_id, $num_in_set, $one_field_group_field["slug"], $one_field_group_field["slug"] );
-
 				update_post_meta($post_id, $meta_key, $new_value);
-				update_post_meta($post_id, "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_added_numInSet_{$num_in_set}", 1);
+				update_post_meta($post_id, "{$meta_key_num_added}{$num_in_set}", 1);
+
 				update_post_meta($post_id, "_simple_fields_been_saved", 1);
 				
 				// value updated. clear cache and exit function.
@@ -1589,10 +1589,6 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 
 		// Loop the fields in this field group
 		foreach ($one_field_group["fields"] as $one_field_group_field) { 
-
-			//_simple_fields_fieldGroupID_23_fieldID_2_numInSet_
-			#file
-			#sf_d($one_field_group_field);
 
 			// Skip deleted fields
 			if ($one_field_group_field["deleted"]) continue;
