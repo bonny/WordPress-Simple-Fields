@@ -30,8 +30,11 @@ if ("edit-post-type-defaults" == $action) {
 					<th><?php _e('Default post connector', 'simple-fields') ?></th>
 					<td>
 						<?php
+
 						$arr_post_connectors = $this->get_post_connectors_for_post_type($post_type);
+						
 						if ($arr_post_connectors) {
+						
 							$selected_post_type_default = $this->get_default_connector_for_post_type($post_type);
 							?>
 							<select name="simple_fields_save-post_type_connector">
@@ -39,13 +42,22 @@ if ("edit-post-type-defaults" == $action) {
 								<option <?php echo ($selected_post_type_default==="__inherit__") ? " selected='selected' " : "" ?> value="__inherit__"><?php _e('Inherit from parent post', 'simple-fields') ?></option>
 								<?php
 								foreach ($arr_post_connectors as $one_post_connector) {
-									echo "<option " . ((intval($selected_post_type_default)==intval($one_post_connector["id"])) ? " selected='selected' " : "") . "value='{$one_post_connector["id"]}'>" . $one_post_connector["name"] . "</option>";
+									
+									$is_the_selected_post_connector = ( intval($selected_post_type_default) == intval($one_post_connector["id"]) );
+									
+									// Don't show post connector if it's deleted and not the one selected = we show it even if it's deleted, if it's the selected one
+									if ( $one_post_connector["deleted"] && ! $is_the_selected_post_connector ) continue;
+
+									echo "<option " . ( $is_the_selected_post_connector ? " selected='selected' " : "" ) . "value='{$one_post_connector["id"]}'>" . $one_post_connector["name"] . "</option>";
 								}
 								?>
 							</select>
 							<?php
+						
 						} else {
+						
 							?><p><?php _e('There are no post connectors for this post type.', 'simple-fields') ?></p><?php
+						
 						}
 						?>
 					</td>
