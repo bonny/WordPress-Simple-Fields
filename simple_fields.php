@@ -1032,6 +1032,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 									global $wp_scripts;
 
 									// From plugin http://time.ly/
+									// Timely’s All-in-One Event Calendar
 									// For some reason the scripts outputed are html escaped, so scripts are broken
 									$wp_scripts->remove("ai1ec_requirejs");
 									$wp_scripts->remove("ai1ec_common_backend");
