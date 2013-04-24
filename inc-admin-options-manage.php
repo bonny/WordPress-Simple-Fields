@@ -504,10 +504,10 @@ if ( ! $action ) {
 				
 				<thead>
 					<tr>
-						<th>Name</th>
-						<th>Slug</th>
-						<th>Fields</th>
-						<th>Added fields</th>
+						<th><?php _e("Name", "simple-fields") ?></th>
+						<th><?php _e("Slug", "simple-fields") ?></th>
+						<th><?php _e("Fields", "simple-fields") ?></th>
+						<th><?php _e("Added fields", "simple-fields") ?></th>
 					</tr>
 				</thead>
 
@@ -590,10 +590,10 @@ if ( ! $action ) {
 				
 				<thead>
 					<tr>
-						<th>Name</th>
-						<th>Slug</th>
-						<th>Field groups</th>
-						<th>Added field groups</th>
+						<th><?php _e("Name", "simple-fields") ?></th>
+						<th><?php _e("Slug", "simple-fields") ?></th>
+						<th><?php _e("Field groups", "simple-fields") ?></th>
+						<th><?php _e("Added field groups", "simple-fields") ?></th>
 					</tr>
 				</thead>
 
@@ -669,8 +669,8 @@ if ( ! $action ) {
 				
 			<thead>
 				<tr>
-					<th>Post type</th>
-					<th>Default connector</th>
+					<th><?php _e("Post type", "simple-fields") ?></th>
+					<th><?php _e("Default connector", "simple-fields") ?></th>
 					<th></th><!-- two empty to make table widths same as the other tables -->
 					<th></th>
 				</tr>
