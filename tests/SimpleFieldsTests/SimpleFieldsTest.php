@@ -77,8 +77,8 @@ EOD;
 
 		// test repeatable/all values
 
-		$allvals = simple_fields_get_all_fields_and_values_for_post($post_id, "include_deleted=0");
-		print_r($allvals);
+		
+		#print_r($allvals);
 
 		$val = array(
 			0 => "Text entered in the text field",
