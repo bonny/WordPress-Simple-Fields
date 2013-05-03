@@ -25,6 +25,7 @@ class MyPluginTest extends WP_UnitTestCase {
 	{
 
 		$expected = <<<EOD
+
 <pre class='sf_box_debug'>
 this is simple fields debug function
 </pre>
@@ -38,6 +39,7 @@ EOD;
 	function testDebug2()
 	{
 				$expected = <<<EOD
+
 <pre class='sf_box_debug'>
 <b>With headline</b>
 this is simple fields debug function
