@@ -38,14 +38,14 @@ EOD;
 	// Test output of debug function
 	function testDebug2()
 	{
-				$expected = <<<EOD
+		$expected = <<<EOD
 
 <pre class='sf_box_debug'>
 <b>With headline</b>
 this is simple fields debug function
 </pre>
 EOD;
-
+		$this->expectOutputString($expected);
 		sf_d("this is simple fields debug function", "With headline");
 	}
 
