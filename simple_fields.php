@@ -3570,7 +3570,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 	 */
 	function get_meta_key_num_added( $field_group_id = null, $field_group_slug = null ) {
 
-		if ( ! isset( $field_group_id ) || ! is_numeric( $field_group_id ) || ! isset( $field_group_slug ) || empty( $field_group_slug ) ) return false;
+		if ( ! isset( $field_group_id ) || ! is_numeric( $field_group_id ) ) return false;
 
 		// Generate string to be used as template in sprintf
 		// Arguments:
