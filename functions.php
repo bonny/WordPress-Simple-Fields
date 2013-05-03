@@ -272,11 +272,14 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 			// now get all fields for that fieldgroup and join them together
 			$selected_post_connector["field_groups"][ $one_field_group["id"] ] = array_merge( $selected_post_connector["field_groups"][ $one_field_group["id"] ], $field_groups[ $one_field_group["id"] ] );
 	
+			// Older versions don't have slug, so don't bail out if not exists
+			$field_group_slug = isset( $one_field_group["slug"] ) ? $one_field_group["slug"] : "";
+
 			// loop through all fields within this field group
 			// now find out how many times this field group has been added
 			// can be zero, 1 and several (if field group is repeatable)
 			$num_added_field_groups = 0;
-			$meta_key_num_added = $sf->get_meta_key_num_added( $one_field_group["id"], $one_field_group["slug"] );
+			$meta_key_num_added = $sf->get_meta_key_num_added( $one_field_group["id"], $field_group_slug );
 			while (get_post_meta($post_id, "{$meta_key_num_added}{$num_added_field_groups}", true)) {
 				$num_added_field_groups++;
 			}
