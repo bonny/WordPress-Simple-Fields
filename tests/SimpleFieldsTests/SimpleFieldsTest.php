@@ -23,14 +23,27 @@ class MyPluginTest extends WP_UnitTestCase {
 	// Test output of debug function
 	function testDebug()
 	{
-		$this->expectOutputString("<pre class='sf_box_debug'>\nthis is simple fields debug function\n</pre>");
+
+		$expected = <<<EOD
+<pre class='sf_box_debug'>
+this is simple fields debug function
+</pre>
+EOD;
+
+		$this->expectOutputString($expected);
 		sf_d("this is simple fields debug function");
 	}
 
 	// Test output of debug function
 	function testDebug2()
 	{
-		$this->expectOutputString("<pre class='sf_box_debug'>\nthis is simple fields debug function\n</pre>");
+				$expected = <<<EOD
+<pre class='sf_box_debug'>
+<b>With headline</b>
+this is simple fields debug function
+</pre>
+EOD;
+
 		sf_d("this is simple fields debug function", "With headline");
 	}
 
