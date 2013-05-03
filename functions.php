@@ -283,6 +283,8 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 			while (get_post_meta($post_id, "{$meta_key_num_added}{$num_added_field_groups}", true)) {
 				$num_added_field_groups++;
 			}
+
+			echo "{$meta_key_num_added}{$num_added_field_groups}";
 			
 			// Field groups should only be allowed to be 0 if the group is repeatable
 			if ($num_added_field_groups == 0 && (isset($one_field_group['repeatable']) && !$one_field_group['repeatable']) ) {
