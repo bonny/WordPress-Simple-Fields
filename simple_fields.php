@@ -3627,7 +3627,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 		// 5 = field slug
 
 		// Legacy version based on ids:
-		$custom_field_key_template = '_simple_fields_fieldGroupID_%1$d_fieldID_%2$d_numInSet_%3$s';
+		$custom_field_key_template = '_simple_fields_fieldGroupID_%1$d_fieldID_%2$s_numInSet_%3$s';
 
 		// Possibly new version with slugs instead
 		#$custom_field_key_template = '_simple_fields_fieldGroupSlug_%4$s_fieldSlug_%5$s_numInSet_%3$d';
