@@ -3614,7 +3614,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 	 * @param int num_in_set
 	 * @return string
 	 */
-	function get_meta_key($field_group_id = NULL, $field_id = NULL, $num_in_set = 0, $field_group_slug, $field_slug) {
+	function get_meta_key($field_group_id = NULL, $field_id = NULL, $num_in_set = 0, $field_group_slug = "", $field_slug = "") {
 
 		if ( ! isset($field_group_id) || ! isset($field_group_id) || ! is_numeric($field_group_id) || ! isset($field_id) || ! isset($num_in_set) ) return FALSE;
 

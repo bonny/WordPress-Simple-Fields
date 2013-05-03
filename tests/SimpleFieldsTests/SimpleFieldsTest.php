@@ -1362,6 +1362,12 @@ EOD;
 	public function test_misc() {
 		
 		// Test meta key
+		
+		// older format
+		$key = $this->sf->get_meta_key(1, 2, 3);
+		$this->assertEquals("_simple_fields_fieldGroupID_1_fieldID_2_numInSet_3", $key);
+
+		// newer format
 		$key = $this->sf->get_meta_key(1, 2, 3);
 		$this->assertEquals("_simple_fields_fieldGroupID_1_fieldID_2_numInSet_3", $key);
 
