@@ -55,7 +55,7 @@ class simple_fields_options_page_debug {
 	function print_nav_tab($subpage) {
 		?>
 		<a href="<?php echo add_query_arg(array("sf-options-subpage" => $this->slug), SIMPLE_FIELDS_FILE) ?>" class="nav-tab <?php echo $this->slug === $subpage ? "nav-tab-active" : "" ?>"><?php esc_html( $this->get_name() ) ?></a>
-		<?
+		<?php
 	}
 
 	/**
