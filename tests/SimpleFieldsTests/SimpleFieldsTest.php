@@ -1212,7 +1212,8 @@ EOD;
                 ),
                 'deleted' => false,
                 'hide_editor' => false,
-                'field_groups_count' => 1
+                'field_groups_count' => 1,
+                "added_with_code" => true
               );
         
         $this->assertEquals($connector_return1_expected, $connector_return1);
