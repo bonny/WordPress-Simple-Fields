@@ -41,7 +41,7 @@ EOD;
 		$expected = <<<EOD
 
 <pre class='sf_box_debug'>
-<b>With headline</b>
+<b>With headline:</b>
 this is simple fields debug function
 </pre>
 EOD;
