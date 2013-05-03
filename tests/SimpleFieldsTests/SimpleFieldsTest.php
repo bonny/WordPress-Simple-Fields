@@ -1131,7 +1131,8 @@ EOD;
 		        ),
 		    ),
 		    'deleted' => false,
-		    "fields_count" => 1
+		    "fields_count" => 1,
+		    "added_with_code" => true
 		);
 
 		unset($arr_return["fields_by_slug"]);
