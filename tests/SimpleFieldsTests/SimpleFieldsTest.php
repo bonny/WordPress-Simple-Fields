@@ -1065,7 +1065,8 @@ EOD;
 		        ),
 		    ),
 		    'deleted' => false,
-		    "fields_count" => 1
+		    "fields_count" => 1,
+		    "added_with_code" => true
 		    // "fields_by_slug" => array()
 		);
 		
