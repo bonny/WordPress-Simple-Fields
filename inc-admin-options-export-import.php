@@ -32,6 +32,7 @@ class simple_fields_options_page_import_export {
 	}
 
 	function maybe_do_import() {
+		
 		if ( isset($_POST) && isset( $_POST["action"] ) && ( $_POST["action"] === "simple_fields_do_import" ) ) {
 			
 			if ("file" === $_POST["import-what"]) {
@@ -409,12 +410,14 @@ class simple_fields_options_page_import_export {
 							Data that only exist in import is appended to server data.
 						</span>
 					</p> -->
-
+					
+					<!-- 
 					<p>
 						<label><input value="append-new" type="radio" name="simple-fields-import-type"> Append</label>
 						<br>
 						<span class="description">Existing data at server it left alone. New data in this import is added.</span>
 					</p>
+					-->
 
 					<p>
 						<input class="hidden button btn-submit-import" type="submit" value="Begin import" disabled>
