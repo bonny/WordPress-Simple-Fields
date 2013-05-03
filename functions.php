@@ -300,7 +300,7 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 					$one_field_group_slug = isset( $one_field_group["slug"] ) ? $one_field_group["slug"] : "";
 					$one_field_value_slug = isset( $one_field_value["slug"] ) ? $one_field_value["slug"] : "";
 
-					$custom_field_key = $sf->get_meta_key( $one_field_group["id"], $one_field_id, $num_in_set, $one_field_group["slug"], $one_field_value["slug"] );
+					$custom_field_key = $sf->get_meta_key( $one_field_group["id"], $one_field_id, $num_in_set, $one_field_group_slug, $one_field_value_slug );
 	
 					$saved_value = get_post_meta($post_id, $custom_field_key, true); // empty string if does not exist
 	
