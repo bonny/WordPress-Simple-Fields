@@ -77,8 +77,9 @@ EOD;
 
 		// test repeatable/all values
 
-		echo "xxx";
-		var_dump( simple_fields_values("field_text") );
+		#echo "xxx";
+		#var_dump( simple_fields_values("field_text") );
+		#exit;
 		#print_r($allvals);
 
 		$val = array(
