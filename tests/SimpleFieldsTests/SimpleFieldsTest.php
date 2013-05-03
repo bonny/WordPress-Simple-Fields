@@ -76,7 +76,10 @@ EOD;
 		$this->assertEquals(1, simple_fields_value("field_user", $post_id));
 
 		// test repeatable/all values
-		print_r(simple_fields_values("field_text", $post_id));
+
+		$allvals = simple_fields_get_all_fields_and_values_for_post($post_id, "include_deleted=0");
+		print_r($allvals);
+
 		$val = array(
 			0 => "Text entered in the text field",
 			1 => "text in textfield 2<span>yes it is</span>"
