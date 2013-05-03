@@ -79,6 +79,10 @@ class simple_fields {
 		require( dirname(__FILE__) . "/field_types/field_divider.php" );
 		require( dirname(__FILE__) . "/field_types/field_date_v2.php" );
 
+		// Load option pages
+		require( dirname(__FILE__) . "/inc-admin-options-export-import.php" );
+		require( dirname(__FILE__) . "/inc-admin-options-debug.php" );
+
 		$this->plugin_foldername_and_filename = basename(dirname(__FILE__)) . "/" . basename(__FILE__);
 		$this->registered_field_types = array();
 
@@ -90,6 +94,7 @@ class simple_fields {
 		add_action( 'admin_enqueue_scripts', array($this, 'admin_enqueue_scripts') );
 		add_action( 'admin_menu', array($this, "admin_menu") );
 		add_action( 'admin_head', array($this, 'admin_head') );
+		add_action( 'admin_head', array($this, 'settings_admin_head') );
 		add_action( 'admin_head', array($this, 'admin_head_select_file') );
 		add_filter( 'plugin_row_meta', array($this, 'set_plugin_row_meta'), 10, 2 );
 		add_action( 'admin_footer', array($this, 'admin_footer') );
@@ -102,7 +107,6 @@ class simple_fields {
 		add_action( 'plugins_loaded', array($this, 'plugins_loaded') );
 		add_action( 'init', array($this, "maybe_add_debug_info") ); 
 
-
 		// Hacks for media select dialog
 		add_filter( 'media_send_to_editor', array($this, 'media_send_to_editor'), 15, 2 );
 		add_filter( 'media_upload_tabs', array($this, 'media_upload_tabs'), 15 );
@@ -113,8 +117,19 @@ class simple_fields {
 		add_action( 'wp_ajax_simple_fields_field_type_post_dialog_load', array($this, 'field_type_post_dialog_load') );
 		add_action( 'wp_ajax_simple_fields_field_group_add_field', array($this, 'field_group_add_field') );
 
+		// Options page
+		add_action("simple_fields_options_print_nav_tabs", array($this, "get_options_nav_tabs"));
+
 		// Add to debug bar if debug is enabled
 		add_filter( 'debug_bar_panels', array($this, "debug_panel_insert") );
+
+		// Enable slugs as meta keys. Works. Enable by setting, by default for new installs, or require filter hook like below?
+		/*
+		add_filter("simple_fields_get_meta_key_template", function($str) {
+			$str = '_simple_fields_fieldGroupSlug_%4$s_fieldSlug_%5$s_numInSet_%3$s';
+			return $str;
+		});
+		*/
 
 		// Boot up
 		do_action("simple_fields_init", $this);
@@ -155,7 +170,7 @@ class simple_fields {
 
 			// 1 = the first version, nothing done during update
 			$db_version = 1;
-			update_option("simple_history_db_version", 1);
+			update_option("simple_fields_db_version", 1);
 		
 		}
 
@@ -227,6 +242,27 @@ class simple_fields {
 	}
 
 	/**
+	 * Run action if we are on a settings/options page that belongs to Simple Fields
+	 */
+	function settings_admin_head() {
+		
+		$is_on_simple_fields_page = FALSE;
+		$page_type = "";
+
+		$current_screen = get_current_screen();
+		if ($current_screen->id === "settings_page_simple-fields-options") {
+			$is_on_simple_fields_page = TRUE;
+			$page_type = "settings";
+		}
+		
+		if ( ! $is_on_simple_fields_page ) return;
+
+		if ("settings" === $page_type) {
+			do_action("simple_fields_settings_admin_head");
+		}
+	}
+
+	/**
 	 * Enqueue styles and scripts, but on on pages that use simple fields
 	 * Should speed up the loading of other pages a bit
 	 */
@@ -254,7 +290,6 @@ class simple_fields {
 
 			// Settings page
 			wp_enqueue_style('simple-fields-styles', SIMPLE_FIELDS_URL.'styles.css', false, SIMPLE_FIELDS_VERSION);
-
 
 		} else {
 
@@ -438,10 +473,23 @@ class simple_fields {
 	
 			#echo "fieldgroups is:";sf_d($fieldgroups);
 
-			// Delete all exisiting custom fields meta that begins with "_simple_fields_fieldGroupID_", .ie. position 0
+			// Delete all exisiting custom fields meta that are not part of the keep-list
 			$post_meta = get_post_custom($post_id);
+
+			// new format.. can be anything... how to get it?
+			$arr_meta_keys_to_keep = array(
+				"_simple_fields_been_saved",
+				"_simple_fields_selected_connector"
+			);
 			foreach ($post_meta as $meta_key => $meta_val) {
-				if ( strpos($meta_key, "_simple_fields_fieldGroupID_") === 0 ) delete_post_meta($post_id, $meta_key);
+
+				if ( strpos($meta_key, "_simple_fields_") === 0 ) {
+					// this is a meta for simple fields, check if it should be kept or deleted
+					if ( ! in_array($meta_key, $arr_meta_keys_to_keep ) ) {
+						delete_post_meta($post_id, $meta_key);
+					}
+				}
+
 			}
 	
 			// cleanup missing keys, due to checkboxes not being checked
@@ -466,12 +514,17 @@ class simple_fields {
 			update_post_meta($post_id, "_simple_fields_been_saved", "1");
 
 			// Loop through each fieldgroups
-#sf_d($fieldgroups);
+#sf_d($fieldgroups, '$fieldgroups');
 			foreach ($fieldgroups as $one_field_group_id => $one_field_group_fields) {
 				
 				// Loop through each field in each field group
 #simple_fields::debug("one_field_group_fields", $one_field_group_fields);
 #sf_d($one_field_group_fields);
+
+				// Get info about the field group that are saved
+				// (We only get ID:s posted, so no meta info about the group)
+				$arr_fieldgroup_info = $this->get_field_group( $one_field_group_id );
+
 				foreach ($one_field_group_fields as $one_field_id => $one_field_values) {
 
 					// one_field_id = id på fältet vi sparar. t.ex. id:et på "måndag" eller "tisdag"
@@ -498,9 +551,38 @@ class simple_fields {
 					$num_in_set = 0;
 
 					foreach ($one_field_values as $one_field_value) {
-					
-						$custom_field_key = "_simple_fields_fieldGroupID_{$one_field_group_id}_fieldID_{$one_field_id}_numInSet_{$num_in_set}";
+
+
+// $one_field_id may be "added" because it's... a special kind of input field
+$arr_field_info = array();
+$one_field_slug = "";
+if ("added" === $one_field_id) {
+	$one_field_slug = "added";
+} else {
+	#sf_d($arr_fieldgroup_info["fields"], 'fields');
+	foreach ($arr_fieldgroup_info["fields"] as $one_field_in_fieldgroup) {
+		if ( intval( $one_field_in_fieldgroup["id"] ) === intval( $one_field_id ) ) {
+			$arr_field_info = $one_field_in_fieldgroup;
+			break;
+		}
+	}
+	$one_field_slug = $arr_field_info["slug"];
+	#sf_d($one_field_slug, 'one_field_slug');
+	#sf_d($one_field_id, 'one_field_id');
+	#exit;
+}
+
+						$custom_field_key = $this->get_meta_key( $one_field_group_id, $one_field_id, $num_in_set, $arr_fieldgroup_info["slug"], $one_field_slug );
+
 						$custom_field_value = $one_field_value;
+
+/*sf_d($custom_field_key, '$custom_field_key');
+sf_d($one_field_group_id, '$one_field_group_id');
+sf_d($one_field_id, '$one_field_id');
+sf_d($num_in_set, 'num_in_set');
+sf_d($arr_fieldgroup_info["slug"], 'arr_fieldgroup_info["slug"]');
+sf_d($one_field_slug, 'one_field_slug');*/
+
 
 						if (array_key_exists($field_type, $this->registered_field_types)) {
 							
@@ -548,6 +630,7 @@ class simple_fields {
 			// if fieldgroups are empty we still need to save it
 			// remove existing simple fields custom fields for this post
 			// @todo: this should also be using wordpress own functions
+			// TODO: use new meta keys names
 			$wpdb->query("DELETE FROM $table WHERE post_id = $post_id AND meta_key LIKE '_simple_fields_fieldGroupID_%'");
 		} 
 		// echo "end save";
@@ -619,7 +702,15 @@ class simple_fields {
 				// Returned value is:
 				//  - string if core fields
 				//  - array if field type extension, unless the field extension overrides this
-				$custom_field_key = "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_{$field_id}_numInSet_{$num_in_set}";
+				$custom_field_key = $this->get_meta_key($field_group_id, $field_id, $num_in_set, $current_field_group["slug"], $field["slug"]);
+
+				/*sf_d($field_group_id, '$field_group_id');
+				sf_d($field_id, '$field_id');
+				sf_d($num_in_set, '$num_in_set');
+				sf_d($current_field_group["slug"], '$current_field_group["slug"]');
+				sf_d($field["slug"], '$field["slug"]');
+				sf_d($custom_field_key, '$custom_field_key');*/
+				
 				$saved_value = get_post_meta($post_id, $custom_field_key, true);
 
 				// Options, common for all fields
@@ -937,10 +1028,20 @@ class simple_fields {
 									// don't load tinymce plugins
 									add_filter('mce_external_plugins', "__return_empty_array");
 
+									// Remove some scripts that cause problems
+									global $wp_scripts;
+
+									// From plugin http://time.ly/
+									// Timely’s All-in-One Event Calendar
+									// For some reason the scripts outputed are html escaped, so scripts are broken
+									$wp_scripts->remove("ai1ec_requirejs");
+									$wp_scripts->remove("ai1ec_common_backend");
+
+									// Start output buffering and output scripts and then get them into a variable
 									ob_start();
 									do_action("admin_print_footer_scripts");
-									$footer_scripts = ob_get_clean();
-									
+									$footer_scripts = ob_get_clean();								
+
 									// only keep scripts. works pretty ok, but we get some stray text too, so use preg match to get only script tags
 									$footer_scripts = wp_kses($footer_scripts, array("script" => array()));
 									
@@ -997,7 +1098,7 @@ class simple_fields {
 						echo "</div>";
 		
 					} elseif ("text" == $field["type"]) {
-		
+
 						$text_value_esc = esc_html($saved_value);
 
 						$type_attr = isset( $field_type_options["subtype"] ) ? $field_type_options["subtype"] : "text";
@@ -1372,11 +1473,12 @@ class simple_fields {
 		$current_field_group = $field_groups[$post_connector_field_id];
 
 		// check for prev. saved fieldgroups
-		// _simple_fields_fieldGroupID_1_fieldID_added_numInSet_0
+		// can be found because a custom field with "added" instead of field id is always added
+		// key is something like "_simple_fields_fieldGroupID_1_fieldID_added_numInSet_0"
 		// try until returns empty
 		$num_added_field_groups = 0;
-
-		while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$post_connector_field_id}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
+		$meta_key_num_added = $this->get_meta_key_num_added( $current_field_group["id"], $current_field_group["slug"] );
+		while (get_post_meta($post_id, "{$meta_key_num_added}{$num_added_field_groups}", true)) {
 			$num_added_field_groups++;
 		}
 		
@@ -1496,7 +1598,8 @@ class simple_fields {
 	function get_post_connectors() {
 
 		// use wp_cache
-		$connectors = wp_cache_get( 'simple_fields_'.$this->ns_key.'_post_connectors', 'simple_fields' );
+		$cache_key = 'simple_fields_'.$this->ns_key.'_post_connectors';
+		$connectors = wp_cache_get( $cache_key, 'simple_fields' );
 		if (FALSE === $connectors) {
 
 			$connectors = get_option("simple_fields_post_connectors");
@@ -1555,7 +1658,7 @@ class simple_fields {
 				$connectors[$connectors[$i]["id"]]["field_groups_count"] = $num_fields_in_group;
 			}
 			
-			wp_cache_set( 'simple_fields_'.$this->ns_key.'_post_connectors', $connectors, 'simple_fields' );
+			wp_cache_set( $cache_key, $connectors, 'simple_fields' );
 			
 		}
 	
@@ -1648,8 +1751,11 @@ class simple_fields {
 				// and add some extra info that is nice to have
 				$num_active_fields = 0;
 				foreach ( $field_groups[$i]["fields"] as $one_field ) {
+
 					if ( ! $one_field["deleted"] ) $num_active_fields++;
-					$one_field["meta_key"] = $this->get_meta_key( $field_groups[$i]["id"], $one_field["id"] );
+
+					$one_field["meta_key"] = $this->get_meta_key( $field_groups[$i]["id"], $one_field["id"], null, $field_groups[$i]["slug"], $one_field["slug"] );
+
 				}
 				$field_groups[$i]["fields_count"] = $num_active_fields;
 
@@ -3267,7 +3373,7 @@ class simple_fields {
 					if ( strpos($dropdown_key, "dropdown_num_") === FALSE) { continue; }
 
 					// Skip deleted
-					if ($dropdown_value["deleted"]) continue;
+					if ( isset( $dropdown_value["deleted"] ) && $dropdown_value["deleted"] ) continue;
 					
 					$return_field_value["options"][] = array(
 						"value"       => $dropdown_value["value"],
@@ -3386,7 +3492,7 @@ class simple_fields {
 	}
 
 	/**
-	 * Gets a field group using it's id. Deleted field groups are not included
+	 * Gets a field group using it's slug. Deleted field groups are not included
 	 *
 	 * @since 1.0.5
 	 * @param string slug of field group (or id, actually)
@@ -3458,6 +3564,47 @@ class simple_fields {
 
 	}
 
+	/**
+	 * Get meta key name for the custom field used for determine how many fields that has been added to a post
+	 * hm... this is the same as get_meta_key but with the field id "added" instead of a real id? i think so...
+	 */
+	function get_meta_key_num_added( $field_group_id = null, $field_group_slug = null ) {
+
+		if ( ! isset( $field_group_id ) || ! is_numeric( $field_group_id ) || ! isset( $field_group_slug ) || empty( $field_group_slug ) ) return false;
+
+		// Generate string to be used as template in sprintf
+		// Arguments:
+		// 1 = field group id
+		// 2 = field group slug
+
+		// Legacy version with ids
+		// _simple_fields_fieldGroupID_1_fieldID_added_numInSet_0
+		/*$custom_field_key_template = '_simple_fields_fieldGroupID_%1$s_fieldID';
+
+		// Possibly new version with slugs
+		#$custom_field_key_template = '_simple_fields_fieldGroupSlug_%2$s_fieldID';
+
+		$custom_field_key_template = apply_filters("simple_fields_get_meta_key_num_added_template", $custom_field_key_template);
+
+		$custom_field_key = sprintf(
+			$custom_field_key_template, 
+			$field_group_id, // 1
+			$field_group_slug // 2
+		);
+
+		$custom_field_key = $custom_field_key . "_added_numInSet_";
+		$custom_field_key = apply_filters("simple_fields_get_meta_key_num_added", $custom_field_key);
+		*/
+
+		$custom_field_key = $this->get_meta_key( $field_group_id, "added", 0, $field_group_slug, "added" );
+
+		// Remove last with num in set
+		$custom_field_key = rtrim($custom_field_key, "0");
+		#sf_d($custom_field_key);
+
+		return $custom_field_key;
+
+	}
 
 	/**
 	 * Get meta key name for a field id + field group id combination
@@ -3467,16 +3614,34 @@ class simple_fields {
 	 * @param int num_in_set
 	 * @return string
 	 */
-	function get_meta_key($field_group_id = NULL, $field_id = NULL, $num_in_set = 0) {
+	function get_meta_key($field_group_id = NULL, $field_id = NULL, $num_in_set = 0, $field_group_slug, $field_slug) {
 
-		if ( ! isset($field_group_id) || ! isset($field_group_id) || ! is_numeric($field_group_id) || ! is_numeric($field_id) || ! is_numeric($num_in_set) ) return FALSE;
+		if ( ! isset($field_group_id) || ! isset($field_group_id) || ! is_numeric($field_group_id) || ! isset($field_id) || ! isset($num_in_set) ) return FALSE;
 
-		$custom_field_key_template = '_simple_fields_fieldGroupID_%1$d_fieldID_%2$d_numInSet_%3$d';
+		// Generate string to be used as template in sprintf
+		// Arguments:
+		// 1 = field group id
+		// 2 = field id
+		// 3 = num_in_set
+		// 4 = field group slug
+		// 5 = field slug
+
+		// Legacy version based on ids:
+		$custom_field_key_template = '_simple_fields_fieldGroupID_%1$d_fieldID_%2$d_numInSet_%3$s';
+
+		// Possibly new version with slugs instead
+		#$custom_field_key_template = '_simple_fields_fieldGroupSlug_%4$s_fieldSlug_%5$s_numInSet_%3$d';
+
 		$custom_field_key_template = apply_filters("simple_fields_get_meta_key_template", $custom_field_key_template);
 
-		// TODO: fetch slugs so they are available for the printf too?
-
-		$custom_field_key = sprintf($custom_field_key_template, $field_group_id, $field_id, $num_in_set);
+		$custom_field_key = sprintf(
+			$custom_field_key_template, 
+			$field_group_id, // 1
+			$field_id, // 2
+			$num_in_set, // 3
+			$field_group_slug, // 4
+			$field_slug // 5
+		);
 		$custom_field_key = apply_filters("simple_fields_get_meta_key", $custom_field_key);
 		
 		return $custom_field_key;
@@ -3651,6 +3816,8 @@ class simple_fields {
 			if ( ! isset($_GET["action"]) || empty( $_GET["action"] ) ) return;
 			$action = $_GET["action"];
 
+			do_action("simple_fields_options_page_save", $action);
+
 			global $sf;
 		
 			$field_groups = $this->get_field_groups();
@@ -3670,7 +3837,11 @@ class simple_fields {
 				$post_connectors[$connector_id]["field_groups"] = (array) @$_POST["added_fields"];
 				$post_connectors[$connector_id]["post_types"] = (array) @$_POST["post_types"];
 				$post_connectors[$connector_id]["hide_editor"] = (bool) @$_POST["hide_editor"];
-					
+				$post_connectors[$connector_id]["added_with_code"] = false;
+
+				// When field group is created it's set to deleted in case we don't save, so undo that
+				$post_connectors[$connector_id]["deleted"] = false;
+
 				// for some reason I got an empty connector (array key was empty) so check for these and remove
 				$post_connectors_tmp = array();
 				foreach ($post_connectors as $key => $one_connector) {
@@ -3803,21 +3974,6 @@ class simple_fields {
 	
 			}
 
-			// Save options
-			if ("edit-options-save" == $action) {
-				
-				if ( ! wp_verify_nonce( $_POST["_wpnonce"], "save-debug-options" ) ) wp_die( __("Cheatin&#8217; uh?") );
-				
-				$this->save_options(array(
-					"debug_type" => (int) $_POST["debug_type"]
-				));
-				
-				wp_redirect( add_query_arg( "message", "debug-options-saved", $menu_page_url ) );
-				exit;				
-				
-			}
-
-
 		} // perform action on simple fields pages
 
 	} // save options
@@ -3889,8 +4045,22 @@ class simple_fields {
 		);
 		$arr_text_input_types = apply_filters("simple_fields_get_html_text_types", $arr_text_input_types);
 		return $arr_text_input_types;
-	}
+	} // get html text types
 
+
+	/**
+	 * Get tabs for options output
+	 */
+	function get_options_nav_tabs($subpage) {
+		?>		
+		<h3 class="nav-tab-wrapper">
+			<a href="<?php echo add_query_arg(array("sf-options-subpage" => "manage"), SIMPLE_FIELDS_FILE) ?>" class="nav-tab <?php echo "manage" === $subpage ? "nav-tab-active" : "" ?>"><?php _e('Manage', 'simple-fields') ?></a>
+			<?php
+			do_action("simple_fields_after_last_options_nav_tab", $subpage);
+			?>
+		</h3>
+		<?php
+	}
 
 } // end class
 

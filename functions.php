@@ -14,7 +14,7 @@
 if (!function_exists("sf_d")) {
 function sf_d($var, $heading = "") {
 	$out = "";
-	$out .= "<pre class='sf_box_debug'>";
+	$out .= "\n<pre class='sf_box_debug'>\n";
 	if ($heading && ! empty($heading)) {
 		$out .= "<b>" . esc_html($heading) . ":</b>\n";
 	}
@@ -28,7 +28,7 @@ function sf_d($var, $heading = "") {
 	} else {
 		$out .= htmlspecialchars( $var, ENT_QUOTES, 'UTF-8' );
 	}
-	$out .= "</pre>";
+	$out .= "\n</pre>";
 	echo apply_filters( "simple_fields_debug_output", $out );
 }
 }
@@ -276,8 +276,8 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 			// now find out how many times this field group has been added
 			// can be zero, 1 and several (if field group is repeatable)
 			$num_added_field_groups = 0;
-	
-			while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
+			$meta_key_num_added = $sf->get_meta_key_num_added( $one_field_group["id"], $one_field_group["slug"] );
+			while (get_post_meta($post_id, "{$meta_key_num_added}{$num_added_field_groups}", true)) {
 				$num_added_field_groups++;
 			}
 			
@@ -297,7 +297,7 @@ function simple_fields_get_all_fields_and_values_for_post($post_id, $args = "") 
 					#echo "<br>num in set: $num_in_set";
 					#sf_d($one_field_value);
 	
-					$custom_field_key = "_simple_fields_fieldGroupID_{$one_field_group["id"]}_fieldID_{$one_field_id}_numInSet_{$num_in_set}";
+					$custom_field_key = $sf->get_meta_key( $one_field_group["id"], $one_field_id, $num_in_set, $one_field_group["slug"], $one_field_value["slug"] );
 					#echo "<br>custom field key: $custom_field_key";
 	
 					$saved_value = get_post_meta($post_id, $custom_field_key, true); // empty string if does not exist
@@ -416,7 +416,7 @@ function simple_fields_get_meta_query($group_id, $field_id, $value, $compare = "
 	$query_args = array('meta_query' => array('relation' => 'OR'));
 
 	for($i=0;$i<$num_in_set;$i++) {
-		$query_args['meta_query'][$i]['key'] = "_simple_fields_fieldGroupID_{$field_group['id']}_fieldID_{$field['id']}_numInSet_{$i}";
+		$query_args['meta_query'][$i]['key'] = $sf->get_meta_key( $field_group['id'], $field['id'], $i, $field_group['slug'], $field['slug'] );
 		$query_args['meta_query'][$i]['value'] = $value;
 		$query_args['meta_query'][$i]['compare'] = $compare;
 		$query_args['meta_query'][$i]['type'] = $type;
@@ -606,13 +606,18 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 			"fields" => array(),
 			"fields_by_slug" => array(),
 			"deleted" => false,
-			"gui_view" => "list" // list | table
+			"gui_view" => "list", // list | table
+			"added_with_code" => true
 		);
 
 	} else {
 
 		// This is an existing field group so get values from existing group
 		$field_group_defaults = $field_groups[$field_group_id];
+
+		// make sure all values are set
+		// added_with_code since 1.2.4
+		if ( ! isset( $field_group_defaults["added_with_code"] ) ) $field_group_defaults["added_with_code"] = true;
 
 		// Add the field id of each field to fields array, since the keys get lost when merging below
 		$field_group_defaults["fields_by_slug"] = array();
@@ -1124,7 +1129,7 @@ must be like:
  * @param array $new_post_connector Args for this connector
  */
 function simple_fields_register_post_connector($unique_name = "", $new_post_connector = array()) {
-
+	#sf_d($new_post_connector);
 	global $sf;
 
 	$post_connectors = $sf->get_post_connectors();
@@ -1200,13 +1205,18 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 			"field_groups" => array(),
 			"post_types" => array(),
 			"deleted" => false,
-			"hide_editor" => false
+			"hide_editor" => false,
+			"added_with_code" => true
 		);
 
 	} else {
 
 		// Existing connector, get old values
 		$post_connector_defaults = $post_connectors[$connector_id];
+
+		// make sure all values are set
+		// added_with_code since 1.2.4
+		if ( ! isset( $post_connector_defaults["added_with_code"] ) ) $post_connector_defaults["added_with_code"] = true;
 
 	}
 
@@ -1425,10 +1435,11 @@ function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $n
 	foreach ($post_connector_info["field_groups"] as $one_field_group) {
 
 		$field_group_id = $one_field_group["id"];
+		$meta_key_num_added = $sf->get_meta_key_num_added( $one_field_group["id"], $one_field_group["slug"] );
 
 		// check number of added field groups
 		$num_added_field_groups = 0; 
-		while (get_post_meta($post_id, "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_added_numInSet_{$num_added_field_groups}", true)) {
+		while (get_post_meta($post_id, "{$meta_key_num_added}{$num_added_field_groups}", true)) {
 			$num_added_field_groups++;
 		}
 
@@ -1450,10 +1461,10 @@ function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $n
 					$num_in_set = $num_added_field_groups;			        
 				}
 
-				$meta_key = $sf->get_meta_key($field_group_id, $field_id, $num_in_set);
-
+				$meta_key = $sf->get_meta_key( $field_group_id, $field_id, $num_in_set, $one_field_group_field["slug"], $one_field_group_field["slug"] );
 				update_post_meta($post_id, $meta_key, $new_value);
-				update_post_meta($post_id, "_simple_fields_fieldGroupID_{$field_group_id}_fieldID_added_numInSet_{$num_in_set}", 1);
+				update_post_meta($post_id, "{$meta_key_num_added}{$num_in_set}", 1);
+
 				update_post_meta($post_id, "_simple_fields_been_saved", 1);
 				
 				// value updated. clear cache and exit function.
@@ -1578,10 +1589,6 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 
 		// Loop the fields in this field group
 		foreach ($one_field_group["fields"] as $one_field_group_field) { 
-
-			//_simple_fields_fieldGroupID_23_fieldID_2_numInSet_
-			#file
-			#sf_d($one_field_group_field);
 
 			// Skip deleted fields
 			if ($one_field_group_field["deleted"]) continue;
@@ -1799,3 +1806,11 @@ function simple_fields_fieldgroup($field_group_id_or_slug, $post_id = NULL, $opt
 
 }
 
+/**
+ * helper to sort fields by name. used on options screen
+ * to be used with uasort()
+ */
+function simple_fields_uasort($a, $b) {
+	if ($a["name"] == $b["name"]) { return 0; }
+	return strcasecmp($a["name"], $b["name"]);
+}
