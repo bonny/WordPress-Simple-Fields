@@ -144,6 +144,9 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
+#### Version 1.3.1
+- Fixed: used short tags in options screen.
+
 #### Version 1.3
 - Added: tabs! in the gui that is.
 - Added: tab with export and import functions!
