@@ -1,6 +1,6 @@
 <?php
 
-add_action("plugins_loaded", "init_simple_fields_field_minimalexample");
+add_action("simple_fields_register_field_types", "init_simple_fields_field_minimalexample");
 
 function init_simple_fields_field_minimalexample() {
 

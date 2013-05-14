@@ -5,9 +5,28 @@
  * Use this as base or inspiration for your own fields
  */
 
-// Make sure simple fields have loaded before we try to do anything. Will get errors otherwise.
-add_action("plugins_loaded", "init_simple_fields_field_example");
+// Notify user if Simple Fields is not installed
+add_action("admin_notices", "simple_fields_field_example_check_simple_fields_installed");
 
+// Make sure simple fields have loaded before we try to do anything. Will get errors otherwise.
+add_action("simple_fields_register_field_types", "init_simple_fields_field_example");
+
+
+// Check if Simple Fields is installed and notify user if not
+function simple_fields_field_example_check_simple_fields_installed() {
+
+	$plugin_is_active = is_plugin_active("Simple-Fields-GIT/simple_fields.php") || is_plugin_active("Simple-Fields/simple_fields.php");
+	if ( ! $plugin_is_active ) {
+		?>
+		<div class="error">
+			<p><?php _e('To use the plugin <em>Simple Fields Example Extension</em> you must also have <a target="_blank" href="http://wordpress.org/extend/plugins/simple-fields/">Simple Fields</a> installed.', 'simple-fields-field-example'); ?></p>
+		</div>
+		<?php
+	}
+
+}
+
+// Main function, that holds the main class with the field
 function init_simple_fields_field_example() {
 	
 	// Setup an example field type
