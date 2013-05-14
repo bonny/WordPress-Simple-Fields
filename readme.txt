@@ -144,6 +144,14 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
+#### Version xxx
+
+- Updated field extension example with code to notify user that they must have simple fields
+installed to use the plugin
+
+- simple_fields_register_post_connector can now accept a string in the post_types argument, 
+if only one post type is to be connected
+
 #### Version 1.3.1
 - Fixed: used short tags in options screen.
 

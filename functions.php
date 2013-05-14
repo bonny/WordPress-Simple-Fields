@@ -1196,6 +1196,11 @@ function simple_fields_register_post_connector($unique_name = "", $new_post_conn
 		$new_post_connector["name"] = $unique_name;
 	}
 
+	// Make sure post_types is an array (this allows for post_types to be a string)
+	if ( isset($new_post_connector["post_types"]) && ! is_array($new_post_connector["post_types"]) ) {
+		$new_post_connector["post_types"] = (array) $new_post_connector["post_types"];
+	}
+
 	// Setup defaults to merge to
 	if ($is_new_connector) {
 
