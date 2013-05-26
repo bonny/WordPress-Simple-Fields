@@ -239,15 +239,21 @@ function init_simple_fields_field_date_v2() {
 			$str_saved_unixtime = "";
 			$str_set_date = "";
 			$str_unixtime_to_set = "";
+
 			if (isset($options["use_defaults"]) && $options["use_defaults"]) {
+
 				if (isset($options["default_date"]) && $options["default_date"] === "today") {
+
 					$str_unixtime_to_set = time() * 1000;
 					$str_iso_to_set = date("Y/m/d H:i");
+
 				} elseif (isset($options["default_date"]) && $options["default_date"] === "no_date") {
 					
 				}
 			} else {
+
 				$str_saved_unixtime = $saved_values["saved_date_time"];
+
 				// convert saved values to unixtime
 				// echo "Saved value: $str_saved_unixtime";
 				if (preg_match('!^\d{2}:\d{2}$!', $str_saved_unixtime)) {
@@ -290,15 +296,28 @@ function init_simple_fields_field_date_v2() {
 			$locale = substr(get_locale(), 0, 2);
 			// $locale = "sv";
 
-			if ($str_unixtime_to_set) {
+			if ( $str_unixtime_to_set ) {
 				// If saved value exists then set date to this value on load
 				// The display: none-thingie is added beause the date picker get shown by setDate-method
 				// Unsure if bug or feature, but annoying anyway.
+
 				$str_set_date = '
 					var date_saved = new Date("'.$str_iso_to_set.'");
 					$( "#%1$s" ).'.$method_name.'("setDate", date_saved);
 					$( "#ui-datepicker-div" ).css("display","none");
 				';
+
+			}
+
+			// don't set a date if default date is no_date and no date is selected
+			// (actually unset what we previosly set)
+			if ( empty( $str_saved_unixtime ) && isset($options["default_date"]) && $options["default_date"] === "no_date") {
+				
+				// echo "<br>unset date/make no date selected";
+				$str_set_date .= '
+					$( "#%1$s" ).'.$method_name.'("setDate", "");
+				';
+
 			}
 
 			$output = sprintf(
@@ -337,8 +356,8 @@ function init_simple_fields_field_date_v2() {
 				',
 				$this->get_options_id("gui_selected_date"),
 				$this->get_options_name("gui_selected_date"),
-				$this->get_options_id("saved_date_time"),
-				$this->get_options_name("saved_date_time"),
+				$this->get_options_id("saved_date_time"), // 3
+				$this->get_options_name("saved_date_time"), //
 				"", // 5
 				$str_saved_unixtime, // 6
 				$str_date_format,
