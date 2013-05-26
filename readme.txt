@@ -152,6 +152,8 @@ installed to use the plugin
 - simple_fields_register_post_connector can now accept a string in the post_types argument, 
 if only one post type is to be connected
 
+- fixed a problem with the date/timepicker v2 not being se correctly when option "no date" was selected
+
 #### Version 1.3.1
 - Fixed: used short tags in options screen.
 
