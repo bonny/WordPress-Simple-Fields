@@ -4,7 +4,7 @@ Donate link: http://simple-fields.com/about/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, more fields, repeatable fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom, simple fields, cms, date picker, time picker, repeatable fields, multiple fields
 Requires at least: 3.5.1
 Tested up to: 3.5.1
-Stable tag: 1.3.2
+Stable tag: 1.3.3
 
 With Simple Fields you can add any kind of custom fields to your pages, posts and attachments.
 
@@ -32,7 +32,7 @@ $video_url = simple_fields_value('video');
 
 Simple Fields comes bundled with a useful variation of fields. Note that any field can be added any number of times to a post using repeatable fields.
 
-The fields that are included in Simple Fields are:
+Fields types available in Simple Fields:
 
 * **Text**<br>
 A simple text input to enter any kind of information.
@@ -143,6 +143,12 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 
 == Changelog ==
+
+#### Version 1.3.3
+
+- Added support for using "sf_meta_key" as an argument to regular wp_query. just add sf_meta_key = "field_group_slug/field_slug" to the args of wp_query and then the argument meta_key will automatically be filled with the correct custom field key to use for that field. Useful when you need to for example sort things based on simple fields in a wp_query. Please note that different field types store their values in different ways, but it works really good for plan text, date/timepicker, and probably some more too.
+
+- Added method get_field_by_fieldgroup_and_slug_string() that can retrive a field array based on a field group slug and a field slug. like this: $sf->get_field_by_fieldgroup_and_slug_string("my_fieldgroup_slug/my_field_slug");
 
 #### Version 1.3.2
 
