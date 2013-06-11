@@ -87,7 +87,6 @@ class simple_fields {
 		$this->registered_field_types = array();
 
 		// Actions and filters
-
 		add_action( 'admin_init', array($this, 'admin_init') );
 		add_action( 'admin_init', array($this, 'check_upgrade_stuff') );
 		add_action( 'admin_init', array($this, "options_page_save" ));
@@ -103,6 +102,9 @@ class simple_fields {
 		add_action( 'save_post', array($this, 'save_postdata') );
 		add_action( 'save_post', array($this, 'clear_caches') );
 		add_action( 'edit_attachment', array($this, 'save_postdata') );
+
+		// Query filters
+		add_action( 'pre_get_posts', array($this, 'action_pre_get_posts_meta') );
 
 		add_action( 'plugins_loaded', array($this, 'plugins_loaded') );
 		add_action( 'init', array($this, "maybe_add_debug_info") ); 
@@ -137,6 +139,28 @@ class simple_fields {
 	}
 
 	/**
+	 * If sf_meta_key is set then that is assumed to be the slugs of a field group and a field
+	 * and the meta_key of the value will be replaced by the meta_key value of that simple field-field
+	 */
+	function action_pre_get_posts_meta( $query ) {
+
+		$sf_meta_key = $query->get("sf_meta_key");
+		if ( ! empty( $sf_meta_key ) ) {
+
+			$field = $this->get_field_by_fieldgroup_and_slug_string( $sf_meta_key );
+
+			if ( false !== $field ) {
+
+				$field_meta_key = $this->get_meta_key( $field["field_group"]["id"], $field["id"], 0, $field["field_group"]["slug"], $field["slug"] );
+				$query->set("meta_key", $field_meta_key );
+				
+			}
+
+		}
+
+	}
+
+	/**
 	 * Inserts debug panel to debug bar
 	 * Called form debug bar filter "debug_bar_panels", so will only be run'ed when debug bar is activated
 	 */
@@ -157,7 +181,7 @@ class simple_fields {
 
 		return $panels;
 
-}
+	}
 
 	// check some things regarding update
 	function check_upgrade_stuff() {
@@ -4061,6 +4085,31 @@ sf_d($one_field_slug, 'one_field_slug');*/
 		</h3>
 		<?php
 	}
+
+	/**
+	 * Retrive a field by a string in the format <fieldgroup_slug>/<field_slug>
+	 * used when fieldgroups and fields need to be passed as string
+	 *
+	 * @param string $string
+	 * @return array field info or false if field not found
+	 */
+	function get_field_by_fieldgroup_and_slug_string($string) {
+		
+		if ( empty($string) ) {
+			return false;
+		}
+
+		$arr = explode("/", $string);
+		if ( 2 !== sizeof($arr) ) {
+			return false;
+		}
+		
+		// sf_d($arr, "arr"); // 0 timeline 1 timeline_date
+		$field = $this->get_field_by_slug( $arr[1], $arr[0] );
+
+		return $field;
+
+	} // end get_field_by_fieldgroup_and_slug_string
 
 } // end class
 
