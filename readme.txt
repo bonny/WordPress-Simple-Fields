@@ -144,6 +144,10 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
+#### Version 1.3.4
+
+- Fixed some PHP strict standards warnings
+
 #### Version 1.3.3
 
 - Added support for using "sf_meta_key" as an argument to regular wp_query. just add sf_meta_key = "field_group_slug/field_slug" to the args of wp_query and then the argument meta_key will automatically be filled with the correct custom field key to use for that field. Useful when you need to for example sort things based on simple fields in a wp_query. Please note that different field types store their values in different ways, but it works really good for plan text, date/timepicker, and probably some more too.
