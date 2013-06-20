@@ -25,9 +25,10 @@ class simple_fields_field {
 
 	/**
 	 * Output on options screen
+	 *
 	 * @return string
 	 */
-	function options_output() {
+	function options_output($existing_vals = array()) {
 		return "<p>Please add method ".__METHOD__."().</p>";
 	}
 	function options_save() {
@@ -112,8 +113,11 @@ class simple_fields_field {
 	 * Used from functions simple_fields_value and simple_fields_values
 	 * $values is an array beginning at 0, for each field,
 	 * so loop to change all your values (there are several if using repeatable)
+	 *
+	 * @param array @values
+	 *
 	 */
-	function return_values($values) {
+	function return_values($values = null, $parsed_options_for_this_field = null) {
 
 		if (is_array($values)) {
 			// Thought: to make it more work like core/legacy plugins, let's return the first thing if only one thing exists

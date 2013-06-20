@@ -73,7 +73,7 @@ function init_simple_fields_field_date_v2() {
 		 *  - Default date
 		 *  - 
 		 */
-		function options_output($existing_vals) {
+		function options_output($existing_vals = array()) {
 
 			$out = "";
 
@@ -382,7 +382,7 @@ function init_simple_fields_field_date_v2() {
 		 * http://stackoverflow.com/questions/9576860/sort-iso-iso-8601-dates-forward-or-backwards
 		 * http://en.wikipedia.org/wiki/Lexicographical_order
 		 */
-		function edit_save($values) {
+		function edit_save($values = null) {
 			
 			/*
 				// echo "Saving these values for field:";sf_d($values);
@@ -432,7 +432,7 @@ function init_simple_fields_field_date_v2() {
 		/**
 		 * Add Extended Return Values and then return the values
 		 */
-		function return_values($values, $parsed_options_for_this_field) {
+		function return_values($values = null, $parsed_options_for_this_field = null) {
 
 			// @todo: what if no value?
 			foreach ($values as $key => $one_value) {

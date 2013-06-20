@@ -353,17 +353,17 @@ class Simple_Fields_Walker_Category_Checklist extends Walker {
 	var $tree_type = 'category';
 	var $db_fields = array ('parent' => 'parent', 'id' => 'term_id');
 
-	function start_lvl(&$output, $depth, $args) {
+	function start_lvl(&$output, $depth = 0, $args = array()) {
 		$indent = str_repeat("\t", $depth);
 		$output .= "$indent<ul class='children'>\n";
 	}
 
-	function end_lvl(&$output, $depth, $args) {
+	function end_lvl(&$output, $depth = 0, $args = array()) {
 		$indent = str_repeat("\t", $depth);
 		$output .= "$indent</ul>\n";
 	}
 
-	function start_el(&$output, $category, $depth, $args) {
+	function start_el(&$output, $category, $depth = 0, $args = array(), $current_object_id = 0) {
 
 		global $simple_fields_taxonomyterm_walker_field_name;
 
@@ -378,7 +378,7 @@ class Simple_Fields_Walker_Category_Checklist extends Walker {
 		$output .= "\n<li $class>" . '<label class="selectit"><input value="' . $category->term_id . '" type="checkbox" name="'.$name.'[]" ' . checked( in_array( $category->term_id, $selected_cats ), true, false ) . disabled( empty( $args['disabled'] ), false, false ) . ' /> ' . esc_html( apply_filters('the_category', $category->name )) . '</label>';
 	}
 
-	function end_el(&$output, $category, $depth, $args) {
+	function end_el(&$output, $category, $depth = 0, $args = array()) {
 		$output .= "</li>\n";
 	}
 }

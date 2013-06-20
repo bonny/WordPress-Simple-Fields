@@ -45,7 +45,7 @@ function init_simple_fields_field_divider() {
 			<?php
 		}
 		
-		function options_output($existing_vals) {
+		function options_output($existing_vals = array()) {
 			return sprintf('
 			<div class="simple-fields-field-group-one-field-row-col-first">
 				<p>
