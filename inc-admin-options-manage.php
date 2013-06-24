@@ -4,9 +4,12 @@
  * edit post type defaults
  */
 if ("edit-post-type-defaults" == $action) {
-	$post_type = $_GET["post-type"];
+
 	global $wp_post_types;
-	if (isset($wp_post_types[$post_type])) {
+	$post_type = $_GET["post-type"];
+
+	if ( isset($wp_post_types[$post_type]) ) {
+		
 		$selected_post_type = $wp_post_types[$post_type];
 		?>
 		<form action="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-post-type-defaults-save" method="post">
@@ -452,7 +455,6 @@ if ("edit-field-group" == $action) {
 // overview, if no action
 if ( ! $action ) {
 
-
 	do_action("simple_fields_options_print_nav_tabs", $subpage);
 
 	/**
@@ -464,7 +466,6 @@ if ( ! $action ) {
 			$post_connector_count++;
 		}
 	}
-
 
 	/**
 	 * view list of existing field groups

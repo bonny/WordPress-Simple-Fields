@@ -120,7 +120,9 @@ class simple_fields {
 		add_action( 'wp_ajax_simple_fields_field_group_add_field', array($this, 'field_group_add_field') );
 
 		// Options page
+		add_action("simple_fields_options_print_nav_tabs", array($this, "promote_ep_on_nav_tabs"));
 		add_action("simple_fields_options_print_nav_tabs", array($this, "get_options_nav_tabs"));
+
 
 		// Add to debug bar if debug is enabled
 		add_filter( 'debug_bar_panels', array($this, "debug_panel_insert") );
@@ -4083,6 +4085,46 @@ sf_d($one_field_slug, 'one_field_slug');*/
 			do_action("simple_fields_after_last_options_nav_tab", $subpage);
 			?>
 		</h3>
+		<?php
+	}
+
+	/**
+	 * Promote Earth People
+	 */
+	function promote_ep_on_nav_tabs() {
+		?>
+		<style>
+			.simple-fields-promote {
+				float: right;
+				background: #aaa;
+				width: 375px;
+				margin-top: -3.5em;
+				padding: .5em;
+				font-size: 12px;
+				display: inline-block;
+				vertical-align: center;
+			}
+			
+			.simple-fields-promote p {
+				color: #eee;
+				font-size: inherit;
+				margin: 0 0 .25em 0;
+			}
+			.simple-fields-promote a {
+				color: inherit;
+			}
+			.ep_logo {
+				float: left;
+			}
+		</style>
+		<div class="simple-fields-promote">
+
+			<img src="http://d3m1jlakmz8guo.cloudfront.net/application/views/assets/img/earth_people.png">
+
+			<p>This plugin is made by swedish web agency <a href="#">Earth People</a>.</p>
+			<p>We specialize in web development, user experience and design.</p>
+			<p><a href="#">Contact us</a> if you need a professional WordPress partner.</p>
+		</div>
 		<?php
 	}
 
