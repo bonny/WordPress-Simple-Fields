@@ -527,7 +527,7 @@ if ( ! $action ) {
 
 							echo "<tr class='$row_class'>";
 							echo "<td>";
-							echo "<a href='$editlink'><strong>" . esc_html( $oneFieldGroup["name"] ) . "</strong></a>";
+							echo "<a href='$editlink'><strong>" . esc_html( $this->get_string( "Field group name, " . $oneFieldGroup["slug"], $oneFieldGroup["name"] ) ) . "</strong></a>";
 							
 							?><div class="row-actions">
 								<span class="edit"><a href="<?php echo $editlink ?>" title="<?php _e("Edit this item") ?>"><?php _e("Edit") ?></a></span>

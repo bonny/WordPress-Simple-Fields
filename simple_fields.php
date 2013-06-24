@@ -52,6 +52,7 @@ class simple_fields {
 	 */
 	function init() {
 
+
 		define( "SIMPLE_FIELDS_VERSION", "1.3.4");
 		define( "SIMPLE_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
 		define( "SIMPLE_FIELDS_NAME", "Simple Fields");
@@ -123,7 +124,6 @@ class simple_fields {
 		add_action("simple_fields_options_print_nav_tabs", array($this, "promote_ep_on_nav_tabs"));
 		add_action("simple_fields_options_print_nav_tabs", array($this, "get_options_nav_tabs"));
 
-
 		// Add to debug bar if debug is enabled
 		add_filter( 'debug_bar_panels', array($this, "debug_panel_insert") );
 
@@ -135,10 +135,74 @@ class simple_fields {
 		});
 		*/
 
+		// Setup things for WPML-support
+		add_action("init", array($this, "setup_wpml_support"));
+
 		// Boot up
 		do_action("simple_fields_init", $this);
 
 	}
+
+	/**
+	 * Init support for WPML translations
+	 */
+	function setup_wpml_support() {
+
+		// If wpml is not active then don't do anything
+		if ( ! $this->is_wpml_active()) return;
+
+		// http://wpml.org/documentation/support/translation-for-texts-by-other-plugins-and-themes/
+
+		// 1. Register the strings that need translation
+		// icl_register_string($context, $name, $value)
+		// run on settings screen, go through all fields and register string
+		add_action("simple_fields_settings_admin_head", array($this, "register_wpml_strings"));
+
+		// 2. Using the translation when displaying
+		// icl_t($context, $name, $value)
+
+	}
+
+	/**
+	 * Register strings so they are translateable with WPML
+	 */
+	function register_wpml_strings() {
+		
+		// Get all fieldgroups and fields
+		$field_groups = $this->get_field_groups();
+
+		foreach ($field_groups as $fieldgroup) {
+
+			// register name and description of each field group
+			icl_register_string("Simple Fields", "Field group name, " . $fieldgroup["slug"], $fieldgroup["name"]);
+			icl_register_string("Simple Fields", "Field group description, " . $fieldgroup["slug"], $fieldgroup["description"]);
+
+			// register name for each field
+			foreach ($fieldgroup["fields"] as $field) {
+				icl_register_string("Simple Fields", "Field name, " . $field["slug"], $field["name"]);
+				icl_register_string("Simple Fields", "Field description, " . $field["slug"], $field["description"]);
+			}
+
+		}
+
+	}
+
+	/**
+	 * Output maybe translated string
+	 * If WPML is installed and activated then icl_t() is used on the string
+	 * If WPML is not instaled, then it's just returned unmodified
+	 */
+	function get_string($name = "", $value = "") {
+
+		if ( $this->is_wpml_active() ) {
+			$value = icl_t("Simple Fields", $name, $value);
+			return "WPML: $value";
+		} else {
+			return $value;
+		}
+
+	}
+
 
 	/**
 	 * If sf_meta_key is set then that is assumed to be the slugs of a field group and a field
@@ -4152,6 +4216,19 @@ sf_d($one_field_slug, 'one_field_slug');*/
 		return $field;
 
 	} // end get_field_by_fieldgroup_and_slug_string
+
+	/**
+	 * Check if wpml is active
+	 *
+	 * @return bool
+	 */
+	public function is_wpml_active() {
+		
+		global $sitepress;		
+		return ( isset( $sitepress ) && $sitepress instanceof SitePress );
+
+	}
+
 
 } // end class
 
