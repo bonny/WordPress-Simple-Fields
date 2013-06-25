@@ -198,15 +198,19 @@ class simple_fields {
 	}
 
 	/**
-	 * Output maybe translated string
+	 * Get maybe translated string
 	 * If WPML is installed and activated then icl_t() is used on the string
 	 * If WPML is not instaled, then it's just returned unmodified
+	 *
+	 * @param string $name Name to use in icl_t
+	 * @param string $value Value to use in icl_t
 	 */
 	function get_string($name = "", $value = "") {
 
 		if ( $this->is_wpml_active() ) {
 			$value = icl_t($this->wpml_context, $name, $value);
-			return "WPML: $value";
+			// $value = "WPML: $value"; // debug to check that function actually runs
+			return $value;
 		} else {
 			return $value;
 		}
@@ -737,6 +741,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 	
 	} // save postdata
 
+	
 	/**
 	 * adds a fieldgroup through ajax = also fetch defaults
 	 * called when clicking "+ add" in post edit screen
@@ -814,9 +819,10 @@ sf_d($one_field_slug, 'one_field_slug');*/
 				$saved_value = get_post_meta($post_id, $custom_field_key, true);
 
 				// Options, common for all fields
+				$field_maybe_translated_name = $this->get_string( "Field name, " . $field["slug"], $field["name"] );
 				$description = "";
 				if ( ! empty( $field["description"] ) ) {
-					$description = sprintf("<div class='simple-fields-metabox-field-description'>%s</div>", esc_html($field["description"]));
+					$description = sprintf("<div class='simple-fields-metabox-field-description'>%s</div>", esc_html( $this->get_string("Field description, " . $field["slug"], $field["description"] ) ) );
 				}
 
 				// Options, common for most core field
@@ -826,6 +832,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 				// div that wraps around each outputed field
 				// Output will be similar to this
 				// <div class="simple-fields-metabox-field simple-fields-fieldgroups-field-1-1 simple-fields-fieldgroups-field-type-text" data-fieldgroup_id="1" data-field_id="1" data-num_in_set="0">
+				
 				?>
 				<div class="simple-fields-metabox-field sf-cf <?php echo $field_class ?>" 
 					data-fieldgroup_id=<?php echo $field_group_id ?>
@@ -854,13 +861,13 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						echo "</div>";
 						echo "<div class='simple-fields-metabox-field-second'>";
 						echo "<input $str_checked id='$field_unique_id' type='checkbox' name='$field_name' value='1' />";
-						echo "<label class='simple-fields-for-checkbox' for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label class='simple-fields-for-checkbox' for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo "</div>";
 		
 					} elseif ("radiobuttons" == $field["type"]) {
 		
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label>" . $field["name"] . "</label>";
+						echo "<label>" . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 
@@ -901,7 +908,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 					} elseif ("dropdown" == $field["type"]) {
 
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 
@@ -981,7 +988,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						echo "<div class='simple-fields-metabox-field-file $class'>";
 
 							echo "<div class='simple-fields-metabox-field-first'>";
-							echo "<label>{$field["name"]}</label>";
+							echo "<label>{$field_maybe_translated_name}</label>";
 							echo $description;
 							echo "</div>";
 
@@ -1050,7 +1057,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						}
 						
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 
@@ -1205,7 +1212,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						$extra_attributes = isset( $field_type_options["attributes"] ) ? $field_type_options["attributes"] : "";
 
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 
@@ -1218,7 +1225,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						$text_value_esc = esc_html($saved_value);
 
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 						
@@ -1234,7 +1241,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						$text_value_esc = esc_html($saved_value);
 						
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 						
@@ -1252,7 +1259,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						$text_value_esc = esc_html($saved_value);
 						// var_dump($saved_value);
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 
@@ -1285,7 +1292,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						// hämta alla terms som finns för taxonomy $enabled_taxonomy
 						// @todo: kunna skicka in args här, t.ex. för orderby
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 
@@ -1337,7 +1344,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						echo "<div class='simple-fields-metabox-field-post'>";
 
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 
@@ -1373,7 +1380,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						#echo "<div class='simple-fields-metabox-field-post'>";
 						// echo "<pre>"; print_r($type_post_options); echo "</pre>";
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 
@@ -1428,7 +1435,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 
 							// Always output label and description, for consistency
 							echo "<div class='simple-fields-metabox-field-first'>";
-							echo "<label>" . $field["name"] . "</label>";
+							echo "<label>" . $field_maybe_translated_name . "</label>";
 							echo $description;
 							echo "</div>";
 							
@@ -1539,7 +1546,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 							$field_group_to_add = $field_groups[$one_post_connector_field_group["id"]];
 	
 							$meta_box_id = "simple_fields_connector_" . $field_group_to_add["id"];
-							$meta_box_title = $field_group_to_add["name"];
+							$meta_box_title = $this->get_string("Field group name, " . $field_group_to_add["slug"], $field_group_to_add["name"] );
 							$meta_box_context = $one_post_connector_field_group["context"];
 							$meta_box_priority = $one_post_connector_field_group["priority"];
 							// @todo: could we just create an anonymous function the "javascript way" instead? does that require a too new version of PHP?
@@ -1601,8 +1608,8 @@ sf_d($one_field_slug, 'one_field_slug');*/
 		echo "<input type='hidden' name='simple-fields-meta-box-field-group-id' value='$post_connector_field_id' />";
 	 
 		// show description
-		if (!empty($current_field_group["description"])) {
-			printf("<p class='%s'>%s</p>", "simple-fields-meta-box-field-group-description", esc_html($current_field_group["description"]));
+		if ( ! empty($current_field_group["description"]) ) {
+			printf("<p class='%s'>%s</p>", "simple-fields-meta-box-field-group-description", esc_html( $this->get_string("Field group description, " . $current_field_group["slug"], $current_field_group["description"]) ) );
 		}
 		//echo "<pre>";print_r($current_field_group);echo "</pre>";
 		
@@ -1615,8 +1622,8 @@ sf_d($one_field_slug, 'one_field_slug');*/
 				foreach ( $current_field_group["fields"] as $field_id => $field_arr ) {
 					// sf_d($field_arr);
 					printf('<div class="simple-fields-metabox-field-group-view-table-headline simple-fields-metabox-field-group-view-table-headline-count-%1$d">', $current_field_group["fields_count"]);
-					printf('<div class="simple-fields-field-group-view-table-headline-name">%1$s</div>', $field_arr["name"]);
-					printf('<div class="simple-fields-field-group-view-table-headline-description">%1$s</div>', $field_arr["description"]);
+					printf('<div class="simple-fields-field-group-view-table-headline-name">%1$s</div>', $this->get_string( "Field name, " . $field_arr["slug"], $field_arr["name"] ) );
+					printf('<div class="simple-fields-field-group-view-table-headline-description">%1$s</div>', $this->get_string("Field description, " . $field_arr["slug"], $field_arr["description"] ) );
 					printf('</div>');
 				}
 				echo "</div>";
