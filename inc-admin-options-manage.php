@@ -613,7 +613,7 @@ if ( ! $action ) {
 					?>
 					<tr class='<?php echo $row_class ?>'>
 						<td>
-							<a href="<?php echo $edit_url ?>"><strong><?php echo esc_html( $one_post_connector["name"] ) ?></strong></a>
+							<a href="<?php echo $edit_url ?>"><strong><?php echo esc_html( $this->get_string( "Post connector name, " . $one_post_connector["slug"], $one_post_connector["name"]) ) ?></strong></a>
 							<div class="row-actions">
 								<span class="edit"><a href="<?php echo $edit_url ?>" title="<?php _e("Edit this item") ?>"><?php _e("Edit") ?></a></span>
 								<!-- <span class="trash"><a class="submitdelete" href="<?php echo $remove_url ?>"><?php _e("Trash") ?></a></span> -->

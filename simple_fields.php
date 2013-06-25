@@ -45,6 +45,10 @@ class simple_fields {
 		
 	;
 
+	private
+
+		$wpml_context = "Simple Fields";
+
 
 	/**
 	 * Init is where we setup actions and filers and loads stuff and a little bit of this and that
@@ -174,15 +178,21 @@ class simple_fields {
 		foreach ($field_groups as $fieldgroup) {
 
 			// register name and description of each field group
-			icl_register_string("Simple Fields", "Field group name, " . $fieldgroup["slug"], $fieldgroup["name"]);
-			icl_register_string("Simple Fields", "Field group description, " . $fieldgroup["slug"], $fieldgroup["description"]);
+			icl_register_string($this->wpml_context, "Field group name, " . $fieldgroup["slug"], $fieldgroup["name"]);
+			icl_register_string($this->wpml_context, "Field group description, " . $fieldgroup["slug"], $fieldgroup["description"]);
 
 			// register name for each field
 			foreach ($fieldgroup["fields"] as $field) {
-				icl_register_string("Simple Fields", "Field name, " . $field["slug"], $field["name"]);
-				icl_register_string("Simple Fields", "Field description, " . $field["slug"], $field["description"]);
+				icl_register_string($this->wpml_context, "Field name, " . $field["slug"], $field["name"]);
+				icl_register_string($this->wpml_context, "Field description, " . $field["slug"], $field["description"]);
 			}
 
+		}
+
+		// Get and register post connectors
+		$post_connectors = $this->get_post_connectors();
+		foreach ($post_connectors as $connector) {
+			icl_register_string($this->wpml_context, "Post connector name, " . $connector["slug"], $connector["name"]);
 		}
 
 	}
@@ -195,7 +205,7 @@ class simple_fields {
 	function get_string($name = "", $value = "") {
 
 		if ( $this->is_wpml_active() ) {
-			$value = icl_t("Simple Fields", $name, $value);
+			$value = icl_t($this->wpml_context, $name, $value);
 			return "WPML: $value";
 		} else {
 			return $value;
