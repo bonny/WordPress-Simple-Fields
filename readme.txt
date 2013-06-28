@@ -144,6 +144,11 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
+#### Version 1.x.x
+
+- Added support for [WPML](http://wpml.org/). Now the names and descriptions of field groups, it's fields, and post connectors can be translated using WPML.
+- Added a little teaser about [WordPress Web Agency Earth People](http://earthpeople.se/?utm_source=wordpress&utm_medium=readme&utm_campaign=simplefields), the company I work for. I you need any professional help with for example Simple Fields then we might be the ones to talk to :)
+
 #### Version 1.3.4
 
 - Fixed some PHP strict standards warnings

@@ -183,8 +183,28 @@ class simple_fields {
 
 			// register name for each field
 			foreach ($fieldgroup["fields"] as $field) {
+
 				icl_register_string($this->wpml_context, "Field name, " . $field["slug"], $field["name"]);
 				icl_register_string($this->wpml_context, "Field description, " . $field["slug"], $field["description"]);
+
+				// register names for dropdowns and radiobuttons
+				// $radiobutton_maybe_translation_val = $this->get_string("Field checkbox value, " . $field["slug"] . " " . $one_radio_option_key, $one_radio_option_val_val );
+				if ( isset( $field["type_radiobuttons_options"] ) && is_array( $field["type_radiobuttons_options"] ) ) {
+					
+					foreach ( $field["type_radiobuttons_options"] as $one_radio_option_key => $one_radio_option_val) {
+
+						// only values like radiobutton_num_2 are allowed
+						if ( strpos($one_radio_option_key, "radiobutton_num_") === FALSE) continue;
+
+						// sf_d( $one_radio_option_key );
+						// sf_d( $one_radio_option_val );
+						// $radiobutton_maybe_translation_val = $this->get_string("Field checkbox value, " . $field["slug"] . " " . $one_radio_option_key, $one_radio_option_val_val );
+						icl_register_string($this->wpml_context, "Field checkbox value, " . $field["slug"] . " " . $one_radio_option_key, $one_radio_option_val["value"]);
+
+					}
+
+				}
+
 			}
 
 		}
@@ -209,7 +229,7 @@ class simple_fields {
 
 		if ( $this->is_wpml_active() ) {
 			$value = icl_t($this->wpml_context, $name, $value);
-			// $value = "WPML: $value"; // debug to check that function actually runs
+			$value = "WPML: $value"; // debug to check that function actually runs
 			return $value;
 		} else {
 			return $value;
@@ -894,10 +914,12 @@ sf_d($one_field_slug, 'one_field_slug');*/
 							} else {
 								if ($saved_value == $one_radio_option_key) { $selected = " checked='checked' "; }
 							}
-													
+							
+							$radiobutton_maybe_translation_val = $this->get_string("Field checkbox value, " . $field["slug"] . " " . $one_radio_option_key, $one_radio_option_val_val );
+
 							echo "<div class='simple-fields-metabox-field-radiobutton'>";
 							echo "	<input $selected name='$field_name' id='$radio_field_unique_id' type='radio' value='$one_radio_option_key' />";
-							echo "	<label for='$radio_field_unique_id' class='simple-fields-for-radiobutton'> " . $one_radio_option_val_val . "</label>";
+							echo "	<label for='$radio_field_unique_id' class='simple-fields-for-radiobutton'> " . $radiobutton_maybe_translation_val . "</label>";
 							echo "</div>";							
 							
 							$loopNum++;
@@ -4177,7 +4199,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 		<style>
 			.simple-fields-promote {
 				float: right;
-				background: #aaa;
+				background: #999;
 				width: 375px;
 				margin-top: -3.5em;
 				padding: .5em;
@@ -4202,9 +4224,10 @@ sf_d($one_field_slug, 'one_field_slug');*/
 
 			<img src="http://d3m1jlakmz8guo.cloudfront.net/application/views/assets/img/earth_people.png">
 
-			<p>This plugin is made by swedish web agency <a href="#">Earth People</a>.</p>
+			<p>This plugin is made by swedish web agency <a href="http://earthpeople.se/?utm_source=wordpress&utm_medium=plugin&utm_campaign=simplefields">Earth People</a>.</p>
 			<p>We specialize in web development, user experience and design.</p>
-			<p><a href="#">Contact us</a> if you need a professional WordPress partner.</p>
+			<p><a href="mailto:peder@earthpeople.se">Contact us</a> if you need a professional WordPress partner.</p>
+		
 		</div>
 		<?php
 	}
