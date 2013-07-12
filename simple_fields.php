@@ -4222,7 +4222,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 		</style>
 		<div class="simple-fields-promote">
 
-			<img src="http://d3m1jlakmz8guo.cloudfront.net/application/views/assets/img/earth_people.png">
+			<!-- <img src="http://d3m1jlakmz8guo.cloudfront.net/application/views/assets/img/earth_people.png"> -->
 
 			<p>This plugin is made by swedish web agency <a href="http://earthpeople.se/?utm_source=wordpress&utm_medium=plugin&utm_campaign=simplefields">Earth People</a>.</p>
 			<p>We specialize in web development, user experience and design.</p>
