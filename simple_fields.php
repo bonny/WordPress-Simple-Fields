@@ -1942,6 +1942,15 @@ sf_d($one_field_slug, 'one_field_slug');*/
 
 	/**
 	 * Get a field group
+	 *
+	 * Example:
+	 * <code>
+	 * global $sf;
+	 * $my_field_group_id = 10;
+	 * $field_group_info = $sf->get_field_group( $my_field_group_id );
+	 * sf_d( $field_group_info , '$field_group_info' );
+	 * </code>
+	 *
 	 * @param int $group_id
 	 * @return array with field group or false if field group is not found
 	 */
