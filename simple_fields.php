@@ -45,12 +45,17 @@ class simple_fields {
 		
 	;
 
+	private
+
+		$wpml_context = "Simple Fields";
+
 
 	/**
 	 * Init is where we setup actions and filers and loads stuff and a little bit of this and that
 	 *
 	 */
 	function init() {
+
 
 		define( "SIMPLE_FIELDS_VERSION", "1.3.4");
 		define( "SIMPLE_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
@@ -120,6 +125,7 @@ class simple_fields {
 		add_action( 'wp_ajax_simple_fields_field_group_add_field', array($this, 'field_group_add_field') );
 
 		// Options page
+		add_action("simple_fields_options_print_nav_tabs", array($this, "promote_ep_on_nav_tabs"));
 		add_action("simple_fields_options_print_nav_tabs", array($this, "get_options_nav_tabs"));
 
 		// Add to debug bar if debug is enabled
@@ -133,10 +139,243 @@ class simple_fields {
 		});
 		*/
 
+		// Setup things for WPML-support
+		add_action("init", array($this, "setup_wpml_support"));
+
 		// Boot up
 		do_action("simple_fields_init", $this);
 
 	}
+
+	/**
+	 * Init support for WPML translations
+	 */
+	function setup_wpml_support() {
+
+		// If wpml is not active then don't do anything
+		if ( ! $this->is_wpml_active()) return;
+
+		// http://wpml.org/documentation/support/translation-for-texts-by-other-plugins-and-themes/
+
+		// 1. Register the strings that need translation
+		// icl_register_string($context, $name, $value)
+		// run on settings screen, go through all fields and register string
+		add_action("simple_fields_settings_admin_head", array($this, "register_wpml_strings"));
+
+		// 2. Using the translation when displaying
+		// icl_t($context, $name, $value)
+
+	}
+
+
+
+	/**
+	 * Make sure a field group has the correct format
+	 * It can be wrong because prior to version ?.? the options
+	 * for a field was not stored in the options array. but nowadays we
+	 * assume it is. so..if it's not: fix that!
+	 *
+	 * @param array $fieldgroup Field group to normalize
+	 * @return array $fieldgroup Normalized/fixed field group
+	 */
+	function normalize_fieldgroups( $field_groups ) {
+	
+		// wierd, but i moved to code so this is the way it is.. 
+		foreach ( $field_groups as & $fieldgroup_by_reference ) {
+
+			// If field was not added with code then move all options to the options-array
+			if ( ! isset($fieldgroup_by_reference["added_with_code"]) || false === $fieldgroup_by_reference["added_with_code"] ) {
+			
+				foreach ($fieldgroup_by_reference["fields"] as & $field_by_reference) {
+
+					#if ( "drps" === $field_by_reference["slug"] ) {
+						
+						// make sure field has an options-key that is an array
+						if ( ! isset( $field_by_reference["options"] ) || ! is_array( $field_by_reference["options"] ) ) $field_by_reference["options"] = array();
+
+						foreach ( $field_by_reference as $field_key => $field_vals ) {
+							
+							// if field has key with name
+							// type_<textarea|post|taxonyterm|dropdown|whatever>_options
+							// then move that info to the field[options]-array
+							if ( 1 === preg_match('/type_([a-z]+)/', $field_key, $field_key_matches) ) {
+								
+								// $field_key_matches[1] = field type
+								$field_key_type = $field_key_matches[1];
+
+								// make sure field type is key in options array
+								if ( ! isset( $field_by_reference["options"][ $field_key_type ] ) || ! is_array( $field_by_reference["options"][ $field_key_type ] ) ) $field_by_reference["options"][ $field_key_type ] = array();
+								
+								// move keys to options array
+								// keys with name dropdown_num_, checkbox_num_, radiobutton_num_ need special treatment
+								$values = array();
+								$values_index = 0;
+
+								// check if checked by default exists
+								$checked_by_default_num = false;
+								if ( isset( $field_vals["checked_by_default_num"] ) ) {
+									$checked_by_default_num = $field_vals["checked_by_default_num"];
+									if ( 1 === preg_match('/_num_([\d]+)/', $checked_by_default_num, $checked_num_matches ) ) {
+										$checked_by_default_num = (int) $checked_num_matches[1];
+									}
+								}
+
+								foreach ( $field_vals as $field_vals_key => $field_vals_val ) {
+									
+									if ( 1 === preg_match('/([a-z]+)_num_(\d+)/i', $field_vals_key, $matches) ) {
+
+										// $matches[1] = field type
+										// $matches[2] = field type num
+										#sf_d($field_vals_key, '$field_vals_key');
+										#sf_d($field_vals_val, '$field_vals_val');
+
+										$values[ $values_index ] = $field_vals_val;
+										$values[ $values_index ]["num"] = (int) $matches[2];
+										
+										if ( false !== $checked_by_default_num && $checked_by_default_num === $values[ $values_index ]["num"] ) {
+											$values[ $values_index ]["checked"] = true;
+											$field_by_reference["options"][ $field_key_type ]["checked_by_default_num"] = $field_key_type . "_num_" . $checked_by_default_num;
+										}
+
+										$values_index++;
+
+									} else {
+
+										// "regular" option key key
+										$field_by_reference["options"][ $field_key_type ][ $field_vals_key ] = $field_vals_val;
+										
+									}
+
+									if ($values) {
+									
+										$field_by_reference["options"][ $field_key_type ]["values"] = $values;
+									
+									}
+
+									
+								} // foreach field vals
+								
+							} // if type_
+
+							// sf_d($field);
+
+						} // foreach field key
+
+
+					#}
+
+				} // foreach field
+
+
+			} // if not added with code
+
+		}
+
+		return $field_groups;
+
+	} // func
+
+	/**
+	 * Register strings so they are translateable with WPML
+	 */
+	function register_wpml_strings() {
+		
+		// Get all fieldgroups and fields
+		$field_groups = $this->get_field_groups();
+
+		foreach ($field_groups as & $fieldgroup_by_reference) {
+						
+			// register name and description of each field group
+			icl_register_string($this->wpml_context, "Field group name, " . $fieldgroup_by_reference["slug"], $fieldgroup_by_reference["name"]);
+			icl_register_string($this->wpml_context, "Field group description, " . $fieldgroup_by_reference["slug"], $fieldgroup_by_reference["description"]);
+
+			// register name for each field
+			foreach ($fieldgroup_by_reference["fields"] as $field) {
+
+				icl_register_string($this->wpml_context, "Field name, " . $field["slug"], $field["name"]);
+				icl_register_string($this->wpml_context, "Field description, " . $field["slug"], $field["description"]);
+
+				// register names for dropdowns and radiobuttons
+				// several fields can have the same slug, if they are in different field groups
+				// how to solve that? 
+				// 	- can't prefix with field group, because they can be in several of those
+				// 	- can't prefix with id because can be different between dev/prod/live-servers
+				// to much to worry about here, let's go with just the slug and then it's up to the
+				// user to not use a slug more than once.
+				if ( isset( $field["options"] ) && is_array( $field["options"] ) ) {
+
+					if ( isset( $field["options"]["radiobuttons"]["values"] ) && is_array( $field["options"]["radiobuttons"]["values"] ) ) {
+	
+						foreach ( $field["options"]["radiobuttons"]["values"] as $one_radio_option_key => $one_radio_option_val) {
+							
+							$string_name = "Field radiobuttons value, " . $field["slug"] . " " . "radiobutton_num_" . $one_radio_option_val["num"];
+							// sf_d($this->wpml_context);sf_d($string_name);sf_d($one_radio_option_val["value"]);
+							icl_register_string($this->wpml_context, $string_name, $one_radio_option_val["value"]);
+
+						} // foreach
+
+					} // if radiobuttons
+					if ( isset( $field["options"]["dropdown"]["values"] ) && is_array( $field["options"]["dropdown"]["values"] ) ) {
+	
+						foreach ( $field["options"]["dropdown"]["values"] as $one_dropdown_val) {
+							
+							$string_name = "Field dropdown value, " . $field["slug"] . " " . "dropdown_num_" . $one_dropdown_val["num"];
+							// sf_d($string_name);
+							icl_register_string($this->wpml_context, $string_name, $one_dropdown_val["value"]);
+
+						} // foreach
+
+					} // if dropdowns
+				
+				} // if options
+/*
+// @todo: make above for dropdowns too
+
+				} elseif ( isset( $field["type_dropdown_options"] ) && is_array( $field["type_radiobuttons_options"] ) ) {
+					
+					foreach ( $field["type_radiobuttons_options"] as $one_radio_option_key => $one_radio_option_val) {
+
+						// only values like radiobutton_num_2 are allowed
+						if ( strpos($one_radio_option_key, "radiobutton_num_") === FALSE) continue;
+						icl_register_string($this->wpml_context, "Field checkbox value, " . $field["slug"] . " " . $one_radio_option_key, $one_radio_option_val["value"]);
+
+					}
+
+				}
+*/
+
+			} // foreach
+
+		} // foreach field groups
+		
+		// Get and register post connectors
+		$post_connectors = $this->get_post_connectors();
+		foreach ($post_connectors as $connector) {
+			icl_register_string($this->wpml_context, "Post connector name, " . $connector["slug"], $connector["name"]);
+		}
+
+	} // func
+
+	/**
+	 * Get maybe translated string
+	 * If WPML is installed and activated then icl_t() is used on the string
+	 * If WPML is not instaled, then it's just returned unmodified
+	 *
+	 * @param string $name Name to use in icl_t
+	 * @param string $value Value to use in icl_t
+	 */
+	function get_string($name = "", $value = "") {
+
+		if ( $this->is_wpml_active() ) {
+			$value = icl_t($this->wpml_context, $name, $value);
+			$value = "WPML: $value"; // debug to check that function actually runs
+			return $value;
+		} else {
+			return $value;
+		}
+
+	}
+
 
 	/**
 	 * If sf_meta_key is set then that is assumed to be the slugs of a field group and a field
@@ -188,18 +427,24 @@ class simple_fields {
 
 		global $wpdb;
 
-		$db_version = get_option("simple_fields_db_version");
-
-		if ($db_version === FALSE) {
+		$db_version = (int) get_option("simple_fields_db_version");
+		
+		if ($db_version === 0) {
 
 			// 1 = the first version, nothing done during update
-			$db_version = 1;
-			update_option("simple_fields_db_version", 1);
+			$new_db_version = 1;
 		
-		}
+		} else if ( 1 === $db_version ) {
 
-		// Do things depending on current version
-		// ...to come...
+			// if prev db version was 1 then clear cache so field group options get updated
+			$this->clear_caches();
+			$new_db_version = 2;
+
+		}
+		
+		if ( isset( $new_db_version ) ) {
+			update_option("simple_fields_db_version", $new_db_version);
+		}
 		
 	}
 	
@@ -495,8 +740,6 @@ class simple_fields {
 		// We have a post_id and we have fieldgroups
 		if ($post_id && is_array($fieldgroups)) {
 	
-			#echo "fieldgroups is:";sf_d($fieldgroups);
-
 			// Delete all exisiting custom fields meta that are not part of the keep-list
 			$post_meta = get_post_custom($post_id);
 
@@ -661,6 +904,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 	
 	} // save postdata
 
+	
 	/**
 	 * adds a fieldgroup through ajax = also fetch defaults
 	 * called when clicking "+ add" in post edit screen
@@ -738,9 +982,10 @@ sf_d($one_field_slug, 'one_field_slug');*/
 				$saved_value = get_post_meta($post_id, $custom_field_key, true);
 
 				// Options, common for all fields
+				$field_maybe_translated_name = $this->get_string( "Field name, " . $field["slug"], $field["name"] );
 				$description = "";
 				if ( ! empty( $field["description"] ) ) {
-					$description = sprintf("<div class='simple-fields-metabox-field-description'>%s</div>", esc_html($field["description"]));
+					$description = sprintf("<div class='simple-fields-metabox-field-description'>%s</div>", esc_html( $this->get_string("Field description, " . $field["slug"], $field["description"] ) ) );
 				}
 
 				// Options, common for most core field
@@ -750,6 +995,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 				// div that wraps around each outputed field
 				// Output will be similar to this
 				// <div class="simple-fields-metabox-field simple-fields-fieldgroups-field-1-1 simple-fields-fieldgroups-field-type-text" data-fieldgroup_id="1" data-field_id="1" data-num_in_set="0">
+				
 				?>
 				<div class="simple-fields-metabox-field sf-cf <?php echo $field_class ?>" 
 					data-fieldgroup_id=<?php echo $field_group_id ?>
@@ -778,13 +1024,13 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						echo "</div>";
 						echo "<div class='simple-fields-metabox-field-second'>";
 						echo "<input $str_checked id='$field_unique_id' type='checkbox' name='$field_name' value='1' />";
-						echo "<label class='simple-fields-for-checkbox' for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label class='simple-fields-for-checkbox' for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo "</div>";
 		
 					} elseif ("radiobuttons" == $field["type"]) {
 		
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label>" . $field["name"] . "</label>";
+						echo "<label>" . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 
@@ -811,10 +1057,12 @@ sf_d($one_field_slug, 'one_field_slug');*/
 							} else {
 								if ($saved_value == $one_radio_option_key) { $selected = " checked='checked' "; }
 							}
-													
+							
+							$radiobutton_maybe_translation_val = $this->get_string("Field radiobuttons value, " . $field["slug"] . " " . $one_radio_option_key, $one_radio_option_val_val );
+
 							echo "<div class='simple-fields-metabox-field-radiobutton'>";
 							echo "	<input $selected name='$field_name' id='$radio_field_unique_id' type='radio' value='$one_radio_option_key' />";
-							echo "	<label for='$radio_field_unique_id' class='simple-fields-for-radiobutton'> " . $one_radio_option_val_val . "</label>";
+							echo "	<label for='$radio_field_unique_id' class='simple-fields-for-radiobutton'> " . $radiobutton_maybe_translation_val . "</label>";
 							echo "</div>";							
 							
 							$loopNum++;
@@ -825,7 +1073,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 					} elseif ("dropdown" == $field["type"]) {
 
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 
@@ -840,13 +1088,20 @@ sf_d($one_field_slug, 'one_field_slug');*/
 							$field_name_dropdown = $field_name . "[]";
 							$field_size = 6;
 						}
+
 						echo "<select id='$field_unique_id' name='$field_name_dropdown' $str_multiple size='$field_size' >";
+
 						foreach ($field["type_dropdown_options"] as $one_option_internal_name => $one_option) {
 							
 							if (isset($one_option["deleted"]) && $one_option["deleted"]) { continue; }
 							if (strpos($one_option_internal_name, "dropdown_num_") === FALSE) continue;
 
-							$dropdown_value_esc = esc_html($one_option["value"]);
+							#$dropdown_value_esc = esc_html( $one_option["value"] );
+
+							$option_name = $one_option["value"];
+							$options_maybe_translation_name = $this->get_string("Field dropdown value, " . $field["slug"] . " " . $one_option_internal_name, $option_name );
+							$dropdown_value_esc = esc_html( $options_maybe_translation_name );
+
 							$selected = "";
 
 							// Different ways of detecting selected dropdown value if multiple or single
@@ -905,7 +1160,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						echo "<div class='simple-fields-metabox-field-file $class'>";
 
 							echo "<div class='simple-fields-metabox-field-first'>";
-							echo "<label>{$field["name"]}</label>";
+							echo "<label>{$field_maybe_translated_name}</label>";
 							echo $description;
 							echo "</div>";
 
@@ -974,7 +1229,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						}
 						
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 
@@ -1129,7 +1384,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						$extra_attributes = isset( $field_type_options["attributes"] ) ? $field_type_options["attributes"] : "";
 
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 
@@ -1142,7 +1397,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						$text_value_esc = esc_html($saved_value);
 
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 						
@@ -1158,7 +1413,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						$text_value_esc = esc_html($saved_value);
 						
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 						
@@ -1176,7 +1431,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						$text_value_esc = esc_html($saved_value);
 						// var_dump($saved_value);
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 
@@ -1209,7 +1464,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						// hämta alla terms som finns för taxonomy $enabled_taxonomy
 						// @todo: kunna skicka in args här, t.ex. för orderby
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 
@@ -1261,7 +1516,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						echo "<div class='simple-fields-metabox-field-post'>";
 
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 
@@ -1297,7 +1552,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 						#echo "<div class='simple-fields-metabox-field-post'>";
 						// echo "<pre>"; print_r($type_post_options); echo "</pre>";
 						echo "<div class='simple-fields-metabox-field-first'>";
-						echo "<label for='$field_unique_id'> " . $field["name"] . "</label>";
+						echo "<label for='$field_unique_id'> " . $field_maybe_translated_name . "</label>";
 						echo $description;
 						echo "</div>";
 
@@ -1352,7 +1607,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 
 							// Always output label and description, for consistency
 							echo "<div class='simple-fields-metabox-field-first'>";
-							echo "<label>" . $field["name"] . "</label>";
+							echo "<label>" . $field_maybe_translated_name . "</label>";
 							echo $description;
 							echo "</div>";
 							
@@ -1463,7 +1718,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 							$field_group_to_add = $field_groups[$one_post_connector_field_group["id"]];
 	
 							$meta_box_id = "simple_fields_connector_" . $field_group_to_add["id"];
-							$meta_box_title = $field_group_to_add["name"];
+							$meta_box_title = $this->get_string("Field group name, " . $field_group_to_add["slug"], $field_group_to_add["name"] );
 							$meta_box_context = $one_post_connector_field_group["context"];
 							$meta_box_priority = $one_post_connector_field_group["priority"];
 							// @todo: could we just create an anonymous function the "javascript way" instead? does that require a too new version of PHP?
@@ -1525,8 +1780,8 @@ sf_d($one_field_slug, 'one_field_slug');*/
 		echo "<input type='hidden' name='simple-fields-meta-box-field-group-id' value='$post_connector_field_id' />";
 	 
 		// show description
-		if (!empty($current_field_group["description"])) {
-			printf("<p class='%s'>%s</p>", "simple-fields-meta-box-field-group-description", esc_html($current_field_group["description"]));
+		if ( ! empty($current_field_group["description"]) ) {
+			printf("<p class='%s'>%s</p>", "simple-fields-meta-box-field-group-description", esc_html( $this->get_string("Field group description, " . $current_field_group["slug"], $current_field_group["description"]) ) );
 		}
 		//echo "<pre>";print_r($current_field_group);echo "</pre>";
 		
@@ -1539,8 +1794,8 @@ sf_d($one_field_slug, 'one_field_slug');*/
 				foreach ( $current_field_group["fields"] as $field_id => $field_arr ) {
 					// sf_d($field_arr);
 					printf('<div class="simple-fields-metabox-field-group-view-table-headline simple-fields-metabox-field-group-view-table-headline-count-%1$d">', $current_field_group["fields_count"]);
-					printf('<div class="simple-fields-field-group-view-table-headline-name">%1$s</div>', $field_arr["name"]);
-					printf('<div class="simple-fields-field-group-view-table-headline-description">%1$s</div>', $field_arr["description"]);
+					printf('<div class="simple-fields-field-group-view-table-headline-name">%1$s</div>', $this->get_string( "Field name, " . $field_arr["slug"], $field_arr["name"] ) );
+					printf('<div class="simple-fields-field-group-view-table-headline-description">%1$s</div>', $this->get_string("Field description, " . $field_arr["slug"], $field_arr["description"] ) );
 					printf('</div>');
 				}
 				echo "</div>";
@@ -1802,6 +2057,9 @@ sf_d($one_field_slug, 'one_field_slug');*/
 				}
 			}
 
+			// normalize it so all info is available in the new funky way
+			$field_groups = $this->normalize_fieldgroups( $field_groups );
+
 			wp_cache_set( 'simple_fields_'.$this->ns_key.'_groups', $field_groups, 'simple_fields' );
 			
 		} // cache false
@@ -1837,6 +2095,15 @@ sf_d($one_field_slug, 'one_field_slug');*/
 
 	/**
 	 * Get a field group
+	 *
+	 * Example:
+	 * <code>
+	 * global $sf;
+	 * $my_field_group_id = 10;
+	 * $field_group_info = $sf->get_field_group( $my_field_group_id );
+	 * sf_d( $field_group_info , '$field_group_info' );
+	 * </code>
+	 *
 	 * @param int $group_id
 	 * @return array with field group or false if field group is not found
 	 */
@@ -4087,6 +4354,47 @@ sf_d($one_field_slug, 'one_field_slug');*/
 	}
 
 	/**
+	 * Promote Earth People
+	 */
+	function promote_ep_on_nav_tabs() {
+		?>
+		<style>
+			.simple-fields-promote {
+				float: right;
+				background: #999;
+				width: 375px;
+				margin-top: -3.5em;
+				padding: .5em;
+				font-size: 12px;
+				display: inline-block;
+				vertical-align: center;
+			}
+			
+			.simple-fields-promote p {
+				color: #eee;
+				font-size: inherit;
+				margin: 0 0 .25em 0;
+			}
+			.simple-fields-promote a {
+				color: inherit;
+			}
+			.ep_logo {
+				float: left;
+			}
+		</style>
+		<div class="simple-fields-promote">
+
+			<!-- <img src="http://d3m1jlakmz8guo.cloudfront.net/application/views/assets/img/earth_people.png"> -->
+
+			<p>This plugin is made by swedish web agency <a href="http://earthpeople.se/?utm_source=wordpress&utm_medium=plugin&utm_campaign=simplefields">Earth People</a>.</p>
+			<p>We specialize in web development, user experience and design.</p>
+			<p><a href="mailto:peder@earthpeople.se">Contact us</a> if you need a professional WordPress partner.</p>
+		
+		</div>
+		<?php
+	}
+
+	/**
 	 * Retrive a field by a string in the format <fieldgroup_slug>/<field_slug>
 	 * used when fieldgroups and fields need to be passed as string
 	 *
@@ -4110,6 +4418,19 @@ sf_d($one_field_slug, 'one_field_slug');*/
 		return $field;
 
 	} // end get_field_by_fieldgroup_and_slug_string
+
+	/**
+	 * Check if wpml is active
+	 *
+	 * @return bool
+	 */
+	public function is_wpml_active() {
+		
+		global $sitepress;		
+		return ( isset( $sitepress ) && $sitepress instanceof SitePress );
+
+	}
+
 
 } // end class
 

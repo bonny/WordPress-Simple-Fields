@@ -4,9 +4,12 @@
  * edit post type defaults
  */
 if ("edit-post-type-defaults" == $action) {
-	$post_type = $_GET["post-type"];
+
 	global $wp_post_types;
-	if (isset($wp_post_types[$post_type])) {
+	$post_type = $_GET["post-type"];
+
+	if ( isset($wp_post_types[$post_type]) ) {
+		
 		$selected_post_type = $wp_post_types[$post_type];
 		?>
 		<form action="<?php echo SIMPLE_FIELDS_FILE ?>&amp;action=edit-post-type-defaults-save" method="post">
@@ -452,7 +455,6 @@ if ("edit-field-group" == $action) {
 // overview, if no action
 if ( ! $action ) {
 
-
 	do_action("simple_fields_options_print_nav_tabs", $subpage);
 
 	/**
@@ -464,7 +466,6 @@ if ( ! $action ) {
 			$post_connector_count++;
 		}
 	}
-
 
 	/**
 	 * view list of existing field groups
@@ -526,7 +527,7 @@ if ( ! $action ) {
 
 							echo "<tr class='$row_class'>";
 							echo "<td>";
-							echo "<a href='$editlink'><strong>" . esc_html( $oneFieldGroup["name"] ) . "</strong></a>";
+							echo "<a href='$editlink'><strong>" . esc_html( $this->get_string( "Field group name, " . $oneFieldGroup["slug"], $oneFieldGroup["name"] ) ) . "</strong></a>";
 							
 							?><div class="row-actions">
 								<span class="edit"><a href="<?php echo $editlink ?>" title="<?php _e("Edit this item") ?>"><?php _e("Edit") ?></a></span>
@@ -612,7 +613,7 @@ if ( ! $action ) {
 					?>
 					<tr class='<?php echo $row_class ?>'>
 						<td>
-							<a href="<?php echo $edit_url ?>"><strong><?php echo esc_html( $one_post_connector["name"] ) ?></strong></a>
+							<a href="<?php echo $edit_url ?>"><strong><?php echo esc_html( $this->get_string( "Post connector name, " . $one_post_connector["slug"], $one_post_connector["name"]) ) ?></strong></a>
 							<div class="row-actions">
 								<span class="edit"><a href="<?php echo $edit_url ?>" title="<?php _e("Edit this item") ?>"><?php _e("Edit") ?></a></span>
 								<!-- <span class="trash"><a class="submitdelete" href="<?php echo $remove_url ?>"><?php _e("Trash") ?></a></span> -->
