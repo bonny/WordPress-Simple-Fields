@@ -167,6 +167,114 @@ class simple_fields {
 
 	}
 
+
+
+	/**
+	 * Make sure a field group has the correct format
+	 * It can be wrong because prior to version ?.? the options
+	 * for a field was not stored in the options array. but nowadays we
+	 * assume it is. so..if it's not: fix that!
+	 *
+	 * @param array $fieldgroup Field group to normalize
+	 * @return array $fieldgroup Normalized/fixed field group
+	 */
+	function normalize_fieldgroups( $field_groups ) {
+	
+		// wierd, but i moved to code so this is the way it is.. 
+		foreach ( $field_groups as & $fieldgroup_by_reference ) {
+
+			// If field was not added with code then move all options to the options-array
+			if ( ! isset($fieldgroup_by_reference["added_with_code"]) || false === $fieldgroup_by_reference["added_with_code"] ) {
+			
+				foreach ($fieldgroup_by_reference["fields"] as & $field_by_reference) {
+
+					#if ( "drps" === $field_by_reference["slug"] ) {
+						
+						// make sure field has an options-key that is an array
+						if ( ! isset( $field_by_reference["options"] ) || ! is_array( $field_by_reference["options"] ) ) $field_by_reference["options"] = array();
+
+						foreach ( $field_by_reference as $field_key => $field_vals ) {
+							
+							// if field has key with name
+							// type_<textarea|post|taxonyterm|dropdown|whatever>_options
+							// then move that info to the field[options]-array
+							if ( 1 === preg_match('/type_([a-z]+)/', $field_key, $field_key_matches) ) {
+								
+								// $field_key_matches[1] = field type
+								$field_key_type = $field_key_matches[1];
+
+								// make sure field type is key in options array
+								if ( ! isset( $field_by_reference["options"][ $field_key_type ] ) || ! is_array( $field_by_reference["options"][ $field_key_type ] ) ) $field_by_reference["options"][ $field_key_type ] = array();
+								
+								// move keys to options array
+								// keys with name dropdown_num_, checkbox_num_, radiobutton_num_ need special treatment
+								$values = array();
+								$values_index = 0;
+
+								// check if checked by default exists
+								$checked_by_default_num = false;
+								if ( isset( $field_vals["checked_by_default_num"] ) ) {
+									$checked_by_default_num = $field_vals["checked_by_default_num"];
+									if ( 1 === preg_match('/_num_([\d]+)/', $checked_by_default_num, $checked_num_matches ) ) {
+										$checked_by_default_num = (int) $checked_num_matches[1];
+									}
+								}
+
+								foreach ( $field_vals as $field_vals_key => $field_vals_val ) {
+									
+									if ( 1 === preg_match('/([a-z]+)_num_(\d+)/i', $field_vals_key, $matches) ) {
+
+										// $matches[1] = field type
+										// $matches[2] = field type num
+										#sf_d($field_vals_key, '$field_vals_key');
+										#sf_d($field_vals_val, '$field_vals_val');
+
+										$values[ $values_index ] = $field_vals_val;
+										$values[ $values_index ]["num"] = (int) $matches[2];
+										
+										if ( false !== $checked_by_default_num && $checked_by_default_num === $values[ $values_index ]["num"] ) {
+											$values[ $values_index ]["checked"] = true;
+											$field_by_reference["options"][ $field_key_type ]["checked_by_default_num"] = $field_key_type . "_num_" . $checked_by_default_num;
+										}
+
+										$values_index++;
+
+									} else {
+
+										// "regular" option key key
+										$field_by_reference["options"][ $field_key_type ][ $field_vals_key ] = $field_vals_val;
+										
+									}
+
+									if ($values) {
+									
+										$field_by_reference["options"][ $field_key_type ]["values"] = $values;
+									
+									}
+
+									
+								} // foreach field vals
+								
+							} // if type_
+
+							// sf_d($field);
+
+						} // foreach field key
+
+
+					#}
+
+				} // foreach field
+
+
+			} // if not added with code
+
+		}
+
+		return $field_groups;
+
+	} // func
+
 	/**
 	 * Register strings so they are translateable with WPML
 	 */
@@ -175,47 +283,78 @@ class simple_fields {
 		// Get all fieldgroups and fields
 		$field_groups = $this->get_field_groups();
 
-		foreach ($field_groups as $fieldgroup) {
-
+		foreach ($field_groups as & $fieldgroup_by_reference) {
+						
 			// register name and description of each field group
-			icl_register_string($this->wpml_context, "Field group name, " . $fieldgroup["slug"], $fieldgroup["name"]);
-			icl_register_string($this->wpml_context, "Field group description, " . $fieldgroup["slug"], $fieldgroup["description"]);
+			icl_register_string($this->wpml_context, "Field group name, " . $fieldgroup_by_reference["slug"], $fieldgroup_by_reference["name"]);
+			icl_register_string($this->wpml_context, "Field group description, " . $fieldgroup_by_reference["slug"], $fieldgroup_by_reference["description"]);
 
 			// register name for each field
-			foreach ($fieldgroup["fields"] as $field) {
+			foreach ($fieldgroup_by_reference["fields"] as $field) {
 
 				icl_register_string($this->wpml_context, "Field name, " . $field["slug"], $field["name"]);
 				icl_register_string($this->wpml_context, "Field description, " . $field["slug"], $field["description"]);
 
 				// register names for dropdowns and radiobuttons
-				// $radiobutton_maybe_translation_val = $this->get_string("Field checkbox value, " . $field["slug"] . " " . $one_radio_option_key, $one_radio_option_val_val );
-				if ( isset( $field["type_radiobuttons_options"] ) && is_array( $field["type_radiobuttons_options"] ) ) {
+				// several fields can have the same slug, if they are in different field groups
+				// how to solve that? 
+				// 	- can't prefix with field group, because they can be in several of those
+				// 	- can't prefix with id because can be different between dev/prod/live-servers
+				// to much to worry about here, let's go with just the slug and then it's up to the
+				// user to not use a slug more than once.
+				if ( isset( $field["options"] ) && is_array( $field["options"] ) ) {
+
+					if ( isset( $field["options"]["radiobuttons"]["values"] ) && is_array( $field["options"]["radiobuttons"]["values"] ) ) {
+	
+						foreach ( $field["options"]["radiobuttons"]["values"] as $one_radio_option_key => $one_radio_option_val) {
+							
+							$string_name = "Field radiobuttons value, " . $field["slug"] . " " . "radiobutton_num_" . $one_radio_option_val["num"];
+							// sf_d($this->wpml_context);sf_d($string_name);sf_d($one_radio_option_val["value"]);
+							icl_register_string($this->wpml_context, $string_name, $one_radio_option_val["value"]);
+
+						} // foreach
+
+					} // if radiobuttons
+					if ( isset( $field["options"]["dropdown"]["values"] ) && is_array( $field["options"]["dropdown"]["values"] ) ) {
+	
+						foreach ( $field["options"]["dropdown"]["values"] as $one_dropdown_val) {
+							
+							$string_name = "Field dropdown value, " . $field["slug"] . " " . "dropdown_num_" . $one_dropdown_val["num"];
+							// sf_d($string_name);
+							icl_register_string($this->wpml_context, $string_name, $one_dropdown_val["value"]);
+
+						} // foreach
+
+					} // if dropdowns
+				
+				} // if options
+/*
+// @todo: make above for dropdowns too
+
+				} elseif ( isset( $field["type_dropdown_options"] ) && is_array( $field["type_radiobuttons_options"] ) ) {
 					
 					foreach ( $field["type_radiobuttons_options"] as $one_radio_option_key => $one_radio_option_val) {
 
 						// only values like radiobutton_num_2 are allowed
 						if ( strpos($one_radio_option_key, "radiobutton_num_") === FALSE) continue;
-
-						// sf_d( $one_radio_option_key );
-						// sf_d( $one_radio_option_val );
-						// $radiobutton_maybe_translation_val = $this->get_string("Field checkbox value, " . $field["slug"] . " " . $one_radio_option_key, $one_radio_option_val_val );
 						icl_register_string($this->wpml_context, "Field checkbox value, " . $field["slug"] . " " . $one_radio_option_key, $one_radio_option_val["value"]);
 
 					}
 
 				}
+*/
 
-			}
+			} // foreach
 
-		}
-
+		} // foreach field groups
+		
 		// Get and register post connectors
 		$post_connectors = $this->get_post_connectors();
 		foreach ($post_connectors as $connector) {
 			icl_register_string($this->wpml_context, "Post connector name, " . $connector["slug"], $connector["name"]);
 		}
 
-	}
+	} // func
 
 	/**
 	 * Get maybe translated string
@@ -288,18 +427,24 @@ class simple_fields {
 
 		global $wpdb;
 
-		$db_version = get_option("simple_fields_db_version");
-
-		if ($db_version === FALSE) {
+		$db_version = (int) get_option("simple_fields_db_version");
+		
+		if ($db_version === 0) {
 
 			// 1 = the first version, nothing done during update
-			$db_version = 1;
-			update_option("simple_fields_db_version", 1);
+			$new_db_version = 1;
 		
-		}
+		} else if ( 1 === $db_version ) {
 
-		// Do things depending on current version
-		// ...to come...
+			// if prev db version was 1 then clear cache so field group options get updated
+			$this->clear_caches();
+			$new_db_version = 2;
+
+		}
+		
+		if ( isset( $new_db_version ) ) {
+			update_option("simple_fields_db_version", $new_db_version);
+		}
 		
 	}
 	
@@ -595,8 +740,6 @@ class simple_fields {
 		// We have a post_id and we have fieldgroups
 		if ($post_id && is_array($fieldgroups)) {
 	
-			#echo "fieldgroups is:";sf_d($fieldgroups);
-
 			// Delete all exisiting custom fields meta that are not part of the keep-list
 			$post_meta = get_post_custom($post_id);
 
@@ -915,7 +1058,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 								if ($saved_value == $one_radio_option_key) { $selected = " checked='checked' "; }
 							}
 							
-							$radiobutton_maybe_translation_val = $this->get_string("Field checkbox value, " . $field["slug"] . " " . $one_radio_option_key, $one_radio_option_val_val );
+							$radiobutton_maybe_translation_val = $this->get_string("Field radiobuttons value, " . $field["slug"] . " " . $one_radio_option_key, $one_radio_option_val_val );
 
 							echo "<div class='simple-fields-metabox-field-radiobutton'>";
 							echo "	<input $selected name='$field_name' id='$radio_field_unique_id' type='radio' value='$one_radio_option_key' />";
@@ -945,13 +1088,20 @@ sf_d($one_field_slug, 'one_field_slug');*/
 							$field_name_dropdown = $field_name . "[]";
 							$field_size = 6;
 						}
+
 						echo "<select id='$field_unique_id' name='$field_name_dropdown' $str_multiple size='$field_size' >";
+
 						foreach ($field["type_dropdown_options"] as $one_option_internal_name => $one_option) {
 							
 							if (isset($one_option["deleted"]) && $one_option["deleted"]) { continue; }
 							if (strpos($one_option_internal_name, "dropdown_num_") === FALSE) continue;
 
-							$dropdown_value_esc = esc_html($one_option["value"]);
+							#$dropdown_value_esc = esc_html( $one_option["value"] );
+
+							$option_name = $one_option["value"];
+							$options_maybe_translation_name = $this->get_string("Field dropdown value, " . $field["slug"] . " " . $one_option_internal_name, $option_name );
+							$dropdown_value_esc = esc_html( $options_maybe_translation_name );
+
 							$selected = "";
 
 							// Different ways of detecting selected dropdown value if multiple or single
@@ -1906,6 +2056,9 @@ sf_d($one_field_slug, 'one_field_slug');*/
 
 				}
 			}
+
+			// normalize it so all info is available in the new funky way
+			$field_groups = $this->normalize_fieldgroups( $field_groups );
 
 			wp_cache_set( 'simple_fields_'.$this->ns_key.'_groups', $field_groups, 'simple_fields' );
 			
