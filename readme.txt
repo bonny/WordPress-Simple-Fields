@@ -4,7 +4,7 @@ Donate link: http://simple-fields.com/about/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, more fields, repeatable fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom, simple fields, cms, date picker, time picker, repeatable fields, multiple fields
 Requires at least: 3.5.1
 Tested up to: 3.5.1
-Stable tag: 1.3.3
+Stable tag: 1.4
 
 With Simple Fields you can add any kind of custom fields to your pages, posts and attachments.
 
@@ -143,6 +143,11 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 
 == Changelog ==
+
+#### Version 1.4
+
+- Added support for [WPML](http://wpml.org/). Now the names and descriptions of field groups, their fields, and post connectors, and values of drop downs and radiobuttons can be translated using WPML.
+- Added a little teaser about [WordPress Web Agency Earth People](http://earthpeople.se/?utm_source=wordpress&utm_medium=readme&utm_campaign=simplefields), the company I work for. If you need any professional help with for example Simple Fields or WordPress in general then we might be the ones to talk to :)
 
 #### Version 1.3.4
 
