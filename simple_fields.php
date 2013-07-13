@@ -368,7 +368,7 @@ class simple_fields {
 
 		if ( $this->is_wpml_active() ) {
 			$value = icl_t($this->wpml_context, $name, $value);
-			$value = "WPML: $value"; // debug to check that function actually runs
+			// $value = "WPML: $value"; // debug to check that function actually runs
 			return $value;
 		} else {
 			return $value;
