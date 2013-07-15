@@ -280,6 +280,11 @@ class simple_fields {
 	 */
 	function register_wpml_strings() {
 		
+		// sometimes icl_register_string does not exist, 
+		// probably because simple fields hooks on tings early 
+		// when wpml is not loaded (like when saving)
+		if ( ! function_exists("icl_register_string" ) ) return;
+
 		// Get all fieldgroups and fields
 		$field_groups = $this->get_field_groups();
 
@@ -315,6 +320,7 @@ class simple_fields {
 						} // foreach
 
 					} // if radiobuttons
+
 					if ( isset( $field["options"]["dropdown"]["values"] ) && is_array( $field["options"]["dropdown"]["values"] ) ) {
 	
 						foreach ( $field["options"]["dropdown"]["values"] as $one_dropdown_val) {
@@ -366,7 +372,7 @@ class simple_fields {
 	 */
 	function get_string($name = "", $value = "") {
 
-		if ( $this->is_wpml_active() ) {
+		if ( $this->is_wpml_active() && function_exists("icl_t") ) {
 			$value = icl_t($this->wpml_context, $name, $value);
 			// $value = "WPML: $value"; // debug to check that function actually runs
 			return $value;
