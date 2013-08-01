@@ -57,7 +57,7 @@ class simple_fields {
 	function init() {
 
 
-		define( "SIMPLE_FIELDS_VERSION", "1.4.1");
+		define( "SIMPLE_FIELDS_VERSION", "1.4.2");
 		define( "SIMPLE_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
 		define( "SIMPLE_FIELDS_NAME", "Simple Fields");
 
