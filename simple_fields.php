@@ -107,6 +107,7 @@ class simple_fields {
 		add_action( 'save_post', array($this, 'save_postdata') );
 		add_action( 'save_post', array($this, 'clear_caches') );
 		add_action( 'edit_attachment', array($this, 'save_postdata') );
+		add_action( "simple_fields_get_selected_connector_for_post", array($this, "set_post_connector_from_template"), 10, 2 );
 
 		// Query filters
 		add_action( 'pre_get_posts', array($this, 'action_pre_get_posts_meta') );
@@ -2212,7 +2213,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 				$str_inherit_parent_connector_name = "({$str_parent_connector_name})";
 			}
 		}
-		
+
 		?>
 		<div class="inside">
 			<div>
@@ -2230,11 +2231,15 @@ sf_d($one_field_slug, 'one_field_slug');*/
 				</select>
 			</div>
 			<?php
+
+			sf_d( $this->post_has_template_connector( $post ) );
+
 			// If connector has been changed with filter then show was connector is being used
 			if ( is_numeric($connector_selected) && $connector_selected != $saved_connector_to_use ) {
 				$connector_selected_info = $this->get_connector_by_id($connector_selected);
 				?><div><p><?php _e("Actual used connector:", "simple-fields") ?> <?php echo $connector_selected_info["name"]; ?></p></div><?php
 			}
+
 			?>
 			<div id="simple-fields-post-edit-side-field-settings-select-connector-please-save" class="hidden">
 				<p><?php _e('Save post to switch to selected fields.', 'simple-fields') ?></p>
@@ -2246,6 +2251,20 @@ sf_d($one_field_slug, 'one_field_slug');*/
 		<?php
 	} // function 
 
+
+	/**
+	 * @param string $template template filename
+	 * @return string Slug of post connector, or empty if no one set
+	 */
+	function get_post_connector_from_template($template) {
+
+		$template_file = locate_template($template);
+		$template_data = get_file_data( $template_file, array("Name" => "Template Name", "PostConnector" => "Simple Fields Connector") );
+		$post_connector = trim($template_data["PostConnector"]);
+		
+		return $post_connector;
+
+	}
 
 	/**
 	 * get selected post connector for a post
@@ -4429,6 +4448,35 @@ sf_d($one_field_slug, 'one_field_slug');*/
 		global $sitepress;		
 		return ( isset( $sitepress ) && $sitepress instanceof SitePress );
 
+	}
+
+	/**
+	 * Look for post connector defined in template
+	 * Format in template is:
+	 *
+	 * Simple Fields Connector: useMeAsThePostConnector
+	 *
+	 * Hooked into action simple_fields_get_selected_connector_for_post
+	 *
+	 */
+	function set_post_connector_from_template($connector_to_use, $post) {
+		
+		// Look for connector defined in template
+		$template = !empty($post->page_template) ? $post->page_template : false;
+		$post_connector_from_template = $this->get_post_connector_from_template( $template );
+		if ($post_connector_from_template) $connector_to_use = $post_connector_from_template;
+
+		return $connector_to_use;
+
+	}
+
+	/**
+	 * Returns true if post has a template connector defined
+	 */
+	function post_has_template_connector($post) {
+		$template = !empty($post->page_template) ? $post->page_template : false;
+		$post_connector_from_template = $this->get_post_connector_from_template( $template );
+		return (bool) $post_connector_from_template;
 	}
 
 
