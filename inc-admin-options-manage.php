@@ -481,7 +481,7 @@ if ( ! $action ) {
 				<a href="%2$s" class="add-new-h2">%3$s</a>
 			</h3>
 			',
-			__('Field groups', 'simple-fields'),
+			__('Field Groups', 'simple-fields'),
 			SIMPLE_FIELDS_FILE . "&amp;action=edit-field-group&amp;group-id=0",
 			__('Add new')
 		);
@@ -664,14 +664,14 @@ if ( ! $action ) {
 
 	<div class="simple-fields-post-type-defaults">
 		
-		<h3><?php _e('Post type defaults', 'simple-fields') ?></h3>
+		<h3><?php _e('Post Type Defaults', 'simple-fields') ?></h3>
 		
 		<table class="wp-list-table widefat fixed">
 				
 			<thead>
 				<tr>
 					<th><?php _e("Post type", "simple-fields") ?></th>
-					<th><?php _e("Default connector", "simple-fields") ?></th>
+					<th><?php _e("Default Post Connector", "simple-fields") ?></th>
 					<th></th><!-- two empty to make table widths same as the other tables -->
 					<th></th>
 				</tr>
@@ -691,17 +691,17 @@ if ( ! $action ) {
 						$default_connector = $this->get_default_connector_for_post_type($one_post_type);
 						switch ($default_connector) {
 							case "__none__":
-								$default_connector_str = __('Default is to use <em>no connector</em>', 'simple-fields');
+								$default_connector_str = __('No connector', 'simple-fields');
 								break;
 							case "__inherit__":
-								$default_connector_str = __('Default is to inherit from <em>parent connector</em>', 'simple-fields');
+								$default_connector_str = __('Inherit parent connector', 'simple-fields');
 								break;
 							default:
 								if (is_numeric($default_connector)) {
 									
 									$connector = $this->get_connector_by_id($default_connector);
 									if ($connector !== FALSE) {
-										$default_connector_str = sprintf(__('Default is to use connector <em>%s</em>', 'simple-fields'), $connector["name"]);
+										$default_connector_str = $connector["name"];
 									}
 								}
 
