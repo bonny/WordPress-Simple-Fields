@@ -539,3 +539,17 @@ ul.simple-fields-file-browser-list {
 .simple-fields-metabox-field-group-view-table-headline-count-10 {
 	width: 10%;
 }
+
+/* edit link for field group shown in edit post screen */
+.sf-meta-box-edit-field-group {
+	position: absolute;
+	top: -3em;
+	right: 2em;
+	display: none;
+}
+.sf-meta-box-edit-field-group a {
+	font-size: 11px;
+}
+.postbox-container:hover .sf-meta-box-edit-field-group {
+	display: block;
+}

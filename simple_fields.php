@@ -1783,9 +1783,19 @@ sf_d($one_field_slug, 'one_field_slug');*/
 			$field_group_wrapper_css .= " simple-fields-meta-box-field-group-wrapper-view-table ";
 		}
 
+		// Start div that will contain fieldgroup and fields in the edit post screen
 		echo "<div class='simple-fields-meta-box-field-group-wrapper $num_added_field_groups_css $field_group_slug_css $field_group_wrapper_css'>";
 		echo "<input type='hidden' name='simple-fields-meta-box-field-group-id' value='$post_connector_field_id' />";
-	 
+	 	
+		// Show edit link if debug is enabled
+		if ( defined("WP_DEBUG") && WP_DEBUG ) {
+			printf(
+				'<div class="sf-meta-box-edit-field-group"><a href="%1$s">%2$s</a></div>',
+				admin_url( "options-general.php?page=simple-fields-options&action=edit-field-group&group-id=" . $current_field_group["id"] ),
+				__('Edit Field Group', 'simple-fields')
+			);
+		}
+
 		// show description
 		if ( ! empty($current_field_group["description"]) ) {
 			printf("<p class='%s'>%s</p>", "simple-fields-meta-box-field-group-description", esc_html( $this->get_string("Field group description, " . $current_field_group["slug"], $current_field_group["description"]) ) );
