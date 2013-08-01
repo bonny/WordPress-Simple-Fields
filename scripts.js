@@ -77,19 +77,37 @@ var simple_fields_file_field = (function($) {
         my.media_frame.on('select', function(){
             
             var file_json = my.media_frame.state().get('selection').first().toJSON(),
-				file_thumb = "";
+				file_thumb = "",
+				thumb_url = "";
 
 			if (file_json.type === "image") {
-				var thumb_url = "";
-				if (file_json.sizes.thumbnail && file_json.sizes.thumbnail.url) {
-					thumb_url = file_json.sizes.thumbnail.url;
-				} else {
-					thumb_url = file_json.sizes.full.url;
+		
+				if (file_json.sizes) {
+
+					// get thumbnail for image. in rare cases thumbs are missing and then fallback to full size
+					if (file_json.sizes.thumbnail && file_json.sizes.thumbnail.url) {
+						thumb_url = file_json.sizes.thumbnail.url;
+					} else if (file_json.sizes.full && file_json.sizes.full.url) {
+						thumb_url = file_json.sizes.full.url;
+					}
+				
+				} else if (file_json.url) {
+
+					thumb_url = file_json.url;
+
 				}
-				file_thumb = "<img src='" + thumb_url + "' alt='' />";
-			} else {
-				file_thumb = "<img src='" + file_json.icon + "' alt='' />";
 			}
+
+			if ( ! thumb_url && file_json.icon) {
+					
+				thumb_url = file_json.icon;
+
+			}
+
+			if (thumb_url) {
+				file_thumb = "<img src='" + thumb_url + "' alt='' />";
+			}
+
 			container_div.find(".simple-fields-metabox-field-file-selected-image").html( file_thumb );
 
 			container_div.find(".simple-fields-metabox-field-file-fileID").val( file_json.id );
