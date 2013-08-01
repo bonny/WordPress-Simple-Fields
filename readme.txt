@@ -144,6 +144,9 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
+#### Version 1.4.x
+- Fix rare case with missing thumbnail when selecting a file
+
 #### Version 1.4.2
 - Post Connectors can now be set from within a page template. Just add
 Simple Fields Connector: slugOfPostConnector
