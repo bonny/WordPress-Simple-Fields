@@ -2230,8 +2230,17 @@ sf_d($one_field_slug, 'one_field_slug');*/
 			}
 		}
 
+		// Show link to edit post connector
+		if ( defined("WP_DEBUG") && WP_DEBUG &&  "__none__" !== $connector_selected && "__inherit__" !== $connector_selected ) {
+			printf(
+				'<div class="sf-post-edit-side-field-edit-post-connector"><a href="%2$s">%1$s</a></div>',
+				__('Edit Post Connector', 'simple-fields'),
+				admin_url( "options-general.php?page=simple-fields-options&action=edit-post-connector&connector-id=" . $connector_selected )
+			);
+		}
+
 		?>
-		<div class="inside">
+		<!-- <div class="inside"> -->
 
 			<?php
 
@@ -2247,7 +2256,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 			} else {
 
 				// dropdown with post connectors ?>
-				<div>
+				<p>
 					<select name="simple_fields_selected_connector" id="simple-fields-post-edit-side-field-settings-select-connector">
 						<option <?php echo ($saved_connector_to_use == "__none__") ? " selected='selected' " : "" ?> value="__none__"><?php _e('None', 'simple-fields') ?></option>
 						<option <?php echo ($saved_connector_to_use == "__inherit__") ? " selected='selected' " : "" ?> value="__inherit__"><?php _e('Inherit from parent', 'simple-fields') ?>
@@ -2260,7 +2269,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 							<option <?php echo ($saved_connector_to_use == $one_connector["id"]) ? " selected='selected' " : "" ?> value="<?php echo $one_connector["id"] ?>"><?php echo $one_connector["name"] ?></option>
 						<?php endforeach; ?>
 					</select>
-				</div>
+				</p>
 				<?php
 
 				// If connector has been changed with filter then show was connector is being used
@@ -2281,7 +2290,9 @@ sf_d($one_field_slug, 'one_field_slug');*/
 			<div>
 				<p><a href="#" id="simple-fields-post-edit-side-field-settings-show-keys"><?php _e('Show custom field keys', 'simple-fields') ?></a></p>
 			</div>
-		</div>
+		
+		<!-- </div> -->
+
 		<?php
 	} // function 
 

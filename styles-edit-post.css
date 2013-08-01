@@ -553,3 +553,19 @@ ul.simple-fields-file-browser-list {
 .postbox-container:hover .sf-meta-box-edit-field-group {
 	display: block;
 }
+
+/* edit link for post connetor shown in edit post screen */
+.sf-post-edit-side-field-edit-post-connector {
+	position: absolute;
+	top: -2.9em;
+	right: 2em;
+	display: none;
+}
+
+.sf-post-edit-side-field-edit-post-connector a {
+	font-size: 11px;
+}
+
+.postbox:hover .sf-post-edit-side-field-edit-post-connector {
+	display: block;
+}
