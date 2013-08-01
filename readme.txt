@@ -148,6 +148,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 - Post Connectors can now be set from within a page template. Just add
 Simple Fields Connector: slugOfPostConnector
 to your template and that connector will be used for all pages with that template.
+- New filters as a result from above: set_post_connector_from_template, get_post_connector_from_template
 
 #### Version 1.4.1
 - Bugfix for WPML and "Call to undefined function"-errors

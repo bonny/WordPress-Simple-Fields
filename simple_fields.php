@@ -3,7 +3,7 @@
 Plugin Name: Simple Fields
 Plugin URI: http://simple-fields.com
 Description: Add groups of textareas, input-fields, dropdowns, radiobuttons, checkboxes and files to your edit post screen.
-Version: 1.4.1
+Version: 1.4.2
 Author: Pär Thernström
 Author URI: http://eskapism.se/
 License: GPL2
@@ -2277,21 +2277,6 @@ sf_d($one_field_slug, 'one_field_slug');*/
 
 
 	/**
-	 * @param string $template template filename
-	 * @return string Slug of post connector. Empty if no one set
-	 */
-	function get_post_connector_from_template($template) {
-
-		$template_file = locate_template($template);
-		if ( ! is_file( $template_file ) ) return "";
-		$template_data = get_file_data( $template_file, array("Name" => "Template Name", "PostConnector" => "Simple Fields Connector") );
-		$post_connector = trim($template_data["PostConnector"]);
-		
-		return $post_connector;
-
-	}
-
-	/**
 	 * get selected post connector for a post
 	 * a post has a post connector, or no connector
 	 * this function will return the inherited connector if post is set to inherit connector
@@ -4491,6 +4476,8 @@ sf_d($one_field_slug, 'one_field_slug');*/
 		$post_connector_from_template = $this->get_post_connector_from_template( $template );
 		if ($post_connector_from_template) $connector_to_use = $post_connector_from_template;
 
+		$connector_to_use = apply_filters("set_post_connector_from_template", $connector_to_use, $post);
+
 		return $connector_to_use;
 
 	}
@@ -4499,11 +4486,33 @@ sf_d($one_field_slug, 'one_field_slug');*/
 	 * Returns true if post has a template connector defined
 	 */
 	function post_has_template_connector($post) {
+
 		$template = !empty($post->page_template) ? $post->page_template : false;
 		$post_connector_from_template = $this->get_post_connector_from_template( $template );
 		return (bool) $post_connector_from_template;
+
 	}
 
+
+	/**
+	 * @param string $template template filename
+	 * @return string Slug of post connector. Empty if no one set
+	 */
+	function get_post_connector_from_template($template) {
+
+		$template_file = locate_template($template);
+		if ( is_file( $template_file ) ) {
+			$template_data = get_file_data( $template_file, array("Name" => "Template Name", "PostConnector" => "Simple Fields Connector") );
+			$post_connector = trim($template_data["PostConnector"]);
+		} else {
+			$post_connector = "";
+		}
+		
+		$post_connector = apply_filters("get_post_connector_from_template", $post_connector, $template);
+		
+		return $post_connector;
+
+	}
 
 } // end class
 
