@@ -2216,34 +2216,52 @@ sf_d($one_field_slug, 'one_field_slug');*/
 
 		?>
 		<div class="inside">
-			<div>
-				<select name="simple_fields_selected_connector" id="simple-fields-post-edit-side-field-settings-select-connector">
-					<option <?php echo ($saved_connector_to_use == "__none__") ? " selected='selected' " : "" ?> value="__none__"><?php _e('None', 'simple-fields') ?></option>
-					<option <?php echo ($saved_connector_to_use == "__inherit__") ? " selected='selected' " : "" ?> value="__inherit__"><?php _e('Inherit from parent', 'simple-fields') ?>
-						<?php
-						echo $str_inherit_parent_connector_name;
-						?>
-					</option>
-					<?php foreach ($arr_connectors as $one_connector) : ?>
-						<?php if ($one_connector["deleted"]) { continue; } ?>
-						<option <?php echo ($saved_connector_to_use == $one_connector["id"]) ? " selected='selected' " : "" ?> value="<?php echo $one_connector["id"] ?>"><?php echo $one_connector["name"] ?></option>
-					<?php endforeach; ?>
-				</select>
-			</div>
+
 			<?php
 
-			sf_d( $this->post_has_template_connector( $post ) );
+			// If connector is set from template then that overrides dropdown
+			if ( $this->post_has_template_connector( $post ) ) {
+			
+				$template = !empty($post->page_template) ? $post->page_template : false;
+				$post_connector_from_template = $this->get_post_connector_from_template( $template );
+				?>
+				<p><?php _e( sprintf('Post connector is defined in template and is set to "%1$s"', $post_connector_from_template), "simple-fields") ?></p>
+				<?php
+			
+			} else {
 
-			// If connector has been changed with filter then show was connector is being used
-			if ( is_numeric($connector_selected) && $connector_selected != $saved_connector_to_use ) {
-				$connector_selected_info = $this->get_connector_by_id($connector_selected);
-				?><div><p><?php _e("Actual used connector:", "simple-fields") ?> <?php echo $connector_selected_info["name"]; ?></p></div><?php
+				// dropdown with post connectors ?>
+				<div>
+					<select name="simple_fields_selected_connector" id="simple-fields-post-edit-side-field-settings-select-connector">
+						<option <?php echo ($saved_connector_to_use == "__none__") ? " selected='selected' " : "" ?> value="__none__"><?php _e('None', 'simple-fields') ?></option>
+						<option <?php echo ($saved_connector_to_use == "__inherit__") ? " selected='selected' " : "" ?> value="__inherit__"><?php _e('Inherit from parent', 'simple-fields') ?>
+							<?php
+							echo $str_inherit_parent_connector_name;
+							?>
+						</option>
+						<?php foreach ($arr_connectors as $one_connector) : ?>
+							<?php if ($one_connector["deleted"]) { continue; } ?>
+							<option <?php echo ($saved_connector_to_use == $one_connector["id"]) ? " selected='selected' " : "" ?> value="<?php echo $one_connector["id"] ?>"><?php echo $one_connector["name"] ?></option>
+						<?php endforeach; ?>
+					</select>
+				</div>
+				<?php
+
+				// If connector has been changed with filter then show was connector is being used
+				if ( is_numeric($connector_selected) && $connector_selected != $saved_connector_to_use ) {
+					$connector_selected_info = $this->get_connector_by_id($connector_selected);
+					?><div><p><?php _e("Actual used connector:", "simple-fields") ?> <?php echo $connector_selected_info["name"]; ?></p></div><?php
+				}
+
+				?>
+				<div id="simple-fields-post-edit-side-field-settings-select-connector-please-save" class="hidden">
+					<p><?php _e('Save post to switch to selected fields.', 'simple-fields') ?></p>
+				</div>
+				<?php
+			
 			}
 
 			?>
-			<div id="simple-fields-post-edit-side-field-settings-select-connector-please-save" class="hidden">
-				<p><?php _e('Save post to switch to selected fields.', 'simple-fields') ?></p>
-			</div>
 			<div>
 				<p><a href="#" id="simple-fields-post-edit-side-field-settings-show-keys"><?php _e('Show custom field keys', 'simple-fields') ?></a></p>
 			</div>
