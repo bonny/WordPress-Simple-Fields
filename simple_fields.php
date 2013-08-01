@@ -2283,7 +2283,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 	function get_post_connector_from_template($template) {
 
 		$template_file = locate_template($template);
-		if ( is_file( ! $template_file ) ) return "";
+		if ( ! is_file( $template_file ) ) return "";
 		$template_data = get_file_data( $template_file, array("Name" => "Template Name", "PostConnector" => "Simple Fields Connector") );
 		$post_connector = trim($template_data["PostConnector"]);
 		
