@@ -1,13 +1,14 @@
 <?php
-// Load WordPress test environment
-// https://github.com/nb/wordpress-tests
-//
-// The path to wordpress-tests
-$path = '/var/www/unit-test.simple-fields.com/wordpress-tests/bootstrap.php';
 
-if( file_exists( $path ) ) {
-    require_once $path;
-} else {
-    exit( "Couldn't find path to wordpress-tests/bootstrap.php\n" );
+#echo "WP_TESTS_DIR is: " . getenv( 'WP_TESTS_DIR' );
+#phpinfo();exit;
+
+require_once getenv( 'WP_TESTS_DIR' ) . '/includes/functions.php';
+
+function _manually_load_plugin() {
+	require dirname( __FILE__ ) . '/../simple_fields.php';
 }
+tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
+
+require getenv( 'WP_TESTS_DIR' ) . '/includes/bootstrap.php';
 
