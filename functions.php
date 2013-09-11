@@ -1491,7 +1491,7 @@ function simple_fields_set_value($post_id, $field_slug, $new_numInSet = null, $n
  * Gets a single value.
  * The first value if field group is repeatable
  *
- * @param string $field_slug
+ * @param string $field_slug. can be in "slashed" format, ie.. fieldgroupslug/fieldgroup, to avoid wrong value being fetched when multiple fields have the same slug.
  * @param int $post_id ID of post or null to use current post in loop
  * @param array $options Array or query string of options to send to field type
  * @return mixed string or array, depending on the field type
@@ -1507,7 +1507,7 @@ function simple_fields_value($field_slug = NULL, $post_id = NULL, $options = NUL
 
 /**
  * Gets all values as array
- * @param string $field_slug or comman separated list of several slugs
+ * @param string $field_slug or comma separated list of several slugs. can be in "slashed" format, ie.. fieldgroupslug/fieldgroup, to avoid wrong value being fetched when multiple fields have the same slug.
  * @param int $post_id ID of post or null to use current post in loop
  * @param array $options Array or query string of options to send to field type
  * @return mixed string or array, depending on the field type and if first arg contains comma or not
@@ -1592,8 +1592,18 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 
 	$parsed_options = wp_parse_args($options);
 
+	// if slug contains slash ("/") then this is a field that we want to get by both field groups and field slug (so field slug can be same for multiple fields)
+	// lke this: fieldgroupslug/fieldslug
+	$is_slashed_slug = ( strpos($field_slug, "/") !== false ) ? true : false;
+	if ( $is_slashed_slug )
+		list($unslashed_group_slug, $unslashed_field_slug) =  explode("/", $field_slug);
+
 	// Loop through the field groups that this post connector has and locate the field_slug we are looking for
 	foreach ($post_connector_info["field_groups"] as $one_field_group) {
+
+		// If slug is slashed then the field group must match
+		if ( $is_slashed_slug && $unslashed_group_slug !== $one_field_group["slug"])
+			continue;
 
 		// Loop the fields in this field group
 		foreach ($one_field_group["fields"] as $one_field_group_field) { 
@@ -1601,7 +1611,7 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 			// Skip deleted fields
 			if ($one_field_group_field["deleted"]) continue;
 
-			if ($field_slug === $one_field_group_field["slug"]) {
+			if ($field_slug === $one_field_group_field["slug"] || $is_slashed_slug && $unslashed_field_slug === $one_field_group_field["slug"]) {
 			
 				// Detect options for the field with this slug
 				// options are in format:
@@ -1790,23 +1800,27 @@ function simple_fields_fieldgroup($field_group_id_or_slug, $post_id = NULL, $opt
 	global $sf;
 	$cache_key = "simple_fields_".$sf->ns_key."_fieldgroup_" . $field_group_id_or_slug . "_" . $post_id . "_" . md5(json_encode($options));
 	$values = wp_cache_get( $cache_key, 'simple_fields');
+	
 	if (FALSE === $values) {
 	
 		$field_group = $sf->get_field_group_by_slug($field_group_id_or_slug);
-	
+
 		$arr_fields = array();
 		foreach ($field_group["fields"] as $one_field) {
 			if ($one_field["deleted"]) continue;
-			$arr_fields[] = trim($one_field["slug"]);
+			$arr_fields[] = trim($one_field["field_group"]["slug"]) . "/" . trim($one_field["slug"]);
 		}
 		
 		$str_field_slugs = join(",", $arr_fields);
+		
 		if ($field_group["repeatable"]) {
 			$values = simple_fields_values($str_field_slugs, $post_id);
 		} else {
 			$values = simple_fields_value($str_field_slugs, $post_id);
 		}
+
 		wp_cache_set( $cache_key, $values, 'simple_fields' );
+
 	}
 
 	$values = apply_filters( "simple_fields_fieldgroup", $values, $field_group_id_or_slug, $post_id, $options);
