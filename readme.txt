@@ -146,15 +146,16 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 #### Version 1.4.x
 
+- Fixed issue with simple_fields_fieldgroup() when fields in different field groups had the same slug. Fixes https://github.com/bonny/WordPress-Simple-Fields/issues/92.
 - Fix rare case with missing thumbnail when selecting a file
 - Added: when WB_DEBUG is enabled/true then a "Edit Field Group"-link is added to the header of a field group in the edit post screen and a "Edit Post Connector" is added to the Simple Fields box in the right sidebar (where you select what connector to use for the post). Hopefully these links speed up your development a bit (at least when you're working with setting up your fields.)
 - Now outputs the full name and slug of a post type in the post connector and post connector default admin. Previously only slug was shown.
 - Fixed some notice warnings, for example when getting extended values for a date field or when a slug did not exist
-- Removed a console.log() is
+- Removed a console.log()
 
 #### Version 1.4.2
 - Post Connectors can now be set from within a page template. Just add
-Simple Fields Connector: slugOfPostConnector
+`Simple Fields Connector: slugOfPostConnector`
 to your template and that connector will be used for all pages with that template.
 - New filters as a result from above: set_post_connector_from_template, get_post_connector_from_template
 
