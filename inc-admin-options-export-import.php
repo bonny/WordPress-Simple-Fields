@@ -159,7 +159,7 @@ class simple_fields_options_page_import_export {
 					
 					// Abort prev call
 					if (ajaxPost && ajaxPost.readyState !== 4) {
-						console.log("aborted");
+//						console.log("aborted");
 						ajaxPost.abort();
 					}
 

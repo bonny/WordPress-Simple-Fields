@@ -25,7 +25,7 @@ if ("edit-post-type-defaults" == $action) {
 						<p><?php _e('Post type', "simple-fields" ) ?></p>
 					</th>
 					<td>
-						<p><?php echo esc_html( $selected_post_type->label ) ?></p>
+						<p><?php echo esc_html( $selected_post_type->labels->name . " (" . $selected_post_type->name . ")" ) ?></p>
 					</td>
 				</tr>
 				
@@ -234,24 +234,31 @@ if ("edit-post-connector" == $action) {
 					$arr_post_types_to_ignore = array("revision", "nav_menu_item");
 					foreach ($wp_post_types as $one_post_type) {
 						if (!in_array($one_post_type->name, $arr_post_types_to_ignore)) {
+							$input_id = "post_types_" . $one_post_type->name;
 							?>
 							<p>
-								<input <?php echo (in_array($one_post_type->name, $post_connector_in_edit["post_types"]) ? " checked='checked' " : ""); ?> type="checkbox" name="post_types[]" value="<?php echo $one_post_type->name ?>" />
-								<?php echo $one_post_type->name ?>
-							<?php
-							/*
-							<!-- <td>
-								<input <?php echo (in_array($one_post_type->name, $post_connector_in_edit["post_types_type_default"]) ? " checked='checked' " : "") ?> type="checkbox" name="post_types_type_default[]" value="<?php echo $one_post_type->name ?>" />
+								<input 
+									<?php echo (in_array($one_post_type->name, $post_connector_in_edit["post_types"]) ? " checked='checked' " : ""); ?> 
+									type="checkbox" 
+									name="post_types[]" 
+									value="<?php echo $one_post_type->name ?>"
+									id="<?php echo $input_id ?>"
+								/>
+								<?php
+								printf( '<label for="%3$s">%1$s (%2$s)</label>', $one_post_type->labels->name, $one_post_type->name, $input_id);
+								?>
+								
+								<?php /* <input <?php echo (in_array($one_post_type->name, $post_connector_in_edit["post_types_type_default"]) ? " checked='checked' " : "") ?> type="checkbox" name="post_types_type_default[]" value="<?php echo $one_post_type->name ?>" />
 								Default connector for post type <?php echo $one_post_type->name ?>
-							</td> -->
-							*/
-							?>
+								*/
+								?>
 							</p>
 							<?php
 						}
 					}
 					?>
 				</td>
+
 			</tr>
 
 		</table>

@@ -2050,6 +2050,9 @@ sf_d($one_field_slug, 'one_field_slug');*/
 
 					if ( ! $one_field["deleted"] ) $num_active_fields++;
 
+					// Make sure all props are set
+					if ( ! isset( $one_field["slug"] ) ) $one_field["slug"] = "";
+
 					$one_field["meta_key"] = $this->get_meta_key( $field_groups[$i]["id"], $one_field["id"], null, $field_groups[$i]["slug"], $one_field["slug"] );
 
 				}

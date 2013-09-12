@@ -435,6 +435,7 @@ function init_simple_fields_field_date_v2() {
 		function return_values($values = null, $parsed_options_for_this_field = null) {
 
 			// @todo: what if no value?
+			$arr_extended = array();
 			foreach ($values as $key => $one_value) {
 				
 				$one_value_unix = strtotime($one_value);
