@@ -548,6 +548,7 @@ function simple_fields_register_field_group($slug = "", $new_field_group = array
 	$field_groups = $sf->get_field_groups();
 	$highest_id = 0;
 	$is_new_field_group = TRUE;
+	$errors = new WP_Error();
 
 	// First get the id of the field group we are adding. Existing or highest new.
 	// Loop through all existing field groups to see if the field group we are adding already exists
