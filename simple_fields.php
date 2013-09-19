@@ -1363,7 +1363,11 @@ sf_d($one_field_slug, 'one_field_slug');*/
 									<script>
 										// We need to call _buttonsInit to make quicktags buttons appear/work, but it's private. however calling addButtons calls _buttonsInit
 										// so we fake-add a button, just to fire _buttonsInit again.
-										QTags.addButton( 'simple_fields_dummy_button', '...', '<br />', null, null, null, null, "apa" );
+										// @todo: If editor does not exist in post then QTags does not exist at all.
+										// 		  Quick fix: only add if QTags exists. Better fix: always load editor even if it's not t be shown? Hide it with JS/CSS? Load editor scripts?
+										if (window.QTags) {
+											QTags.addButton( 'simple_fields_dummy_button', '...', '<br />', null, null, null, null, "apa" );
+										}
 									</script>
 									<?php
 
