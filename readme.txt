@@ -146,6 +146,8 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 #### Version 1.4.x
 
+- Preview of posts with simple fields works (did it ever not work? I can't remember...)
+- Revisions are saved now saved with Simple Fields values too
 - Fixed issue with simple_fields_fieldgroup() when fields in different field groups had the same slug. Fixes https://github.com/bonny/WordPress-Simple-Fields/issues/92.
 - Fix rare case with missing thumbnail when selecting a file
 - Added: when WB_DEBUG is enabled/true then a "Edit Field Group"-link is added to the header of a field group in the edit post screen and a "Edit Post Connector" is added to the Simple Fields box in the right sidebar (where you select what connector to use for the post). Hopefully these links speed up your development a bit (at least when you're working with setting up your fields.)

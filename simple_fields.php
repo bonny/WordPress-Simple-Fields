@@ -723,12 +723,15 @@ class simple_fields {
 			return $post_id;
 		}
 	
+
 		// verify if this is an auto save routine. If it is our form has not been submitted, so we dont want to do anything
 		if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) { return $post_id; }
 
+		// why dont' we want to save revisions? i'll do that from now on, let's se what happens
 		// dont's save if is revision
-		if (wp_is_post_revision($post_id) !== FALSE) return $post_id;
-		
+		// preview is a revison? should save then so preview with fields work
+		// if (wp_is_post_revision($post_id) !== FALSE) return $post_id;
+
 		// attach post connector
 		// only save if being found in post variable, beacuse it may not exist if meta box is hidden/not outputted on page
 		if ( isset($_POST["simple_fields_selected_connector"]) ) {
@@ -3850,7 +3853,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 
 		$cache_key = 'simple_fields_'.$this->ns_key.'_get_field_group_by_slug_deleted_' . (int) $include_deleted . "_" . $field_group_slug;
 		$return_val = wp_cache_get( $cache_key, 'simple_fields' );
-		
+
 		if (FALSE === $return_val) {
 
 			$field_groups = $this->get_field_groups();
