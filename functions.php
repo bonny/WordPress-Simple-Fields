@@ -1818,7 +1818,7 @@ function simple_fields_fieldgroup($field_group_id_or_slug, $post_id = NULL, $opt
 	global $sf;
 	$cache_key = "simple_fields_".$sf->ns_key."_fieldgroup_" . $field_group_id_or_slug . "_" . $post_id . "_" . md5(json_encode($options));
 	$values = wp_cache_get( $cache_key, 'simple_fields');
-$values = false; // @DEBUG
+
 	if (FALSE === $values) {
 	
 		$field_group = $sf->get_field_group_by_slug($field_group_id_or_slug);
