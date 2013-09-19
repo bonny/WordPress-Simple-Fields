@@ -1566,21 +1566,37 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 
 				$loopnum = 0;
 
-				if (!isset($arr_comma_slugs_values[$loopnum])) $arr_comma_slugs_values[$loopnum] = array();
+				if (!isset($arr_comma_slugs_values[$loopnum]))
+					$arr_comma_slugs_values[$loopnum] = array();
 
+				// If slashed value then fetch slug part
+				$is_slashed_slug = ( strpos($one_of_the_comma_separated_slug, "/") !== false ) ? true : false;
+
+				if ( $is_slashed_slug ) {
+					list($unslashed_group_slug, $unslashed_field_slug) =  explode("/", $one_of_the_comma_separated_slug);
+					$slug_for_array = $unslashed_field_slug;
+				} else {
+					$slug_for_array = $one_of_the_comma_separated_slug;
+				}
+
+				// create array with result
 				foreach ($one_slug_values as $one_slug_sub_value) {
-					$arr_comma_slugs_values[$loopnum][$one_of_the_comma_separated_slug] = $one_slug_sub_value;
+
+					$arr_comma_slugs_values[$loopnum][$slug_for_array] = $one_slug_sub_value;
 					$loopnum++;
+
 				}
 
 			}
 		}
+
 
 		$arr_comma_slugs_values = apply_filters( "simple_fields_values", $arr_comma_slugs_values, $field_slug, $post_id, $options);
 		return $arr_comma_slugs_values;
 
 	}
 
+	// here we get a single field
 	global $sf;
 
 	// Post connector for this post, with lots of info
@@ -1722,6 +1738,7 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 				*/
 				$saved_values = apply_filters("simple-fields-return-values-" . $one_field_group_field["type"], $saved_values);
 				$saved_values = apply_filters( "simple_fields_values", $saved_values, $field_slug, $post_id, $options, $one_field_group_field["type"]);
+
 				return $saved_values;					
 
 			}
@@ -1784,7 +1801,7 @@ function simple_fields_is_connector($slug) {
 }
 
 /**
- * Returns allt the values in a field group
+ * Returns all the values in a field group
  * It's a shortcut to running simple_fields_value(slugs) with all slugs already entered
  * Depending if the field group is repeatable or not, simple_field_value or simple_fields_values will be used
  *
@@ -1801,15 +1818,19 @@ function simple_fields_fieldgroup($field_group_id_or_slug, $post_id = NULL, $opt
 	global $sf;
 	$cache_key = "simple_fields_".$sf->ns_key."_fieldgroup_" . $field_group_id_or_slug . "_" . $post_id . "_" . md5(json_encode($options));
 	$values = wp_cache_get( $cache_key, 'simple_fields');
-	
+$values = false; // @DEBUG
 	if (FALSE === $values) {
 	
 		$field_group = $sf->get_field_group_by_slug($field_group_id_or_slug);
 
 		$arr_fields = array();
 		foreach ($field_group["fields"] as $one_field) {
+
 			if ($one_field["deleted"]) continue;
+
+			// add field group to each field slug
 			$arr_fields[] = trim($one_field["field_group"]["slug"]) . "/" . trim($one_field["slug"]);
+
 		}
 		
 		$str_field_slugs = join(",", $arr_fields);
