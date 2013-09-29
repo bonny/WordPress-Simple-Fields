@@ -366,7 +366,7 @@ class simple_fields {
 	/**
 	 * Get maybe translated string
 	 * If WPML is installed and activated then icl_t() is used on the string
-	 * If WPML is not instaled, then it's just returned unmodified
+	 * If WPML is not installed, then it's just returned unmodified
 	 *
 	 * @param string $name Name to use in icl_t
 	 * @param string $value Value to use in icl_t
