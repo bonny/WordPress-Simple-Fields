@@ -51,12 +51,12 @@ EOD;
 
 
 	function testInsertManuallyAddedFields() {
-		_insert_manually_added_fields();
 	}	
 
 	// insert and test manually added fields
 	function testManuallyAddedFields()
 	{
+		_insert_manually_added_fields();
 
 		$post_id = 11;
 

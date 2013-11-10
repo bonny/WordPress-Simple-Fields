@@ -12,3 +12,22 @@ tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
 require getenv( 'WP_TESTS_DIR' ) . '/includes/bootstrap.php';
 
+
+class SimpleFields_TestCase extends WP_UnitTestCase {
+	
+	public static $sf = null;
+	
+	public static function setUpBeforeClass() {
+
+		self::$sf = $GLOBALS['sf'];
+
+	}
+
+	/*
+	function plugin() {
+		return CWS_PageLinksTo::$instance;
+	}
+	*/
+
+}
+
