@@ -476,7 +476,7 @@ EOT;
 		$vals_expected = array(
 			'id' => $post_id,
 			'title' => 'Post with fields',
-			'permalink' => 'http://example.org/?p=' . $post_id,
+			'permalink' => get_permalink($post_id),
 			'post' => get_post($post_id)
 		);
 		$this->assertEquals($vals_expected, $vals);

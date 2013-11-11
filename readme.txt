@@ -154,6 +154,7 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 - Now outputs the full name and slug of a post type in the post connector and post connector default admin. Previously only slug was shown.
 - Fixed some notice warnings, for example when getting extended values for a date field or when a slug did not exist
 - Removed a console.log()
+- All unit tests are now setup the wp-cli-way, horray!
 
 #### Version 1.4.2
 - Post Connectors can now be set from within a page template. Just add
