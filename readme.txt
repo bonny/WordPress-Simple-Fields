@@ -2,9 +2,9 @@
 Contributors: eskapism, MarsApril, samface, angrycreative, Earth People
 Donate link: http://simple-fields.com/about/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, more fields, repeatable fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom, simple fields, cms, date picker, time picker, repeatable fields, multiple fields
-Requires at least: 3.5.1
-Tested up to: 3.5.1
-Stable tag: 1.4.2
+Requires at least: 3.7.1
+Tested up to: 3.7.1
+Stable tag: 1.4.3
 
 With Simple Fields you can add any kind of custom fields to your pages, posts and attachments.
 
@@ -144,14 +144,17 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
-#### Version 1.4.x
+#### Version 1.4.3
 
+- Preview of posts with simple fields works (did it ever not work? I can't remember...)
+- Revisions are saved now saved with Simple Fields values too
 - Fixed issue with simple_fields_fieldgroup() when fields in different field groups had the same slug. Fixes https://github.com/bonny/WordPress-Simple-Fields/issues/92.
 - Fix rare case with missing thumbnail when selecting a file
 - Added: when WB_DEBUG is enabled/true then a "Edit Field Group"-link is added to the header of a field group in the edit post screen and a "Edit Post Connector" is added to the Simple Fields box in the right sidebar (where you select what connector to use for the post). Hopefully these links speed up your development a bit (at least when you're working with setting up your fields.)
 - Now outputs the full name and slug of a post type in the post connector and post connector default admin. Previously only slug was shown.
 - Fixed some notice warnings, for example when getting extended values for a date field or when a slug did not exist
 - Removed a console.log()
+- All unit tests are now setup the wp-cli-way, horray!
 
 #### Version 1.4.2
 - Post Connectors can now be set from within a page template. Just add

@@ -3,7 +3,7 @@
 Plugin Name: Simple Fields
 Plugin URI: http://simple-fields.com
 Description: Add groups of textareas, input-fields, dropdowns, radiobuttons, checkboxes and files to your edit post screen.
-Version: 1.4.2
+Version: 1.4.3
 Author: Pär Thernström
 Author URI: http://eskapism.se/
 License: GPL2
@@ -56,9 +56,9 @@ class simple_fields {
 	 */
 	function init() {
 
-
 		define( "SIMPLE_FIELDS_VERSION", "1.4.2");
 		define( "SIMPLE_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
+
 		define( "SIMPLE_FIELDS_NAME", "Simple Fields");
 
 		load_plugin_textdomain( 'simple-fields', null, basename(dirname(__FILE__)).'/languages/');
@@ -366,7 +366,7 @@ class simple_fields {
 	/**
 	 * Get maybe translated string
 	 * If WPML is installed and activated then icl_t() is used on the string
-	 * If WPML is not instaled, then it's just returned unmodified
+	 * If WPML is not installed, then it's just returned unmodified
 	 *
 	 * @param string $name Name to use in icl_t
 	 * @param string $value Value to use in icl_t
@@ -723,12 +723,15 @@ class simple_fields {
 			return $post_id;
 		}
 	
+
 		// verify if this is an auto save routine. If it is our form has not been submitted, so we dont want to do anything
 		if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) { return $post_id; }
 
+		// why dont' we want to save revisions? i'll do that from now on, let's se what happens
 		// dont's save if is revision
-		if (wp_is_post_revision($post_id) !== FALSE) return $post_id;
-		
+		// preview is a revison? should save then so preview with fields work
+		// if (wp_is_post_revision($post_id) !== FALSE) return $post_id;
+
 		// attach post connector
 		// only save if being found in post variable, beacuse it may not exist if meta box is hidden/not outputted on page
 		if ( isset($_POST["simple_fields_selected_connector"]) ) {
@@ -1363,7 +1366,11 @@ sf_d($one_field_slug, 'one_field_slug');*/
 									<script>
 										// We need to call _buttonsInit to make quicktags buttons appear/work, but it's private. however calling addButtons calls _buttonsInit
 										// so we fake-add a button, just to fire _buttonsInit again.
-										QTags.addButton( 'simple_fields_dummy_button', '...', '<br />', null, null, null, null, "apa" );
+										// @todo: If editor does not exist in post then QTags does not exist at all.
+										// 		  Quick fix: only add if QTags exists. Better fix: always load editor even if it's not t be shown? Hide it with JS/CSS? Load editor scripts?
+										if (window.QTags) {
+											QTags.addButton( 'simple_fields_dummy_button', '...', '<br />', null, null, null, null, "apa" );
+										}
 									</script>
 									<?php
 
@@ -3846,7 +3853,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 
 		$cache_key = 'simple_fields_'.$this->ns_key.'_get_field_group_by_slug_deleted_' . (int) $include_deleted . "_" . $field_group_slug;
 		$return_val = wp_cache_get( $cache_key, 'simple_fields' );
-		
+
 		if (FALSE === $return_val) {
 
 			$field_groups = $this->get_field_groups();
