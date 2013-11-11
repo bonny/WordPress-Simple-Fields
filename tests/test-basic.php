@@ -451,6 +451,8 @@ EOT;
 				'medium' => 'Missing Attachment',
 				'large' => 'Missing Attachment',
 				'post-thumbnail' => 'Missing Attachment',
+				// +        'post-thumbnail-full-width' => 'Missing Attachment'
+
 			),
 			'image' => array(
 				'full' => '',
@@ -458,6 +460,8 @@ EOT;
 				'medium' => '',
 				'large' => '',
 				'post-thumbnail' => '',
+				// +        'post-thumbnail-full-width' => ''
+
 			),
 			'image_src' => array(
 				'full' => false,
@@ -465,6 +469,8 @@ EOT;
 				'medium' => false,
 				'large' => false,
 				'post-thumbnail' => false,
+				// 'post-thumbnail-full-width' => false
+
 			),
 			'metadata' => false,
 			"post" => null
