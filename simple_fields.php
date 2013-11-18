@@ -3611,29 +3611,41 @@ sf_d($one_field_slug, 'one_field_slug');*/
 
 			// field is of type file
 			// lets get more info about that file then, so we have most useful stuff in an array – hooray!
-			
 			if (isset($field_value) && is_numeric($field_value)) {
 
-				$file_id                             = (int) $field_value;
-				$return_field_value["id"]            = $file_id;
-				$return_field_value["is_image"]      = wp_attachment_is_image( $file_id );
-				$return_field_value["url"]           = wp_get_attachment_url( $file_id );
-				$return_field_value["mime"]          = get_post_mime_type( $file_id );
+				$file_id = (int) $field_value;
 
-				// generate html for all registered image sizes
-				$arr_sizes = array_merge(array("full"), get_intermediate_image_sizes());
-				$return_field_value["link"]      = array();
-				$return_field_value["image"]     = array();
-				$return_field_value["image_src"] = array();
-				foreach ($arr_sizes as $size_key) {
-					$return_field_value["link"][$size_key]      = wp_get_attachment_link( $file_id, $size_key );
-					$return_field_value["image"][$size_key]     = wp_get_attachment_image( $file_id, $size_key );
-					$return_field_value["image_src"][$size_key] = wp_get_attachment_image_src( $file_id, $size_key );
-				}
-			
-				$return_field_value["metadata"] = wp_get_attachment_metadata( $file_id );
-				$return_field_value["post"] = get_post( $file_id );
+				$file_post_object = get_post( $file_id );
 				
+				if ( is_null($file_post_object) ) {
+					
+					// Post does not exist, do not return anything (i.e. keep array empty)
+
+				} else {
+
+					// Post object does contain something
+
+					$return_field_value["id"]            = $file_id;
+					$return_field_value["is_image"]      = wp_attachment_is_image( $file_id );
+					$return_field_value["url"]           = wp_get_attachment_url( $file_id );
+					$return_field_value["mime"]          = get_post_mime_type( $file_id );
+
+					// generate html for all registered image sizes
+					$arr_sizes = array_merge(array("full"), get_intermediate_image_sizes());
+					$return_field_value["link"]      = array();
+					$return_field_value["image"]     = array();
+					$return_field_value["image_src"] = array();
+					foreach ($arr_sizes as $size_key) {
+						$return_field_value["link"][$size_key]      = wp_get_attachment_link( $file_id, $size_key );
+						$return_field_value["image"][$size_key]     = wp_get_attachment_image( $file_id, $size_key );
+						$return_field_value["image_src"][$size_key] = wp_get_attachment_image_src( $file_id, $size_key );
+					}
+				
+					$return_field_value["metadata"] = wp_get_attachment_metadata( $file_id );
+					$return_field_value["post"] = get_post( $file_id );
+				
+				} // if get_post returns null
+
 			}
 
 		} else if ("radiobuttons" === $field["type"]) {

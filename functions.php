@@ -13,6 +13,7 @@
  */
 if (!function_exists("sf_d")) {
 function sf_d($var, $heading = "") {
+	
 	$out = "";
 	$out .= "\n<pre class='sf_box_debug'>\n";
 	if ($heading && ! empty($heading)) {
@@ -25,11 +26,17 @@ function sf_d($var, $heading = "") {
 	} else if ( is_bool($var)) {
 		$out .= "Var is BOOLEAN ";
 		$out .= $var ? "TRUE" : "FALSE";
+	} else if ( is_string($var) ) {
+		if (strlen($var) === 0)
+			$out .= 'Var is empty string ("").';
+		else
+			$out .= "Var is string with length " . strlen($var) . ": " . htmlspecialchars( $var, ENT_QUOTES, 'UTF-8' );
 	} else {
 		$out .= htmlspecialchars( $var, ENT_QUOTES, 'UTF-8' );
 	}
 	$out .= "\n</pre>";
 	echo apply_filters( "simple_fields_debug_output", $out );
+
 }
 }
 
