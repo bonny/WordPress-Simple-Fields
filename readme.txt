@@ -146,8 +146,8 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 #### Version 1.4.4
 
-- If a file field type has a file selected, but that file is removed, then an array with values would get returned. Now fixes so it returns an empty array, just the way it works of not file at all is selected. Fixes https://github.com/bonny/WordPress-Simple-Fields/issues/94.
-- Modified sf_d() so it will output length of strings, and it will also tell you if a string is empty.
+- If a file field type had a file selected, but that file was removed, then an array with values would get returned. Now fixed so it returns an empty array instead, just the way it works if no file at all is selected. Fixes https://github.com/bonny/WordPress-Simple-Fields/issues/94.
+- Modified sf_d() so it will output the length of a string, and it will also tell you if a string is empty
 
 #### Version 1.4.3
 
