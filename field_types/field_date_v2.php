@@ -31,16 +31,13 @@ function init_simple_fields_field_date_v2() {
 			global $wp_scripts;
 			wp_enqueue_script('jquery-ui-datepicker');
 			$ui = $wp_scripts->query('jquery-ui-core');
-			//$url = "https://ajax.aspnetcdn.com/ajax/jquery.ui/{$ui->ver}/themes/smoothness/jquery.ui.all.css";
-			$url = "https://ajax.googleapis.com/ajax/libs/jqueryui/{$ui->ver}/themes/smoothness/jquery-ui.css";
-			wp_enqueue_style('jquery-ui-smoothness', $url, false, $ui->ver);
-
-			wp_enqueue_script("jquery-ui-datepicker");
-
+			
+			// Styles for datepicker
+			wp_enqueue_style("jquery-ui-datepicker-theme", SIMPLE_FIELDS_URL . "datepicker/jquery-ui-base/jquery.ui.theme.css");			
+			wp_enqueue_style("jquery-ui-datepicker", SIMPLE_FIELDS_URL . "datepicker/jquery-ui-base/jquery.ui.datepicker.css");
+			
 			// Language files
-			//$url = "https://ajax.aspnetcdn.com/ajax/jquery.ui/{$ui->ver}/i18n/jquery-ui-i18n.min.js";
-			$url = "https://ajax.googleapis.com/ajax/libs/jqueryui/{$ui->ver}/i18n/jquery-ui-i18n.min.js";
-			wp_enqueue_script('jquery-ui-18n', $url, false, $ui->ver);
+			wp_enqueue_script("jquery-ui-18n", SIMPLE_FIELDS_URL . "datepicker/jquery-ui-i18n.min.js", array("jquery-ui-datepicker"));
 
 			// Timepicker
 			wp_enqueue_script("jquery-timepicker", SIMPLE_FIELDS_URL . "js/jquery-ui-timepicker-addon.js", array("jquery-ui-datepicker"));

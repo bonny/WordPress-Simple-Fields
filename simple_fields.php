@@ -3,7 +3,7 @@
 Plugin Name: Simple Fields
 Plugin URI: http://simple-fields.com
 Description: Add groups of textareas, input-fields, dropdowns, radiobuttons, checkboxes and files to your edit post screen.
-Version: 1.4.4
+Version: 1.4.5
 Author: Pär Thernström
 Author URI: http://eskapism.se/
 License: GPL2
@@ -56,7 +56,7 @@ class simple_fields {
 	 */
 	function init() {
 
-		define( "SIMPLE_FIELDS_VERSION", "1.4.4");
+		define( "SIMPLE_FIELDS_VERSION", "1.4.5");
 		define( "SIMPLE_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
 
 		define( "SIMPLE_FIELDS_NAME", "Simple Fields");

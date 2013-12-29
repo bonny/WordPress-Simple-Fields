@@ -3,8 +3,8 @@ Contributors: eskapism, MarsApril, samface, angrycreative, Earth People
 Donate link: http://simple-fields.com/about/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, more fields, repeatable fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom, simple fields, cms, date picker, time picker, repeatable fields, multiple fields
 Requires at least: 3.7.1
-Tested up to: 3.7.1
-Stable tag: 1.4.4
+Tested up to: 3.8
+Stable tag: 1.4.5
 
 With Simple Fields you can add any kind of custom fields to your pages, posts and attachments.
 
@@ -144,10 +144,14 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
+#### Version 1.4.5
+
+- Use local, modified, version of CSS for the datepicker v2. Fixes [Issue #100: "Date picker v2 includes a version of jquery ui that makes wps built in modal look ugly and wierd"](https://github.com/bonny/WordPress-Simple-Fields/issues/100).
+
 #### Version 1.4.4
 
-- If a file field type has a file selected, but that file is removed, then an array with values would get returned. Now fixes so it returns an empty array, just the way it works of not file at all is selected. Fixes https://github.com/bonny/WordPress-Simple-Fields/issues/94.
-- Modified sf_d() so it will output length of strings, and it will also tell you if a string is empty.
+- If a file field type had a file selected, but that file was removed, then an array with values would get returned. Now fixed so it returns an empty array instead, just the way it works if no file at all is selected. Fixes https://github.com/bonny/WordPress-Simple-Fields/issues/94.
+- Modified sf_d() so it will output the length of a string, and it will also tell you if a string is empty
 
 #### Version 1.4.3
 
