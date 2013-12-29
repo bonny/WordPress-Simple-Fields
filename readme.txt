@@ -4,7 +4,7 @@ Donate link: http://simple-fields.com/about/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, more fields, repeatable fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom, simple fields, cms, date picker, time picker, repeatable fields, multiple fields
 Requires at least: 3.7.1
 Tested up to: 3.8
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 
 With Simple Fields you can add any kind of custom fields to your pages, posts and attachments.
 
@@ -143,6 +143,10 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 
 == Changelog ==
+
+#### Version 1.4.5
+
+- Use local, modified, version of CSS for the datepicker v2. Fixes [Issue #100: "Date picker v2 includes a version of jquery ui that makes wps built in modal look ugly and wierd"](https://github.com/bonny/WordPress-Simple-Fields/issues/100).
 
 #### Version 1.4.4
 
