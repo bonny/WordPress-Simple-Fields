@@ -1,0 +1,640 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Simple Fields\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-04-05 19:17-0300\n"
+"PO-Revision-Date: 2014-04-04 12:02+0100\n"
+"Last-Translator: Xavier Palacín Ayuso <cubiczx@hotmail.copm>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.6.4\n"
+"Language: es_ES\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: functions.php:539
+msgid "Wrong type of arguments passed"
+msgstr "Tipo incorrecto de argumentos pasados"
+
+#: inc-admin-options.php:81
+msgid "Field group saved"
+msgstr "Grupo de los campos guardados"
+
+#: inc-admin-options.php:82
+msgid "Post connector saved"
+msgstr "Conector mensaje guardado correctamente"
+
+#: inc-admin-options.php:83
+msgid "Field group deleted"
+msgstr "Grupo de los campos eliminado"
+
+#: inc-admin-options.php:84
+msgid "Post connector deleted"
+msgstr "Conector de post eliminado"
+
+#: inc-admin-options.php:85
+msgid "Post type defaults saved"
+msgstr "Estándares para tipos de mensaje guardado"
+
+#: inc-admin-options.php:86
+msgid "Debug options saved"
+msgstr "Opciones de depuración guardadas"
+
+#: inc-admin-options.php:110
+msgid "Default post connector"
+msgstr "Conector de post por defecto"
+
+#: inc-admin-options.php:118
+msgid "No post connector"
+msgstr "No connector de post"
+
+#: inc-admin-options.php:119
+msgid "Inherit from parent post"
+msgstr "Heredar del post padre"
+
+#: inc-admin-options.php:128
+msgid "There are no post connectors for this post type."
+msgstr "No hay ningún conector para este tipo de post."
+
+#: inc-admin-options.php:135 inc-admin-options.php:819
+msgid "Save changes"
+msgstr "Guardar cambios"
+
+#: inc-admin-options.php:138 inc-admin-options.php:462
+msgid "or"
+msgstr "o"
+
+#: inc-admin-options.php:139 inc-admin-options.php:305
+#: inc-admin-options.php:463
+msgid "cancel"
+msgstr "cancelar"
+
+#: inc-admin-options.php:176
+msgid "Post Connector details"
+msgstr "Detalles de conector de post"
+
+#: inc-admin-options.php:181 inc-admin-options.php:366
+#: inc-admin-options.php:556 inc-admin-options.php:641 simple_fields.php:2340
+msgid "Name"
+msgstr "Nombre"
+
+#: inc-admin-options.php:187 inc-admin-options.php:385
+#: inc-admin-options.php:557 inc-admin-options.php:642 simple_fields.php:2345
+msgid "Slug"
+msgstr "Slug"
+
+#: inc-admin-options.php:197
+msgid "A unique identifier for this connector"
+msgstr "Un identificador único para este conector"
+
+#: inc-admin-options.php:205
+msgid "Field Groups"
+msgstr "Grupos de campos"
+
+#: inc-admin-options.php:209
+msgid "Add field group..."
+msgstr "Añadir grupo de campo..."
+
+#: inc-admin-options.php:234 simple_fields.php:300
+msgid "Context"
+msgstr "Contexto"
+
+#: inc-admin-options.php:236 simple_fields.php:301
+msgid "normal"
+msgstr "normal"
+
+#: inc-admin-options.php:237 simple_fields.php:302
+msgid "advanced"
+msgstr "avanzado"
+
+#: inc-admin-options.php:238 simple_fields.php:303
+#, fuzzy
+msgid "side"
+msgstr "lateral"
+
+#: inc-admin-options.php:241
+msgid "Priority"
+msgstr "Prioridad"
+
+#: inc-admin-options.php:243 simple_fields.php:304
+msgid "low"
+msgstr "baja"
+
+#: inc-admin-options.php:244 simple_fields.php:305
+msgid "high"
+msgstr "alta"
+
+#: inc-admin-options.php:247 inc-admin-options.php:312
+#: inc-admin-options.php:470 simple_fields.php:290 simple_fields.php:2777
+msgid "Delete"
+msgstr "Eliminar"
+
+#: inc-admin-options.php:257 inc-admin-options.php:413
+msgid "Options"
+msgstr "Opciones"
+
+#: inc-admin-options.php:264
+msgid "Hide the built in editor"
+msgstr "Ocultar el editor integrado"
+
+#: inc-admin-options.php:270
+msgid "Available for post types"
+msgstr "Disponible para los tipos de post"
+
+#: inc-admin-options.php:300 inc-admin-options.php:457
+msgid "Save Changes"
+msgstr "Guardar cambios"
+
+#: inc-admin-options.php:345
+msgid "Could not find field group. Perhaps it has been deleted?"
+msgstr "¿No encuentra el grupo de campos. Tal vez se haya eliminado"
+
+#: inc-admin-options.php:361
+msgid "Field group details"
+msgstr "Detalles del grupo de campos"
+
+#: inc-admin-options.php:375
+msgid "Enter a name for this field group"
+msgstr "Escriba un nombre para este grupo de campos"
+
+#: inc-admin-options.php:393 simple_fields.php:190
+msgid "Allowed chars: a-z and underscore."
+msgstr "Caracteres permitidos: az y subrayado \"_\""
+
+#: inc-admin-options.php:396
+msgid "A unique identifier for this field group."
+msgstr "Un identificador único para este grupo de campos."
+
+#: inc-admin-options.php:402 simple_fields.php:2358
+msgid "Description"
+msgstr "Descripción"
+
+#: inc-admin-options.php:420
+msgid "Repeatable"
+msgstr "Múltiple"
+
+#: inc-admin-options.php:422
+msgid ""
+"With repeatable checked you can add the fields below to a post multiple "
+"times. Great for image slideshow, attachments, and similar."
+msgstr ""
+"Con múltiple marcado, puede agregar campos a un mensaje varias veces. "
+"Excelente para presentación de imágenes, archivos adjuntos, etc."
+
+#: inc-admin-options.php:429
+msgid "Use table view"
+msgstr "Utilice la vista de tabla"
+
+#: inc-admin-options.php:431
+msgid ""
+"List fields in a more compact and overviewable table view. Works best when "
+"you use just a few fields."
+msgstr ""
+"Enumerar los campos en una vista de tabla más compacta y resumida. Funciona "
+"mejor cuando se utiliza sólo unos pocos campos."
+
+#: inc-admin-options.php:438 inc-admin-options.php:558
+msgid "Fields"
+msgstr "Campos"
+
+#: inc-admin-options.php:451
+msgid "Add field"
+msgstr "Agregar campo"
+
+#: inc-admin-options.php:532 inc-admin-options.php:643
+msgid "Field groups"
+msgstr "Grupos de campo"
+
+#: inc-admin-options.php:534 inc-admin-options.php:630
+msgid "Add new"
+msgstr "Añadir nuevo"
+
+#: inc-admin-options.php:547
+msgid "No field groups yet."
+msgstr "Ningún grupo de campos se ha creado todavía."
+
+#: inc-admin-options.php:559
+msgid "Added fields"
+msgstr "Campos Adicionados"
+
+#: inc-admin-options.php:580 inc-admin-options.php:665
+msgid "Edit this item"
+msgstr "Edite este artículo"
+
+#: inc-admin-options.php:580 inc-admin-options.php:665 simple_fields.php:822
+msgid "Edit"
+msgstr "Editar"
+
+#: inc-admin-options.php:581 inc-admin-options.php:666
+msgid "Trash"
+msgstr "Papelera"
+
+#: inc-admin-options.php:629
+msgid "Post Connectors"
+msgstr "Conectores de Post"
+
+#: inc-admin-options.php:644
+msgid "Added field groups"
+msgstr "Grupo de campos agregados"
+
+#: inc-admin-options.php:714
+msgid "Post type defaults"
+msgstr "Tipos de post por defecto"
+
+#: inc-admin-options.php:741
+msgid "Default is to use <em>no connector</em>"
+msgstr "El valor por defecto es usar <em>ningún conector</ em>"
+
+#: inc-admin-options.php:744
+msgid "Default is to inherit from <em>parent connector</em>"
+msgstr "El valor predeterminado es heredar <em>conector padre</ em>"
+
+#: inc-admin-options.php:751
+#, php-format
+msgid "Default is to use connector <em>%s</em>"
+msgstr "Por defecto se usa el conector <em>% s </ em>"
+
+#: inc-admin-options.php:785
+msgid "Debug"
+msgstr "Depurar"
+
+#: inc-admin-options.php:809
+msgid "Don't enable debug output"
+msgstr "No habilitar la salida de depuración"
+
+#: inc-admin-options.php:810
+msgid "Enable debug output for administrators"
+msgstr "Activación de la salida de depuración para los administradores"
+
+#: inc-admin-options.php:811
+msgid "Enable debug output for all users"
+msgstr "Activación de la salida de depuración para todos los usuarios"
+
+#: inc-admin-options.php:815
+msgid ""
+"Automatically append information about attached fields on posts (using "
+"filter 'the_content')."
+msgstr ""
+"Adjuntar automáticamente la información acerca de los campos en los mensajes "
+"adjuntos (usando el filtro 'the_content')."
+
+#: inc-admin-options.php:827
+msgid "View debug information"
+msgstr "Mostrar información de depuración"
+
+#: simple_fields.php:291
+msgid "Delete this field?"
+msgstr "¿Quieres eliminar este campo?"
+
+#: simple_fields.php:292
+msgid "Delete this group?"
+msgstr "¿Quieres eliminar este grupo de campos?"
+
+#: simple_fields.php:293
+msgid "Delete this post connector?"
+msgstr "¿Quieres eliminar este conector?"
+
+#: simple_fields.php:294
+msgid "Delete radio button?"
+msgstr "¿Quieres eliminar este botón de radio?"
+
+#: simple_fields.php:295
+msgid "Delete dropdown value?"
+msgstr "¿Quieres eliminar este valor?"
+
+#: simple_fields.php:296
+msgid "Adding..."
+msgstr "Agregando..."
+
+#: simple_fields.php:297 simple_fields.php:1429 simple_fields.php:1471
+msgid "Add"
+msgstr "Añadir"
+
+#: simple_fields.php:298
+msgid "Remove field group from post connector?"
+msgstr "¿Quieres eliminar este grupo de campos en el conector?"
+
+#: simple_fields.php:299
+msgid "Remove this field group?"
+msgstr "¿Quieres eliminar este grupo de campos?"
+
+#: simple_fields.php:335
+msgid "Settings"
+msgstr "Configuración"
+
+#: simple_fields.php:599
+msgid "Remove field group"
+msgstr "Eliminar grupo de campo"
+
+#: simple_fields.php:814 simple_fields.php:2116 simple_fields.php:2366
+msgid "Select"
+msgstr "Seleccionar"
+
+#: simple_fields.php:815 simple_fields.php:1151
+msgid "Clear"
+msgstr "Borrar"
+
+#: simple_fields.php:816
+msgid "View"
+msgstr "Ver"
+
+#: simple_fields.php:1061 simple_fields.php:1191
+msgid "Select..."
+msgstr "Seleccionar..."
+
+#: simple_fields.php:1095
+msgid "The selected Taxonomy Term for this field type does not exist"
+msgstr "El término taxonomía seleccionada para este tipo de campo no existe"
+
+#: simple_fields.php:1150
+msgid "Select post"
+msgstr "Seleccionar post"
+
+#: simple_fields.php:1257
+msgid "Meta key:"
+msgstr "Clave meta:"
+
+#: simple_fields.php:1260
+msgid "Slug:"
+msgstr "Slug:"
+
+#: simple_fields.php:1801
+msgid "(no parent found)"
+msgstr "(Ningún padre encontrado)"
+
+#: simple_fields.php:1823
+msgid "None"
+msgstr "No"
+
+#: simple_fields.php:1824
+msgid "Inherit from parent"
+msgstr "Herdar del padre"
+
+#: simple_fields.php:1839
+msgid "Actual used connector:"
+msgstr "Conector utilizado actualmente:"
+
+#: simple_fields.php:1843
+msgid "Save post to switch to selected fields."
+msgstr "Guarde los cambios para mostrar los campos seleccionados."
+
+#: simple_fields.php:1846
+msgid "Show custom field keys"
+msgstr "Visualización de los botones de campos personalizados"
+
+#: simple_fields.php:2150
+msgid ""
+"<p>No post type is selected. Please at at least one post type in Simple "
+"Fields.</p>"
+msgstr ""
+"<p>No se ha seleccionado ningún tipo de mensaje. En al menos un tipo de "
+"favor, incluya su mensaje en campos simples.</p>"
+
+#: simple_fields.php:2354
+msgid ""
+"A unique identifier used in your theme to get the saved values of this field."
+msgstr ""
+"Un identificador único que se utiliza en el tema de los valores guardados en "
+"este campo."
+
+#: simple_fields.php:2363
+msgid "Type"
+msgstr "Tipo"
+
+#: simple_fields.php:2367 simple_fields.php:3591
+msgid "Text"
+msgstr "Text"
+
+#: simple_fields.php:2368 simple_fields.php:3595
+msgid "Textarea"
+msgstr "Textarea"
+
+#: simple_fields.php:2369 simple_fields.php:3599
+msgid "Checkbox"
+msgstr "Checkbox"
+
+#: simple_fields.php:2370 simple_fields.php:3603
+msgid "Radio buttons"
+msgstr "Radiobuttons"
+
+#: simple_fields.php:2371 simple_fields.php:3607
+msgid "Dropdown"
+msgstr "Dropdown"
+
+#: simple_fields.php:2372 simple_fields.php:3611
+msgid "File"
+msgstr "Archivo"
+
+#: simple_fields.php:2373 simple_fields.php:3615
+msgid "Post"
+msgstr "Post"
+
+#: simple_fields.php:2374 simple_fields.php:3619
+msgid "Taxonomy"
+msgstr "Taxonomía"
+
+#: simple_fields.php:2375 simple_fields.php:3623
+msgid "Taxonomy Term"
+msgstr "Término de taxonomía"
+
+#: simple_fields.php:2376 simple_fields.php:3627
+msgid "Color"
+msgstr "Color"
+
+#: simple_fields.php:2377 simple_fields.php:3631
+msgid "Date"
+msgstr "Fecha"
+
+#: simple_fields.php:2378 simple_fields.php:3635
+msgid "User"
+msgstr "Usuario"
+
+#: simple_fields.php:2441
+msgid "A hint to the user of what can be entered in the field."
+msgstr "Una sugerencia al usuario que se puede insertar en el campo."
+
+#: simple_fields.php:2460
+msgid "Add your own attributes to the input tag."
+msgstr "Añada sus propios atributos para la etiqueta \"input\"."
+
+#: simple_fields.php:2490
+msgid "Use HTML-editor"
+msgstr "Utilizar el editor HTML"
+
+#: simple_fields.php:2511 simple_fields.php:2521 simple_fields.php:2540
+#: simple_fields.php:2593 simple_fields.php:2633 simple_fields.php:2683
+#: simple_fields.php:2725 simple_fields.php:2793
+msgid "Enable Extended Return Values"
+msgstr "Habilitar Valores de retorno ampliados"
+
+#: simple_fields.php:2512
+msgid ""
+"Return an array with the name, email and full WP_User-object of the selected "
+"user, instead of just the user ID."
+msgstr ""
+"Devuelve una array con el nombre, correo electrónico y un objeto WP_User-"
+"object plena usuario seleccionado, en lugar de sólo el ID de usuario."
+
+#: simple_fields.php:2522
+msgid ""
+"Return an array with attachment title, path, etc., instead of just a post ID."
+msgstr ""
+"Devuelve un array con el título del anexo, la ruta, etc. En lugar de un "
+"único ID del mensaje."
+
+#: simple_fields.php:2532
+msgid "Also show time"
+msgstr "También mostrará la hora"
+
+#: simple_fields.php:2541
+msgid ""
+"Return an array with the selected date as a unix timestamp and as the date "
+"format set in WordPress settings."
+msgstr ""
+"Devuelve un array con el seleccionado como una marca de tiempo Unix y "
+"formato de fecha como se define en la configuración de la fecha de WordPress."
+
+#: simple_fields.php:2552
+msgid "Post types to select from"
+msgstr "Tipos de post para escoger a partir de"
+
+#: simple_fields.php:2594
+msgid ""
+"Return an array with the title, permalink, and complete post object of the "
+"selected post, instead of just the ID."
+msgstr ""
+"Devuelve un array con el título, enlace permanente, y un post completo del "
+"objeto seleccionado, en lugar de sólo el ID del mensaje."
+
+#: simple_fields.php:2605
+msgid "Taxonomies to show in dropdown"
+msgstr "Taxonomía para mostrar el menú desplegable"
+
+#: simple_fields.php:2634
+msgid ""
+"Return an array with name and complete taxonomy object of the selected "
+"taxonomy, instead of just the ID."
+msgstr ""
+"Devuelve un array con el nombre completo y la taxonomía del objeto "
+"seleccionado, en lugar de sólo la taxonomía ID."
+
+#: simple_fields.php:2645
+msgid "Taxonomy to select terms from"
+msgstr "Taxonomía para seleccionar términos de"
+
+#: simple_fields.php:2671
+msgid "Additional arguments"
+msgstr "Argumentos adicionales"
+
+#: simple_fields.php:2684
+msgid ""
+"Return a multi dimensional array with all the taxonomy terms objects, "
+"instead of just the IDs of the terms."
+msgstr ""
+"Devuelve un array multidimensional con todos los objetos en términos de "
+"taxonomía, y no sólo los identificadores de los términos."
+
+#: simple_fields.php:2726
+msgid ""
+"Return an array with the value of the selected radiobutton + the values of "
+"the non-selected radiobuttons."
+msgstr ""
+"Devuelve un array con el valor de radiobutton + valores seleccionados de "
+"botones de radio no seleccionados."
+
+#: simple_fields.php:2734 simple_fields.php:2814
+msgid "Values"
+msgstr "Valores"
+
+#: simple_fields.php:2737
+msgid "Default"
+msgstr "Predeterminado"
+
+#: simple_fields.php:2741
+msgid "Add radio button"
+msgstr "Añadir radiobutton"
+
+#: simple_fields.php:2753
+msgid "Checked by default"
+msgstr "Marcado por defecto"
+
+#: simple_fields.php:2794
+msgid ""
+"Return an array with the value of the selected item in the dropdown + the "
+"values of the non-selected items."
+msgstr ""
+"Devuelve un array con el valor del elemento seleccionado en los valores "
+"desplegables (dropdown) + para la lista de los elementos no seleccionados."
+
+#: simple_fields.php:2820
+msgid "Add dropdown value"
+msgstr "Agregar valor"
+
+#: simple_fields.php:2830
+msgid "Delete field"
+msgstr "Eliminar campo"
+
+#: simple_fields.php:3021
+msgid " (Repeatable)"
+msgstr " (Repetible)"
+
+#: simple_fields.php:3023
+#, php-format
+msgid "Fieldgroup %1$s %2$s"
+msgstr "Grupos de campo %1$s %2$s"
+
+#: simple_fields.php:3037
+msgid "Field"
+msgstr "Campo"
+
+#: simple_fields.php:3038
+msgid "type"
+msgstr "Tipo"
+
+#: simple_fields.php:3058
+msgid ""
+"No slug for this field found (probably old field that has not been edited "
+"and saved)."
+msgstr ""
+"No se ha encontrado slug para este campo (probablemente un viejo campo que "
+"no ha sido editado y guardado)."
+
+#: simple_fields.php:3088
+msgid "Show fields."
+msgstr "Mostrar campos."
+
+#: simple_fields.php:3089
+msgid "Hide fields."
+msgstr "Ocultar campos"
+
+#: simple_fields.php:3663 simple_fields.php:3698 simple_fields.php:3752
+#: simple_fields.php:3771 simple_fields.php:3789 simple_fields.php:3807
+msgid "Cheatin&#8217; uh?"
+msgstr "Haciendo trampa&#8217;  eh???"
+
+#~ msgid "New field group"
+#~ msgstr "Novo grupo de campos"
+
+#~ msgid "New post connector"
+#~ msgstr "Novo relacionamento de post"
+
+#~ msgid "Added dropdown values"
+#~ msgstr "Valores atuais:"
+
+#~ msgid "Select file"
+#~ msgstr "Selecionar arquivo"
+
+#~ msgid "image"
+#~ msgstr "imagem"
+
+#~ msgid "Visual"
+#~ msgstr "Visual"
+
+#~ msgid "HTML"
+#~ msgstr "HTML"
+
+#~ msgid "Submit"
+#~ msgstr "Enviar"
