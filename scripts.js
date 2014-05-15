@@ -61,18 +61,54 @@ var simple_fields_file_field = (function($) {
 
 		// Code based on https://github.com/thomasgriffin/New-Media-Image-Uploader/blob/master/js/media.js
 		// TODO: how do i get the filter dropdown?? i think i've tried everything!
+
+		/*
         my.media_frame = wp.media({
             className: 'media-frame simple-fields-media-frame',
             frame: 'select', // select | post. select removed left nav (insert media, create gallery, set featured image)
             multiple: false,
             title: _wpMediaViewsL10n.mediaLibraryTitle,
-            /*library: {
-                //type: 'audio' // image | audio
-            },*/
             button: {
                 text: _wpMediaViewsL10n.insertIntoPost
             }
         });
+		*/
+		
+		// http://simple-fields.com/documentation/field-types/file/#comment-1182
+		//———– replaced with the following: ———-
+		//see: http://stackoverflow.com/questions/14674948/wordpress-3-5-media-manager-add-my-own-backbone-js-views
+		my.media_frame = wp.media({
+			state: 'mystate',
+			className: 'media-frame simple-fields-media-frame',
+			frame: 'select', // select | post. select removed left nav (insert media, create gallery, set featured image)
+			multiple: false,
+			title: _wpMediaViewsL10n.mediaLibraryTitle,
+			button: {
+				text: _wpMediaViewsL10n.insertIntoPost
+			}
+		});
+
+		my.media_frame.states.add([
+
+			new wp.media.controller.Library({
+				id: 'mystate',
+				title: _wpMediaViewsL10n.mediaLibraryTitle,
+				priority: 2,
+				toolbar: 'select',
+				filterable: 'uploaded',
+				library: wp.media.query(my.media_frame.options.library),
+				multiple: my.media_frame.options.multiple ? 'reset' : true,
+				editable: true,
+				displayUserSettings: true,
+				displaySettings: true,
+				allowLocalEdits: true
+				//AttachmentView: ?
+
+			}),
+		]);
+
+
+
 
         my.media_frame.on('select', function(){
             

@@ -144,6 +144,11 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
+#### Version 1.4.x
+
+- Media Library should work better with third party plugins now, like [Media Library Assistant](http://wordpress.org/plugins/media-library-assistant/). Thanks to “Rémi” for providing some example code on how to fix this. Should fix [http://wordpress.org/support/topic/mediathek-not-working-with-simplefield](http://wordpress.org/support/topic/mediathek-not-working-with-simplefield).
+- simple_fields_values() can now also be passed a WP_Post object (instead of just the post id).
+
 #### Version 1.4.6
 
 - Added Spanish translation. Thank you translator!
