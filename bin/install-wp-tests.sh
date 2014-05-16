@@ -36,6 +36,6 @@ mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"
 
 # prepare shell for phpunit call
 pwd
-cd $plugin_dir/tests
+#cd $plugin_dir/tests
 
 set +x
