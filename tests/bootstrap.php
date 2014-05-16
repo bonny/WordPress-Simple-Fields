@@ -1,5 +1,8 @@
 <?php
 
+ini_set('display_errors','on');
+error_reporting(E_ALL);
+
 #echo "WP_TESTS_DIR is: " . getenv( 'WP_TESTS_DIR' );
 #phpinfo();exit;
 
@@ -28,6 +31,8 @@ else {
  
 if ( ! file_exists( WP_TESTS_DIR . '/includes/functions.php' ) ) 
     die( 'The WordPress PHPUnit test suite could not be found.' ); 
+
+require_once dirname( __FILE__ ) . '/../tmp/wordpress-tests/includes/functions.php';
  
 require_once WP_TESTS_DIR . '/includes/functions.php'; 
 
