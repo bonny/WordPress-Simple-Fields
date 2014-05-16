@@ -30,3 +30,8 @@ sed -i "s/yourpasswordhere/$DB_PASS/" wp-tests-config.php
 
 # create database
 mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"
+
+# prepare shell for phpunit call
+cd $plugin_dir/tests
+
+set +x
