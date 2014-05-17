@@ -45,5 +45,7 @@ before_script:
     # prepare for running the tests
     #- cd $plugin_dir/tests
     #- cd tests
+    - phpenv rehash
+
 
 script: phpunit

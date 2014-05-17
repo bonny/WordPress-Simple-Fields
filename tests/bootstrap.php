@@ -1,5 +1,7 @@
 <?php
 
+echo __FILE__;
+
 require( dirname( __FILE__ ) . '/includes/define-constants.php' );
 
 if ( ! file_exists( WP_TESTS_DIR . '/includes/functions.php' ) ) {
