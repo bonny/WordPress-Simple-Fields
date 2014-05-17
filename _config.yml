@@ -1,0 +1,8 @@
+timezone: Europe/Stockholm
+highlighter: pygments
+markdown: redcarpet
+collections:
+  front_sections:
+    foo: bar
+    output: true
+
