@@ -3,6 +3,8 @@
 ini_set('display_errors','on');
 error_reporting(E_ALL);
 
+define( 'WP_TESTS_DIR', getenv( 'WP_TESTS_DIR' ) );
+echo "\nWP_TESTS_DIR is " . WP_TESTS_DIR . "\n";
 
 echo "\n" . __FILE__ . " " . __LINE__ . "\n";
 echo "\ngetcwd: " . getcwd() . "\n";
@@ -30,8 +32,6 @@ function _manually_load_plugin() {
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
 echo "\n" . __FILE__ . " " . __LINE__ . "\n";
-
-echo "\nWP_TESTS_DIR is " . WP_TESTS_DIR . "\n";
 
 require WP_TESTS_DIR . '/includes/bootstrap.php';
 
