@@ -75,6 +75,10 @@ EOD;
 		$this->assertEquals("12/10/2012", simple_fields_value("field_date", $post_id));
 		$this->assertEquals(1, simple_fields_value("field_user", $post_id));
 
+		// test that wp_post object can be passed
+		$post_dapost = get_post($post_id);
+		$this->assertEquals("Text entered in the text field", simple_fields_value("field_text", $post_dapost));
+
 		// test repeatable/all values
 
 		#echo "xxx";

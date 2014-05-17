@@ -577,3 +577,8 @@ ul.simple-fields-file-browser-list {
 .simple-fields-media-frame .media-menu .media-menu-item:nth-child(2) {
 	display: none;
 }
+
+/* hide "ATTACHMENT DISPLAY SETTINGS" since they don't do anything when file is selected in simple fields */
+.simple-fields-media-frame .attachment-display-settings {
+	display: none;
+}

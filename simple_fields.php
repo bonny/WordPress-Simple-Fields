@@ -3,7 +3,7 @@
 Plugin Name: Simple Fields
 Plugin URI: http://simple-fields.com
 Description: Add groups of textareas, input-fields, dropdowns, radiobuttons, checkboxes and files to your edit post screen.
-Version: 1.4.6
+Version: 1.4.7
 Author: Pär Thernström
 Author URI: http://eskapism.se/
 License: GPL2
@@ -56,7 +56,7 @@ class simple_fields {
 	 */
 	function init() {
 
-		define( "SIMPLE_FIELDS_VERSION", "1.4.6");
+		define( "SIMPLE_FIELDS_VERSION", "1.4.7");
 		define( "SIMPLE_FIELDS_URL", plugins_url(basename(dirname(__FILE__))). "/");
 
 		define( "SIMPLE_FIELDS_NAME", "Simple Fields");
@@ -1794,8 +1794,10 @@ sf_d($one_field_slug, 'one_field_slug');*/
 		echo "<div class='simple-fields-meta-box-field-group-wrapper $num_added_field_groups_css $field_group_slug_css $field_group_wrapper_css'>";
 		echo "<input type='hidden' name='simple-fields-meta-box-field-group-id' value='$post_connector_field_id' />";
 	 	
-		// Show edit link if debug is enabled
-		if ( defined("WP_DEBUG") && WP_DEBUG ) {
+		// Show edit link if debug is enabled and user can manage options
+		$show_post_edit_field_group_edit_link = current_user_can("manage_options");
+		$show_post_edit_field_group_edit_link = apply_filters("simple_fields_show_post_edit_field_group_edit_link", $show_post_edit_field_group_edit_link);
+		if ( $show_post_edit_field_group_edit_link ) {
 			printf(
 				'<div class="sf-meta-box-edit-field-group"><a href="%1$s">%2$s</a></div>',
 				admin_url( "options-general.php?page=simple-fields-options&action=edit-field-group&group-id=" . $current_field_group["id"] ),
@@ -4459,7 +4461,8 @@ sf_d($one_field_slug, 'one_field_slug');*/
 			<!-- <img src="http://d3m1jlakmz8guo.cloudfront.net/application/views/assets/img/earth_people.png"> -->
 
 			<p>This plugin is made by swedish web agency <a href="http://earthpeople.se/?utm_source=wordpress&utm_medium=plugin&utm_campaign=simplefields">Earth People</a>.</p>
-			<p>We specialize in web development, user experience and design.</p>
+			<p>Please <a href="http://eskapism.se/sida/donate/?utm_source=wordpress&utm_medium=plugin&utm_term=simple-fields&utm_campaign=simplefieldsplugin
+">donate to support the development of this plugin</a>.</p>
 			<p><a href="mailto:peder@earthpeople.se">Contact us</a> if you need a professional WordPress partner.</p>
 		
 		</div>

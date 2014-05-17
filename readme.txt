@@ -4,7 +4,7 @@ Donate link: http://simple-fields.com/about/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, more fields, repeatable fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom, simple fields, cms, date picker, time picker, repeatable fields, multiple fields
 Requires at least: 3.7.1
 Tested up to: 3.9.1
-Stable tag: 1.4.6
+Stable tag: 1.4.7
 
 With Simple Fields you can add any kind of custom fields to your pages, posts and attachments.
 
@@ -144,10 +144,11 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
-#### Version 1.4.x
+#### Version 1.4.7
 
-- Media Library should work better with third party plugins now, like [Media Library Assistant](http://wordpress.org/plugins/media-library-assistant/). Thanks to “Rémi” for providing some example code on how to fix this. Should fix [http://wordpress.org/support/topic/mediathek-not-working-with-simplefield](http://wordpress.org/support/topic/mediathek-not-working-with-simplefield).
+- File field type and the media library should work better with third party plugins now, like [Media Library Assistant](http://wordpress.org/plugins/media-library-assistant/). Thanks to “Rémi” for providing some example code on how to fix this. Should fix [http://wordpress.org/support/topic/mediathek-not-working-with-simplefield](http://wordpress.org/support/topic/mediathek-not-working-with-simplefield).
 - simple_fields_values() can now also be passed a WP_Post object (instead of just the post id).
+- the edit field group link on the edit post screen is not visible for users with capability edit_options (WP_DEBUG is no longer needed). Can be changed with filter `simple_fields_show_post_edit_field_group_edit_link"`.
 
 #### Version 1.4.6
 
