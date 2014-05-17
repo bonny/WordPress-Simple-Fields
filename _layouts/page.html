@@ -29,31 +29,31 @@
         -->
       </header>
       <section>
-        
+
         <h2>{{ page.title }}</h2>
         {{ page.content | markdownify }}
 
       </section>
 
-      
+
        {% for section in site.front_sections %}
 
         <section>
-          
+
           <h3>{{ section.title }}</h3>
           {{ section.content | markdownify }}
-      
+
         </section>
-          
+
       {% endfor %}
 
-      
+
       <footer>
         <p>This project is maintained by <a href="https://github.com/bonny">bonny</a></p>
         <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
     </div>
-    
+
     <script src="javascripts/scale.fix.js"></script>
 
   </body>

@@ -1,5 +1,5 @@
 ---
 layout: page
-title: Welcome to Simple Fields
+title: Simple Fields – better custom fields for WordPress
 ---
 Detta är text på startsidan.
