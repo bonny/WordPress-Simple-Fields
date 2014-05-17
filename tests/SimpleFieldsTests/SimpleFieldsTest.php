@@ -78,6 +78,7 @@ EOD;
 		// test that wp_post object can be passed
 		$post_dapost = get_post($post_id);
 		$this->assertEquals("Text entered in the text field", simple_fields_value("field_text", $post_dapost));
+		$this->assertEquals("Text entered in the text field WRONG", simple_fields_value("field_text", $post_dapost));
 
 		// test repeatable/all values
 
