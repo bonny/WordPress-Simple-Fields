@@ -1,15 +1,51 @@
 language: php
 
 php:
-    - 5.3
+#    - 5.3
     - 5.4
+#    - 5.5
 
 env:
-    - WP_VERSION=3.6.1 WP_MULTISITE=0
-    - WP_VERSION=3.6.1 WP_MULTISITE=1
+    - WP_VERSION=master WP_MULTISITE=0
+#    - WP_VERSION=3.8 WP_MULTISITE=0
+#    - WP_VERSION=3.7.1 WP_MULTISITE=0
+#    - WP_VERSION=3.6.1 WP_MULTISITE=0
+#    - WP_VERSION=3.5.2 WP_MULTISITE=0
+#    - WP_VERSION=master WP_MULTISITE=1
+#    - WP_VERSION=3.8 WP_MULTISITE=1
+#    - WP_VERSION=3.7.1 WP_MULTISITE=1
+#    - WP_VERSION=3.6.1 WP_MULTISITE=1
+#    - WP_VERSION=3.5.2 WP_MULTISITE=1
 
 before_script:
-    - export WP_TESTS_DIR=/tmp/wordpress-tests/
-    - bash bin/install-wp-tests.sh wordpress_test root '' $WP_VERSION 
+    # set up WP install
+    - mkdir -p tmp
+    - WP_CORE_DIR=tmp/wordpress/
+    - export WP_TESTS_DIR=tmp/wordpress-tests/
+    - wget -nv -O tmp/wordpress.tar.gz https://github.com/WordPress/WordPress/tarball/$WP_VERSION
+    - mkdir -p $WP_CORE_DIR
+    - tar --strip-components=1 -zxmf tmp/wordpress.tar.gz -C $WP_CORE_DIR
+    - plugin_slug=$(basename $(pwd))
+    - plugin_dir=$WP_CORE_DIR/wp-content/plugins/$plugin_slug
+    #- cd ..
+    #- mv $plugin_slug $plugin_dir
+    # set up testing suite
+    - svn co --ignore-externals http://unit-tests.svn.wordpress.org/trunk/ $WP_TESTS_DIR
+    #- cd $WP_TESTS_DIR
+    - cp tmp/wordpress-tests/wp-tests-config-sample.php tmp/wordpress-tests/wp-tests-config.php
+    # require_once 'PHPUnit/Autoload.php' causes error in bootstrap file, so use same file but with that line removed
+    # thanks to SDD that led me to that solution
+    - cp -fr tests/bootstrap-wordpress-unit-test-suite.php tmp/wordpress-tests/includes/bootstrap.php
+    - sed -i "s:dirname( __FILE__ ) . '/wordpress/':'$WP_CORE_DIR':" tmp/wordpress-tests/wp-tests-config.php
+    - sed -i "s/yourdbnamehere/wordpress_test/" tmp/wordpress-tests/wp-tests-config.php
+    - sed -i "s/yourusernamehere/root/" tmp/wordpress-tests/wp-tests-config.php
+    - sed -i "s/yourpasswordhere//" tmp/wordpress-tests/wp-tests-config.php
+    # set up database
+    - mysql -e 'CREATE DATABASE wordpress_test;' -uroot
+    # prepare for running the tests
+    #- cd $plugin_dir/tests
+    #- cd tests
+    - phpenv rehash
 
-script: phpunit
+
+script: phpunit --verbose --debug 
