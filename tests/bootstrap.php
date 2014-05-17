@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 
 
 echo "\n" . __FILE__ . " " . __LINE__ . "\n";
-echo "\ngetcwd: " . getcwd();
+echo "\ngetcwd: " . getcwd() . "\n";
 
 require( dirname( __FILE__ ) . '/includes/define-constants.php' );
 
