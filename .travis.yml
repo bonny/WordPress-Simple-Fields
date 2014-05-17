@@ -32,7 +32,7 @@ before_script:
     # set up testing suite
     - svn co --ignore-externals http://unit-tests.svn.wordpress.org/trunk/ $WP_TESTS_DIR
     #- cd $WP_TESTS_DIR
-    - cp tmp/wp-tests-config-sample.php tmp/wordpress-tests/wp-tests-config.php
+    - cp tmp/wordpress-tests/wp-tests-config-sample.php tmp/wordpress-tests/wp-tests-config.php
     # require_once 'PHPUnit/Autoload.php' causes error in bootstrap file, so use same file but with that line removed
     # thanks to SDD that led me to that solution
     - cp -fr tests/bootstrap-wordpress-unit-test-suite.php tmp/wordpress-tests/includes/bootstrap.php
