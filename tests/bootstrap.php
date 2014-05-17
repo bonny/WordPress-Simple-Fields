@@ -31,6 +31,8 @@ tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
 echo "\n" . __FILE__ . " " . __LINE__ . "\n";
 
+echo "\nWP_TESTS_DIR is " . WP_TESTS_DIR . "\n";
+
 require WP_TESTS_DIR . '/includes/bootstrap.php';
 
 class SimpleFields_TestCase extends WP_UnitTestCase {
