@@ -56,16 +56,9 @@ EOD;
 	// insert and test manually added fields
 	function testManuallyAddedFields()
 	{
-
-		echo __LINE__ . __FILE__;
-
 		_insert_manually_added_fields();
 
-		echo __LINE__ . __FILE__;
-
 		$post_id = 11;
-
-		echo __LINE__ . __FILE__;
 
 		// test single/first values
 		$this->assertEquals("Text entered in the text field", simple_fields_value("field_text", $post_id));
@@ -81,16 +74,10 @@ EOD;
 		$this->assertEquals("FF3C26", simple_fields_value("field_color", $post_id));
 		$this->assertEquals("12/10/2012", simple_fields_value("field_date", $post_id));
 		$this->assertEquals(1, simple_fields_value("field_user", $post_id));
-echo __LINE__ . __FILE__;
-		// test that wp_post object can be passed
-		$post_dapost = get_post($post_id);
-		$this->assertEquals("Text entered in the text field", simple_fields_value("field_text", $post_dapost));
-		$this->assertEquals("Text entered in the text field WRONG", simple_fields_value("field_text", $post_dapost));
-
-		$this->assertEquals("abc", "def");
 
 		// test repeatable/all values
 
+		#echo "xxx";
 		#var_dump( simple_fields_values("field_text") );
 		#exit;
 		#print_r($allvals);
