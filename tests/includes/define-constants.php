@@ -1,16 +1,6 @@
 <?php
 
 /**
- * Define constants needed by test suite.
- */
-
-define( 'BP_PLUGIN_DIR', dirname( dirname( dirname( __FILE__ ) ) ) . '/' );
-
-if ( ! defined( 'BP_TESTS_DIR' ) ) {
-	define( 'BP_TESTS_DIR', dirname( dirname( __FILE__ ) ) . '/' );
-}
-
-/**
  * In the pre-develop.svn WP development environment, an environmental bash
  * variable would be set to run PHP Unit tests. However, this has been done
  * away with in a post-develop.svn world. We'll still check if this variable
