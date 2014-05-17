@@ -80,9 +80,10 @@ EOD;
 		$this->assertEquals("Text entered in the text field", simple_fields_value("field_text", $post_dapost));
 		$this->assertEquals("Text entered in the text field WRONG", simple_fields_value("field_text", $post_dapost));
 
+		$this->assertEquals("abc", "def");
+
 		// test repeatable/all values
 
-		#echo "xxx";
 		#var_dump( simple_fields_values("field_text") );
 		#exit;
 		#print_r($allvals);
