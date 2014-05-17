@@ -569,3 +569,11 @@ ul.simple-fields-file-browser-list {
 .postbox:hover .sf-post-edit-side-field-edit-post-connector {
 	display: block;
 }
+
+/*
+	modify media selector used by file field
+*/
+/* hide second/built in media library item in sidebar */
+.simple-fields-media-frame .media-menu .media-menu-item:nth-child(2) {
+	display: none;
+}

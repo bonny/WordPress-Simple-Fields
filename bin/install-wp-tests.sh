@@ -18,6 +18,9 @@ mkdir -p $WP_CORE_DIR
 wget -nv -O /tmp/wordpress.tar.gz https://github.com/WordPress/WordPress/tarball/$WP_VERSION
 tar --strip-components=1 -zxmf /tmp/wordpress.tar.gz -C $WP_CORE_DIR
 
+plugin_slug=$(basename $(pwd))
+plugin_dir=$WP_CORE_DIR/wp-content/plugins/$plugin_slug
+
 # set up testing suite
 svn co --ignore-externals --quiet http://unit-tests.svn.wordpress.org/trunk/ $WP_TESTS_DIR
 
@@ -30,3 +33,9 @@ sed -i "s/yourpasswordhere/$DB_PASS/" wp-tests-config.php
 
 # create database
 mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"
+
+# prepare shell for phpunit call
+pwd
+#cd $plugin_dir/tests
+
+set +x

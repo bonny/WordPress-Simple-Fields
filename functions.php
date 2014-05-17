@@ -1516,7 +1516,7 @@ function simple_fields_value($field_slug = NULL, $post_id = NULL, $options = NUL
 /**
  * Gets all values as array
  * @param string $field_slug or comma separated list of several slugs. can be in "slashed" format, ie.. fieldgroupslug/fieldgroup, to avoid wrong value being fetched when multiple fields have the same slug.
- * @param int $post_id ID of post or null to use current post in loop
+ * @param int $post_id ID of post or WP_Post object or null to use current post in loop
  * @param array $options Array or query string of options to send to field type
  * @return mixed string or array, depending on the field type and if first arg contains comma or not
  * 
@@ -1553,6 +1553,10 @@ function simple_fields_values($field_slug = NULL, $post_id = NULL, $options = NU
 
 	if (is_null($post_id)) {
 		$post_id = get_the_ID();
+	}
+
+	if (is_a($post_id, "WP_Post")) {
+		$post_id = $post_id->ID;
 	}
 
 	// if field_slug contains commas then get all fields. awe-some!

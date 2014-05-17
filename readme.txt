@@ -3,8 +3,8 @@ Contributors: eskapism, MarsApril, samface, angrycreative, Earth People
 Donate link: http://simple-fields.com/about/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, more fields, repeatable fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom, simple fields, cms, date picker, time picker, repeatable fields, multiple fields
 Requires at least: 3.7.1
-Tested up to: 3.8
-Stable tag: 1.4.5
+Tested up to: 3.8.2
+Stable tag: 1.4.6
 
 With Simple Fields you can add any kind of custom fields to your pages, posts and attachments.
 
@@ -143,6 +143,15 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 
 == Changelog ==
+
+#### Version 1.4.x
+
+- Media Library should work better with third party plugins now, like [Media Library Assistant](http://wordpress.org/plugins/media-library-assistant/). Thanks to “Rémi” for providing some example code on how to fix this. Should fix [http://wordpress.org/support/topic/mediathek-not-working-with-simplefield](http://wordpress.org/support/topic/mediathek-not-working-with-simplefield).
+- simple_fields_values() can now also be passed a WP_Post object (instead of just the post id).
+
+#### Version 1.4.6
+
+- Added Spanish translation. Thank you translator!
 
 #### Version 1.4.5
 
