@@ -7,17 +7,19 @@ error_reporting(E_ALL);
 echo "\n" . __FILE__ . " " . __LINE__ . "\n";
 echo "\ngetcwd: " . getcwd() . "\n";
 
-require( dirname( __FILE__ ) . '/includes/define-constants.php' );
+#require( dirname( __FILE__ ) . '/includes/define-constants.php' );
 
 echo "\n" . __FILE__ . " " . __LINE__ . "\n";
 
-if ( ! file_exists( WP_TESTS_DIR . '/includes/functions.php' ) ) {
-	die( "The WordPress PHPUnit test suite could not be found.\n" );
-}
+#if ( ! file_exists( WP_TESTS_DIR . '/includes/functions.php' ) ) {
+#	die( "The WordPress PHPUnit test suite could not be found.\n" );
+#}
+require_once dirname( __FILE__ ) . '/../tmp/wordpress-tests/includes/functions.php';
+
 
 echo "\n" . __FILE__ . " " . __LINE__ . "\n";
 
-require_once WP_TESTS_DIR . '/includes/functions.php';
+#require_once WP_TESTS_DIR . '/includes/functions.php';
 
 echo "\n" . __FILE__ . " " . __LINE__ . "\n";
 
