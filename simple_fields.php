@@ -1007,10 +1007,12 @@ sf_d($one_field_slug, 'one_field_slug');*/
 				// <div class="simple-fields-metabox-field simple-fields-fieldgroups-field-1-1 simple-fields-fieldgroups-field-type-text" data-fieldgroup_id="1" data-field_id="1" data-num_in_set="0">
 				
 				?>
-				<div class="simple-fields-metabox-field sf-cf <?php echo $field_class ?>" 
-					data-fieldgroup_id=<?php echo $field_group_id ?>
-					data-field_id="<?php echo $field_id ?>"
-					data-num_in_set=<?php echo $num_in_set ?>
+				
+				<div 
+					class="simple-fields-metabox-field sf-cf <?php echo $field_class ?>" 
+					data-fieldgroup_id=<?php echo $field_group_id ?> 
+					data-field_id="<?php echo $field_id ?>" 
+					data-num_in_set=<?php echo $num_in_set ?> 
 					>
 					<?php
 
@@ -1180,33 +1182,33 @@ sf_d($one_field_slug, 'one_field_slug');*/
 								echo "<div class='simple-fields-metabox-field-file-selected-image'>$image_html</div>";
 							echo "</div>";
 
-							echo "<div class='simple-fields-metabox-field-file-col2'>";
+							echo "\n<div class='simple-fields-metabox-field-file-col2'>";
 								
-								echo "<input type='hidden' class='text simple-fields-metabox-field-file-fileID' name='$field_name' id='$field_unique_id' value='$attachment_id' />";							
+								echo "\n<input type='hidden' class='text simple-fields-metabox-field-file-fileID' name='$field_name' id='$field_unique_id' value='$attachment_id' />";							
 	
 								// File name
-								echo "<div class='simple-fields-metabox-field-file-selected-image-name'>$image_name</div>";
+								echo "\n<div class='simple-fields-metabox-field-file-selected-image-name'>$image_name</div>";
 
 								// File action links (view, select, edit, etc.)
 								$field_unique_id_esc = rawurlencode($field_unique_id);
 								$file_url = get_bloginfo('wpurl') . "/wp-admin/media-upload.php?simple_fields_dummy=1&simple_fields_action=select_file&simple_fields_file_field_unique_id=$field_unique_id_esc&post_id=$current_post_id&TB_iframe=true";
 								
-								echo "<a class='simple-fields-metabox-field-file-select' href='$file_url'>".__('Select', 'simple-fields')."</a> ";
-								echo "<a href='#' class='simple-fields-metabox-field-file-clear'>".__('Clear', 'simple-fields')."</a> ";
-								echo "<a class='simple-fields-metabox-field-file-view' target='_blank' href='$view_file_url'>".__('View', 'simple-fields')."</a> ";
+								echo "\n<a class='simple-fields-metabox-field-file-select' href='$file_url'>".__('Select', 'simple-fields')."</a> ";
+								echo "\n<a href='#' class='simple-fields-metabox-field-file-clear'>".__('Clear', 'simple-fields')."</a> ";
+								echo "\n<a class='simple-fields-metabox-field-file-view' target='_blank' href='$view_file_url'>".__('View', 'simple-fields')."</a> ";
 								
 								//$class = ($attachment_id) ? " " : " hidden ";
 								// old format: http://viacom.ep/wp-admin/media.php?attachment_id=20314&action=edit
 								// new format: http://viacom.ep/wp-admin/post.php?post=20314&action=edit
 								$href_edit = ($attachment_id) ? admin_url("post.php?post={$attachment_id}&action=edit") : "#";
-								echo "<a href='{$href_edit}' target='_blank' class='simple-fields-metabox-field-file-edit'>".__('Edit', 'simple-fields') . "</a>";
+								echo "\n<a href='{$href_edit}' target='_blank' class='simple-fields-metabox-field-file-edit'>".__('Edit', 'simple-fields') . "</a>";
 
-							echo "</div>";
+							echo "\n</div>";
 
 
-							echo "</div>"; // second
+							echo "\n</div>"; // second
 
-						echo "</div>";
+						echo "\n</div>";
 							
 					} elseif ("textarea" == $field["type"]) {
 		
@@ -1332,13 +1334,17 @@ sf_d($one_field_slug, 'one_field_slug');*/
 									$footer_scripts = ob_get_clean();								
 
 									// only keep scripts. works pretty ok, but we get some stray text too, so use preg match to get only script tags
-									$footer_scripts = wp_kses($footer_scripts, array("script" => array()));
+									// wp_kses also replaces & > &amp, which is not good in scripts
+									$footer_scripts = $this->wp_kses( $footer_scripts, array("script" => array() ), array(), true );
 									
 									preg_match_all('/<script>(.*)<\/script>/msU', $footer_scripts, $matches);
+
 									$footer_scripts = "";
+
 									foreach ($matches[1] as $one_script_tag_contents) {
-										if ( ! empty( $one_script_tag_contents ) )
+										if ( ! empty( $one_script_tag_contents ) ) {
 											$footer_scripts .= sprintf('<script>%1$s</script>', $one_script_tag_contents);
+										}
 									}
 
 									// the scripts only output correct id for the first editor
@@ -1357,7 +1363,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 									// the line that begins with 
 									// (function(){var t=tinyMCEPreInit,sl=tinymce.ScriptLoader
 									// breaks my install... so let's remove it
-									// it's only outputed sometimes, something to do with compressed scripts or not. or simpething.
+									// it's only outputed sometimes, something to do with compressed scripts or not. or something.
 									$footer_scripts = preg_replace('/\(function\(\){var t=tinyMCEPreInit,sl=tinymce.ScriptLoader.*/', '', $footer_scripts);
 
 									echo "$footer_scripts";
@@ -4559,6 +4565,32 @@ sf_d($one_field_slug, 'one_field_slug');*/
 		return $post_connector;
 
 	}
+
+
+	/**
+	 * Filters content and keeps only allowable HTML elements.
+	 *
+	 * This is the same function as built into WP, but with optional allowing of keeping "&"
+	 *
+	 * @param string $string Content to filter through kses
+	 * @param array $allowed_html List of allowed HTML elements
+	 * @param array $allowed_protocols Optional. Allowed protocol in links.
+	 * @return string Filtered content with only allowed HTML elements
+	 */
+	function wp_kses( $string, $allowed_html, $allowed_protocols = array(), $skip_normalize_entities = false ) {
+		if ( empty( $allowed_protocols ) )
+			$allowed_protocols = wp_allowed_protocols();
+		$string = wp_kses_no_null($string);
+		$string = wp_kses_js_entities($string);
+		
+		if (!$skip_normalize_entities) {
+			$string = wp_kses_normalize_entities($string);
+		}
+
+		$string = wp_kses_hook($string, $allowed_html, $allowed_protocols); // WP changed the order of these funcs and added args to wp_kses_hook
+		return wp_kses_split($string, $allowed_html, $allowed_protocols);
+	}
+
 
 } // end class
 
