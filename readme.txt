@@ -4,7 +4,7 @@ Donate link: http://simple-fields.com/about/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, more fields, repeatable fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom, simple fields, cms, date picker, time picker, repeatable fields, multiple fields
 Requires at least: 3.7.1
 Tested up to: 3.9.1
-Stable tag: 1.4.7
+Stable tag: 1.4.8
 
 With Simple Fields you can add any kind of custom fields to your pages, posts and attachments.
 
@@ -143,6 +143,11 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 
 == Changelog ==
+
+#### Version 1.4.8
+
+- TinyMCE/WYSIWYG-editors should work again now, when using repeatable fields. Should fix http://wordpress.org/support/topic/problem-with-repeatable-fields, http://wordpress.org/support/topic/error-in-wordpres-39, http://wordpress.org/support/topic/39-html-editor-load-script-issue?replies=4, http://wordpress.org/support/topic/bug-repeatable-field-groups-and-wp-39?replies=2.
+- Please remember to [donate if you like and use this plugin](http://eskapism.se/sida/donate/). Or at least [give it a nice plugin review](https://wordpress.org/support/view/plugin-reviews/simple-fields)!
 
 #### Version 1.4.7
 
