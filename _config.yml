@@ -6,3 +6,7 @@ collections:
     foo: bar
     output: true
 
+# Custom vars
+current_version:  1.4.8
+repo: https://github.com/bonny/WordPress-Simple-Fields/
+
