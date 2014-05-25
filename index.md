@@ -6,6 +6,8 @@ tagline: test
 
 Simple Fields is a nice plugin indeed.
 
+<p class="version">Currently v{{ site.current_version }}</p>
+
 
 {% for post in site.posts %}
     <li>aaa<span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a></li>
