@@ -11,6 +11,16 @@ Gist:
 Gist 2:
 {% gist bonny/3851387 %}
 
+
+- list
+- items
+
+# headline
+
+*bold*'
+_and things_
+
+
 <!--
 {% gist parkr/931c1c8d465a04042403 jekyll-private-gist.markdown %}
 -->
