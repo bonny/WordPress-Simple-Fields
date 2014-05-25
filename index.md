@@ -1,23 +1,16 @@
 ---
 layout: page
 title: Simple Fields – better custom fields for WordPress
+tagline: test
 ---
 
 Simple Fields is a nice plugin indeed.
 
-Gist now index.html:
-{% gist bonny/3851387/ %}
 
-Gist 2:
-{% gist bonny/3851387 %}
-
-Gist 3:
-{% gist 5555251 %}
-
-Date:
-{{ page.date | date: '%B %d, %Y' }}
-
-
+{% for post in site.posts %}
+    <li>aaa<span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a></li>
+  {% endfor %}
+</
 
 - list
 - items
