@@ -14,6 +14,9 @@ Gist 2:
 Gist 3:
 {% gist 5555251 %}
 
+Date:
+{{ page.date | date: '%B %d, %Y' }}
+
 
 
 - list
