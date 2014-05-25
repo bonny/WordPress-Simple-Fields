@@ -1,6 +1,7 @@
 timezone: Europe/Stockholm
 highlighter: pygments
-markdown: rdiscount
+#markdown: rdiscount
+markdown: redcarpet
 collections:
   front_sections:
     foo: bar
