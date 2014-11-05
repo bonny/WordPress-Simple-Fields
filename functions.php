@@ -1835,13 +1835,15 @@ function simple_fields_fieldgroup($field_group_id_or_slug, $post_id = NULL, $opt
 		$field_group = $sf->get_field_group_by_slug($field_group_id_or_slug);
 
 		$arr_fields = array();
-		foreach ($field_group["fields"] as $one_field) {
+		if (is_array($field_group["fields"])) {
+			foreach ($field_group["fields"] as $one_field) {
 
-			if ($one_field["deleted"]) continue;
+				if ($one_field["deleted"]) continue;
 
-			// add field group to each field slug
-			$arr_fields[] = trim($one_field["field_group"]["slug"]) . "/" . trim($one_field["slug"]);
+				// add field group to each field slug
+				$arr_fields[] = trim($one_field["field_group"]["slug"]) . "/" . trim($one_field["slug"]);
 
+			}
 		}
 		
 		$str_field_slugs = join(",", $arr_fields);
