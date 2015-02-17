@@ -4,16 +4,21 @@ php:
     - 5.3
     - 5.4
     - 5.5
+    - 5.6
 
 env:
     - WP_VERSION=master WP_MULTISITE=0
-    - WP_VERSION=3.8 WP_MULTISITE=0
-    - WP_VERSION=3.7.1 WP_MULTISITE=0
+    - WP_VERSION=4.0.1 WP_MULTISITE=0
+    - WP_VERSION=3.9.3 WP_MULTISITE=0
+    - WP_VERSION=3.8.5 WP_MULTISITE=0
+    - WP_VERSION=3.7.5 WP_MULTISITE=0
     - WP_VERSION=3.6.1 WP_MULTISITE=0
     - WP_VERSION=3.5.2 WP_MULTISITE=0
     - WP_VERSION=master WP_MULTISITE=1
-    - WP_VERSION=3.8 WP_MULTISITE=1
-    - WP_VERSION=3.7.1 WP_MULTISITE=1
+    - WP_VERSION=4.0.1 WP_MULTISITE=1
+    - WP_VERSION=3.9.3 WP_MULTISITE=1
+    - WP_VERSION=3.8.5 WP_MULTISITE=1
+    - WP_VERSION=3.7.5 WP_MULTISITE=1
     - WP_VERSION=3.6.1 WP_MULTISITE=1
     - WP_VERSION=3.5.2 WP_MULTISITE=1
 
@@ -48,4 +53,4 @@ before_script:
     - phpenv rehash
 
 
-script: phpunit --verbose --debug 
+script: phpunit --verbose --debug
