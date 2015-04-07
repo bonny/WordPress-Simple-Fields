@@ -4,7 +4,7 @@ Donate link: http://simple-fields.com/about/donate/
 Tags: admin, fields, custom fields, advanced custom fields, extended custom fields, more fields, repeatable fields, field manager, attachments, text areas, input fields, tinymce, radio button, drop down, files, meta box, edit, post, post_meta, post meta, custom, simple fields, cms, date picker, time picker, repeatable fields, multiple fields
 Requires at least: 3.7.1
 Tested up to: 3.9.1
-Stable tag: 1.4.8
+Stable tag: 1.4.9
 
 With Simple Fields you can add any kind of custom fields to your pages, posts and attachments.
 
@@ -45,7 +45,7 @@ A simple checkbox to be able to select something on/off.
 
 * **Radio Buttons**<br>
 Add multiple radiobuttons where a user can select one of the buttons. Useful for letting a user choose between multiple options.
- 
+
 * **Dropdown**<br>
 Add multiple values to a dropdown box. User can select one or several items in the list. Useful for letting your users select one or severall things.
 
@@ -66,12 +66,12 @@ Show a color picker where the user can choose any color. The color can also be e
 
 * **Date and Time**<br>
 Chose a date and optionally time from a JQuery UI date and time picker.
- 
+
 * **User**<br>
 Choose a user from the system.
- 
+
 See the [field documentation](http://simple-fields.com/documentation/field-types/) for more details about the different fields.
- 
+
 = Use Field Type Extensions to add your own field types =
 
 If you miss a field type in Simple Fields you can use [Field Extensions](http://simple-fields.com/extensions/) to add more field types. These are fields that are created by other developers and shared with the Simple Fields community.
@@ -109,7 +109,7 @@ A lot of the functionality in Simple Fields is tested using unit testing. Test c
 
 If you have questions/bug reports/feature requests for Simple Fields then:
 
-* use the [WordPress Support Forum](http://wordpress.org/support/plugin/simple-fields) 
+* use the [WordPress Support Forum](http://wordpress.org/support/plugin/simple-fields)
 * visit the [GitHub project page for Simple Fields](http://github.com/bonny/WordPress-Simple-Fields)
 * view the [getting started guide](http://simple-fields.com/documentation/getting-started/)
 
@@ -143,6 +143,11 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 
 == Changelog ==
+
+#### Version 1.4.9
+
+- Fix cache warning message. Fixes https://wordpress.org/support/topic/notice-indirect-modification-of-overloaded-property-wp_object_cachecache.
+- Fix foreach error in `simple_fields_fieldgroup()` when a $field_group_id_or_slug does not exist.
 
 #### Version 1.4.8
 
@@ -209,7 +214,7 @@ to your template and that connector will be used for all pages with that templat
 - Updated field extension example with code to notify user that they must have simple fields
 installed to use the plugin
 
-- simple_fields_register_post_connector can now accept a string in the post_types argument, 
+- simple_fields_register_post_connector can now accept a string in the post_types argument,
 if only one post type is to be connected
 
 - fixed a problem with the date/timepicker v2 not being se correctly when option "no date" was selected
@@ -258,8 +263,8 @@ if only one post type is to be connected
 - Changed the way some cache keys where stored, beacuse a key in an array that contains quotes is just silly looking (but valid, apparently)
 - Little better looking output of "Show custom field keys"
 - Fixed ordering of fields when using simple_fields_register_field_group
-- Fixed bug with post field and extended return values, 
-  where a field with no post/page selected would return the post of the current post in the loop. 
+- Fixed bug with post field and extended return values,
+  where a field with no post/page selected would return the post of the current post in the loop.
   Now returns empty array instead. Thanks to [hjalle](https://twitter.com/hjalle) for finding.
 - simple_fields_register_post_connector now uses name from each field group, so no need to enter that manually any more (if entered manually, it will be removed)
 - Added filters and actions that you can use in your functions.php-file or in your plugin or field extension or whatever. Added filters are:
@@ -292,8 +297,8 @@ if only one post type is to be connected
   simple_fields_get_meta_key_template<br>
   simple_fields_get_meta_key<br>
 - Added method get_meta_key(). Use it to retrieve the key that simple fields uses for meta/custom fields storage.
-- Added "meta_key" as key to all fields when using get_field_by_slug() somewhere. 
-  Makes it easy to know/get the meta key if you need it. returns the meta key for the first field in that field group. 
+- Added "meta_key" as key to all fields when using get_field_by_slug() somewhere.
+  Makes it easy to know/get the meta key if you need it. returns the meta key for the first field in that field group.
   If group is repeatable you must add number to numInSet yourself. Will contain a value like "_simple_fields_fieldGroupID_1_fieldID_2_numInSet_0"
 - Fixed so plugin works with jQuery 1.9, because now jQuery(htmlString) requires first char to be < for string to be considered HTML. Was not working due to spaces before first HMTL tag.
 - Added Slovak translation by Branco. Thanks a lot!
@@ -355,12 +360,12 @@ if only one post type is to be connected
 #### Version 1.0.5
 - Added: field group slug to field group wrapper css + field wrapper css on edit post screen, so you can style different field groups differently.
 - Added: new method: get_field_group(): returns an array with info about a field group by using id or slug
-- Added: new function: simple_fields_fieldgroup(). Works like simple_fields_value(s) but for a complete fieldgroup. 
+- Added: new function: simple_fields_fieldgroup(). Works like simple_fields_value(s) but for a complete fieldgroup.
 Pretty good "shortcut" when you want to get all the field values in a field group.
 - Added: new method get_field_by_slug. Returns a field from a fieldgroup using their slugs.
 - Fixed: Added wp_cache to some very commonly used functions. Quick tests with Xdebug shows a noticable faster performance.
-- Changed: method get_field_groups() adds a key with name field_group with some info about the field group that the field belongs to. 
-Useful since sometimes when you use for example get_field_by_slug() to get a single field, you want to know some basic info about the 
+- Changed: method get_field_groups() adds a key with name field_group with some info about the field group that the field belongs to.
+Useful since sometimes when you use for example get_field_by_slug() to get a single field, you want to know some basic info about the
 field group it belongs to, like the id or slug.
 - Changed: function sf_d also shows if a variable is a boolean.
 
@@ -370,11 +375,11 @@ field group it belongs to, like the id or slug.
 - Changed: minor CSS fixes here and there
 
 #### Version 1.0.3
-- Added: Added options for returning values as "Extended Return Values". 
-Very useful when working with for example files: 
-instead of just the ID of the file you get the id, the full path to the file, the dimensions if it's a image, and more. 
-This feature is available for these field types: 
-file, radiobutton, dropdown, post, user, taxonomy, taxonomy term and date. 
+- Added: Added options for returning values as "Extended Return Values".
+Very useful when working with for example files:
+instead of just the ID of the file you get the id, the full path to the file, the dimensions if it's a image, and more.
+This feature is available for these field types:
+file, radiobutton, dropdown, post, user, taxonomy, taxonomy term and date.
 Please see the [documentation for Extended Return Values](http://simple-fields.com/documentation/api/extended-return-values/) for more information and examples.
 - Added: option to set the height for textarea fields (inlcuding HTML/TinyMCE-editor-mode)
 - Added: new field type: divider. Useful if you have a field group with many fields. By adding the divider field to a field group it simply created a shite space or a space with a line. It's written using the new Extension API btw, so feel free to check out the source if you want to create something similar yourself.
@@ -411,7 +416,7 @@ Please see the [documentation for Extended Return Values](http://simple-fields.c
 - Fixed: An incompatibility with the new TinyMCE in Wordpress 3.3 caused the HTML-editor to not show.
 - Fixed: An incompatibility with the new media uploader in Wordpress 3.3 caused the "insert into post"-button to not show in the media library.
 
-#### 0.4 
+#### 0.4
 - Massive update!
 - Backup: Lots of new stuff in this version of the plugin, so pleeeeeeease make sure you backup your stuff before installing this. Things may be borked.
 - Added: new field type: taxonomy term! Select taxonomy terms, from any taxonomy in the system. The development of this field type was sponsored by http://plucera.se. Thanks guys!
@@ -537,4 +542,3 @@ Please see the [documentation for Extended Return Values](http://simple-fields.c
 
 #### 0.1
 - First beta version.
-
