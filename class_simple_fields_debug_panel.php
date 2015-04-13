@@ -3,9 +3,9 @@
 /**
  * Class to extend Debug Bar with groovy Simple Fields stuff
  */
-class class_simple_fields_debug_panel {
+class class_simple_fields_debug_panel extends Debug_Bar_Panel {
 
-	function title() {
+	function title($title = null) {
 		return 'Simple Fields';
 	}
 
@@ -23,4 +23,3 @@ class class_simple_fields_debug_panel {
 	}
 
 }
-
