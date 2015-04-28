@@ -48,12 +48,12 @@ var simple_fields_file_field = (function($) {
 	};
 
 	my.init = function() {
-		simple_fields.log("init simple_fields_file_field");
+		//simple_fields.log("init simple_fields_file_field");
 		my.addListeners();
 	};
 
 	my.openFileBrowser = function(e) {
-		
+
 		e.preventDefault();
 
 		var target = $(e.target),
@@ -73,7 +73,7 @@ var simple_fields_file_field = (function($) {
             }
         });
 		*/
-		
+
 		// http://simple-fields.com/documentation/field-types/file/#comment-1182
 		//———– replaced with the following: ———-
 		//see: http://stackoverflow.com/questions/14674948/wordpress-3-5-media-manager-add-my-own-backbone-js-views
@@ -111,13 +111,13 @@ var simple_fields_file_field = (function($) {
 
 
         my.media_frame.on('select', function(){
-            
+
             var file_json = my.media_frame.state().get('selection').first().toJSON(),
 				file_thumb = "",
 				thumb_url = "";
 
 			if (file_json.type === "image") {
-		
+
 				if (file_json.sizes) {
 
 					// get thumbnail for image. in rare cases thumbs are missing and then fallback to full size
@@ -126,7 +126,7 @@ var simple_fields_file_field = (function($) {
 					} else if (file_json.sizes.full && file_json.sizes.full.url) {
 						thumb_url = file_json.sizes.full.url;
 					}
-				
+
 				} else if (file_json.url) {
 
 					thumb_url = file_json.url;
@@ -135,7 +135,7 @@ var simple_fields_file_field = (function($) {
 			}
 
 			if ( ! thumb_url && file_json.icon) {
-					
+
 				thumb_url = file_json.icon;
 
 			}
@@ -150,9 +150,9 @@ var simple_fields_file_field = (function($) {
 			container_div.find(".simple-fields-metabox-field-file-view").attr( "href", file_json.url );
 			container_div.find(".simple-fields-metabox-field-file-edit").attr( "href", file_json.editLink );
 			container_div.find(".simple-fields-metabox-field-file-selected-image-name").text( file_json.title + " (" + file_json.filename + ")" );
-            
+
             container_div.addClass("simple-fields-metabox-field-file-is-selected");
-			container_div.effect("highlight", 4000);          
+			container_div.effect("highlight", 4000);
 
         });
 
@@ -163,7 +163,7 @@ var simple_fields_file_field = (function($) {
 	my.clearSelectedFile = function(e) {
 
 		e.preventDefault();
-	
+
 		var target = $(e.target),
 			container_div = target.closest(".simple-fields-metabox-field-file");
 
@@ -284,7 +284,7 @@ var simple_fields_file_field = (function($) {
 		return false;
 
 	}
-	
+
 	function simple_fields_get_fieldID_from_this(t) {
 		var $t = $(t);
 		return $t.closest(".simple-fields-field-group-one-field").find(".simple-fields-field-group-one-field-id").val();
@@ -329,7 +329,7 @@ var simple_fields_file_field = (function($) {
 		$li.find(".simple-fields-field-type-options").hide();
 		$li.find(".simple-fields-field-type-options-" + selectedFieldType).fadeIn("slow");
 	});
-	
+
 	// Field group edit, show delete icon for field
 	$(document).on("mouseenter mouseleave", "li.simple-fields-field-group-one-field", function(e) {
 		var $t = $(this);
@@ -357,7 +357,7 @@ var simple_fields_file_field = (function($) {
 		if (confirm(sfstrings.confirmDeleteGroup)) return true;
 		return false;
 	});
-	
+
 	// Edit post connector, confirm connector delete
 	$(document).on("click", ".simple-fields-post-connector-delete a", function() {
 		if (confirm(sfstrings.confirmDeleteConnector)) return true;
@@ -421,7 +421,7 @@ var simple_fields_file_field = (function($) {
 		}
 		return false;
 	});
-	
+
 	// get a field group from the server and add it to the page (aka "the add button")
 	// what we need:
 	// - field group id
@@ -431,7 +431,7 @@ var simple_fields_file_field = (function($) {
 	$(document).on("click", "div.simple-fields-metabox-field-add a:nth-child(1)", function(e) {
 
 		var $t = $(this).closest("div.simple-fields-metabox-field-add");
-		
+
 		$t.text(sfstrings.adding);
 		var $wrapper = $t.parents(".simple-fields-meta-box-field-group-wrapper");
 		var field_group_id = $wrapper.find("input[name=simple-fields-meta-box-field-group-id]").val();
@@ -445,7 +445,7 @@ var simple_fields_file_field = (function($) {
 		};
 
 		var is_link_at_bottom = $t.hasClass("simple-fields-metabox-field-add-bottom");
-	
+
 		$.post(ajaxurl, data, function(response) {
 
 			$ul = $wrapper.find("ul.simple-fields-metabox-field-group-fields");
@@ -460,7 +460,7 @@ var simple_fields_file_field = (function($) {
 			var wrapper = $ul.closest("div.simple-fields-meta-box-field-group-wrapper");
 
 			$response.slideDown("slow", function() {
-				
+
 				simple_fields_metabox_tinymce_attach();
 
 				// add jscolor to possibly new fields
@@ -468,18 +468,18 @@ var simple_fields_file_field = (function($) {
 
 				// add datepicker too
 				$('input.simple-fields-field-type-date', $ul).datePicker(simple_fields_datepicker_args);
-				
+
 				// Fire event so plugins can listen to the add-button
 				$(document.body).trigger("field_group_added", $response);
 
 			});
 
 			$t.html("<a href='#'>+ "+sfstrings.add+"</a>");
-			
+
 			wrapper.addClass("simple-fields-meta-box-field-group-wrapper-has-fields-added");
 
 		});
-		
+
 		simple_fields_new_fields_count++;
 
 		return false;
@@ -495,7 +495,7 @@ var simple_fields_file_field = (function($) {
 
 	// Edit post, field group delete
 	$(document).on("click", "div.simple-fields-metabox-field-group-delete a", function(e) {
-	
+
 		if (confirm(sfstrings.confirmRemoveGroup)) {
 			var li = $(this).closest("li");
 			li.hide("slow", function() {
@@ -503,7 +503,7 @@ var simple_fields_file_field = (function($) {
 				var wrapper = li.closest("div.simple-fields-meta-box-field-group-wrapper");
 				var ul = li.closest("ul.simple-fields-metabox-field-group-fields");
 				li.remove();
-				
+
 				// If removed last fieldgroup, hide the add link
 				if (ul.find(">li").length === 0) {
 					//wrapper.find("div.simple-fields-metabox-field-add-bottom").hide("slow");
@@ -515,11 +515,11 @@ var simple_fields_file_field = (function($) {
 			});
 
 		}
-	
+
 		return false;
-	
+
 	});
-	
+
 
 
 	// media buttons
@@ -531,7 +531,7 @@ var simple_fields_file_field = (function($) {
 		return false;
 	});
 	*/
-	
+
 	// field type post
 	// popup a dialog where the user can choose the post to attach
 	$(document).on("click", "a.simple-fields-metabox-field-post-select", function(e) {
@@ -562,7 +562,7 @@ var simple_fields_file_field = (function($) {
 
 	});
 
-	
+
 	/**
 	 * Post type dialog: click on cancel link
 	 * Close the dialog
@@ -571,7 +571,7 @@ var simple_fields_file_field = (function($) {
 		e.preventDefault();
 		$("div.simple-fields-meta-box-field-group-field-type-post-dialog").dialog("close");
 	});
-	
+
 	/**
 	 * in dialog: click on post type = show posts of that type
 	 */
@@ -587,7 +587,7 @@ var simple_fields_file_field = (function($) {
 
 		// add this too?
 		// additional_args = div.find('input[name="additional_arguments"]').val();
-		
+
 		dialog.load(ajaxurl, {
 			"action": "simple_fields_field_type_post_dialog_load",
 			"str_enabled_post_types": enabled_post_types,
@@ -595,20 +595,20 @@ var simple_fields_file_field = (function($) {
 		});
 
 	});
-	
+
 	/**
 	 * in dialog: click on a post = update input in field group and then close dialog
 	 */
 	$(document).on("click", ".simple-fields-meta-box-field-group-field-type-post-dialog-post-posts a", function(e) {
-		
+
 		e.preventDefault();
-		
+
 		var a = $(this);
 		var post_id = a.attr("href").match(/post=([\d]+)/)[1];
 		var dialog = $("div.simple-fields-meta-box-field-group-field-type-post-dialog");
 		var originLink = dialog.data("originLink");
 		originLink = $(originLink);
-		
+
 		var div = originLink.closest(".simple-fields-metabox-field");
 		div.find(".simple-fields-field-type-post-postID").attr("value", post_id);
 		div.find(".simple-fields-field-type-post-postName").text(a.text());
@@ -616,9 +616,9 @@ var simple_fields_file_field = (function($) {
 		div.find(".simple-fields-field-type-post-postName").show();
 
 		dialog.dialog("close");
-		
+
 	});
-	
+
 	/**
 	 * Field type post: link clear = clear post id and name
 	 */
@@ -630,7 +630,7 @@ var simple_fields_file_field = (function($) {
 		div.find(".simple-fields-field-type-post-postName").hide("fast");
 		div.find(".simple-fields-field-type-post-postID").attr("value", "");
 	});
-	
+
 	/**
 	 * ondomready
 	 */
@@ -643,7 +643,7 @@ var simple_fields_file_field = (function($) {
 		// If meta_box_field_group_wrapper exists on the page then it's a page with simple fields-fields
 		var meta_box_field_group_wrapper = $("div.simple-fields-meta-box-field-group-wrapper");
 		if (meta_box_field_group_wrapper.length) {
-			
+
 			// Add chosen to select dropdown
 			// ...or not, didn't get the widths to work
 			// $("div.simple-fields-fieldgroups-field-type-dropdown select").chosen({});
@@ -655,7 +655,7 @@ var simple_fields_file_field = (function($) {
 			axis: 'y',
 			handle: ".simple-fields-field-group-one-field-handle"
 		});
-		
+
 		// radiobutton
 		$(".simple-fields-field-type-options-radiobutton-values-added").sortable({
 			axis: 'y',
@@ -682,10 +682,10 @@ var simple_fields_file_field = (function($) {
 			var selectedVal = $(this).val();
 			var selectedValName = $(this).find(":selected").text();
 			$(this).val("");
-			
+
 			var str_html = "";
 			str_html += "<li>";
-			
+
 			str_html += "<div class='simple-fields-post-connector-addded-fields-handle'></div>";
 			str_html += "<div class='simple-fields-post-connector-addded-fields-field-name'>" + selectedValName + "</div>";
 			str_html += "<input type='hidden' name='added_fields["+selectedVal+"][id]' value='"+selectedVal+"' />";
@@ -699,7 +699,7 @@ var simple_fields_file_field = (function($) {
 			str_html += "<option value='advanced'>"+sfstrings.advanced+"</option>";
 			str_html += "<option value='side'>"+sfstrings.side+"</option>";
 			str_html += "</select>";
-			
+
 			str_html += "Priority";
 			str_html += "<select class='simple-fields-post-connector-addded-fields-option-priority' name='added_fields["+selectedVal+"][priority]'>";
 			str_html += "<option value='low'>"+sfstrings.low+"</option>";
@@ -710,14 +710,14 @@ var simple_fields_file_field = (function($) {
 			str_html += "<a href='#' class='simple-fields-post-connector-addded-fields-delete'>"+sfstrings.txtDelete+"</a>";
 
 			str_html += "</li>";
-			
+
 			var $html = $(str_html);
-			
+
 			$("#simple-fields-post-connector-added-fields").append($html);
-			
+
 			$html.effect("highlight");
-			
-			
+
+
 		});
 
 		// Edit post connector, add sortable to list of added fields
@@ -836,16 +836,16 @@ var simple_fields_file_field = (function($) {
 
 			var match = window.location.search.match(/simple_fields_file_field_unique_id=([\w]+)/);
 			params.simple_fields_file_field_unique_id = match[1];
-			
+
 			// all params that start with "simple_fields_"
 			$.each(params, function(key, val) {
 				frm_filter.append("<input type='hidden' name='"+key+"' value='"+val+"' />");
 			});
 
 		}
-		
+
 		if (sfstrings.page_type == "post") {
-	
+
 			// attach TinyMCE to textareas
 			// this is only needen when adding with ajax?
 			//simple_fields_metabox_tinymce_attach();
@@ -854,7 +854,7 @@ var simple_fields_file_field = (function($) {
 			$('input.simple-fields-field-type-date').datePicker();
 
 		}
-		
+
 	}); // end domready
 
 }(jQuery)); // self invoke function
@@ -915,4 +915,3 @@ function simple_fields_metabox_file_select(file_id, file_thumb, file_name) {
 }
 */
 // simple-fields-metabox-field-file
-

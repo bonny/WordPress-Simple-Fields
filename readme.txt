@@ -144,6 +144,10 @@ See that "Add"-link above "Article images"? That means that it is repeatable, so
 
 == Changelog ==
 
+#### Trunk
+
+- Fix: Remove a console.log what was highly annoying.
+
 #### Version 1.4.10 (April 2015)
 
 - Fix compatibilty issue with Query Monitor and the Debug_Bar_Panel that Simple Fields uses.
