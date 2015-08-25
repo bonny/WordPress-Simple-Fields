@@ -2596,22 +2596,18 @@ sf_d($one_field_slug, 'one_field_slug');*/
 
 		global $sf;
 
-		$arr_enabled_post_types = isset($_POST["arr_enabled_post_types"]) ? $_POST["arr_enabled_post_types"] : array();
-		$str_enabled_post_types = isset($_POST["str_enabled_post_types"]) ? $_POST["str_enabled_post_types"] : "";
-		$additional_arguments = isset($_POST["additional_arguments"]) ? $_POST["additional_arguments"] : "";
+		$arr_enabled_post_types = isset( $_REQUEST["arr_enabled_post_types"] ) ? $_REQUEST["arr_enabled_post_types"] : array();
+		$str_enabled_post_types = isset( $_REQUEST["str_enabled_post_types"] ) ? $_REQUEST["str_enabled_post_types"] : "";
+		$additional_arguments = isset( $_REQUEST["additional_arguments"] ) ? $_REQUEST["additional_arguments"] : "";
 		$existing_post_types = get_post_types(NULL, "objects");
-		$selected_post_type = isset($_POST["selected_post_type"]) ? (string) $_POST["selected_post_type"] : "";
+		$selected_post_type = isset( $_REQUEST["selected_post_type"] ) ? (string) $_REQUEST["selected_post_type"] : "";
 
-		if (empty($arr_enabled_post_types)) {
+		if ( empty( $arr_enabled_post_types)) {
 			$arr_enabled_post_types = explode(",", $str_enabled_post_types);
 		}
 
-		/*echo "<br>selected_post_type: $selected_post_type";
-		echo "<br>str_enabled_post_types: $str_enabled_post_types";
-		echo "<br>enabled post types:"; print_r($arr_enabled_post_types);*/
-
 		// If no post type is selected then don't show any posts
-		if (empty($arr_enabled_post_types)) {
+		if ( empty( $arr_enabled_post_types ) ) {
 			_e("<p>No post type is selected. Please at at least one post type in Simple Fields.</p>", "simple-fields");
 			exit;
 		}
@@ -2633,7 +2629,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 					if ($selected_post_type == $key) {
 						$class = "selected";
 					}
-					printf("\n<li class='%s'><a href='%s'>%s</a></li>", $class, "$key", $val->labels->name);
+					printf("\n<li class='%s'><a href='%s'>%s</a></li>", $class, esc_attr( $key ), esc_attr( $val->labels->name ) );
 					$loopnum++;
 				}
 			?>
@@ -2642,7 +2638,7 @@ sf_d($one_field_slug, 'one_field_slug');*/
 		} else {
 			$selected_post_type = $arr_enabled_post_types[0];
 			?>
-			<p>Showing posts of type: <a href="<?php echo $selected_post_type; ?>"><?php echo $existing_post_types[$selected_post_type]->labels->name; ?></a></p>
+			<p>Showing posts of type: <a href="<?php echo esc_attr( $selected_post_type ) ?>"><?php echo esc_attr( $existing_post_types[$selected_post_type]->labels->name ) ?></a></p>
 			<?php
 		} ?>
 
