@@ -24,13 +24,8 @@ function init_simple_fields_field_date_v2() {
 		 * Load scripts and styles
 		 */
 		function enqueue_scripts() {
-			// https://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css
 
-			// Load jquery styles using method found here:
-			// http://snippets.webaware.com.au/snippets/load-a-nice-jquery-ui-theme-in-wordpress/
-			global $wp_scripts;
 			wp_enqueue_script('jquery-ui-datepicker');
-			$ui = $wp_scripts->query('jquery-ui-core');
 			
 			// Styles for datepicker
 			wp_enqueue_style("jquery-ui-datepicker-theme", SIMPLE_FIELDS_URL . "datepicker/jquery-ui-base/jquery.ui.theme.css");			
@@ -40,8 +35,9 @@ function init_simple_fields_field_date_v2() {
 			wp_enqueue_script("jquery-ui-18n", SIMPLE_FIELDS_URL . "datepicker/jquery-ui-i18n.min.js", array("jquery-ui-datepicker"));
 
 			// Timepicker
-			wp_enqueue_script("jquery-timepicker", SIMPLE_FIELDS_URL . "js/jquery-ui-timepicker-addon.js", array("jquery-ui-datepicker"));
-			wp_enqueue_style("jquery-timepicker", SIMPLE_FIELDS_URL . "js/jquery-ui-timepicker-addon.css", array("jquery-ui-smoothness"));
+			wp_enqueue_script("jquery-ui-timepicker", SIMPLE_FIELDS_URL . "js/jquery-ui-timepicker-addon.js", array("jquery-ui-datepicker"));
+			wp_enqueue_script("jquery-ui-slideraccess", SIMPLE_FIELDS_URL . "js/jquery-ui-sliderAccess.js", array("jquery-ui-timepicker"));
+			wp_enqueue_style("jquery-ui-timepicker", SIMPLE_FIELDS_URL . "js/jquery-ui-timepicker-addon.css");
 
 		}
 		
