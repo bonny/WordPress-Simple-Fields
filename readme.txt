@@ -9,6 +9,10 @@ Stable tag: 1.4.11
 With Simple Fields you can add any kind of custom fields to your pages, posts and attachments.
 
 == Description ==
+
+*Please note that Simple Fields is
+[not actively developed anymore](http://simple-fields.com/2016/bye-bye-simple-fields/).*
+
 The built in custom fields in WordPress are great, but they do come with a big limitation: they only support plain text. To overcome this limitation I created the Simple Fields WordPress plugin.
 
 With Simple Fields you can add for example textboxes, text areas, checkboxes, radio buttons, dropdowns, and file browser to the post admin area. These fields are all much easier to use for the user than regular custom fields.

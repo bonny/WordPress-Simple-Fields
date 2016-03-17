@@ -1,6 +1,8 @@
 Simple Fields WordPress Custom Fields Plugin
 ============================================
 
+*Please note that Simple Fields is [not actively developed anymore](http://simple-fields.com/2016/bye-bye-simple-fields/).*
+
 Simple Fields is a WordPress plugin that adds visual Custom Fields, 
 hence making them more usably for end users (aka customers). 
 
